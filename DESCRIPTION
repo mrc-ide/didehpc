@@ -1,0 +1,17 @@
+Package: didewin
+Title: DIDE Windows Cluster Support
+Version: 0.0.1
+Author: Rich FitzJohn
+Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
+Description: DIDE Windows cluster support.
+License: MIT + file LICENSE
+LazyData: true
+URL: https://github.com/dide-tools/didewin
+BugReports: https://github.com/dide-tools/didewin/issues
+Imports:
+    base64enc,
+    httr,
+    xml2
+Suggests:
+    testthat
+RoxygenNote: 5.0.0
