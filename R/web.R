@@ -9,14 +9,16 @@
 ##'   you will be prompted graphically for your password).
 ##'
 ##' @export
-login <- function(credentials) {
+web_login <- function(credentials) {
   ## What should be stored (and reused if the connection expires) is
   ## the *call* so that we can rerun back through this.
   ##
   ## TODO: It would be great if the website returned a non 3xx code on
   ## login failure.
-  dat <- get_credentials(credentials)
-  data <- list(us=dat$username, pw=dat$password, hpcfunc=encode64("login"))
+  dat <- get_credentials(credentials, TRUE)
+  data <- list(us=encode64(dat$username),
+               pw=encode64(dat$password),
+               hpcfunc=encode64("login"))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
                   curl_insecure(), body=data, encode="form")
   httr::stop_for_status(r)
@@ -31,8 +33,8 @@ login <- function(credentials) {
 }
 
 ##' @export
-##' @rdname login
-logout <- function() {
+##' @rdname web_login
+web_logout <- function() {
   r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php")
   httr::stop_for_status(r)
   invisible(TRUE)
@@ -41,14 +43,12 @@ logout <- function() {
 ##' Submit tasks to the cluster
 ##' @title Submit tasks to the cluster
 ##'
-##' @param task Filenames, as \emph{network paths}.  The function
-##'   \code{\link{dide_home}} can construct paths to your home
-##'   directory easily.
+##' @param task Filenames, as \emph{network paths}.
 ##'
 ##' @param name Optional name for the task (scalar)
 ##' @param cluster Cluster to use
 ##' @export
-submit <- function(task, name=NULL, cluster=NULL) {
+web_submit <- function(task, name=NULL, cluster=NULL) {
   if (length(task) == 0L) {
     stop("Must specify at least one task")
   } else {
@@ -102,23 +102,12 @@ submit <- function(task, name=NULL, cluster=NULL) {
   }
 }
 
-##' Construct network path to files in your home directory.
-##' @title Network path construction
-##' @param path Path, relative to your home direcory
-##' @param username Your username
-##' @export
-dide_home <- function(path, username) {
-  assert_scalar_character(username)
-  assert_character(path)
-  paste0("\\\\fi--san02\\homes\\", username, "\\", gsub("/", "\\\\", path))
-}
-
 ##' Get status of the nodes.  This is just a holding place until the
 ##' website can return something like JSON.
 ##' @title Node status
 ##' @param cluster Name of the cluster
 ##' @export
-shownodes <- function(cluster=NULL) {
+web_shownodes <- function(cluster=NULL) {
   ## TODO: This doesn't get the node names because reading HTML from
   ## tables is unpleasant.
   if (is.null(cluster)) {
@@ -159,40 +148,66 @@ valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb")
 }
 
-get_credentials <- function(credentials) {
+get_credentials <- function(credentials, need_password=TRUE) {
+  if (is.null(credentials)) {
+    if (!interactive()) {
+      stop("Credentials file needed for non-interactive use")
+    }
+    credentials <- trimws(readline(prompt="DIDE username: "))
+    if (credentials == "") {
+      stop("Invalid empty username")
+    }
+  }
   ## Jesus.  Some cleaning here to do.
   ## Check that username/password is OK
   ## Perhaps allow and parse environment variables
   if (is.list(credentials)) {
-    ## check that username, password are present
-    if (!all(c("username", "password") %in% names(credentials))) {
-      stop("Invalid")
-    }
-    ret <- credentials
+    ret <- check_credentials(credentials, need_password)
   } else if (is.character(credentials)) {
     if (file.exists(credentials)) {
       ret <- read_credentials(credentials)
     } else {
       ## Assume we have a username.
-      ret <- list(username=credentials,
-                  password=password_tcltk(credentials))
+      ret <- list(username=credentials)
+      if (need_password) {
+        if (!interactive()) {
+          stop("Credentials file needed for non-interactive use")
+        }
+        ret$password <- password_tcltk(credentials)
+      }
     }
   } else {
     stop("Unexpected type")
   }
 
   ret$username <- sub("^DIDE\\\\", "", ret$username)
-  lapply(ret, encode64)
+  ret
 }
 
 ## Format is
 ## username=<username>
 ## password=<password>
 read_credentials <- function(filename) {
-  ## Lots of validation needed here.
   dat <- strsplit(readLines(filename), "=")
-  setNames(as.list(trimws(vapply(dat, "[[", character(1), 2L))),
-           trimws(vapply(dat, "[[", character(1), 1L)))
+  dat <- setNames(as.list(trimws(vapply(dat, "[[", character(1), 2L))),
+                  trimws(vapply(dat, "[[", character(1), 1L)))
+  check_credentials(dat, TRUE)
+}
+
+check_credentials <- function(credentials, need_password) {
+  if (is.null(names(credentials))) {
+    stop("Credentials must be named")
+  }
+  extra <- setdiff(names(credentials), c("username", "password"))
+  if (length(extra) > 0L) {
+    stop("Unknown fields in credentials: ", paste(extra, collapse=", "))
+  }
+  req <- c("username", if (need_password) "password")
+  msg <- setdiff(req, names(credentials))
+  if (length(msg) > 0L) {
+    stop("Missing fields in credentials: ", paste(msg, collapse=", "))
+  }
+  credentials # consider credentials[req]
 }
 
 password_tcltk <- function(username) {

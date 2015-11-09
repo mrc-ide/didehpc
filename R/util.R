@@ -24,3 +24,28 @@ encode64 <- function(x) {
 decode64 <- function(x) {
   rawToChar(base64enc::base64decode(x))
 }
+
+modify_list <- function(x, val, name=deparse(substitute(val))) {
+  extra <- setdiff(names(val), names(x))
+  if (length(extra) > 0L) {
+    warning(sprintf("Unknown elements in %s: %s",
+                    nmae, paste(extra, collapse=", ")))
+    val <- val[setdiff(names(val), extra)]
+  }
+  modifyList(x, val)
+}
+
+is_windows <- function() {
+  Sys.info()[["sysname"]] == "Windows"
+}
+is_linux <- function() {
+  Sys.info()[["sysname"]] == "Linux"
+}
+
+string_starts_with <- function(x, y) {
+  substr(x, 1, nchar(y)) == y
+}
+
+drop_blank <- function(x) {
+  sub("^\n", "", gsub("\n[[:space:]]*\n", "\n", x))
+}
