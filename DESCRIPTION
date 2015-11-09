@@ -11,6 +11,7 @@ BugReports: https://github.com/dide-tools/didewin/issues
 Imports:
     base64enc,
     httr,
+    whisker,
     xml2
 Suggests:
     testthat
