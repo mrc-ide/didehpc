@@ -10,7 +10,8 @@ test_that("globals are not usually defined", {
 
 test_that("credentials", {
   if (!interactive()) {
-    expect_error(get_credentials(), "Credentials file needed")
+    expect_error(get_credentials(NULL), "Credentials file needed")
+    expect_error(get_credentials("username", TRUE), "Credentials file needed")
   }
   expect_equal(get_credentials("username", FALSE),
                list(username="username"))
@@ -44,7 +45,6 @@ test_that("credentials", {
 test_that("interactive", {
   if (!interactive()) {
     expect_error(didewin_config(), "Credentials file needed")
-    expect_error(didewin_config("username"), "Credentials file needed")
   }
 
   dat <- didewin_config("me")

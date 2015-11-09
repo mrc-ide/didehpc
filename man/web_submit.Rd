@@ -4,14 +4,12 @@
 \alias{web_submit}
 \title{Submit tasks to the cluster}
 \usage{
-web_submit(task, name = NULL, cluster = NULL)
+web_submit(task, config)
 }
 \arguments{
 \item{task}{Filenames, as \emph{network paths}.}
 
-\item{name}{Optional name for the task (scalar)}
-
-\item{cluster}{Cluster to use}
+\item{config}{Configuration information, via \code{\link{didewin_config}}.}
 }
 \description{
 Submit tasks to the cluster

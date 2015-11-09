@@ -5,18 +5,20 @@
 \alias{web_logout}
 \title{Log on to the cluster}
 \usage{
-web_login(credentials)
+web_login(config = didewin_config())
 
 web_logout()
 }
 \arguments{
-\item{credentials}{Either a list with elements username, password,
-or a path to a file containing lines \code{username=<username>}
-and \code{password=<password>} or your username (in which case
-you will be prompted graphically for your password).}
+\item{config}{A \code{\link{didewin_config}} object.  If settings
+have been mde global this can be omitted.}
 }
 \description{
 Getting credentials without storing anything anywhere is
 difficult, especially without storing information.  We try here.
+}
+\details{
+The logic here will change as the general configuration approach
+solidifies.  For now it's all a bit crap.
 }
 

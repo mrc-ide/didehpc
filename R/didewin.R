@@ -19,9 +19,10 @@ build_batch <- function(task_handle, config, workdir) {
               context_workdrive=wd$drive_remote,
               context_workdir=windows_path(wd$rel),
               context_root=context_root,
-              network_shares=lapply(config$shares, function(x)
+              ## NOTE: don't forget the unname()
+              network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,
-                     path=windows_path(x$path_remote))))
+                     path=windows_path(x$path_remote)))))
 
   template <- readLines(system.file("template.bat", package="didewin"))
   drop_blank(whisker::whisker.render(template, dat))
@@ -39,13 +40,14 @@ write_batch <- function(task_handle, config, workdir) {
 }
 
 ## Fully explicit one-shot submission for testing:
+##
+## Determine what we do if a file is already submitted?
 submit1_ <- function(expr, context, config, workdir=getwd()) {
   task_handle <- context::save_task(expr, context)
   batch <- write_batch(task_handle, config, workdir)
-  remote_path(batch)
   ## TODO: It would be good to know what the timeout is on the login
   ## so that we could login only when it is likely to be useful.
   ## Because it might prompt for user input it's not really ideal for
   ## use within functions that might be called in scripts.
-  web_submit(remote_path(batch), cluster=config$cluster)
+  web_submit(remote_path(batch), config)
 }

@@ -11,14 +11,23 @@ didewin_config(credentials = NULL, home = NULL, temp = NULL,
 didewin_config_global(...)
 }
 \arguments{
-\item{credentials}{Path to credentials file, or username}
+\item{credentials}{Either a list with elements username, password,
+or a path to a file containing lines \code{username=<username>}
+and \code{password=<password>} or your username (in which case
+you will be prompted graphically for your password).}
 
 \item{home}{Path to network home directory, on local system}
 
 \item{temp}{Path to network temp directory, on local system}
 
-\item{cluster}{Cluster to use}
+\item{cluster}{Name of the cluster to use (one of
+\code{\link{valid_clusters}()})}
 
 \item{...}{arguments to \code{didewin_config}}
+}
+\description{
+Collects configuration information.  Unfortunately there's a
+fairly complicated process of working out what goes where so
+documentation coming later.
 }
 

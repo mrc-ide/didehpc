@@ -1,8 +1,21 @@
+##' Collects configuration information.  Unfortunately there's a
+##' fairly complicated process of working out what goes where so
+##' documentation coming later.
+##'
 ##' @title Configuration
-##' @param credentials Path to credentials file, or username
+##'
+##' @param credentials Either a list with elements username, password,
+##'   or a path to a file containing lines \code{username=<username>}
+##'   and \code{password=<password>} or your username (in which case
+##'   you will be prompted graphically for your password).
+##'
 ##' @param home Path to network home directory, on local system
+##'
 ##' @param temp Path to network temp directory, on local system
-##' @param cluster Cluster to use
+##'
+##' @param cluster Name of the cluster to use (one of
+##' \code{\link{valid_clusters}()})
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL) {
@@ -20,6 +33,10 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               username=username)
   ## Can offer support for additional mappings here, too, so long as
   ## they're absolute path mappings.
+  ##
+  ## TODO: check that all paths point at different remote paths, and
+  ## different drives.  More of an issue when we accept generic
+  ## mappings.
   shares <- list()
   if (!is.null(dat$home)) {
     shares$home <- path_mapping("home", dat$home, dide_home("", username), "Q:")
@@ -98,4 +115,11 @@ print.didewin_config <- function(x, ...) {
     }
   }
   invisible(x)
+}
+
+##' Valid cluster names
+##' @title Valid DIDE clusters
+##' @export
+valid_clusters <- function() {
+  c("fi--dideclusthn", "fi--didemrchnb")
 }

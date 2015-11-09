@@ -1,21 +1,22 @@
 ##' Getting credentials without storing anything anywhere is
 ##' difficult, especially without storing information.  We try here.
 ##'
+##' The logic here will change as the general configuration approach
+##' solidifies.  For now it's all a bit crap.
+##'
 ##' @title Log on to the cluster
 ##'
-##' @param credentials Either a list with elements username, password,
-##'   or a path to a file containing lines \code{username=<username>}
-##'   and \code{password=<password>} or your username (in which case
-##'   you will be prompted graphically for your password).
+##' @param config A \code{\link{didewin_config}} object.  If settings
+##'   have been mde global this can be omitted.
 ##'
 ##' @export
-web_login <- function(credentials) {
+web_login <- function(config=didewin_config()) {
   ## What should be stored (and reused if the connection expires) is
   ## the *call* so that we can rerun back through this.
   ##
   ## TODO: It would be great if the website returned a non 3xx code on
   ## login failure.
-  dat <- get_credentials(credentials, TRUE)
+  dat <- get_credentials(config$credentials, TRUE)
   data <- list(us=encode64(dat$username),
                pw=encode64(dat$password),
                hpcfunc=encode64("login"))
@@ -35,7 +36,8 @@ web_login <- function(credentials) {
 ##' @export
 ##' @rdname web_login
 web_logout <- function() {
-  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php")
+  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
+                 curl_insecure())
   httr::stop_for_status(r)
   invisible(TRUE)
 }
@@ -45,10 +47,10 @@ web_logout <- function() {
 ##'
 ##' @param task Filenames, as \emph{network paths}.
 ##'
-##' @param name Optional name for the task (scalar)
-##' @param cluster Cluster to use
+##' @param config Configuration information, via \code{\link{didewin_config}}.
+##'
 ##' @export
-web_submit <- function(task, name=NULL, cluster=NULL) {
+web_submit <- function(task, config) {
   if (length(task) == 0L) {
     stop("Must specify at least one task")
   } else {
@@ -58,16 +60,7 @@ web_submit <- function(task, name=NULL, cluster=NULL) {
   if (any(err)) {
     stop("All tasks must be Windows network paths")
   }
-  if (is.null(cluster)) {
-    cluster <- valid_clusters()[[1]]
-  } else {
-    cluster <- match_value(cluster, valid_clusters())
-  }
-  if (is.null(name)) {
-    name <- ""
-  } else {
-    assert_scalar_character(name)
-  }
+  name <- ""
   template <- "GeneralNodes" # or "4Core", "8Core"
   resource_count <- 1L
   resource_type <- "Cores"
@@ -75,7 +68,7 @@ web_submit <- function(task, name=NULL, cluster=NULL) {
   stderr <- ""
   stdout <- ""
   data <- list(
-    cluster=encode64(cluster),
+    cluster=encode64(config$cluster),
     template=encode64(template),
     rc=encode64(as.character(resource_count)),
     rt=encode64(resource_type),
@@ -98,7 +91,8 @@ web_submit <- function(task, name=NULL, cluster=NULL) {
     id <- as.integer(sub(re, "\\1", res))
     list(name=name, id=id)
   } else {
-    ## recover
+    stop("Not yet implemented")
+    ## recover; possibly try and log on again?
   }
 }
 
@@ -111,7 +105,7 @@ web_shownodes <- function(cluster=NULL) {
   ## TODO: This doesn't get the node names because reading HTML from
   ## tables is unpleasant.
   if (is.null(cluster)) {
-    cluster <- valid_clusters()[[1]]
+    cluster <- getOption("didewin.cluster", valid_clusters()[[1]])
   } else {
     cluster <- match_value(cluster, valid_clusters())
   }
@@ -142,10 +136,6 @@ web_shownodes <- function(cluster=NULL) {
     i <- i + y2[[i]]
   }
   cbind(used=z1, total=z2)
-}
-
-valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb")
 }
 
 get_credentials <- function(credentials, need_password=TRUE) {
