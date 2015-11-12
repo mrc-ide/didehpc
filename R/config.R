@@ -25,9 +25,11 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 temp=temp)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
-  ## TODO: get_credentials() should prompt for username if it NULL
   ## NOTE: does *not* store (or request password)
   username <- get_credentials(dat$credentials, FALSE)$username
+  if (is.null(dat$credentials)) {
+    dat$credentials <- username
+  }
   ret <- list(cluster=match_value(dat$cluster, valid_clusters()),
               credentials=dat$credentials,
               username=username)
