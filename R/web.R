@@ -113,29 +113,98 @@ web_shownodes <- function(cluster=NULL) {
                hpcfunc="shownodes",
                cluster_no=as.character(match(cluster, valid_clusters())))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/shownodes.php",
-                  curl_insecure(), body=data, encode="form")
-  httr::stop_for_status(r)
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
+  check_status(r)
   txt <- httr::content(r, as="text")
-  ## If this returned JSON this would be heaps easier.  But we'll just
-  ## jump right in and parse this, even if we just do a crap job.  Not
-  ## sure what the failure mode is where we're not validly logged in
-  ## though.
-  html <- xml2::read_html(txt)
-  xx <- vapply(xml2::xml_find_all(html, "//table//table//img/@alt"),
-               xml2::xml_text, character(1))
-  re <- "([0-9]+)/([0-9]+) in use"
-  y1 <- as.integer(sub(re, "\\1", xx[grepl(re, xx)]))
-  y2 <- as.integer(sub(re, "\\2", xx[grepl(re, xx)]))
+  dat <- strsplit(txt, "\n")[[1]]
+  re <- "^([^ ]+) +- +([0-9]+) +([^ ]+) *(.*)$"
+  d <- dat[-(1:2)]
+  node <- sub(re, "\\1", d)
+  core <- as.integer(sub(re, "\\2", d)) + 1L
+  state <- sub(re, "\\3", d)
+  rest <- sub(re, "\\4", d)
+  task_id <- rep(NA_integer_, length(d))
+  i <- nchar(rest) > 0L
+  task_id[i] <- as.integer(sub("^([0-9]+).*", "\\1", rest[i]))
+  data.frame(node=node, core=core, state=state, task_id=task_id,
+             stringsAsFactors=FALSE)
+}
 
-  ## Pull this apart into groups:
-  z1 <- z2 <- integer()
-  i <- 1L
-  while (i < length(y1)) {
-    z1 <- c(z1, y1[[i]])
-    z2 <- c(z2, y2[[i]])
-    i <- i + y2[[i]]
+##' Get job status from the cluster
+##' @title Job status
+##'
+##' @param x Either a username or configuration object
+##'
+##' @param cluster The cluster to check (default taken from
+##'   configuration if passed as \code{x}).
+##'
+##' @param state State of jobs to check; default is all states ("*").
+##'   Other valid options are "Running", "Finished", "Queued",
+##'   "Failed" and "Cancelled".
+##'
+##' @param n number of rows to return (default is Inf, which returns
+##'   all available jobs).
+##'
+##' @export
+web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
+                          state="*", n=Inf) {
+  if (inherits(x, "didewin_config")) {
+    username <- x$username
+    if (missing(cluster)) {
+      cluster <- x$cluster
+    }
+  } else {
+    assert_scalar_character(x)
+    username <- x
   }
-  cbind(used=z1, total=z2)
+  cluster <- match_value(cluster, valid_clusters())
+  match_value(state,
+              c("*", "Running", "Finished", "Queued", "Failed", "Cancelled"))
+  if (n == Inf) {
+    n <- -1
+  } else {
+    if (!is.finite(n) || n <= 0) {
+      stop("n must be a positive integer (including Inf)")
+    }
+  }
+  data <- list(user=encode64(username),
+               scheduler=encode64(cluster),
+               state=encode64(state),
+               jobs=encode64(as.character(n)))
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/_listalljobs.php",
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
+  check_status(r)
+  txt <- httr::content(r, as="text")
+  cols <- c("task_id", "name", "state", "resources", "user",
+            "time_start", "time_submit", "time_end", "template")
+  ## Id Name State Resources User StartTime SubmitTime EndTime JobTemplate
+  res <- strsplit(strsplit(txt, "\n")[[1]], "\t")
+  len <- vapply(res, length, integer(1))
+  if (any(len != length(cols))) {
+    stop("Parse error; unexpected output from server")
+  }
+  res <- as.data.frame(do.call(rbind, res), stringsAsFactors=FALSE)
+  names(res) <- cols
+
+  ## Some type switches:
+  res$task_id <- as.integer(res$task_id)
+  res$name <- trimws(res$name)
+  res$name[!nzchar(res$name)] <- NA_character_
+  res$user <- sub("^DIDE\\\\", "", res$user)
+  res$time_start <- dide_time_parse(res$time_start)
+  res$time_end <- dide_time_parse(res$time_end)
+  res$time_submit <- dide_time_parse(res$time_submit)
+  res
+}
+
+dide_time_parse <- function(x) {
+  ## YYYYMMDDHHMMSS
+  ## 20151109170805
+  strptime(x, "%Y%m%d%H%M%S")
 }
 
 get_credentials <- function(credentials, need_password=TRUE) {
@@ -226,4 +295,12 @@ password_unix <- function(username) {
                  intern=TRUE)
   cat('\n')
   invisible(pass)
+}
+
+## It might be worth having another shot here; recalling if the
+## configuration is given and if an expression to evaluate is there...
+check_status <- function(r) {
+  if (httr::status_code(r) >= 300) {
+    stop("Please login first with web_login()")
+  }
 }
