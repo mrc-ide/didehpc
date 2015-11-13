@@ -49,3 +49,15 @@ string_starts_with <- function(x, y) {
 drop_blank <- function(x) {
   sub("^\n", "", gsub("\n[[:space:]]*\n", "\n", x))
 }
+
+time_checker <- function(timeout) {
+  t0 <- Sys.time()
+  timeout <- as.difftime(timeout, units="secs")
+  function() {
+    Sys.time() - t0 > timeout
+  }
+}
+
+vcapply <- function(X, FUN, ...) {
+  vapply(X, FUN, character(1), ...)
+}

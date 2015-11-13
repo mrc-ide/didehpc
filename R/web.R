@@ -49,8 +49,10 @@ web_logout <- function() {
 ##'
 ##' @param config Configuration information, via \code{\link{didewin_config}}.
 ##'
+##' @param name Optional name for the task.
+##'
 ##' @export
-web_submit <- function(task, config) {
+web_submit <- function(task, config, name="") {
   if (length(task) == 0L) {
     stop("Must specify at least one task")
   } else {
@@ -60,7 +62,12 @@ web_submit <- function(task, config) {
   if (any(err)) {
     stop("All tasks must be Windows network paths")
   }
-  name <- ""
+  if (length(name) != 1L) {
+    stop("name must be a scalar")
+  }
+  if (length(task) > 1L && nzchar(name)) {
+    stop("Can't use name when submitting >1 task")
+  }
   template <- "GeneralNodes" # or "4Core", "8Core"
   resource_count <- 1L
   resource_type <- "Cores"
@@ -75,23 +82,23 @@ web_submit <- function(task, config) {
     jn=encode64(name),
     wd=encode64(workdir),
     se=encode64(stderr),
-    sd=encode64(stdout),
+    so=encode64(stdout),
     jobs=encode64(paste(task, collapse="\n")),
     hpcfunc="submit")
+
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/submit_1.php",
-                  curl_insecure(), body=data, encode="form")
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
   httr::stop_for_status(r)
+
   txt <- httr::content(r, as="text")
-  ## This is going to need work in the case where the returned thing
-  ## does not return correctly.
-  x <- xml2::xml_find_one(xml2::read_html(txt), '//*[@id="res"]/@value')
-  res <- decode64(xml2::xml_text(x))
-  re <- "^Job has been submitted. ID: +([0-9]+)\\.\n$"
-  if (grepl(re, res)) {
-    id <- as.integer(sub(re, "\\1", res))
-    list(name=name, id=id)
+  res <- strsplit(txt, "\n")[[1]]
+  re <- "^Job has been submitted. ID: +([0-9]+)\\.$"
+  if (length(res) > 0L && all(grepl(re, res))) {
+    sub(re, "\\1", res)
   } else {
-    stop("Not yet implemented")
+    stop("Job submission has likely failed; could be a login error")
     ## recover; possibly try and log on again?
   }
 }
@@ -123,13 +130,36 @@ web_shownodes <- function(cluster=NULL) {
   d <- dat[-(1:2)]
   node <- sub(re, "\\1", d)
   core <- as.integer(sub(re, "\\2", d)) + 1L
-  state <- sub(re, "\\3", d)
+  status <- sub(re, "\\3", d)
   rest <- sub(re, "\\4", d)
-  task_id <- rep(NA_integer_, length(d))
+  task_id <- rep(NA_character_, length(d))
   i <- nchar(rest) > 0L
-  task_id[i] <- as.integer(sub("^([0-9]+).*", "\\1", rest[i]))
-  data.frame(node=node, core=core, state=state, task_id=task_id,
+  task_id[i] <- sub("^([0-9]+).*", "\\1", rest[i])
+  data.frame(node=node, core=core, status=status, dide_task_id=task_id,
              stringsAsFactors=FALSE)
+}
+
+## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
+web_cancel <- function(cluster, dide_task_id) {
+  if (is.null(cluster)) {
+    cluster <- getOption("didewin.cluster", valid_clusters()[[1]])
+  } else {
+    cluster <- match_value(cluster, valid_clusters())
+  }
+  if (length(dide_task_id) == 0L) {
+    stop("Need at least one task to cancel")
+  }
+  jobs <- setNames(as.list(dide_task_id), paste0("c", dide_task_id))
+  data <- c(list(cluster=encode64(cluster),
+                 hpcfunc=encode64("cancel")),
+            jobs)
+  browser()
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/cancel.php",
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
+  check_status(r)
+  txt <- httr::content(r, as="text")
 }
 
 ##' Get job status from the cluster
@@ -179,7 +209,7 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
                   body=data, encode="form")
   check_status(r)
   txt <- httr::content(r, as="text")
-  cols <- c("task_id", "name", "state", "resources", "user",
+  cols <- c("dide_task_id", "name", "status", "resources", "user",
             "time_start", "time_submit", "time_end", "template")
   ## Id Name State Resources User StartTime SubmitTime EndTime JobTemplate
   res <- strsplit(strsplit(txt, "\n")[[1]], "\t")
@@ -191,14 +221,31 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
   names(res) <- cols
 
   ## Some type switches:
-  res$task_id <- as.integer(res$task_id)
+  res$dide_task_id <- res$dide_task_id
   res$name <- trimws(res$name)
   res$name[!nzchar(res$name)] <- NA_character_
   res$user <- sub("^DIDE\\\\", "", res$user)
+  res$status <- status_map(res$status)
   res$time_start <- dide_time_parse(res$time_start)
   res$time_end <- dide_time_parse(res$time_end)
   res$time_submit <- dide_time_parse(res$time_submit)
   res
+}
+
+status_map <- function(x, reverse=FALSE) {
+  map <- c(Running="RUNNING",
+           Finished="COMPLETE",
+           Queued="PENDING",
+           Failed="ERROR",
+           Cancelled="ORPHAN")
+  ## for reverse,
+  ##   MISSING -> NA
+  ##   REDIRECT -> ?
+  if (reverse) {
+    unname(map[match(x, names(map))])
+  } else {
+    unname(map[x])
+  }
 }
 
 dide_time_parse <- function(x) {

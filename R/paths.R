@@ -67,8 +67,25 @@ remote_path <- function(x) {
   windows_path(file.path(x$path_remote, x$rel, fsep="/"))
 }
 
-path_batch <- function(root, id) {
-  file.path(root, "batch", paste0(id, ".bat"))
+file_path <- function(...) {
+  paths <- list(...)
+  paths <- paths[!vapply(paths, is.null, logical(1))]
+  do.call("file.path", paths, quote=TRUE)
+}
+path_batch <- function(root, id=NULL) {
+  if (!is.null(id)) {
+    id <- paste0(id, ".bat")
+  }
+  file_path(root, "batch", id)
+}
+path_dide_task_id <- function(root, id=NULL) {
+  file_path(root, "dide_task_id", id)
+}
+path_dide_cluster <- function(root, id=NULL) {
+  file_path(root, "dide_cluster", id)
+}
+path_logs <- function(root, id=NULL) {
+  file_path(root, "logs", id)
 }
 
 ## These will change.

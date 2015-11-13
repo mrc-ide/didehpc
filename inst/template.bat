@@ -6,6 +6,7 @@ set CONTEXT_TASK_ID={{{context_task_id}}}
 set CONTEXT_WORKDRIVE={{{context_workdrive}}}
 set CONTEXT_WORKDIR={{{context_workdir}}}
 set CONTEXT_ROOT={{{context_root}}}
+set CONTEXT_LOGFILE={{{context_logfile}}}
 
 call setr{{{r_version}}}.bat
 
@@ -16,4 +17,5 @@ net use {{{drive}}} {{{path}}}
 %CONTEXT_WORKDRIVE%
 cd %CONTEXT_WORKDIR%
 cd
-Rscript %CONTEXT_ROOT%\context_runner %CONTEXT_ROOT% %CONTEXT_TASK_ID%
+echo Logging to %CONTEXT_LOGFILE%
+Rscript %CONTEXT_ROOT%\context_runner %CONTEXT_ROOT% %CONTEXT_TASK_ID% > %CONTEXT_LOGFILE% 2>&1

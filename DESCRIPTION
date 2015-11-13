@@ -10,10 +10,10 @@ URL: https://github.com/dide-tools/didewin
 BugReports: https://github.com/dide-tools/didewin/issues
 Imports:
     base64enc,
+    crayon,
     context,
     httr,
-    whisker,
-    xml2
+    whisker
 Suggests:
     testthat
 RoxygenNote: 5.0.0

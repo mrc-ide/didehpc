@@ -1,3 +1,26 @@
+submit <- function(root, task_ids, config, workdir) {
+  ## This is a bit roundabout but it means that multiple tasks
+  ## can be submitted fairly atomically (e.g., if some tasks
+  ## don't exist).
+  f <- function(i, x) {
+    batch <- write_batch(x[[i]], config, workdir)
+    remote_path(prepare_path(batch, config$shares))
+  }
+  handles <- context::task_handle(root, task_ids)
+  path <- vapply(seq_along(task_ids), f, character(1), handles,
+                 USE.NAMES=FALSE)
+  ## I don't think that this will work, because the web form
+  ## will assign everything to a single ID.  And I doubt that
+  ## it will return >1 ID if we ask nicely.
+  dide_id <- web_submit(path, config, paste(task_ids, collapse="\n"))
+  f_task_id <- path_dide_task_id(root, task_ids)
+  f_cluster <- path_dide_cluster(root, task_ids)
+  for (i in seq_along(task_ids)) {
+    writeLines(dide_id[[i]], f_task_id[[i]])
+    writeLines(config$cluster, f_cluster[[i]])
+  }
+}
+
 build_batch <- function(task_handle, config, workdir) {
   wd <- prepare_path(workdir, config$shares)
 
@@ -7,6 +30,7 @@ build_batch <- function(task_handle, config, workdir) {
   context_root <- prepare_path(task_handle$root, config$shares)
   context_root <- windows_path(file.path(context_root$drive_remote,
                                          context_root$rel))
+  context_logfile <- windows_path(path_logs(context_root, task_handle$id))
 
   ## Consider dumping out:
   ##   WMIC NETUSE LIST FULL /FORMAT:CSV
@@ -19,6 +43,7 @@ build_batch <- function(task_handle, config, workdir) {
               context_workdrive=wd$drive_remote,
               context_workdir=windows_path(wd$rel),
               context_root=context_root,
+              context_logfile=context_logfile,
               ## NOTE: don't forget the unname()
               network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,
@@ -36,18 +61,5 @@ write_batch <- function(task_handle, config, workdir) {
   filename <- path_batch(task_handle$root, task_handle$id)
   dir.create(dirname(filename), FALSE, TRUE)
   writeLines(str, filename)
-  prepare_path(filename, config$shares)
-}
-
-## Fully explicit one-shot submission for testing:
-##
-## Determine what we do if a file is already submitted?
-submit1_ <- function(expr, context, config, workdir=getwd()) {
-  task_handle <- context::save_task(expr, context)
-  batch <- write_batch(task_handle, config, workdir)
-  ## TODO: It would be good to know what the timeout is on the login
-  ## so that we could login only when it is likely to be useful.
-  ## Because it might prompt for user input it's not really ideal for
-  ## use within functions that might be called in scripts.
-  web_submit(remote_path(batch), config)
+  filename
 }
