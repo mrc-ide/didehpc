@@ -3,3 +3,5 @@
 .RData
 .context
 TODO.md
+inst/staticdocs
+inst/web

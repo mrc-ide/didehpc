@@ -40,4 +40,12 @@ clean:
 	rm -f ${PACKAGE}_*.tar.gz
 	rm -rf ${PACKAGE}.Rcheck
 
+staticdocs:
+	@mkdir -p inst/staticdocs
+	Rscript -e "library(methods); staticdocs::build_site()"
+	rm -f vignettes/*.html
+	@rmdir inst/staticdocs
+website: staticdocs
+	./update_web.sh
+
 .PHONY: all test document install vignettes
