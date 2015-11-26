@@ -84,6 +84,7 @@ web_submit <- function(task, config, name="") {
     se=encode64(stderr),
     so=encode64(stdout),
     jobs=encode64(paste(task, collapse="\n")),
+    dep=encode64(""),
     hpcfunc="submit")
 
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/submit_1.php",
@@ -95,11 +96,23 @@ web_submit <- function(task, config, name="") {
   txt <- httr::content(r, as="text")
   res <- strsplit(txt, "\n")[[1]]
   re <- "^Job has been submitted. ID: +([0-9]+)\\.$"
-  if (length(res) > 0L && all(grepl(re, res))) {
-    sub(re, "\\1", res)
+  i <- grepl(re, res)
+
+  extra <- res[!i]
+  if (length(extra) > 0L) {
+    warning(paste(extra, collapse="\n"), immediate.=TRUE)
+  }
+
+  nok <- sum(i)
+  if (nok > 0L) {
+    if (nok != length(task)) {
+      ## Hopefully never triggers
+      stop("Unexpected response length from server")
+    }
+    sub(re, "\\1", res[i])
   } else {
+    ## TODO: Detect this and hit login and try again?
     stop("Job submission has likely failed; could be a login error")
-    ## recover; possibly try and log on again?
   }
 }
 
@@ -160,6 +173,12 @@ web_cancel <- function(cluster, dide_task_id) {
                   body=data, encode="form")
   check_status(r)
   txt <- httr::content(r, as="text")
+  ## Possibilities here are:
+  ##   - OK
+  ##   - NOT_FOUND
+  ##   - WRONG_USER
+  ##   - WRONG_STATE
+  ##   - ID_ERROR
 }
 
 ##' Get job status from the cluster

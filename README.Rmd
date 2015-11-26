@@ -23,7 +23,9 @@ The steps below are described in more detail in the usage section:
 5. Queue expressions which will be run at some future time on the cluster
 6. Monitor progress, retrieve results, etc.
 
-
+```{r, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(error=FALSE)
+```
 
 ## Directories
 
@@ -33,8 +35,7 @@ I'm just going to assume your project is self contained and contains no referenc
 
 The simplest way to set these is to set these globally, which can be done most simply by setting and forgetting.  Mine are:
 
-
-```r
+```{r}
 didewin::didewin_config_global(credentials="~/.smbcredentials",
                                home="~/net/home",
                                temp="~/net/temp",
@@ -58,8 +59,7 @@ didewin::didewin_config_global(cluster="fi--didemrchnb")
 
 Once your credentials are set up, try logging in with:
 
-
-```r
+```{r}
 didewin::web_login()
 ```
 
@@ -69,7 +69,7 @@ In general you will not need to run the `web_login` function above, but it's wor
 
 ## Contexts
 
-For detailed discussion on this, please see the [`context`](http://dide-tools.github.io/context) package, and especially its [vignette](http://dide-tools.github.io/context/vignettes/context.html).  Essentially "contexts" are recipes for reconstructing your local R environment on a remote computer that might be configured differently to yours.  So, things like
+For detailed discussion on this, please see the [`context`](http://dide-tools.github.io/context) package, and especially its [vignette](http://dide-tools.github.io/context/vignettes/context.html).  Essentially "contexts" are recipes for reconstructing your local R environment on a remote computer that might be configured differently to yours.  So, things like:
 
 * installing packages (especially if you run non windows, or have 32/64 bit differences).
 * sourcing R scripts to create functions and objects
@@ -80,18 +80,19 @@ Once all the above is set up, actually evaluating the R expression you want to r
 
 So, suppose I have a script file `myfunctions.R` that contains simply the function definition:
 
-```r
-make_trees <- function(n, nspp) {
-  lapply(seq_len(n), function(...) ape::rtree(nspp))
-}
+```{r, echo=FALSE, results="asis"}
+cat(c("```r", readLines("myfunctions.R"), "```"), sep="\n")
 ```
 
 which is just going to create `n` trees each of which have `nspp`.  Perhaps this is some slow tree bootstrapping/mcmc proceedure :)
 
+```{r, echo=FALSE, results="hide"}
+loadNamespace("ape") # will be done by context later.
+unlink("contexts", recursive=TRUE)
+Sys.setenv("CONTEXT_SOURCE_PATH"=normalizePath("~/Documents/Projects/epi/cluster/context"))
+```
 
-
-
-```r
+```{r}
 root <- "contexts"
 ctx <- context::context_save(packages="ape", sources="myfunctions.R", root=root)
 ```
@@ -106,22 +107,15 @@ The important bits here are:
 
 The directory `contexts` now contains files:
 
-
-```r
+```{r}
 dir(root)
-```
-
-```
-## [1] "context_bootstrap" "context_runner"    "contexts"
-## [4] "context_version"   "drat"
 ```
 
 but in general you do not need to know or care what is going on in there (see the context package if you're curious).
 
 ## Queues
 
-
-```r
+```{r}
 obj <- didewin::queue(ctx)
 ```
 
@@ -129,44 +123,14 @@ If the above command does not throw an error, then you have successfully logged 
 
 This is a weird sort of object called an `R6` class.  It's a bit like a Python or Java class if you've come from those languages.
 
-
-```r
+```{r}
 obj
-```
-
-```
-## <queue>
-##   Public:
-##     clone: function
-##     config: didewin_config
-##     context: context_handle
-##     enqueue: function
-##     enqueue_: function
-##     initialize: function
-##     load: function
-##     login: function
-##     root: contexts
-##     set_cluster: function
-##     set_context: function
-##     submit: function
-##     task_get: function
-##     task_result: function
-##     tasks_drop: function
-##     tasks_list: function
-##     tasks_status: function
-##     tasks_times: function
-##     workdir: /home/rich/net/home/didewin_demo
 ```
 
 List tasks that we are running already:
 
-
-```r
+```{r}
 obj$tasks_list()
-```
-
-```
-## character(0)
 ```
 
 (note that this is only tasks that are being run via didewin/context, *not* all your tasks).
@@ -177,265 +141,66 @@ This is the bit that starts doing some actual work for you.  I want to run the `
 
 To make 5 trees of 10 species each:
 
-
-```r
+```{r, submit1}
 t <- obj$enqueue(make_trees(5, 10))
 ```
 
 The returned object is another R6 object that can be used to query the task
 
-
-```r
+```{r}
 t
 ```
 
-```
-## <task>
-##   Public:
-##     clone: function
-##     config: didewin_config
-##     context: function
-##     expr: function
-##     handle: task_handle
-##     id: 1b72130fdb8d49f147c32705c69e5ba9
-##     initialize: function
-##     log: function
-##     result: function
-##     root: contexts
-##     status: function
-##     times: function
-##     wait: function
-```
-
-
-```r
+```{r}
 t$status()
-```
-
-```
-## [1] "PENDING"
-```
-
-```r
 t$times()
-```
-
-```
-##                            task_id           submitted started finished
-## 1 1b72130fdb8d49f147c32705c69e5ba9 2015-11-26 15:27:00    <NA>     <NA>
-##    waiting running idle
-## 1 1.160853      NA   NA
 ```
 
 Trying to get a task before it is done is an error:
 
-
-```r
+```{r, error=TRUE}
 t$result()
-```
-
-```
-## Error in task_result(self, self$id): task 1b72130fdb8d49f147c32705c69e5ba9 is unfetchable: PENDING
 ```
 
 However, we can wait until it is done (here, waiting for up to 1000s)
 
-
-```r
+```{r, wait1}
 res <- t$wait(1000)
 res[[1]]
 ```
 
-```
-##
-## Phylogenetic tree with 10 tips and 9 internal nodes.
-##
-## Tip labels:
-## 	t6, t2, t3, t8, t1, t10, ...
-##
-## Rooted; includes branch lengths.
-```
-
 Success!
 
-
-```r
+```{r}
 t$status()
-```
-
-```
-## [1] "COMPLETE"
-```
-
-```r
 t$times()
-```
-
-```
-##                            task_id           submitted             started
-## 1 1b72130fdb8d49f147c32705c69e5ba9 2015-11-26 15:27:00 2015-11-26 15:27:00
-##              finished waiting running    idle
-## 1 2015-11-26 15:27:10       0      10 1.66972
-```
-
-```r
 t$result()[[1]]
 ```
 
-```
-##
-## Phylogenetic tree with 10 tips and 9 internal nodes.
-##
-## Tip labels:
-## 	t6, t2, t3, t8, t1, t10, ...
-##
-## Rooted; includes branch lengths.
-```
+The rather long running time above (`r t$times()$running` s) is due to downloading and installing all the required packages.  This is a bit clearer in the log for that job (this function can be run even when a task is running still).
 
-The rather long running time above (10 s) is due to downloading and installing all the required packages.  This is a bit clearer in the log for that job (this function can be run even when a task is running still).
-
-
-```r
+```{r}
 t$log()
-```
-
-```
-## [ bootstrap ]  Q:\didewin_demo\contexts
-## [ lib       ]  Q:\didewin_demo\contexts/R/x86_64-w64-mingw32/3.2
-## [ install   ]  context
-##     also installing the dependencies 'curl', 'drat'
-##
-##     trying URL 'http://cran.rstudio.com/bin/windows/contrib/3.2/curl_0.9.4.zip'
-##     Content type 'application/zip' length 4384579 bytes (4.2 MB)
-##     ==================================================
-##     downloaded 4.2 MB
-##
-##     trying URL 'http://cran.rstudio.com/bin/windows/contrib/3.2/drat_0.1.0.zip'
-##     Content type 'application/zip' length 70331 bytes (68 KB)
-##     ==================================================
-##     downloaded 68 KB
-##
-##     package 'curl' successfully unpacked and MD5 sums checked
-##     package 'drat' successfully unpacked and MD5 sums checked
-##
-##     The downloaded binary packages are in
-##     	C:\Users\rfitzjoh\AppData\Local\Temp\Rtmpkp9OSs\downloaded_packages
-##     installing the source package 'context'
-##
-##     * installing *source* package 'context' ...
-##     ** R
-##     ** inst
-##     ** preparing package for lazy loading
-##     ** help
-##     *** installing help indices
-##     ** building package indices
-##     ** installing vignettes
-##     ** testing if installed package can be loaded
-##     *** arch - i386
-##     *** arch - x64
-##     * DONE (context)
-##
-##     The downloaded source packages are in
-##     	'C:\Users\rfitzjoh\AppData\Local\Temp\Rtmpkp9OSs\downloaded_packages'
-## [ done      ]
-## [ init      ]  2015-11-26 15:27:08.518
-## [ version   ]  0.0.2
-## [ root      ]  Q:\didewin_demo\contexts
-## [ task      ]  1b72130fdb8d49f147c32705c69e5ba9
-## [ context   ]  ae37ce673914ec8221b76836d0c1321f
-## [ lib       ]  Q:\didewin_demo\contexts/R/x86_64-w64-mingw32/3.2
-## [ install   ]  ape
-##     Installing package into 'Q:/didewin_demo/contexts/R/x86_64-w64-mingw32/3.2'
-##     (as 'lib' is unspecified)
-##     trying URL 'http://cran.rstudio.com/bin/windows/contrib/3.2/ape_3.3.zip'
-##     Content type 'application/zip' length 1399090 bytes (1.3 MB)
-##     ==================================================
-##     downloaded 1.3 MB
-##
-##     package 'ape' successfully unpacked and MD5 sums checked
-##
-##     The downloaded binary packages are in
-##     	C:\Users\rfitzjoh\AppData\Local\Temp\Rtmpkp9OSs\downloaded_packages
-## [ library   ]  ape
-## [ namespace ]
-## [ source    ]  myfunctions.R
-## [ expr      ]  make_trees(5, 10)
-## [ start     ]  2015-11-26 15:27:10.862
-## [ result    ]  Q:\didewin_demo\contexts/task_results/1b72130fdb8d49f147c32705c69e5ba9
-## [ end       ]  2015-11-26 15:27:10.877
 ```
 
 Future expressions that use the same packages will be faster:
 
-
-```r
+```{r, submit2}
 t2 <- obj$enqueue(make_trees(1, 20))
 res2 <- t2$wait(1000)
 obj$tasks_times()[c("task_id", "submitted", "running")]
 ```
 
-```
-##                            task_id           submitted running
-## 1 1b72130fdb8d49f147c32705c69e5ba9 2015-11-26 15:27:00      10
-## 2 381520c40a9c293e7d6eea67b8d35ffd 2015-11-26 15:27:12       1
-```
-
 In the log you can see a quicker startup period
-
-```r
+```{r}
 t2$log()
-```
-
-```
-## [ bootstrap ]  Q:\didewin_demo\contexts
-## [ lib       ]  Q:\didewin_demo\contexts/R/x86_64-w64-mingw32/3.2
-## [ ok        ]
-## [ init      ]  2015-11-26 15:27:12.893
-## [ version   ]  0.0.2
-## [ root      ]  Q:\didewin_demo\contexts
-## [ task      ]  381520c40a9c293e7d6eea67b8d35ffd
-## [ context   ]  ae37ce673914ec8221b76836d0c1321f
-## [ lib       ]  Q:\didewin_demo\contexts/R/x86_64-w64-mingw32/3.2
-## [ library   ]  ape
-## [ namespace ]
-## [ source    ]  myfunctions.R
-## [ expr      ]  make_trees(1, 20)
-## [ start     ]  2015-11-26 15:27:13.096
-## [ result    ]  Q:\didewin_demo\contexts/task_results/381520c40a9c293e7d6eea67b8d35ffd
-## [ end       ]  2015-11-26 15:27:13.096
 ```
 
 The task handles can be recreated from the queue
 
-
-```r
+```{r}
 obj$tasks_list()
-```
-
-```
-## [1] "1b72130fdb8d49f147c32705c69e5ba9" "381520c40a9c293e7d6eea67b8d35ffd"
-```
-
-```r
 obj$task_get(obj$tasks_list()[[1]])
-```
-
-```
-## <task>
-##   Public:
-##     clone: function
-##     config: didewin_config
-##     context: function
-##     expr: function
-##     handle: task_handle
-##     id: 1b72130fdb8d49f147c32705c69e5ba9
-##     initialize: function
-##     log: function
-##     result: function
-##     root: contexts
-##     status: function
-##     times: function
-##     wait: function
 ```
 
 The queue can be recreated in a fresh R session.  Unfortunately at the moment that's really ugly:

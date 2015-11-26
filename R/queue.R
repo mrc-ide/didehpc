@@ -1,3 +1,10 @@
+##' Create a queue object
+##'
+##' Queues are R6 objects with many methods.  They need documenting still.
+##' @title Create a queue object
+##' @param context A context
+##' @param config Optional dide configuration information.
+##' @export
 queue <- function(context, config=didewin_config()) {
   .R6_queue$new(context, config)
 }
@@ -57,19 +64,21 @@ queue <- function(context, config=didewin_config()) {
         ## On initialisation we should set the context for subsequent
         ## calls; this is going to be handled differently by different
         ## approaches I suspect, but it will need to be set up.
-        initialize=function(context, config, ...) {
+        initialize=function(context, config, login=TRUE, ...) {
           self$config <- config
           self$context <- context
           self$root <- context$root
           self$workdir <- getwd()
           ## TODO: here, we can run most of write_batch to do the
           ## preparation of paths, etc.
-          self$login()
           dir.create(path_batch(self$root), FALSE, TRUE)
           dir.create(path_logs(self$root), FALSE, TRUE)
           ## For tracking the cluster/task id of tasks:
           dir.create(path_dide_task_id(self$root), FALSE, TRUE)
           dir.create(path_dide_cluster(self$root), FALSE, TRUE)
+          if (login) {
+            self$login()
+          }
         },
 
         login=function() {
@@ -109,13 +118,14 @@ queue <- function(context, config=didewin_config()) {
         ## I don't know that these always want to be submitted.
         enqueue_=function(expr, ..., envir=parent.frame(), submit=TRUE) {
           task <- context::task_save(expr, self$context, envir)
-          ## TODO: delete the task before throwing if anything below
-          ## here fails.  Alternatively/additionally add resubmit
-          ## function that syncs between the HPC and us.
           if (submit) {
-            self$submit(task$id)
+            withCallingHandlers(self$submit(task$id),
+                                error=function(e) {
+                                  message("Deleting task as submission failed")
+                                  context::task_delete(task)
+                                })
           }
-          invisible(task$id)
+          invisible(.R6_task$new(self, task$id))
         },
 
         submit=function(task_ids) {

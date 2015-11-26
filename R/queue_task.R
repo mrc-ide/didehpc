@@ -48,7 +48,9 @@ task_result <- function(obj, task_id,
     .NotYetUsed("follow_redirect")
   }
   status <- tasks_status(obj, task_id)
-  if (status == TASK_COMPLETE || status == TASK_ERROR) {
+  ## TODO: organise for these to be correctly exported from context as
+  ## TASK (so we have TASK$COMPLETE, TASK$ERROR, etc.
+  if (status == "COMPLETE" || status == "ERROR") {
     context::task_result(context::task_handle(obj$root, task_id, FALSE))
   } else if (sanitise) {
     UnfetchableTask(task_id, status)
@@ -90,7 +92,7 @@ tasks_times <- function(obj, task_ids=NULL, unit_elapsed="secs") {
   ## One way of doing this is to write a list with 1, 2, 3 times in it?
   res <- tasks_ours(obj)
   if (!is.null(task_ids)) {
-    res[match(task_ids, res$task_id), , drop=FALSE]
+    res <- res[match(task_ids, res$task_id), , drop=FALSE]
   }
   if (nrow(res) == 0L) {
     ## NOTE: can't get a zero length time.
@@ -156,20 +158,27 @@ task_wait <- function(obj, task_id, timeout, every=0.5) {
     if (!inherits(res, "UnfetchableTask")) {
       return(res)
     } else if (t()) {
-      Sys.sleep(every)
-    } else {
       stop("task not returned in time")
+    } else {
+      Sys.sleep(every)
     }
   }
 }
 
-task_drop <- function(obj, task_id) {
+## TODO: be clear about pluraliusation here.
+task_drop <- function(obj, task_ids) {
   ## TODO: This should also cancel *running* tasks, and that sort of thing.
   context::task_delete(context::task_handle(obj$root, task_ids, FALSE))
+  task_unschedule(obj, task_ids)
+}
+
+task_unschedule <- function(obj, task_ids) {
+  ## 1: map to dide id
+  ## 2: pass to web_cancel
+  ## 3: parse return value
 }
 
 task_log <- function(obj, task_id) {
-  ## I should do some parsing here.
   dat <- readLines(path_logs(obj$root, task_id))
   pretty_context_log(context::parse_context_log(dat))
 }

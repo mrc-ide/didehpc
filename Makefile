@@ -27,10 +27,14 @@ check: build
 check_all:
 	TEST_INSTALL_PACKAGES=true make check
 
+README_DIR=~/net/home/didewin_demo
 README.md: README.Rmd
-	Rscript -e "options(warnPartialMatchArgs=FALSE); knitr::knit('$<')"
-	sed -i.bak 's/[[:space:]]*$$//' README.md
-	rm -f $@.bak myfile.json
+	mkdir -p ${README_DIR}
+	cp $< ${README_DIR}
+	cd ${README_DIR} && Rscript -e "options(warnPartialMatchArgs=FALSE); knitr::knit('$<')"
+	cp ${README_DIR}/$@ .
+	sed -i.bak 's/[[:space:]]*$$//' $@
+	rm -f $@.bak
 
 clean:
 	rm -f ${PACKAGE}_*.tar.gz

@@ -9,7 +9,11 @@ submit <- function(root, task_ids, config, workdir) {
   handles <- context::task_handle(root, task_ids)
   path <- vapply(seq_along(task_ids), f, character(1), handles,
                  USE.NAMES=FALSE)
-  ## I don't think that this will work, because the web form
+  ## TODO: the name must be a scalar (unless Wes has updated it), so
+  ## there's no meaninful name that can be added unless
+  name <- if (length(task_ids) == 1) task_ids else ""
+
+  ## TODO: I don't think that this will work, because the web form
   ## will assign everything to a single ID.  And I doubt that
   ## it will return >1 ID if we ask nicely.
   dide_id <- web_submit(path, config, paste(task_ids, collapse="\n"))
