@@ -460,8 +460,11 @@ Other directions I am thinking of:
 This package requires [context](https://github.com/dide-tools/context) so install that first.
 
 ```r
-devtools::install_packages("dide-tools/context")
-devtools::install_packages("dide-tools/didewin")
+devtools::install_packages(c(
+  "gaborcsardi/progress",
+  "dide-tools/context",
+  "richfitz/queuer",
+  "dide-tools/didewin"))
 ```
 
 

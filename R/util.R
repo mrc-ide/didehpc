@@ -18,11 +18,11 @@ encode64 <- function(x) {
   if (x == "") {
     ""
   } else {
-    base64enc::base64encode(charToRaw(x))
+    storr::encode64(x, "+", "/")
   }
 }
 decode64 <- function(x) {
-  rawToChar(base64enc::base64decode(x))
+  storr::decode64(x, "+", "/")
 }
 
 modify_list <- function(x, val, name=deparse(substitute(val))) {

@@ -9,10 +9,10 @@ LazyData: true
 URL: https://github.com/dide-tools/didewin
 BugReports: https://github.com/dide-tools/didewin/issues
 Imports:
-    base64enc,
     crayon,
     context,
     httr,
+    storr,
     whisker
 Suggests:
     testthat
