@@ -23,7 +23,7 @@ web_login <- function(config=didewin_config()) {
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
                   curl_insecure(), body=data, encode="form")
   httr::stop_for_status(r)
-  txt <- httr::content(r, as="text")
+  txt <- httr::content(r, as="text", encoding="UTF-8")
 
   ## TODO: grep on HTML is terrible but there's no id or anything to
   ## hook against here.
@@ -93,7 +93,7 @@ web_submit <- function(task, config, name="") {
                   body=data, encode="form")
   httr::stop_for_status(r)
 
-  txt <- httr::content(r, as="text")
+  txt <- httr::content(r, as="text", encoding="UTF-8")
   res <- strsplit(txt, "\n")[[1]]
   re <- "^Job has been submitted. ID: +([0-9]+)\\.$"
   i <- grepl(re, res)
@@ -137,7 +137,7 @@ web_shownodes <- function(cluster=NULL) {
                   httr::accept("text/plain"),
                   body=data, encode="form")
   check_status(r)
-  txt <- httr::content(r, as="text")
+  txt <- httr::content(r, as="text", encoding="UTF-8")
   dat <- strsplit(txt, "\n")[[1]]
   re <- "^([^ ]+) +- +([0-9]+) +([^ ]+) *(.*)$"
   d <- dat[-(1:2)]
@@ -172,13 +172,14 @@ web_cancel <- function(cluster, dide_task_id) {
                   httr::accept("text/plain"),
                   body=data, encode="form")
   check_status(r)
-  txt <- httr::content(r, as="text")
+  txt <- httr::content(r, as="text", encoding="UTF-8")
   ## Possibilities here are:
   ##   - OK
   ##   - NOT_FOUND
   ##   - WRONG_USER
   ##   - WRONG_STATE
   ##   - ID_ERROR
+  txt
 }
 
 ##' Get job status from the cluster
@@ -227,7 +228,7 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
                   httr::accept("text/plain"),
                   body=data, encode="form")
   check_status(r)
-  txt <- httr::content(r, as="text")
+  txt <- httr::content(r, as="text", encoding="UTF-8")
   cols <- c("dide_task_id", "name", "status", "resources", "user",
             "time_start", "time_submit", "time_end", "template")
   ## Id Name State Resources User StartTime SubmitTime EndTime JobTemplate

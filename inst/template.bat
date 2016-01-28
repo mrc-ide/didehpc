@@ -11,11 +11,11 @@ set CONTEXT_LOGFILE={{{context_logfile}}}
 call setr{{{r_version}}}.bat
 
 {{{#network_shares}}}
-net use {{{drive}}} {{{path}}}
+net use {{{drive}}} {{{path}}} /y
 {{{/network_shares}}}
 
 %CONTEXT_WORKDRIVE%
-cd %CONTEXT_WORKDIR%
+cd \%CONTEXT_WORKDIR%
 cd
 echo Logging to %CONTEXT_LOGFILE%
-Rscript %CONTEXT_ROOT%\context_runner %CONTEXT_ROOT% %CONTEXT_TASK_ID% > %CONTEXT_LOGFILE% 2>&1
+Rscript %CONTEXT_ROOT%\bin\context_runner %CONTEXT_ROOT% %CONTEXT_TASK_ID% > %CONTEXT_LOGFILE% 2>&1

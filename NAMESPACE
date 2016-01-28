@@ -3,7 +3,7 @@
 S3method(print,didewin_config)
 export(didewin_config)
 export(didewin_config_global)
-export(queue)
+export(queue_didewin)
 export(valid_clusters)
 export(web_jobstatus)
 export(web_login)

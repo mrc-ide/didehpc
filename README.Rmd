@@ -295,3 +295,7 @@ to mount all drives and with any luck it will all work and you don't have to do 
 ## Mac
 
 Guidance welcomed from anyone who can get this reliably working.
+
+# Other things
+
+R resources on the cluster are here: `\\fi--didef2\software\HPC\R`

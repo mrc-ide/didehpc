@@ -78,12 +78,6 @@ path_batch <- function(root, id=NULL) {
   }
   file_path(root, "batch", id)
 }
-path_dide_task_id <- function(root, id=NULL) {
-  file_path(root, "dide_task_id", id)
-}
-path_dide_cluster <- function(root, id=NULL) {
-  file_path(root, "dide_cluster", id)
-}
 path_logs <- function(root, id=NULL) {
   file_path(root, "logs", id)
 }

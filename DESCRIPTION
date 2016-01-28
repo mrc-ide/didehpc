@@ -12,6 +12,7 @@ Imports:
     crayon,
     context,
     httr,
+    queuer,
     storr,
     whisker
 Suggests:
