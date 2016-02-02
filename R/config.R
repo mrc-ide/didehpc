@@ -18,11 +18,13 @@
 ##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
-                           cluster=NULL) {
+                           cluster=NULL, build_server=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
-                temp=temp)
+                temp=temp,
+                cluster=cluster,
+                build_server=build_server)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -32,7 +34,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   }
   ret <- list(cluster=match_value(dat$cluster, valid_clusters()),
               credentials=dat$credentials,
-              username=username)
+              username=username,
+              build_server=dat$build_server)
   ## Can offer support for additional mappings here, too, so long as
   ## they're absolute path mappings.
   ##
@@ -80,10 +83,11 @@ didewin_config_global <- function(...) {
 
 didewin_config_defaults <- function() {
   defaults <- list(
-    cluster     = getOption("didewin.cluster",     valid_clusters()[[1]]),
-    credentials = getOption("didewin.credentials", NULL),
-    home        = getOption("didewin.home",        NULL),
-    temp        = getOption("didewin.temp",        NULL))
+    cluster      = getOption("didewin.cluster",      valid_clusters()[[1]]),
+    credentials  = getOption("didewin.credentials",  NULL),
+    home         = getOption("didewin.home",         NULL),
+    temp         = getOption("didewin.temp",         NULL),
+    build_server = getOption("didewin.build_server", "129.31.25.12"))
 
   ## Extra shot for the windows users because we can do most of this
   ## automatically if they are a domain machine.  We might be able to
@@ -125,3 +129,9 @@ print.didewin_config <- function(x, ...) {
 valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb")
 }
+
+## TODO: This will eventually be configurable, but for now is assumed
+## in a few places -- search for R_VERSION (all caps).
+R_VERSION <- numeric_version("3.2.3")
+R_BITS <- 64L
+R_PLATFORM <- if (R_BITS == 64L) "x86_64-w64-mingw32" else "i386-w64-mingw32"

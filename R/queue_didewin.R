@@ -29,6 +29,8 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
       if (login) {
         self$login()
       }
+
+      initialise_packages(self)
     },
 
     login=function() {
@@ -55,6 +57,112 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
       unsubmit(self, task_ids)
     }
   ))
+
+## There are two steps here; the first is to see if there are any
+## packages that do need building, the second step is to try and build
+## them.
+##
+## A binary package needs building if it is present in the drat but
+## there is no binary package that is not later than it.  We could get
+## clever and check the hashes and store them in the context db
+## perhaps?
+##
+## TODO: The other thing that is needed is the on-cluster
+## initialisation.  Basically we will pass a task with the expression
+## `sessionInfo` to the cluster.  That will trigger a full
+## installation.  It's really only worth doing that if the packages do
+## not appear to be installed though so we will have to do a check
+## here.
+initialise_packages <- function(obj) {
+  context <- obj$context
+  build_server <- obj$config$build_server
+
+  path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
+  packages <- unlist(context$packages, use.names=FALSE)
+  if (all(packages %in% .packages(TRUE, path_lib))) {
+    return()
+  }
+
+  if (is.null(build_server)) {
+    return(initialise_packages_on_cluster(obj))
+  }
+
+  ## Next, look to see if any of the packages in the local drat need
+  ## compilation
+  path_drat <- context$package_sources$local_drat
+  if (!is.null(path_drat)) {
+    db <- storr::storr_rds(file.path(path_drat, "timestamp"),
+                           mangle_key=TRUE)
+    tmp <- check_binary_packages(db, path_drat)
+    if (length(tmp$packages) > 0L) {
+      bin <- buildr::build_binaries(tmp$packages_source, build_server)
+      dir.create(tmp$dest, FALSE, TRUE)
+      file.copy(bin, tmp$dest, overwrite=TRUE)
+      hash <- tools::md5sum(bin)
+      names(hash) <- basename(bin)
+      tools::write_PACKAGES(tmp$dest, type="win.binary")
+      file.remove(bin)
+      for (i in seq_along(tmp$packages)) {
+        db$set(tmp$hash[[i]], hash[i], "binary")
+      }
+    }
+  }
+
+  r_version_2 <- as.character(R_VERSION[1, 1:2])
+  cross_install_context(path_lib, "windows", r_version_2, context)
+}
+
+initialise_packages_on_cluster <- function(obj) {
+  t <- obj$enqueue_(quote(sessionInfo()))
+  message("Initialising packages on the cluster itself")
+  message("You'll need to check the status of the job if this doesn't complete")
+  t$wait(timeout=120)
+}
+
+check_binary_packages <- function(db, path_drat) {
+  fields <- c("Package", "Version", "MD5sum", "NeedsCompilation")
+  path_src <- file.path(path_drat, "src/contrib")
+  pkgs <- as.data.frame(read.dcf(file.path(path_src, "PACKAGES"),
+                                 fields=fields),
+                        stringsAsFactors=FALSE)
+  i <- pkgs$NeedsCompilation == "yes"
+  if (any(i)) {
+    pkgs <- pkgs[i, , drop=FALSE]
+  } else {
+    return(list(packages=character(0),
+                packages_source=character(0),
+                hash=character(0)))
+  }
+
+  ## At this point, check the appropriate binary directory.  That's
+  ## going to depend on the target R version (which will be the same
+  ## as the build server ideally).
+  r_version_2 <- paste(unclass(R_VERSION)[[1]][1:2], collapse=".")
+  path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
+
+  if (file.exists(path_bin)) {
+    f <- function(hash) {
+      bin <- tryCatch(db$get(hash, "binary"), KeyError=function(e) NULL)
+      if (is.null(bin)) {
+        TRUE
+      } else {
+        dest <- file.path(path_bin, names(bin))
+        !file.exists(dest) || unname(tools::md5sum(dest)) != bin[[1]]
+      }
+    }
+    rebuild <- vlapply(pkgs$MD5sum, f)
+
+    pkgs <- pkgs[rebuild, , drop=FALSE]
+  }
+
+  packages_source <-
+    file.path(path_src, sprintf("%s_%s.tar.gz", pkgs$Package, pkgs$Version))
+  list(packages=pkgs$Package,
+       packages_source=packages_source,
+       hash=pkgs$MD5sum,
+       dest=path_bin)
+}
+
 
 submit <- function(obj, task_ids) {
   db <- context::context_db(obj)

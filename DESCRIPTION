@@ -16,5 +16,6 @@ Imports:
     storr,
     whisker
 Suggests:
+    buildr,
     testthat
 RoxygenNote: 5.0.1
