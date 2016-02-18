@@ -460,7 +460,7 @@ Other directions I am thinking of:
 This package requires [context](https://github.com/dide-tools/context) so install that first.
 
 ```r
-devtools::install_packages(c(
+devtools::install_github(c(
   "gaborcsardi/progress",
   "dide-tools/context",
   "richfitz/queuer",
@@ -533,3 +533,17 @@ to mount all drives and with any luck it will all work and you don't have to do 
 ## Mac
 
 Guidance welcomed from anyone who can get this reliably working.
+
+# Compiled code
+
+Packages that include compiled code represent a challenge, as every node on the cluster needs a working windows compiler toolchain and that's tricky to guarantee.  This is even worse if you need C++11 support as the current R/Windows/C++ toolchain does not support C++11, but there is experimental support we can try and use, but that requires rebuilding R itself (and all packages that it uses) so it's not a great solution.
+
+Options:
+
+* Install Rtools on the cluster and require recent R versions for jobs that require it.
+* Compile the package on windows and add to `context`'s drat repository:
+  - via R-win-builder (automatic submission via `devtools` but no automatic collection).
+  - appveyor
+  - a dedicated windows build machine
+
+The last option is probably the best for us as it will scale the most easily.  However, it might be worth waiting to see what Gabor comes up with via [r-hub](https://github.com/r-hub) first.
