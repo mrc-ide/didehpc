@@ -122,7 +122,7 @@ but in general you do not need to know or care what is going on in there (see th
 
 
 ```r
-obj <- didewin::queue(ctx)
+obj <- didewin::queue_didewin(ctx)
 ```
 
 If the above command does not throw an error, then you have successfully logged in.
