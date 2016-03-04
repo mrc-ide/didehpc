@@ -299,7 +299,8 @@ get_credentials <- function(credentials, need_password=TRUE) {
         if (!interactive()) {
           stop("Credentials file needed for non-interactive use")
         }
-        ret$password <- password_tcltk(credentials)
+        ret$password <- getPass::getPass(
+          sprintf("Enter DIDE password for %s: ", ret$username))
       }
     }
   } else {
@@ -334,34 +335,6 @@ check_credentials <- function(credentials, need_password) {
     stop("Missing fields in credentials: ", paste(msg, collapse=", "))
   }
   credentials # consider credentials[req]
-}
-
-password_tcltk <- function(username) {
-  loadNamespace("tcltk")
-  wnd <- tcltk::tktoplevel()
-  tcltk::tktitle(wnd) <- "Enter password"
-  pass_var <- tcltk::tclVar("")
-  command <- function() tcltk::tkdestroy(wnd)
-  tcltk::tkgrid(tcltk::tklabel(wnd, text=sprintf("Password for %s:", username)))
-  tcltk::tkgrid(pass_box <- tcltk::tkentry(wnd, textvariable=pass_var, show="*"))
-  tcltk::tkbind(pass_box, "<Return>", command)
-  tcltk::tkgrid(tcltk::tkbutton(wnd, text="OK", command=command))
-  tcltk::tkfocus(pass_box)
-  tcltk::tkwait.window(wnd)
-  invisible(tcltk::tclvalue(pass_var))
-}
-
-## This probably should not be used in OSX's R.app; worth finding out.
-## switch on
-##   .Platform$GUI
-## I think.
-password_unix <- function(username) {
-  stty <- Sys_which("stty")
-  cat(sprintf("Password for %s: ", username))
-  pass <- system('stty -echo && read ff && stty echo && echo $ff && ff=""',
-                 intern=TRUE)
-  cat('\n')
-  invisible(pass)
 }
 
 ## It might be worth having another shot here; recalling if the
