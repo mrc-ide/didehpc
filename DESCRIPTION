@@ -11,7 +11,7 @@ BugReports: https://github.com/dide-tools/didewin/issues
 Imports:
     crayon,
     context,
-    httr,
+    httr (>= 1.0.0),
     queuer,
     storr,
     whisker
