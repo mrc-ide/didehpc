@@ -109,7 +109,7 @@ initialise_packages <- function(obj) {
   }
 
   r_version_2 <- as.character(R_VERSION[1, 1:2])
-  cross_install_context(path_lib, "windows", r_version_2, context)
+  context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
 
 initialise_packages_on_cluster <- function(obj) {
