@@ -95,10 +95,10 @@ didewin_config_defaults <- function() {
   ## for cases where they're off the main network though.
   if (is_windows()) {
     if (is.null(defaults$home)) {
-      defaults$home <- "Q:"
+      defaults$home <- "Q:/"
     }
     if (is.null(defaults$temp)) {
-      defaults$home <- "T:"
+      defaults$home <- "T:/"
     }
     if (is.null(defaults$credentials)) {
       defaults$credentials <- Sys.getenv("USERNAME")
