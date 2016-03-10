@@ -98,7 +98,7 @@ didewin_config_defaults <- function() {
       defaults$home <- "Q:/"
     }
     if (is.null(defaults$temp)) {
-      defaults$home <- "T:/"
+      defaults$temp <- "T:/"
     }
     if (is.null(defaults$credentials)) {
       defaults$credentials <- Sys.getenv("USERNAME")
