@@ -6,7 +6,7 @@
 \title{Configuration}
 \usage{
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
-  cluster = NULL)
+  cluster = NULL, build_server = NULL, shares = NULL)
 
 didewin_config_global(...)
 }
@@ -22,6 +22,10 @@ you will be prompted graphically for your password).}
 
 \item{cluster}{Name of the cluster to use (one of
 \code{\link{valid_clusters}()})}
+
+\item{shares}{Optional additional share mappings.  Can either be a
+single path mapping (as returned by \code{\link{path_mapping}}
+or a list of such calls.}
 
 \item{...}{arguments to \code{didewin_config}}
 }

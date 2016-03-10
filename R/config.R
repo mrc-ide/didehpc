@@ -16,15 +16,20 @@
 ##' @param cluster Name of the cluster to use (one of
 ##' \code{\link{valid_clusters}()})
 ##'
+##' @param shares Optional additional share mappings.  Can either be a
+##'   single path mapping (as returned by \code{\link{path_mapping}}
+##'   or a list of such calls.
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
-                           cluster=NULL, build_server=NULL) {
+                           cluster=NULL, build_server=NULL, shares=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
                 temp=temp,
                 cluster=cluster,
-                build_server=build_server)
+                build_server=build_server,
+                shares=shares)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -36,18 +41,31 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               credentials=dat$credentials,
               username=username,
               build_server=dat$build_server)
-  ## Can offer support for additional mappings here, too, so long as
-  ## they're absolute path mappings.
-  ##
-  ## TODO: check that all paths point at different remote paths, and
-  ## different drives.  More of an issue when we accept generic
-  ## mappings.
-  shares <- list()
+
+  if (is.null(dat$shares)) {
+    shares <- list()
+  } else if (inherits(dat$shares, "path_mapping")) {
+    shares <- list(dat$shares)
+    names(shares) <- dat$shares$name
+  } else if (is.list(dat$shares)) {
+    if (!all(vlapply(dat$shares, inherits, "path_mapping"))) {
+      stop("All elements of 'shares' must be a path_mapping")
+    }
+    shares <- dat$shares
+  } else {
+    stop("Invalid input for 'shares'")
+  }
   if (!is.null(dat$home)) {
     shares$home <- path_mapping("home", dat$home, dide_home("", username), "Q:")
   }
   if (!is.null(dat$temp)) {
     shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
+  }
+
+  remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES=FALSE)
+  dups <- unique(remote[duplicated(remote)])
+  if (length(dups) > 0L) {
+    stop("Duplicate remote drive names: ", paste(dups, collapse=", "))
   }
   ret$shares <- shares
 
@@ -87,7 +105,8 @@ didewin_config_defaults <- function() {
     credentials  = getOption("didewin.credentials",  NULL),
     home         = getOption("didewin.home",         NULL),
     temp         = getOption("didewin.temp",         NULL),
-    build_server = getOption("didewin.build_server", "129.31.25.12"))
+    build_server = getOption("didewin.build_server", "129.31.25.12"),
+    shares       = getOption("didewin.shares",       NULL))
 
   ## Extra shot for the windows users because we can do most of this
   ## automatically if they are a domain machine.  We might be able to
