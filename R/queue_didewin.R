@@ -78,37 +78,37 @@ initialise_packages <- function(obj) {
   build_server <- obj$config$build_server
 
   path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
-  packages <- unlist(context$packages, use.names=FALSE)
+  packages <- c("context", unlist(context$packages, use.names=FALSE))
   if (all(packages %in% .packages(TRUE, path_lib))) {
     return()
-  }
-
-  if (is.null(build_server)) {
-    return(initialise_packages_on_cluster(obj))
   }
 
   ## Next, look to see if any of the packages in the local drat need
   ## compilation
   path_drat <- context$package_sources$local_drat
   if (!is.null(path_drat)) {
-    db <- storr::storr_rds(file.path(path_drat, "timestamp"),
-                           mangle_key=TRUE)
-    tmp <- check_binary_packages(db, path_drat)
-    if (length(tmp$packages) > 0L) {
-      bin <- buildr::build_binaries(tmp$packages_source, build_server)
-      dir.create(tmp$dest, FALSE, TRUE)
-      file.copy(bin, tmp$dest, overwrite=TRUE)
-      hash <- tools::md5sum(bin)
-      names(hash) <- basename(bin)
-      tools::write_PACKAGES(tmp$dest, type="win.binary")
-      file.remove(bin)
-      for (i in seq_along(tmp$packages)) {
-        db$set(tmp$hash[[i]], hash[i], "binary")
+    if (is.null(build_server)) {
+      return(initialise_packages_on_cluster(obj))
+    } else {
+      db <- storr::storr_rds(file.path(path_drat, "timestamp"),
+                             mangle_key=TRUE)
+      tmp <- check_binary_packages(db, path_drat)
+      if (length(tmp$packages) > 0L) {
+        bin <- buildr::build_binaries(tmp$packages_source, build_server)
+        dir.create(tmp$dest, FALSE, TRUE)
+        file.copy(bin, tmp$dest, overwrite=TRUE)
+        hash <- tools::md5sum(bin)
+        names(hash) <- basename(bin)
+        tools::write_PACKAGES(tmp$dest, type="win.binary")
+        file.remove(bin)
+        for (i in seq_along(tmp$packages)) {
+          db$set(tmp$hash[[i]], hash[i], "binary")
+        }
       }
     }
   }
 
-  r_version_2 <- as.character(R_VERSION[1, 1:2])
+  r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
 
@@ -116,7 +116,7 @@ initialise_packages_on_cluster <- function(obj) {
   t <- obj$enqueue_(quote(sessionInfo()))
   message("Initialising packages on the cluster itself")
   message("You'll need to check the status of the job if this doesn't complete")
-  t$wait(timeout=120)
+  t$wait(timeout=600)
 }
 
 check_binary_packages <- function(db, path_drat) {
