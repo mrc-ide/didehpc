@@ -210,8 +210,8 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
     username <- x
   }
   cluster <- match_value(cluster, valid_clusters())
-  match_value(state,
-              c("*", "Running", "Finished", "Queued", "Failed", "Cancelled"))
+  valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
+  state <- match_value(state, valid)
   if (n == Inf) {
     n <- -1
   } else {

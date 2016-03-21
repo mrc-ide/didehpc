@@ -49,6 +49,10 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
       web_shownodes(if (is.null(cluster)) self$config$cluster else cluster)
     },
 
+    tasks_status_dide=function(task_ids=NULL) {
+      tasks_status_dide(self, task_ids)
+    },
+
     submit=function(task_ids) {
       ## See below:
       submit(self, task_ids)
@@ -201,4 +205,93 @@ unsubmit <- function(obj, task_ids) {
     ret[[i]] <- web_cancel(cluster, dide_id)
   }
   ret
+}
+
+## What we're really looking for here is:
+##  ctx      dide
+##  PENDING  RUNNING -> setup, possibly stalled -> update to RUNNING
+##  PENDING  ERROR   -> setup, has failed       -> update to ERROR
+##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
+##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
+tasks_status_dide <- function(obj, task_ids=NULL) {
+  if (is.null(task_ids)) {
+    task_ids <- obj$tasks_list()
+  }
+  st_ctx <- obj$tasks_status(task_ids)
+  db <- context_db(obj)
+
+  i <- st_ctx %in% c("PENDING", "RUNNING")
+  if (!any(i)) {
+    message("No tasks need checking")
+    return()
+  }
+  task_ids <- task_ids[i]
+  st_ctx <- st_ctx[i]
+
+  ## Because this is not really API, I'm going through this way so
+  ## there's only one place to check:
+  set_task_error <- function(id) {
+    message("manually erroring task ", id)
+    db$set(id, "ERROR", "task_status")
+    db$set(id, simpleError("Queued job failure"), "task_results")
+  }
+
+  ## Realistically we're not interested in Finished here, and that does
+  ## bank up after a bit.  Talk with Wes about improvements perhaps?
+  dat <- web_jobstatus(obj$config$username, obj$config$cluster)
+  i <- match(task_ids, dat$name)
+  if (any(is.na(i))) {
+    stop("Did not find information on tasks: ",
+         paste(tasks[is.na(i)], collapse=", "))
+  }
+
+  ok <- TRUE
+  st_dide <- dat$status[i]
+
+  i <- st_dide == "ERROR"
+  if (any(i)) {
+    j <- i & st_ctx == "PENDING"
+    if (any(j)) {
+      message("Tasks have failed while context booting:\n",
+              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+    }
+    j <- i & st_ctx == "RUNNING"
+    if (any(j)) {
+      message("Tasks have crashed after starting:\n",
+              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+    }
+    lapply(task_ids[i], set_task_error)
+    ok <- FALSE
+  }
+
+  i <- st_ctx == "RUNNING" & st_dide == "COMPLETE"
+  if (any(i)) {
+    ## Second round of check to avoid a race condition:
+    f <- function(id) {
+      if (obj$tasks_status(id) == "RUNNING") {
+        set_task_error(id)
+        TRUE
+      } else {
+        FALSE
+      }
+    }
+    res <- vlapply(task_ids[i], f)
+    if (any(res)) {
+      message("Tasks have started on cluster, unexpectedly stopped:\n",
+              paste(sprintf("\t- %s", task_ids[i][res]), collapse="\n"))
+    }
+    ok <- FALSE
+  }
+
+  i <- st_ctx == "PENDING" & st_dide == "RUNNING"
+  if (any(i)) {
+    message("Tasks have started on cluster, but context still booting:\n",
+            paste(sprintf("\t- %s", task_ids[i]), collapse="\n"))
+    ok <- FALSE
+  }
+
+  if (ok) {
+    message("Reported statuses seem accurate to me")
+  }
+  invisible(NULL)
 }
