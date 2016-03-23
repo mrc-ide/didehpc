@@ -6,7 +6,7 @@
 \title{Configuration}
 \usage{
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
-  cluster = NULL, build_server = NULL, shares = NULL)
+  cluster = NULL, build_server = NULL, shares = NULL, template = NULL)
 
 didewin_config_global(...)
 }
@@ -26,6 +26,11 @@ you will be prompted graphically for your password).}
 \item{shares}{Optional additional share mappings.  Can either be a
 single path mapping (as returned by \code{\link{path_mapping}}
 or a list of such calls.}
+
+\item{template}{A job template.  On fi--dideclusthn this can be
+"GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
+this can be "GeneralNodes", "8Core", "12Core", "12and16Core" or
+"16Core".}
 
 \item{...}{arguments to \code{didewin_config}}
 }

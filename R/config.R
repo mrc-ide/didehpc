@@ -20,16 +20,23 @@
 ##'   single path mapping (as returned by \code{\link{path_mapping}}
 ##'   or a list of such calls.
 ##'
+##' @param template A job template.  On fi--dideclusthn this can be
+##'   "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
+##'   this can be "GeneralNodes", "8Core", "12Core", "12and16Core" or
+##'   "16Core".
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
-                           cluster=NULL, build_server=NULL, shares=NULL) {
+                           cluster=NULL, build_server=NULL, shares=NULL,
+                           template=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
                 temp=temp,
                 cluster=cluster,
                 build_server=build_server,
-                shares=shares)
+                shares=shares,
+                template=template)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -40,7 +47,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   ret <- list(cluster=match_value(dat$cluster, valid_clusters()),
               credentials=dat$credentials,
               username=username,
-              build_server=dat$build_server)
+              build_server=dat$build_server,
+              template=dat$template)
 
   if (is.null(dat$shares)) {
     shares <- list()
@@ -61,6 +69,14 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   if (!is.null(dat$temp)) {
     shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
   }
+
+  if (ret$cluster == "fi--didemrchnb") {
+    valid_templates <- c("GeneralNodes", "8Core", "12Core", "12and16Core",
+                         "16Core")
+  } else {
+    valid_templates <- c("GeneralNodes", "4Core", "8Core")
+  }
+  ret$template <- match_value(ret$template, valid_templates)
 
   remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES=FALSE)
   dups <- unique(remote[duplicated(remote)])
@@ -106,7 +122,8 @@ didewin_config_defaults <- function() {
     home         = getOption("didewin.home",         NULL),
     temp         = getOption("didewin.temp",         NULL),
     build_server = getOption("didewin.build_server", "129.31.25.12"),
-    shares       = getOption("didewin.shares",       NULL))
+    shares       = getOption("didewin.shares",       NULL),
+    template     = getOption("didewin.template",     "GeneralNodes"))
 
   ## Extra shot for the windows users because we can do most of this
   ## automatically if they are a domain machine.  We might be able to

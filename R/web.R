@@ -68,7 +68,7 @@ web_submit <- function(task, config, name="") {
   if (length(task) > 1L && nzchar(name)) {
     stop("Can't use name when submitting >1 task")
   }
-  template <- "GeneralNodes" # or "4Core", "8Core"
+
   resource_count <- 1L
   resource_type <- "Cores"
   workdir <- ""
@@ -76,7 +76,7 @@ web_submit <- function(task, config, name="") {
   stdout <- ""
   data <- list(
     cluster=encode64(config$cluster),
-    template=encode64(template),
+    template=encode64(config$template),
     rc=encode64(as.character(resource_count)),
     rt=encode64(resource_type),
     jn=encode64(name),
