@@ -69,7 +69,12 @@ web_submit <- function(task, config, name="") {
     stop("Can't use name when submitting >1 task")
   }
 
-  resource_count <- 1L
+  if (config$template == "GeneralNodes") {
+    resource_count <- 1L
+  } else {
+    resource_count <- as.integer(sub("Core", "", config$template))
+  }
+
   resource_type <- "Cores"
   workdir <- ""
   stderr <- ""

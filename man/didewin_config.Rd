@@ -29,8 +29,7 @@ or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
 "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "8Core", "12Core", "12and16Core" or
-"16Core".}
+this can be "GeneralNodes", "12Core" or "16Core".}
 
 \item{...}{arguments to \code{didewin_config}}
 }
