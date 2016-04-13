@@ -225,6 +225,6 @@ check_resources <- function(cluster, template, cores) {
 
 ## TODO: This will eventually be configurable, but for now is assumed
 ## in a few places -- search for R_VERSION (all caps).
-R_VERSION <- numeric_version("3.2.3")
+R_VERSION <- numeric_version("3.2.4")
 R_BITS <- 64L
 R_PLATFORM <- if (R_BITS == 64L) "x86_64-w64-mingw32" else "i386-w64-mingw32"
