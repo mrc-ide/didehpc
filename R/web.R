@@ -75,15 +75,14 @@ web_submit <- function(task, config, name="") {
     resource_count <- as.integer(sub("Core", "", config$template))
   }
 
-  resource_type <- "Cores"
   workdir <- ""
   stderr <- ""
   stdout <- ""
   data <- list(
     cluster=encode64(config$cluster),
     template=encode64(config$template),
-    rc=encode64(as.character(resource_count)),
-    rt=encode64(resource_type),
+    rc=encode64(as.character(config$resource$count)),
+    rt=encode64(config$resource$type),
     jn=encode64(name),
     wd=encode64(workdir),
     se=encode64(stderr),

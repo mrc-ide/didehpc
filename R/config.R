@@ -2,6 +2,35 @@
 ##' fairly complicated process of working out what goes where so
 ##' documentation coming later.
 ##'
+##' @section Resources and parallel computing:
+##'
+##' If you need more than one core per task (i.e., you want the each
+##'   task to do some parallel processing \emph{in addition} to the
+##'   parallelism between tasks) you can do that through the
+##'   configuration options here.
+##'
+##' The \code{template} option choses among templates defined on the
+##'   cluster.  If you select one of these then we will reserve an
+##'   entire node \emph{unless} you also specify \code{cores}.
+##'
+##' If you specify \code{cores}, the HPC will queue your job until an
+##'   appropriate number of cores appears for the selected template.
+##'   This can leave your job queing forever (e.g., selecting 20 cores
+##'   on a 16Core template) so be careful.  The \code{cores} option is
+##'   most useful with the \code{GeneralNodes} template, which is the
+##'   default.
+##'
+##' In either case, if more than 1 core is implied (either by using
+##'   any template other than \code{GeneralNodes} or by specifying a
+##'   \code{cores} value greater than 1) on startup, a \code{parallel}
+##'   cluster will be started, using \code{parallel::makePSOCKcluster}
+##'   and this will be registered as the default cluster.  The nodes
+##'   will all have the appropriate context loaded and you can
+##'   immediately use them with \code{parallel::clusterApply} and
+##'   related functions by passing \code{NULL} as the first argument.
+##'   The cluster will be shut down politely on exit, and logs will be
+##'   output to the "workers" directory below your context root.
+##'
 ##' @title Configuration
 ##'
 ##' @param credentials Either a list with elements username, password,
@@ -22,12 +51,22 @@
 ##'
 ##' @param template A job template.  On fi--dideclusthn this can be
 ##'   "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-##'   this can be "GeneralNodes", "12Core" or "16Core".
+##'   this can be "GeneralNodes", "12Core" or "16Core", or "12and16Core".
+##'
+##' @param cores The number of cores to request.  This is really only
+##'   useful when using the \code{GeneralNodes} template.  If
+##'   specified, then we will request this many cores from the windows
+##'   queuer.  If you request too many cores then your task will queue
+##'   forever!  8 is the largest this should be on fi--didehusthn and
+##'   16 on fi--didemrchnb (while there are 20 core nodes you may not
+##'   have access to them).  If omitted then a single core is selected
+##'   for the GeneralNodes template or the \emph{entire machine} for
+##'   the other templates.
 ##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
-                           template=NULL) {
+                           template=NULL, cores=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -35,7 +74,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 cluster=cluster,
                 build_server=build_server,
                 shares=shares,
-                template=template)
+                template=template,
+                cores=cores)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -47,7 +87,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               credentials=dat$credentials,
               username=username,
               build_server=dat$build_server,
-              template=dat$template)
+              template=dat$template,
+              cores=dat$cores)
 
   if (is.null(dat$shares)) {
     shares <- list()
@@ -69,13 +110,7 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
   }
 
-  if (ret$cluster == "fi--didemrchnb") {
-    valid_templates <- c("GeneralNodes", "8Core", "12Core", "12and16Core",
-                         "16Core")
-  } else {
-    valid_templates <- c("GeneralNodes", "4Core", "8Core")
-  }
-  ret$template <- match_value(ret$template, valid_templates)
+  ret$resource <- check_resources(ret$cluster, ret$template, ret$cores)
 
   remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES=FALSE)
   dups <- unique(remote[duplicated(remote)])
@@ -122,7 +157,8 @@ didewin_config_defaults <- function() {
     temp         = getOption("didewin.temp",         NULL),
     build_server = getOption("didewin.build_server", "129.31.25.12"),
     shares       = getOption("didewin.shares",       NULL),
-    template     = getOption("didewin.template",     "GeneralNodes"))
+    template     = getOption("didewin.template",     "GeneralNodes"),
+    cores        = getOption("didewin.cores",        NULL))
 
   ## Extra shot for the windows users because we can do most of this
   ## automatically if they are a domain machine.  We might be able to
@@ -163,6 +199,29 @@ print.didewin_config <- function(x, ...) {
 ##' @export
 valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb")
+}
+
+check_resources <- function(cluster, template, cores) {
+  if (cluster == "fi--didemrchnb") {
+    valid_templates <- c("GeneralNodes", "12Core", "12and16Core", "16Core")
+  } else {
+    valid_templates <- c("GeneralNodes", "4Core", "8Core")
+  }
+  assert_value(template, valid_templates)
+
+  if (!is.null(cores)) {
+    assert_scalar_integer(cores)
+    max_cores <- if (cluster == "fi--didemrchnb") 16 else 8
+    if (cores > max_cores) {
+      stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
+    }
+    ret <- list(parallel=TRUE, count=cores, type="Cores")
+  } else if (template == "GeneralNodes") {
+    ret <- list(parallel=FALSE, count=1L, type="Cores")
+  } else {
+    ret <- list(parallel=TRUE, count=1L, "Nodes")
+  }
+  invisible(ret)
 }
 
 ## TODO: This will eventually be configurable, but for now is assumed

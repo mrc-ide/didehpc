@@ -14,6 +14,11 @@ call setr{{{r_version}}}.bat
 net use {{{drive}}} {{{path}}} /y
 {{{/network_shares}}}
 
+{{{#parallel}}}
+REM This is a parallel job: will use %CPP_NUMCPUS%
+set CONTEXT_CORES=%CCP_NUMCPUS%
+{{{/parallel}}}
+
 %CONTEXT_WORKDRIVE%
 cd \%CONTEXT_WORKDIR%
 cd

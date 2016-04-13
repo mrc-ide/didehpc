@@ -23,6 +23,7 @@ build_batch <- function(root, task_id, config, workdir) {
               context_workdir=windows_path(wd$rel),
               context_root=context_root,
               context_logfile=context_logfile,
+              parallel=config$resource$parallel,
               ## NOTE: don't forget the unname()
               network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,

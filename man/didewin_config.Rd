@@ -6,7 +6,8 @@
 \title{Configuration}
 \usage{
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
-  cluster = NULL, build_server = NULL, shares = NULL, template = NULL)
+  cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
+  cores = NULL)
 
 didewin_config_global(...)
 }
@@ -29,7 +30,17 @@ or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
 "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "12Core" or "16Core".}
+this can be "GeneralNodes", "12Core" or "16Core", or "12and16Core".}
+
+\item{cores}{The number of cores to request.  This is really only
+useful when using the \code{GeneralNodes} template.  If
+specified, then we will request this many cores from the windows
+queuer.  If you request too many cores then your task will queue
+forever!  8 is the largest this should be on fi--didehusthn and
+16 on fi--didemrchnb (while there are 20 core nodes you may not
+have access to them).  If omitted then a single core is selected
+for the GeneralNodes template or the \emph{entire machine} for
+the other templates.}
 
 \item{...}{arguments to \code{didewin_config}}
 }
@@ -37,5 +48,35 @@ this can be "GeneralNodes", "12Core" or "16Core".}
 Collects configuration information.  Unfortunately there's a
 fairly complicated process of working out what goes where so
 documentation coming later.
+}
+\section{Resources and parallel computing}{
+
+
+If you need more than one core per task (i.e., you want the each
+  task to do some parallel processing \emph{in addition} to the
+  parallelism between tasks) you can do that through the
+  configuration options here.
+
+The \code{template} option choses among templates defined on the
+  cluster.  If you select one of these then we will reserve an
+  entire node \emph{unless} you also specify \code{cores}.
+
+If you specify \code{cores}, the HPC will queue your job until an
+  appropriate number of cores appears for the selected template.
+  This can leave your job queing forever (e.g., selecting 20 cores
+  on a 16Core template) so be careful.  The \code{cores} option is
+  most useful with the \code{GeneralNodes} template, which is the
+  default.
+
+In either case, if more than 1 core is implied (either by using
+  any template other than \code{GeneralNodes} or by specifying a
+  \code{cores} value greater than 1) on startup, a \code{parallel}
+  cluster will be started, using \code{parallel::makePSOCKcluster}
+  and this will be registered as the default cluster.  The nodes
+  will all have the appropriate context loaded and you can
+  immediately use them with \code{parallel::clusterApply} and
+  related functions by passing \code{NULL} as the first argument.
+  The cluster will be shut down politely on exit, and logs will be
+  output to the "workers" directory below your context root.
 }
 
