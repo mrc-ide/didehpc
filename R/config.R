@@ -185,10 +185,9 @@ print.didewin_config <- function(x, ...) {
     if (is.atomic(x[[i]])) {
       cat(sprintf(" - %s: %s\n", names(x)[[i]], x[[i]]))
     } else if (is.list(x[[i]])) {
-      cat(sprintf(" - %s:\n", names(x)[[i]], length(x[[i]])))
-      for (j in x[[i]]) {
-        cat(sprintf("   - %s\n", as.character(j)))
-      }
+      cat(sprintf(" - %s:\n", names(x)[[i]]))
+      cat(paste(sprintf("    - %s: %s\n", names(x[[i]]),
+                        vcapply(x[[i]], as.character)), collapse=""))
     }
   }
   invisible(x)
