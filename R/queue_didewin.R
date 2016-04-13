@@ -218,7 +218,7 @@ tasks_status_dide <- function(obj, task_ids=NULL) {
     task_ids <- obj$tasks_list()
   }
   st_ctx <- obj$tasks_status(task_ids)
-  db <- context_db(obj)
+  db <- context::context_db(obj)
 
   i <- st_ctx %in% c("PENDING", "RUNNING")
   if (!any(i)) {
