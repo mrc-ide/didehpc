@@ -218,7 +218,7 @@ check_resources <- function(cluster, template, cores) {
   } else if (template == "GeneralNodes") {
     ret <- list(parallel=FALSE, count=1L, type="Cores")
   } else {
-    ret <- list(parallel=TRUE, count=1L, "Nodes")
+    ret <- list(parallel=TRUE, count=1L, type="Nodes")
   }
   invisible(ret)
 }
