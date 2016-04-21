@@ -88,30 +88,7 @@ initialise_packages <- function(obj) {
   }
 
   ## Next, look to see if any of the packages in the local drat need
-  ## compilation
-  path_drat <- context$package_sources$local_drat
-  if (!is.null(path_drat)) {
-    if (is.null(build_server)) {
-      return(initialise_packages_on_cluster(obj))
-    } else {
-      db <- storr::storr_rds(file.path(path_drat, "timestamp"),
-                             mangle_key=TRUE)
-      tmp <- check_binary_packages(db, path_drat)
-      if (length(tmp$packages) > 0L) {
-        bin <- buildr::build_binaries(tmp$packages_source, build_server)
-        dir.create(tmp$dest, FALSE, TRUE)
-        file.copy(bin, tmp$dest, overwrite=TRUE)
-        hash <- tools::md5sum(bin)
-        names(hash) <- basename(bin)
-        tools::write_PACKAGES(tmp$dest, type="win.binary")
-        file.remove(bin)
-        for (i in seq_along(tmp$packages)) {
-          db$set(tmp$hash[[i]], hash[i], "binary")
-        }
-      }
-    }
-  }
-
+  ## compilation.
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
@@ -144,6 +121,8 @@ check_binary_packages <- function(db, path_drat) {
   r_version_2 <- paste(unclass(R_VERSION)[[1]][1:2], collapse=".")
   path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
 
+  ## This is no longer sufficient because we'd want to check to see if
+  ## binaries had been added anyway...
   if (file.exists(path_bin)) {
     f <- function(hash) {
       bin <- tryCatch(db$get(hash, "binary"), KeyError=function(e) NULL)
