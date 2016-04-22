@@ -73,6 +73,7 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   ret
 }
 
+##' @export
 as.character.path_mapping <- function(x) {
   if (is.null(x$rel)) {
     sprintf("(local) %s => %s => %s (remote)",
