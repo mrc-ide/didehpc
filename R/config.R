@@ -160,6 +160,10 @@ didewin_config_defaults <- function() {
     template     = getOption("didewin.template",     "GeneralNodes"),
     cores        = getOption("didewin.cores",        NULL))
 
+  if (is.null(defaults$credentials)) {
+    defaults$credentials <- getOption("didewin.username", NULL)
+  }
+
   ## Extra shot for the windows users because we can do most of this
   ## automatically if they are a domain machine.  We might be able to
   ## get there with `mount` on Linux too.  Probably needs some work
