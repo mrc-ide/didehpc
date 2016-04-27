@@ -6,7 +6,7 @@ prepare_path <- function(path, mappings) {
   ## TODO: currently assume that mappings does not end in a trailing slash.
   ## TODO: not sure about slash direction disagreements.
   for (m in mappings) {
-    if (string_starts_with(path, m$path_local)) {
+    if (string_starts_with(tolower(path), tolower(m$path_local))) {
       m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
       return(m)
     }
