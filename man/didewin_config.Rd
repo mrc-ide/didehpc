@@ -30,7 +30,11 @@ or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
 "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "12Core" or "16Core", or "12and16Core".}
+this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
+"20Core", or "24Core".  See the main cluster documentation if
+you tweak these parameters, as you may not have permission to
+use all templates (and if you use one that you don't have
+permission for the job will fail).}
 
 \item{cores}{The number of cores to request.  This is really only
 useful when using the \code{GeneralNodes} template.  If
