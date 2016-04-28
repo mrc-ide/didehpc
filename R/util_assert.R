@@ -33,7 +33,8 @@ assert_integer <- function(x, strict=FALSE, name=deparse(substitute(x))) {
     }
   }
 }
-assert_scalar_integer <- function(x, name=deparse(substitute(x))) {
+assert_scalar_integer <- function(x, strict=FALSE,
+                                  name=deparse(substitute(x))) {
   assert_scalar(x, name)
-  assert_integer(x, name)
+  assert_integer(x, strict, name)
 }
