@@ -8,6 +8,8 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/dide-tools/didewin
 BugReports: https://github.com/dide-tools/didewin/issues
+Depends:
+    R (>= 3.2.2)
 Imports:
     crayon,
     context (>= 0.0.6),
