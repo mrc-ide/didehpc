@@ -12,6 +12,8 @@
 ##' The \code{template} option choses among templates defined on the
 ##'   cluster.  If you select one of these then we will reserve an
 ##'   entire node \emph{unless} you also specify \code{cores}.
+##'   Alternatively if \code{wholenode} is specified this overrides
+##'   the logic here.
 ##'
 ##' If you specify \code{cores}, the HPC will queue your job until an
 ##'   appropriate number of cores appears for the selected template.
@@ -57,7 +59,7 @@
 ##'   use all templates (and if you use one that you don't have
 ##'   permission for the job will fail).
 ##'
-##' @param cores The number of cores to request.  This is really only
+##' @param cores The number of cores to request.  This is mostly
 ##'   useful when using the \code{GeneralNodes} template.  If
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
@@ -65,12 +67,26 @@
 ##'   16 on fi--didemrchnb (while there are 20 core nodes you may not
 ##'   have access to them).  If omitted then a single core is selected
 ##'   for the GeneralNodes template or the \emph{entire machine} for
-##'   the other templates.
+##'   the other templates (unless modified by \code{wholenode}).
+##'
+##' @param wholenode Request the whole node?  This will default to
+##'   \code{TRUE} if any template other than \code{GeneralNodes} is
+##'   selected.
+##'
+##' @param parallel Should we set up the parallel cluster?  Normally
+##'   if more than one core is implied (via the \code{cores} argument,
+##'   by picking a template other than \code{GeneralNodes} or by using
+##'   \code{wholenode}) then a parallel cluster will be set up (see
+##'   Details).  If \code{parallel} is set to \code{FALSE} then this
+##'   will not occur.  This might be useful in cases where you want to
+##'   manage your own job level parallelism (e.g. using OpenMP) or if
+##'   you're just after the whole node for the memory).
 ##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
-                           template=NULL, cores=NULL) {
+                           template=NULL, cores=NULL,
+                           wholenode=NULL, parallel=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -79,7 +95,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 build_server=build_server,
                 shares=shares,
                 template=template,
-                cores=cores)
+                cores=cores,
+                wholenode=wholenode,
+                parallel=parallel)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -92,7 +110,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               username=username,
               build_server=dat$build_server,
               template=dat$template,
-              cores=dat$cores)
+              cores=dat$cores,
+              wholenode=dat$wholenode,
+              parallel=dat$parallel)
 
   if (is.null(dat$shares)) {
     shares <- list()
@@ -114,7 +134,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
   }
 
-  ret$resource <- check_resources(ret$cluster, ret$template, ret$cores)
+  ret$resource <- check_resources(ret$cluster, ret$template, ret$cores,
+                                  ret$wholenode, ret$parallel)
 
   remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES=FALSE)
   dups <- unique(remote[duplicated(remote)])
@@ -162,7 +183,9 @@ didewin_config_defaults <- function() {
     build_server = getOption("didewin.build_server", "129.31.25.12"),
     shares       = getOption("didewin.shares",       NULL),
     template     = getOption("didewin.template",     "GeneralNodes"),
-    cores        = getOption("didewin.cores",        NULL))
+    cores        = getOption("didewin.cores",        NULL),
+    wholenode    = getOption("didewin.wholenode",    NULL),
+    parallel     = getOption("didewin.parallel",     NULL))
 
   if (is.null(defaults$credentials)) {
     defaults$credentials <- getOption("didewin.username", NULL)
@@ -208,7 +231,7 @@ valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb")
 }
 
-check_resources <- function(cluster, template, cores) {
+check_resources <- function(cluster, template, cores, wholenode, parallel) {
   if (cluster == "fi--didemrchnb") {
     valid_templates <- c("GeneralNodes", "12Core", "12and16Core", "16Core",
                          "24Core")
@@ -218,16 +241,19 @@ check_resources <- function(cluster, template, cores) {
   assert_value(template, valid_templates)
 
   if (!is.null(cores)) {
+    if (isTRUE(wholenode)) {
+      stop("Cannot specify both wholenode and cores")
+    }
     assert_scalar_integer(cores)
     max_cores <- if (cluster == "fi--didemrchnb") 16 else 8
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
-    ret <- list(parallel=TRUE, count=cores, type="Cores")
-  } else if (template == "GeneralNodes") {
-    ret <- list(parallel=FALSE, count=1L, type="Cores")
+    ret <- list(parallel=parallel %||% TRUE, count=cores, type="Cores")
+  } else if (template != "GeneralNodes" || isTRUE(wholenode)) {
+    ret <- list(parallel=parallel %||% TRUE, count=1L, type="Nodes")
   } else {
-    ret <- list(parallel=TRUE, count=1L, type="Nodes")
+    ret <- list(parallel=parallel %||% FALSE, count=1L, type="Cores")
   }
   invisible(ret)
 }

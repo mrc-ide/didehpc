@@ -72,3 +72,27 @@ test_that("globals", {
   on.exit(options(oo))
   expect_equal(oo, list(didewin.credentials=NULL))
 })
+
+test_that("template logic", {
+  oo <- didewin_config_global(credentials="foo")
+  on.exit(options(oo))
+
+  expect_equal(didewin_config()$resource,
+               list(parallel=FALSE, count=1, type="Cores"))
+  expect_equal(didewin_config(wholenode=TRUE)$resource,
+               list(parallel=TRUE, count=1, type="Nodes"))
+  expect_equal(didewin_config(wholenode=TRUE, parallel=TRUE)$resource,
+               list(parallel=TRUE, count=1, type="Nodes"))
+  expect_equal(didewin_config(wholenode=TRUE, parallel=FALSE)$resource,
+               list(parallel=FALSE, count=1, type="Nodes"))
+
+  expect_error(didewin_config(wholenode=TRUE, cores=2)$resource,
+               "Cannot specify both wholenode and cores")
+
+  expect_equal(didewin_config(template="8Core")$resource,
+               list(parallel=TRUE, count=1, type="Nodes"))
+  expect_equal(didewin_config(template="8Core", parallel=FALSE)$resource,
+               list(parallel=FALSE, count=1, type="Nodes"))
+  expect_equal(didewin_config(template="8Core", cores=3)$resource,
+               list(parallel=TRUE, count=3, type="Cores"))
+})

@@ -7,7 +7,7 @@
 \usage{
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
-  cores = NULL)
+  cores = NULL, wholenode = NULL, parallel = NULL)
 
 didewin_config_global(...)
 }
@@ -36,7 +36,7 @@ you tweak these parameters, as you may not have permission to
 use all templates (and if you use one that you don't have
 permission for the job will fail).}
 
-\item{cores}{The number of cores to request.  This is really only
+\item{cores}{The number of cores to request.  This is mostly
 useful when using the \code{GeneralNodes} template.  If
 specified, then we will request this many cores from the windows
 queuer.  If you request too many cores then your task will queue
@@ -44,7 +44,20 @@ forever!  8 is the largest this should be on fi--didehusthn and
 16 on fi--didemrchnb (while there are 20 core nodes you may not
 have access to them).  If omitted then a single core is selected
 for the GeneralNodes template or the \emph{entire machine} for
-the other templates.}
+the other templates (unless modified by \code{wholenode}).}
+
+\item{wholenode}{Request the whole node?  This will default to
+\code{TRUE} if any template other than \code{GeneralNodes} is
+selected.}
+
+\item{parallel}{Should we set up the parallel cluster?  Normally
+if more than one core is implied (via the \code{cores} argument,
+by picking a template other than \code{GeneralNodes} or by using
+\code{wholenode}) then a parallel cluster will be set up (see
+Details).  If \code{parallel} is set to \code{FALSE} then this
+will not occur.  This might be useful in cases where you want to
+manage your own job level parallelism (e.g. using OpenMP) or if
+you're just after the whole node for the memory).}
 
 \item{...}{arguments to \code{didewin_config}}
 }
@@ -64,6 +77,8 @@ If you need more than one core per task (i.e., you want the each
 The \code{template} option choses among templates defined on the
   cluster.  If you select one of these then we will reserve an
   entire node \emph{unless} you also specify \code{cores}.
+  Alternatively if \code{wholenode} is specified this overrides
+  the logic here.
 
 If you specify \code{cores}, the HPC will queue your job until an
   appropriate number of cores appears for the selected template.
