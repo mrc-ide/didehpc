@@ -128,10 +128,19 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     stop("Invalid input for 'shares'")
   }
   if (!is.null(dat$home)) {
-    shares$home <- path_mapping("home", dat$home, dide_home("", username), "Q:")
+    if (inherits(dat$home, "path_mapping")) {
+      shares$home <- home
+    } else {
+      shares$home <-
+        path_mapping("home", dat$home, dide_home("", username), "Q:")
+    }
   }
   if (!is.null(dat$temp)) {
-    shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
+    if (inherits(dat$temp, "path_mapping")) {
+      shares$temp <- temp
+    } else {
+      shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
+    }
   }
 
   ret$resource <- check_resources(ret$cluster, ret$template, ret$cores,
