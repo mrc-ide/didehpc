@@ -152,21 +152,14 @@ submit <- function(obj, task_ids) {
   root <- obj$context$root
   config <- obj$config
 
-  f <- function(id) {
+  ## TODO: in theory this can be done in bulk on the cluster but it
+  ## requires some support on the web interface I think.
+  for (id in task_ids) {
     batch <- write_batch(root, id, config, obj$workdir)
-    remote_path(prepare_path(batch, config$shares))
-  }
-  path <- vapply(task_ids, f, character(1), USE.NAMES=FALSE)
-
-  ## TODO: the name must be a scalar (unless Wes has updated it), so
-  ## there's no meaninful name that can be added unless
-  name <- if (length(task_ids) == 1) task_ids else ""
-
-  dide_id <- web_submit(path, config, paste(task_ids, collapse="\n"))
-
-  for (i in seq_along(task_ids)) {
-    db$set(task_ids[[i]], dide_id[[i]],   "dide_id")
-    db$set(task_ids[[i]], config$cluster, "dide_cluster")
+    path <- remote_path(prepare_path(batch, config$shares))
+    dide_id <- web_submit(path, config, id)
+    db$set(id, dide_id,        "dide_id")
+    db$set(id, config$cluster, "dide_cluster")
   }
 }
 
