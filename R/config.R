@@ -129,7 +129,7 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   }
   if (!is.null(dat$home)) {
     if (inherits(dat$home, "path_mapping")) {
-      shares$home <- home
+      shares$home <- dat$home
     } else {
       shares$home <-
         path_mapping("home", dat$home, dide_home("", username), "Q:")
@@ -137,7 +137,7 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   }
   if (!is.null(dat$temp)) {
     if (inherits(dat$temp, "path_mapping")) {
-      shares$temp <- temp
+      shares$temp <- dat$temp
     } else {
       shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
     }
