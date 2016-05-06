@@ -152,11 +152,15 @@ submit <- function(obj, task_ids) {
   root <- obj$context$root
   config <- obj$config
 
+  pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
+                                   total=total)
+
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
     batch <- write_batch(root, id, config, obj$workdir)
     path <- remote_path(prepare_path(batch, config$shares))
+    pb$tick()
     dide_id <- web_submit(path, config, id)
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")

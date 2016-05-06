@@ -15,6 +15,7 @@ Imports:
     context (>= 0.0.6),
     getPass,
     httr (>= 1.0.0),
+    progress,
     queuer,
     storr,
     whisker
