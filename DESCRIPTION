@@ -17,6 +17,7 @@ Imports:
     httr (>= 1.0.0),
     progress,
     queuer,
+    rematch,
     storr,
     whisker
 Suggests:
