@@ -160,8 +160,10 @@ detect_mount_unix <- function() {
   ## on on the wired network and Linux I see //shorthost/path
   ##
   ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
-  m <- rematch::re_match(re, dat)[,c("host", "path", "local")]
-  remote <- sprintf("\\\\%s\\%s", m[, "host"], gsub("/", "\\\\", m[, "path"]))
+  m <- rematch::re_match(re, dat)[, c("host", "path", "local"), drop=FALSE]
+
+  host <- sub("\\.dide\\.ic\\.ac\\.uk$", "", m[, "host"])
+  remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
   cbind(remote=remote, local=m[, "local"])
 }
 
