@@ -125,3 +125,62 @@ dide_temp <- function(path) {
   assert_character(path)
   paste0("\\\\fi--didef2\\tmp\\", "\\", gsub("/", "\\\\", path))
 }
+
+detect_mount_fail <- function() {
+  cbind(host=character(), path=character(), local=character())
+}
+
+## TODO: No idea what spaces in the filenames will do here.  Nothing
+## pretty, that's for sure.
+detect_mount_unix <- function() {
+  mount <- Sys.which("mount")
+  if (mount == "") {
+    return(detect_mount_fail())
+  }
+
+  type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
+  ## consider
+  ##   mount -t cifs  # (linux)
+  ##   mount -t smbfs # (osx)
+  re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
+  dat <- system2(mount, c("-t", type), stdout=TRUE, stderr=FALSE)
+  i <- grepl(re, dat, perl=TRUE)
+  if (!all(i)) {
+    ## This will be useful to see until I get this correct.
+    warning("Ignoring mounts:\n", paste(re[!i], collapse="\n"))
+  }
+  dat <- dat[i]
+
+  if (length(dat) == 0L) {
+    return(detect_mount_fail())
+  }
+
+  ## There are a couple of formats here.  On the VPN and with OSX
+  ## (currently correlated) I see a //username@host/path format while
+  ## on on the wired network and Linux I see //shorthost/path
+  ##
+  ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
+
+  rematch::re_match(re, dat)[,c("host", "path", "local")]
+}
+
+detect_mount_windows <- function() {
+  windir <- Sys.getenv("WINDIR", "C:\\windows")
+  format_csv <- sprintf('/format:"%s\\System32\\wbem\\en-US\\csv"', windir)
+
+  ## Using stdout=path does not work here, yielding a file that has
+  ## embedded NULs and failing to be read.
+  path <- tempfile()
+  tmp <- system2("wmic", c("netuse", "list", "brief", format_csv), stdout=TRUE)
+  writeLines(tmp[-1], path)
+  on.exit(file.remove(path))
+  dat <- read.csv(path, stringsAsFactors=FALSE)
+  cbind(host=dat$Node, path=gsub("\\", "/", dat$RemoteName, fixed=TRUE),
+        local=dat$LocalName)
+}
+
+detect_mount <- function() {
+  ret <- if (is_windows()) detect_mount_windows() else detect_mount_unix()
+  full <- sprintf("\\\\%s\\%s", ret[, "host"], gsub("/", "\\\\", ret[, "path"]))
+  cbind(ret, full)
+}

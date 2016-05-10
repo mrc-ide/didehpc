@@ -54,12 +54,11 @@ test_that("interactive", {
   expect_equal(dat$cluster, valid_clusters()[[1]])
   ## This might become an error soon because there will be nothing to
   ## map against.
-  expect_equal(dat$shares, list())
+  expect_is(dat$shares, "list")
 
   dat <- didewin_config("me", home=tempdir())
-  expect_equal(length(dat$shares), 1)
 
-  expect_equal(dat$shares[[1]],
+  expect_equal(dat$shares$home,
                structure(list(name="home",
                               path_remote=clean_path(dide_home("", "me")),
                               path_local=tempdir(),

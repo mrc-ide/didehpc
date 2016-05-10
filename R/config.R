@@ -105,53 +105,22 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   if (is.null(dat$credentials)) {
     dat$credentials <- username
   }
-  ret <- list(cluster=match_value(dat$cluster, valid_clusters()),
+
+  cluster <- match_value(dat$cluster, valid_clusters())
+  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares, username)
+  resource <- check_resources(cluster, dat$template, dat$cores,
+                              dat$wholenode, dat$parallel)
+
+  ret <- list(cluster=cluster,
               credentials=dat$credentials,
               username=username,
               build_server=dat$build_server,
               template=dat$template,
               cores=dat$cores,
               wholenode=dat$wholenode,
-              parallel=dat$parallel)
-
-  if (is.null(dat$shares)) {
-    shares <- list()
-  } else if (inherits(dat$shares, "path_mapping")) {
-    shares <- list(dat$shares)
-    names(shares) <- dat$shares$name
-  } else if (is.list(dat$shares)) {
-    if (!all(vlapply(dat$shares, inherits, "path_mapping"))) {
-      stop("All elements of 'shares' must be a path_mapping")
-    }
-    shares <- dat$shares
-  } else {
-    stop("Invalid input for 'shares'")
-  }
-  if (!is.null(dat$home)) {
-    if (inherits(dat$home, "path_mapping")) {
-      shares$home <- dat$home
-    } else {
-      shares$home <-
-        path_mapping("home", dat$home, dide_home("", username), "Q:")
-    }
-  }
-  if (!is.null(dat$temp)) {
-    if (inherits(dat$temp, "path_mapping")) {
-      shares$temp <- dat$temp
-    } else {
-      shares$temp <- path_mapping("temp", dat$temp, dide_temp(""), "T:")
-    }
-  }
-
-  ret$resource <- check_resources(ret$cluster, ret$template, ret$cores,
-                                  ret$wholenode, ret$parallel)
-
-  remote <- vcapply(shares, "[[", "drive_remote", USE.NAMES=FALSE)
-  dups <- unique(remote[duplicated(remote)])
-  if (length(dups) > 0L) {
-    stop("Duplicate remote drive names: ", paste(dups, collapse=", "))
-  }
-  ret$shares <- shares
+              parallel=dat$parallel,
+              resource=resource,
+              shares=shares)
 
   class(ret) <- "didewin_config"
   ret
@@ -205,21 +174,12 @@ didewin_config_defaults <- function() {
     }
   }
 
-  ## Extra shot for the windows users because we can do most of this
-  ## automatically if they are a domain machine.  We might be able to
-  ## get there with `mount` on Linux too.  Probably needs some work
-  ## for cases where they're off the main network though.
-  if (is_windows()) {
-    if (is.null(defaults$home)) {
-      defaults$home <- "Q:/"
-    }
-    if (is.null(defaults$temp)) {
-      defaults$temp <- "T:/"
-    }
-    if (is.null(defaults$credentials)) {
-      defaults$credentials <- Sys.getenv("USERNAME")
-    }
+  ## Extra shot for the windows users because we get the username
+  ## automatically if they are on a domain machine.
+  if (is_windows() && is.null(defaults$credentials)) {
+    defaults$credentials <- Sys.getenv("USERNAME")
   }
+
   defaults
 }
 
@@ -270,6 +230,84 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     ret <- list(parallel=parallel %||% FALSE, count=1L, type="Cores")
   }
   invisible(ret)
+}
+
+## This function will detect home, temp and if the current working
+## directory is not in one of those then continue on to detect the cwd
+## too.
+##
+## TODO: I don't know if this will work for all possible issues with
+## path normalisation (e.g. if a mount occurs against a symlink?)
+dide_detect_mount <- function(home, temp, shares, username) {
+  dat <- detect_mount()
+  ret <- list()
+
+  if (is.null(home)) {
+    is_home <- dat[, "host"] == "fi--san02" & grepl("^homes/", dat[, "path"])
+    if (sum(is_home) == 1L) {
+      ret$home <- path_mapping("home", dat[is_home, "local"],
+                               dat[is_home, "full"], "Q:")
+    }
+  } else {
+    if (inherits(home, "path_mapping")) {
+      ret$home <- home
+    } else {
+      ret$home <- path_mapping("home", home, dide_home("", username), "Q:")
+    }
+  }
+
+  if (is.null(temp)) {
+    is_temp <- dat[, "host"] == "fi--didef2" & dat[, "path"] == "tmp"
+    if (sum(is_temp) == 1L) {
+      ret$temp <- path_mapping("temp", dat[is_temp, "local"],
+                               dide_temp(""), "T:")
+    }
+  } else {
+    if (inherits(temp, "path_mapping")) {
+      ret$temp <- temp
+    } else {
+      ret$temp <- path_mapping("temp", temp, dide_temp(""), "T:")
+    }
+  }
+
+  if (!is.null(shares)) {
+    if (inherits(shares, "path_mapping")) {
+      ret <- c(ret, setNames(list(shares), shares$name))
+    } else if (is.list(shares)) {
+      if (!all(vlapply(shares, inherits, "path_mapping"))) {
+        stop("All elements of 'shares' must be a path_mapping")
+      }
+      ret <- c(ret, shares)
+    } else {
+      stop("Invalid input for 'shares'")
+    }
+  }
+
+  mapped <- vcapply(ret, "[[", "path_local")
+
+  remote <- vcapply(ret, "[[", "drive_remote", USE.NAMES=FALSE)
+  dups <- unique(remote[duplicated(remote)])
+  if (length(dups) > 0L) {
+    stop("Duplicate remote drive names: ", paste(dups, collapse=", "))
+  }
+
+  ## TODO: The tolower needs to be done in a platform dependent way I
+  ## think.  For now assume that Linux users don't store multiple
+  ## relevant paths that differ in case.
+  wd <- tolower(getwd())
+  ok <- vlapply(tolower(mapped), string_starts_with, x=tolower(wd))
+  if (!any(ok)) {
+    i <- vlapply(tolower(dat[, "local"]), string_starts_with, x=tolower(wd))
+    if (any(i)) {
+      used <- toupper(substr(vcapply(ret, "[[", "drive_remote"), 1, 1))
+      drive <- paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
+      workdir <- list(
+        workdir=path_mapping("workdir", dat[i, "local"], full[i], drive))
+      ret <- c(ret, workdir)
+    }
+  }
+
+  ret
 }
 
 ## TODO: This will eventually be configurable, but for now is assumed
