@@ -73,6 +73,18 @@ test_that("globals", {
   expect_equal(oo, list(didewin.credentials=NULL))
 })
 
+test_that("unset globals", {
+  oo <- options()
+  on.exit(options(oo))
+
+  didewin_config_global(credentials="foo")
+  expect_equal(getOption("didewin.credentials"), "foo")
+
+  didewin_config_global(credentials=NULL)
+  expect_equal(getOption("didewin.credentials"), NULL)
+  expect_equal(getOption("didewin.credentials", NA), NA) # really not set
+})
+
 test_that("template logic", {
   oo <- didewin_config_global(credentials="foo")
   on.exit(options(oo))
