@@ -299,13 +299,17 @@ dide_detect_mount <- function(home, temp, shares, username) {
   wd <- tolower(getwd())
   ok <- vlapply(tolower(mapped), string_starts_with, x=tolower(wd))
   if (!any(ok)) {
-    i <- vlapply(tolower(dat[, "local"]), string_starts_with, x=tolower(wd))
-    if (any(i)) {
+    i <- (nzchar(dat[, "local"]) &
+          vlapply(tolower(dat[, "local"]), string_starts_with, x=tolower(wd)))
+    if (sum(i) == 1L) {
       used <- toupper(substr(vcapply(ret, "[[", "drive_remote"), 1, 1))
       drive <- paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
-      workdir <- list(
-        workdir=path_mapping("workdir", dat[i, "local"], full[i], drive))
-      ret <- c(ret, workdir)
+      workdir <- path_mapping("workdir", dat[i, "local"],
+                              dat[i, "remote"], drive)
+      ret <- c(ret, list(workdir=workdir))
+    } else if (sum(i) > 1L) {
+      ## Could take the *longest* here?
+      warning("Having trouble determining the working directory mount point")
     }
   }
 
