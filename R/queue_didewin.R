@@ -153,7 +153,7 @@ submit <- function(obj, task_ids) {
   config <- obj$config
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
-                                   total=total)
+                                   total=length(task_ids))
 
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
