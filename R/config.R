@@ -197,7 +197,10 @@ didewin_config_defaults <- function() {
     parallel     = getOption("didewin.parallel",     NULL))
 
   if (is.null(defaults$credentials)) {
-    defaults$credentials <- getOption("didewin.username", NULL)
+    username <- getOption("didewin.username", NULL)
+    if (!is.null(username)) {
+      defaults$credentials <- username
+    }
   }
 
   ## Extra shot for the windows users because we can do most of this
