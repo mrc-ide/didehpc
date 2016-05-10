@@ -243,10 +243,11 @@ dide_detect_mount <- function(home, temp, shares, username) {
   ret <- list()
 
   if (is.null(home)) {
-    is_home <- dat[, "host"] == "fi--san02" & grepl("^homes/", dat[, "path"])
+    is_home <- string_starts_with(tolower(dat[, "remote"]),
+                                  "\\\\fi--san02\\homes")
     if (sum(is_home) == 1L) {
       ret$home <- path_mapping("home", dat[is_home, "local"],
-                               dat[is_home, "full"], "Q:")
+                               dat[is_home, "remote"], "Q:")
     }
   } else {
     if (inherits(home, "path_mapping")) {
@@ -257,7 +258,8 @@ dide_detect_mount <- function(home, temp, shares, username) {
   }
 
   if (is.null(temp)) {
-    is_temp <- dat[, "host"] == "fi--didef2" & dat[, "path"] == "tmp"
+    is_temp <- string_starts_with(tolower(dat[, "remote"]),
+                                  "\\\\fi--didef2\\tmp")
     if (sum(is_temp) == 1L) {
       ret$temp <- path_mapping("temp", dat[is_temp, "local"],
                                dide_temp(""), "T:")

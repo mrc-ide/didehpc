@@ -160,8 +160,9 @@ detect_mount_unix <- function() {
   ## on on the wired network and Linux I see //shorthost/path
   ##
   ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
-
-  rematch::re_match(re, dat)[,c("host", "path", "local")]
+  m <- rematch::re_match(re, dat)[,c("host", "path", "local")]
+  remote <- sprintf("\\\\%s\\%s", m[, "host"], gsub("/", "\\\\", m[, "path"]))
+  cbind(remote=remote, local=m[, "local"])
 }
 
 detect_mount_windows <- function() {
@@ -175,12 +176,10 @@ detect_mount_windows <- function() {
   writeLines(tmp[-1], path)
   on.exit(file.remove(path))
   dat <- read.csv(path, stringsAsFactors=FALSE)
-  cbind(host=dat$Node, path=gsub("\\", "/", dat$RemoteName, fixed=TRUE),
-        local=dat$LocalName)
+
+  cbind(remote=dat$RemoteName, local=dat$LocalName)
 }
 
 detect_mount <- function() {
-  ret <- if (is_windows()) detect_mount_windows() else detect_mount_unix()
-  full <- sprintf("\\\\%s\\%s", ret[, "host"], gsub("/", "\\\\", ret[, "path"]))
-  cbind(ret, full)
+  if (is_windows()) detect_mount_windows() else detect_mount_unix()
 }
