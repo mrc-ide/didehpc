@@ -233,15 +233,21 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
                   body=data, encode="form")
   check_status(r)
   txt <- httr::content(r, as="text", encoding="UTF-8")
+
   cols <- c("dide_task_id", "name", "status", "resources", "user",
             "time_start", "time_submit", "time_end", "template")
   ## Id Name State Resources User StartTime SubmitTime EndTime JobTemplate
-  res <- strsplit(strsplit(txt, "\n")[[1]], "\t")
-  len <- vapply(res, length, integer(1))
-  if (any(len != length(cols))) {
-    stop("Parse error; unexpected output from server")
+  if (nzchar(txt)) {
+    res <- strsplit(strsplit(txt, "\n")[[1]], "\t")
+    len <- lengths(res)
+    if (any(len != length(cols))) {
+      stop("Parse error; unexpected output from server")
+    }
+    res <- as.data.frame(do.call(rbind, res), stringsAsFactors=FALSE)
+  } else {
+    res <- as.data.frame(matrix(character(0), 0, length(cols)),
+                         stringsAsFactors=FALSE)
   }
-  res <- as.data.frame(do.call(rbind, res), stringsAsFactors=FALSE)
   names(res) <- cols
 
   ## Some type switches:
