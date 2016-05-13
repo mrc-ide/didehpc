@@ -262,6 +262,37 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
   res
 }
 
+##' Get the log of a command from the HPC server.  Note that logs are
+##' only available for jobs that have finished or failed (not availab e
+##'
+##' @title Get job log
+##' @param config A config object
+##' @param dide_id A \emph{DIDE} id number
+##' @export
+web_joblog <- function(config, dide_id) {
+  data <- list(hpcfunc="showfail",
+               cluster=encode64(config$cluster),
+               id=dide_id)
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/showjobfail.php",
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
+  check_status(r)
+  xml <- xml2::read_html(httr::content(r, as="text", encoding="UTF-8"))
+  value <- xml2::xml_attr(xml2::xml_find_one(xml, '//input[@id="res"]'),
+                          "value")
+  value <- decode64(value)
+  ## Deal with newline issues:
+  value <- sub("\n$", "", gsub("\n\n", "\n", value))
+  re <- "(.*?)Output\\s*:\\n(.*)"
+  pre <- sub(re, "\\1", value)
+  ret <- sub(re, "\\2", value)
+  if (nzchar(pre)) {
+    attr(ret, "message") <- pre
+  }
+  ret
+}
+
 status_map <- function(x, reverse=FALSE) {
   map <- c(Running="RUNNING",
            Finished="COMPLETE",

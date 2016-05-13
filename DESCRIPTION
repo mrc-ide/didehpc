@@ -19,7 +19,8 @@ Imports:
     queuer,
     rematch,
     storr,
-    whisker
+    whisker,
+    xml2
 Suggests:
     buildr,
     testthat,
