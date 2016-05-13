@@ -1,3 +1,8 @@
+## Base imports:
+##' @importFrom stats setNames
+##' @importFrom utils modifyList packageVersion read.csv
+NULL
+
 Sys_which <- function(name) {
   if (length(name) != 1L) {
     stop("'name' must be a scalar")

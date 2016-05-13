@@ -6,3 +6,5 @@ TODO.md
 inst/staticdocs
 inst/web
 inst/doc
+didewin_*.tar.gz
+didewin.Rcheck

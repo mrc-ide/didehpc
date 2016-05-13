@@ -24,6 +24,9 @@ you will be prompted graphically for your password).}
 \item{cluster}{Name of the cluster to use (one of
 \code{\link{valid_clusters}()})}
 
+\item{build_server}{Currently ignored, but will soon be a windows
+build server for bespoke binary packages.}
+
 \item{shares}{Optional additional share mappings.  Can either be a
 single path mapping (as returned by \code{\link{path_mapping}}
 or a list of such calls.}

@@ -240,7 +240,7 @@ tasks_status_dide <- function(obj, task_ids=NULL) {
   i <- match(task_ids, dat$name)
   if (any(is.na(i))) {
     stop("Did not find information on tasks: ",
-         paste(tasks[is.na(i)], collapse=", "))
+         paste(task_ids[is.na(i)], collapse=", "))
   }
 
   ok <- TRUE

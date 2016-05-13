@@ -5,3 +5,7 @@
 ^.travis.yml$
 ^appveyor.yml$
 ^TODO\.md$
+^ignore$
+^didewin_.*\.tar\.gz$
+^notes\.md$
+^update_web\.sh$
