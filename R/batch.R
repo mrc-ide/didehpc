@@ -5,13 +5,15 @@ build_batch <- function(root, task_id, config, workdir) {
   ## differs in drive from the workdir (which really probably is not a
   ## clever idea).
   context_root <- prepare_path(root, config$shares)
-  context_root <- windows_path(file.path(context_root$drive_remote,
-                                         context_root$rel))
-  context_logfile <- windows_path(path_logs(context_root, task_id))
+  context_root_abs <- windows_path(file.path(context_root$drive_remote,
+                                             context_root$rel))
 
-  ## Consider dumping out:
-  ##   WMIC NETUSE LIST FULL /FORMAT:CSV
-  ## So we can see how the network mappings look
+  if (string_starts_with(normalizePath(root), normalizePath(getwd()))) {
+    context_logfile <- windows_path(path_logs(root, task_id))
+  } else {
+    context_logfile <- windows_path(path_logs(context_root_abs, task_id))
+  }
+
   r_version <- paste0(R_BITS, "_",
                       paste(unclass(R_VERSION)[[1]], collapse="_"))
   dat <- list(date=as.character(Sys.time()),
@@ -21,7 +23,7 @@ build_batch <- function(root, task_id, config, workdir) {
               context_task_id=task_id,
               context_workdrive=wd$drive_remote,
               context_workdir=windows_path(wd$rel),
-              context_root=context_root,
+              context_root=context_root_abs,
               context_logfile=context_logfile,
               parallel=config$resource$parallel,
               ## NOTE: don't forget the unname()
