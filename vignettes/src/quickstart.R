@@ -65,11 +65,13 @@ install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
 didewin::didewin_config_global(cluster="fi--didemrchnb")
 
 ## Otherwise, and on any other platform you'll need to provide your username:
-didewin::didewin_config_global(username="rfitzjoh",
+##+ eval=FALSE
+didewin::didewin_config_global(credentials="rfitzjoh",
                                cluster="fi--didemrchnb")
 
 ## If this is the first time you have run this package, best to try
 ## out the login proceedure with:
+##+ eval=FALSE
 didewin::web_login()
 
 ## ## Describe your project dependencies so we can recreate that on the cluster
@@ -81,20 +83,24 @@ packages <- c("ape", "MASS")
 sources <- c("mysources.R", "utils.R")
 
 ## Then save this together to form a "context".
+##+ eval=FALSE
 ctx <- context::context_save("contexts", packages=packages, sources=sources)
 
 ## ## Build a queue, based on this context.
 
 ## This will prompt you for your password, as it will try and log in.
+##+ eval=FALSE
 obj <- didewin::queue_didewin(ctx)
 
 ## Once you get to this point we're ready to start running things on
 ## the cluster.  Let's fire off a test to make sure that everything works OK:
+##+ eval=FALSE
 t <- obj$enqueue(sessionInfo())
 
 ## We can poll the job for a while, which will print a progress bar.
 ## If the job is returned in time, it will return the result of
 ## running the function.  Otherwise it will throw an error.
+##+ eval=FALSE
 t$wait(120)
 
 ## You can use `t$result()` to get the result straight away (throwing

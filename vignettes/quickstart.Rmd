@@ -69,14 +69,14 @@ didewin::didewin_config_global(cluster="fi--didemrchnb")
 ```
 
 Otherwise, and on any other platform you'll need to provide your username:
-``` {r }
-didewin::didewin_config_global(username="rfitzjoh",
+``` {r eval=FALSE}
+didewin::didewin_config_global(credentials="rfitzjoh",
                                cluster="fi--didemrchnb")
 ```
 
 If this is the first time you have run this package, best to try
 out the login proceedure with:
-``` {r }
+``` {r eval=FALSE}
 didewin::web_login()
 ```
 
@@ -93,27 +93,27 @@ sources <- c("mysources.R", "utils.R")
 ```
 
 Then save this together to form a "context".
-``` {r }
+``` {r eval=FALSE}
 ctx <- context::context_save("contexts", packages=packages, sources=sources)
 ```
 
 ## Build a queue, based on this context.
 
 This will prompt you for your password, as it will try and log in.
-``` {r }
+``` {r eval=FALSE}
 obj <- didewin::queue_didewin(ctx)
 ```
 
 Once you get to this point we're ready to start running things on
 the cluster.  Let's fire off a test to make sure that everything works OK:
-``` {r }
+``` {r eval=FALSE}
 t <- obj$enqueue(sessionInfo())
 ```
 
 We can poll the job for a while, which will print a progress bar.
 If the job is returned in time, it will return the result of
 running the function.  Otherwise it will throw an error.
-``` {r }
+``` {r eval=FALSE}
 t$wait(120)
 ```
 
