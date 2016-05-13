@@ -1,4 +1,4 @@
-@ECHO off
+@echo off
 REM automatically generated
 ECHO   host: %COMPUTERNAME%
 ECHO   date: {{{date}}}

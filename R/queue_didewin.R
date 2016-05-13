@@ -185,6 +185,7 @@ submit <- function(obj, task_ids) {
     dide_id <- web_submit(path, config, id)
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
+    db$set(id, path_logs(NULL, id), "log_path")
   }
 }
 

@@ -170,7 +170,6 @@ web_cancel <- function(cluster, dide_task_id) {
   data <- c(list(cluster=encode64(cluster),
                  hpcfunc=encode64("cancel")),
             jobs)
-  browser()
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/cancel.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
