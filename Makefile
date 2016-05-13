@@ -48,4 +48,11 @@ staticdocs:
 website: staticdocs
 	./update_web.sh
 
+vignettes: vignettes/quickstart.Rmd vignettes/didewin.Rmd
+	${RSCRIPT} -e "library(methods); devtools::build_vignettes()"
+vignettes/quickstart.Rmd: vignettes/src/quickstart.R
+	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
+vignettes/didewin.Rmd: vignettes/src/didewin.R
+	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
+
 .PHONY: all test document install vignettes
