@@ -59,6 +59,27 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
     },
     unsubmit=function(task_ids) {
       unsubmit(self, task_ids)
+    },
+
+    dide_id=function(task_ids) {
+      if (inherits(task_ids, "task")) {
+        task_ids <- task_ids$id
+      } else if (inherits(task_ids, "task_bundle")) {
+        task_ids <- task_ids$ids
+      } else if (is.null(task_ids)) {
+        task_ids <- self$tasks_list()
+        names(task_ids) <- task_ids
+      } else if (!is.character(task_ids)) {
+        stop("Invalid input for task_ids")
+      }
+      db <- context::context_db(self)
+      setNames(vcapply(task_ids, db$get, "dide_id"), names(task_ids))
+    },
+
+    dide_log=function(task_id) {
+      dide_id <- self$dide_id(task_id)
+      assert_scalar_character(dide_id, "task_id") # bit of trickery
+      web_joblog(self$config, dide_id)
     }
   ))
 
