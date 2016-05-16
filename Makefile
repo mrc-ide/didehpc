@@ -50,9 +50,8 @@ website: staticdocs
 
 vignettes: vignettes/quickstart.Rmd vignettes/didewin.Rmd
 	${RSCRIPT} -e "library(methods); devtools::build_vignettes()"
-vignettes/quickstart.Rmd: vignettes/src/quickstart.R
-	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
-vignettes/didewin.Rmd: vignettes/src/didewin.R
-	${RSCRIPT} -e 'library(sowsear); sowsear("$<", output="$@")'
+
+vignettes/quickstart.Rmd:
+	sh build_vignettes.sh
 
 .PHONY: all test document install vignettes
