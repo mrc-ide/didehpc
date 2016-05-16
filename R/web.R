@@ -281,15 +281,23 @@ web_joblog <- function(config, dide_id) {
   value <- xml2::xml_attr(xml2::xml_find_one(xml, '//input[@id="res"]'),
                           "value")
   value <- decode64(value)
+  class(value) <- "dide_log"
+  value
+}
+
+##' @export
+print.dide_log <- function(x, ...) {
   ## Deal with newline issues:
-  value <- sub("\n$", "", gsub("\n\n", "\n", value))
-  re <- "(.*?)Output\\s*:\\n(.*)"
-  pre <- sub(re, "\\1", value)
-  ret <- sub(re, "\\2", value)
-  if (nzchar(pre)) {
-    attr(ret, "message") <- pre
-  }
-  ret
+  value <- sub("\n*$", "", gsub("\n\n", "\n", x))
+  ## TODO: might be worth some processing here...
+  ## re <- "(.*?)Output\\s*:\\n(.*)"
+  ## pre <- sub(re, "\\1", value)
+  ## ret <- sub(re, "\\2", value)
+  ## if (nzchar(pre)) {
+  ##   attr(ret, "message") <- pre
+  ## }
+  ## ret
+  cat(paste0(value, "\n"))
 }
 
 status_map <- function(x, reverse=FALSE) {
