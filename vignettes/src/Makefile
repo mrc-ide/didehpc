@@ -1,11 +1,12 @@
 RSCRIPT = Rscript --no-init-file
 
-all: quickstart.md
+all: quickstart.md didewin.md
 
-quickstart.Rmd: quickstart.R
+%.Rmd: %.R
 	${RSCRIPT} -e 'sowsear::sowsear("$<", output="$@")'
 
-quickstart.md: quickstart.Rmd
-	${RSCRIPT} -e 'knitr::knit("quickstart.Rmd")'
+%.md: %.Rmd
+	rm -f $@
+	${RSCRIPT} -e 'knitr::knit("$<")'
 	sed -i.bak 's/[[:space:]]*$$//' $@
 	rm -f $@.bak

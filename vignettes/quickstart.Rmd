@@ -1,13 +1,15 @@
 ---
 title: "Quickstart for R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "`r Sys.Date()`"
+date: "2016-05-16"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quickstart for R and the DIDE cluster}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+
 
 > Get yourself running R jobs on the cluster in 10 minutes or so.
 
@@ -38,7 +40,8 @@ end up in a situation where packages simply can't be loaded you may
 need to restart R and try installing things from scratch.
 Hopefully I can come up with a way of reducing the pain here.
 
-``` {r eval=FALSE}
+
+```r
 install.packages("devtools")
 devtools::install_github(c(
   "richfitz/ids",
@@ -48,13 +51,15 @@ devtools::install_github(c(
 ```
 
 Or:
-``` {r eval=FALSE}
+
+```r
 drat:::add("richfitz")
 install.packages("didewin")
 ```
 
 Or:
-``` {r eval=FALSE}
+
+```r
 install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
                                     drat="https://richfitz.github.io/drat"))
 ```
@@ -64,58 +69,463 @@ install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
 On windows if you are using a domain machine, you should need only
 to select the cluster you want to use
 
-``` {r eval=FALSE}
+
+```r
 didewin::didewin_config_global(cluster="fi--didemrchnb")
 ```
 
 Otherwise, and on any other platform you'll need to provide your username:
-``` {r eval=FALSE}
-didewin::didewin_config_global(credentials="rfitzjoh",
+
+```r
+didewin::didewin_config_global(credentials="yourusername",
+                               cluster="fi--didemrchnb")
+```
+
+If you are running Linux we can get both your username and password
+from the file you use to mount your network shares (see the main
+vignette for details)
+
+```r
+didewin::didewin_config_global(credentials="~/.smbcredentials",
                                cluster="fi--didemrchnb")
 ```
 
 If this is the first time you have run this package, best to try
 out the login proceedure with:
-``` {r eval=FALSE}
+
+```r
 didewin::web_login()
 ```
 
 ## Describe your project dependencies so we can recreate that on the cluster
 
 Make a vector of packages that you use in your project:
-``` {r }
+
+```r
 packages <- c("ape", "MASS")
 ```
 
 And of files that define functions that you ned to run things:
-``` {r }
-sources <- c("mysources.R", "utils.R")
+
+```r
+sources <- "mysources.R"
+```
+
+(if you had a vector here that would be OK too).  The source file
+here is very simple:
+
+
+```r
+writeLines(c("```r", readLines(sources), "```"))
+```
+
+```
+## ```r
+## make_tree <- function(nspp) {
+##   message("I am building a tree!")
+##   ape::rtree(nspp)
+## }
+## ```
 ```
 
 Then save this together to form a "context".
-``` {r eval=FALSE}
+
+```r
 ctx <- context::context_save("contexts", packages=packages, sources=sources)
 ```
+
+The first argument here, `"contexts"` is the name of a directory
+that we will use to hold a lot of information about your jobs.  You
+don't need (or particularly want) to know what is in here.
 
 ## Build a queue, based on this context.
 
 This will prompt you for your password, as it will try and log in.
-``` {r eval=FALSE}
+
+It also installs windows versions of all packages within the
+`contexts` directory -- both packages required to get this whole
+system working and then the packages required for your particular
+jobs.
+
+
+```r
 obj <- didewin::queue_didewin(ctx)
+```
+
+```
+## Loading context 8a89c62653fe70e1a63b735e7833be2c
 ```
 
 Once you get to this point we're ready to start running things on
 the cluster.  Let's fire off a test to make sure that everything works OK:
-``` {r eval=FALSE}
+
+```r
 t <- obj$enqueue(sessionInfo())
 ```
 
 We can poll the job for a while, which will print a progress bar.
 If the job is returned in time, it will return the result of
 running the function.  Otherwise it will throw an error.
-``` {r eval=FALSE}
+
+```r
 t$wait(120)
+```
+
+```
+## R version 3.2.4 Revised (2016-03-16 r70336)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows Server 2012 R2 x64 (build 9600)
+##
+## locale:
+## [1] LC_COLLATE=English_United Kingdom.1252
+## [2] LC_CTYPE=English_United Kingdom.1252
+## [3] LC_MONETARY=English_United Kingdom.1252
+## [4] LC_NUMERIC=C
+## [5] LC_TIME=English_United Kingdom.1252
+##
+## attached base packages:
+## [1] methods   stats     graphics  grDevices utils     datasets  base
+##
+## other attached packages:
+## [1] ape_3.4     MASS_7.3-45
+##
+## loaded via a namespace (and not attached):
+## [1] R6_2.1.2        context_0.0.7   nlme_3.1-125    grid_3.2.4
+## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
 ```
 
 You can use `t$result()` to get the result straight away (throwing
 an error if it is not ready) or `t$wait(Inf)` to wait forever.
+
+## Running a single task
+
+This is just using the `enqueue` function as above.  But it also
+works with functions defined in files passed in as `sources`; here
+the function `make_tree`.
+
+```r
+t <- obj$enqueue(make_tree(10))
+tree <- t$wait(120)
+tree
+```
+
+```
+##
+## Phylogenetic tree with 10 tips and 9 internal nodes.
+##
+## Tip labels:
+## 	t4, t1, t9, t6, t2, t8, ...
+##
+## Rooted; includes branch lengths.
+```
+
+The `t` object has a number of other methods you can use:
+
+```r
+t
+```
+
+```
+## <task>
+##   Public:
+##     clone: function (deep = FALSE)
+##     context_id: function ()
+##     db: environment
+##     expr: function (locals = FALSE)
+##     handle: task_handle
+##     id: be8c84d4646943649504e0a1d4a50e7f
+##     initialize: function (obj, id, check_exists = TRUE)
+##     log: function ()
+##     result: function (sanitise = FALSE)
+##     status: function ()
+##     times: function (unit_elapsed = "secs")
+##     wait: function (timeout, every = 0.5, progress = TRUE)
+```
+
+Get the result from running a task
+
+```r
+t$result()
+```
+
+```
+##
+## Phylogenetic tree with 10 tips and 9 internal nodes.
+##
+## Tip labels:
+## 	t4, t1, t9, t6, t2, t8, ...
+##
+## Rooted; includes branch lengths.
+```
+
+Get the status of the task
+
+```r
+t$status()
+```
+
+```
+## [1] "COMPLETE"
+```
+
+(might also be "PENDING", "RUNNING" or "ERROR"
+
+Get the original expression:
+
+```r
+t$expr()
+```
+
+```
+## make_tree(10)
+```
+
+Find out how long everything took
+
+```r
+t$times()
+```
+
+```
+##                            task_id           submitted             started
+## 1 be8c84d4646943649504e0a1d4a50e7f 2016-05-16 12:04:40 2016-05-16 12:04:05
+##              finished   waiting  running     idle
+## 1 2016-05-16 12:04:05 -34.51194 0.015625 36.00339
+```
+
+You may see negative numbers for "waiting" as the submitted time is
+based on your computer and started/finished are based on the
+cluster.
+
+And get the log from running the task
+
+```r
+t$log()
+```
+
+```
+## [ bootstrap ]  Q:\cluster_test\vignette\contexts
+## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ ok        ]
+## [ init      ]  2016-05-16 12:04:05.526
+## [ version   ]  0.0.7
+## [ debug     ]  running as single core job
+## [ root      ]  Q:\cluster_test\vignette\contexts
+## [ task      ]  be8c84d4646943649504e0a1d4a50e7f
+## [ context   ]  8a89c62653fe70e1a63b735e7833be2c
+## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ library   ]  ape, MASS
+## [ namespace ]
+## [ source    ]  mysources.R
+## [ expr      ]  make_tree(10)
+## [ start     ]  2016-05-16 12:04:05.761
+##     I am building a tree!
+## [ ok        ]
+## [ end       ]  2016-05-16 12:04:05.808
+##     Warning message:
+##     package 'ape' was built under R version 3.2.5
+```
+
+There is also a bit of DIDE specific logging that happens before
+this point; if the job fails inexplicably the answer may be in:
+
+```r
+obj$dide_log(t)
+```
+
+```
+## Output                          :
+## host: FI--DIDEMRC53
+## date: 2016-05-16 12:04:40
+## didewin version: 0.0.2
+## context version: 0.0.7
+## dide task id: 10259892
+## mapping Q: -> \\fi--san02\homes\rfitzjoh
+## The command completed successfully.
+## mapping T: -> \\fi--didef2\tmp
+## The command completed successfully.
+## working directory: Q:\cluster_test\vignette
+## logfile: contexts\logs\be8c84d4646943649504e0a1d4a50e7f
+## Q:\cluster_test\vignette>Rscript Q:\cluster_test\vignette\contexts\bin\context_runner Q:\cluster_test\vignette\contexts be8c84d4646943649504e0a1d4a50e7f  1>contexts\logs\be8c84d4646943649504e0a1d4a50e7f 2>&1
+## Quitting
+```
+
+## Running a bunch of tasks
+
+There are two broad options here;
+
+1. Apply a function to each element of a list, similar to `lapply`
+with `queuer::qlapply`
+2. Apply a function to each row of a data.frame perhaps using each
+column as a different argument with `queuer::enqueue_bulk`
+
+Suppose we want to make a bunch of trees of different sizes.  This
+would involve mapping our `make_tree` function over a vector of
+sizes:
+
+```r
+sizes <- 3:8
+grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+```
+
+```
+## Creating bundle: 'pasty_amurstarfish'
+```
+
+```
+## saving 6 tasks...
+```
+
+```
+## submitting 6 tasks...
+```
+
+By default, `queuer::qlapply` returns a "task_bundle" with an
+automatically generated name.  You can customise the name with the
+`name` argument.
+
+Get the startus of all the jobs
+
+```r
+grp$status()
+```
+
+```
+## 8dd868a487d04501a1b8a08c4fd1781e 8a5c312403c34f1e9008f4fd67c8a426
+##                       "COMPLETE"                       "COMPLETE"
+## fbc741da2a294ba0b82e1c5cef3c5ef6 f69751a742a14f7980fd427f3de1365e
+##                       "COMPLETE"                        "PENDING"
+## da49801fbc4d45d5813f34b272fd250a dd53f8efc8084b958f2e994ee9189c65
+##                        "PENDING"                        "PENDING"
+```
+
+Wait until they are all complete and get the results
+
+```r
+res <- grp$wait(120)
+```
+
+The other bulk interface is where you want to run a function over a
+combination of parameters.  Use `queuer::enqueue_bulk` here.
+
+```r
+pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+pars
+```
+
+```
+##   a         b        c
+## 1 a 0.2059746 3.141593
+## 2 b 0.2059746 3.141593
+## 3 c 0.2059746 3.141593
+## 4 a 0.1765568 3.141593
+## 5 b 0.1765568 3.141593
+## 6 c 0.1765568 3.141593
+```
+
+```r
+grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+```
+
+```
+## Creating bundle: 'psychopharmacological_gangesdolphin'
+```
+
+```
+## saving 6 tasks...
+```
+
+```
+## submitting 6 tasks...
+```
+
+By default this runs
+
+* `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
+* `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+* ...
+* `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+
+
+```r
+res <- grp$wait(120)
+res
+```
+
+```
+## [[1]]
+## [[1]][[1]]
+## [[1]][[1]]$a
+## [1] "a"
+##
+## [[1]][[1]]$b
+## [1] 0.2059746
+##
+## [[1]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[2]]
+## [[2]][[1]]
+## [[2]][[1]]$a
+## [1] "b"
+##
+## [[2]][[1]]$b
+## [1] 0.2059746
+##
+## [[2]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[3]]
+## [[3]][[1]]
+## [[3]][[1]]$a
+## [1] "c"
+##
+## [[3]][[1]]$b
+## [1] 0.2059746
+##
+## [[3]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[4]]
+## [[4]][[1]]
+## [[4]][[1]]$a
+## [1] "a"
+##
+## [[4]][[1]]$b
+## [1] 0.1765568
+##
+## [[4]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[5]]
+## [[5]][[1]]
+## [[5]][[1]]$a
+## [1] "b"
+##
+## [[5]][[1]]$b
+## [1] 0.1765568
+##
+## [[5]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[6]]
+## [[6]][[1]]
+## [[6]][[1]]$a
+## [1] "c"
+##
+## [[6]][[1]]$b
+## [1] 0.1765568
+##
+## [[6]][[1]]$c
+## [1] 3.141593
+```

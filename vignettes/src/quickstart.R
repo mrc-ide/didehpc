@@ -9,8 +9,20 @@
 ##   %\VignetteEncoding{UTF-8}
 ## ---
 
+### If knitr fails, you'll get an error
+###
+### Error in file(file, ifelse(append, "a", "w")) :
+###   cannot open the connection
+### Calls: <Anonymous> ... handle -> withCallingHandlers -> withVisible -> eval -> eval
+### In addition: Warning message:
+### In file(file, ifelse(append, "a", "w")) :
+###   cannot open file 'quickstart.md': Permission denied
+###
+### With no information as to where the chunk that fails is.  Running
+### in interactive mode can help.  Have fun debugging!
 ##+ echo=FALSE,results="hide"
 knitr::opts_chunk$set(error=FALSE)
+set.seed(1)
 
 ## > Get yourself running R jobs on the cluster in 10 minutes or so.
 

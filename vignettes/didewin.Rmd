@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "`r Sys.Date()`"
+date: "2016-05-16"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{R and the DIDE cluster}
@@ -118,7 +118,8 @@ alternative is to list a set of packages that you want installed
 and split them into packages you would like attached and packages
 you would like loaded:
 
-``` {r }
+
+```r
 packages <- list(loaded="geiger", attached="ape")
 ```
 

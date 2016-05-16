@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 RSCRIPT="Rscript --no-init-file"
 SRC=$PWD
@@ -12,7 +12,7 @@ if [ ! -f ~/.smbcredentials ]; then
     exit 1
 fi
 
-if [ ! -f $(dirname $TARGET) ]; then
+if [ ! -d $(dirname $TARGET) ]; then
     echo "Can't automatically run vignettes for you -- missing directory"
     exit 1
 fi
@@ -25,6 +25,6 @@ make -C $TARGET
 
 cp $TARGET/*.md vignettes
 chmod 644 vignettes/*.md
-for f in tmp/*.md; do
-    mv "$f" "tmp/$(basename "$f" .md).Rmd"
+for f in vignettes/*.md; do
+    mv "$f" "vignettes/$(basename "$f" .md).Rmd"
 done
