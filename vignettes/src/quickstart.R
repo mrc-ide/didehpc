@@ -102,14 +102,17 @@ packages <- c("ape", "MASS")
 ## And of files that define functions that you ned to run things:
 sources <- "mysources.R"
 
-## (if you had a vector here that would be OK too).  The source file
+## If you had a vector here that would be OK too.  The source file
 ## here is very simple:
 
-##+ result="asis"
+##+ echo=FALSE,results="asis"
 writeLines(c("```r", readLines(sources), "```"))
 
 ## Then save this together to form a "context".
 ctx <- context::context_save("contexts", packages=packages, sources=sources)
+
+## If you have no packages or no sources, use `NULL` or omit them in
+## the call below (which is the default anyway).
 
 ## The first argument here, `"contexts"` is the name of a directory
 ## that we will use to hold a lot of information about your jobs.  You
