@@ -75,6 +75,11 @@ web_submit <- function(task, config, name="") {
     resource_count <- as.integer(sub("Core", "", config$template))
   }
 
+  i <- grepl(" ", task)
+  if (any(i)) {
+    task[i] <- shQuote(task[i], "cmd")
+  }
+
   workdir <- ""
   stderr <- ""
   stdout <- ""
