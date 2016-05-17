@@ -255,7 +255,7 @@ dide_detect_mount <- function(home, temp, shares, username) {
   } else {
     if (inherits(home, "path_mapping")) {
       ret$home <- home
-    } else {
+    } else if (!identical(home, FALSE)) {
       ret$home <- path_mapping("home", home, dide_home("", username), "Q:")
     }
   }
@@ -270,7 +270,7 @@ dide_detect_mount <- function(home, temp, shares, username) {
   } else {
     if (inherits(temp, "path_mapping")) {
       ret$temp <- temp
-    } else {
+    } else if (!identical(temp, FALSE)) {
       ret$temp <- path_mapping("temp", temp, dide_temp(""), "T:")
     }
   }
