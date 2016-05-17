@@ -1,3 +1,6 @@
+## TODO: it might be worth checking to see how slow this is just with
+## whisker and preparing a single task, returning something that just
+## needs the task id?
 build_batch <- function(root, task_id, config, workdir) {
   wd <- prepare_path(workdir, config$shares)
 
@@ -29,7 +32,8 @@ build_batch <- function(root, task_id, config, workdir) {
               ## NOTE: don't forget the unname()
               network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,
-                     path=windows_path(x$path_remote)))))
+                     path=windows_path(x$path_remote)))),
+              rtools=config$rtools)
 
   template <- readLines(system.file("template.bat", package="didewin"))
   drop_blank(whisker::whisker.render(template, dat))

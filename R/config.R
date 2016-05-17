@@ -305,10 +305,8 @@ dide_detect_mount <- function(home, temp, shares, username) {
     i <- (nzchar(dat[, "local"]) &
           vlapply(tolower(dat[, "local"]), string_starts_with, x=tolower(wd)))
     if (sum(i) == 1L) {
-      used <- toupper(substr(vcapply(ret, "[[", "drive_remote"), 1, 1))
-      drive <- paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
       workdir <- path_mapping("workdir", dat[i, "local"],
-                              dat[i, "remote"], drive)
+                              dat[i, "remote"], available_drive(ret))
       ret <- c(ret, list(workdir=workdir))
     } else if (sum(i) > 1L) {
       ## Could take the *longest* here?
@@ -319,8 +317,44 @@ dide_detect_mount <- function(home, temp, shares, username) {
   ret
 }
 
+available_drive <- function(shares) {
+  used <- toupper(substr(vcapply(shares, "[[", "drive_remote"), 1, 1))
+  paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
+}
+
 ## TODO: This will eventually be configurable, but for now is assumed
 ## in a few places -- search for R_VERSION (all caps).
 R_VERSION <- numeric_version("3.2.4")
 R_BITS <- 64L
 R_PLATFORM <- if (R_BITS == 64L) "x86_64-w64-mingw32" else "i386-w64-mingw32"
+
+## TODO: document how updates happen as there's some manual
+## downloading and installation of rtools.
+rtools_versions <- function(r_version, path=NULL) {
+  r_version_2 <- as.character(r_version[1, 1:2])
+  ret <- switch(r_version_2,
+                "3.2"=list(path="Rtools33", gcc="4.6.3"),
+                "3.3"=list(path="Rtools33", gcc="4.6.3"),
+                stop("Get Rich to upgrade Rtools"))
+  ret$path <- windows_path(file_path(path, "Rtools", ret$path))
+  ret
+}
+
+rtools_info <- function(config) {
+  tmpdrive <- NULL
+  for (s in config$shares) {
+    if (grepl("//fi--didef2/tmp/?", tolower(unname(s$path_remote)))) {
+      tmpdrive <- s$drive_remote
+      break
+    }
+  }
+  if (is.null(tmpdrive)) {
+    tmpdrive <- "//fi--didef2/tmp"
+  }
+  rtools_versions(R_VERSION, tmpdrive)
+}
+
+needs_rtools <- function(rtools, config, context) {
+  rtools_pkgs <- c("rstan", "odin")
+  isTRUE(unname(rtools)) || any(rtools_pkgs %in% context$packages)
+}

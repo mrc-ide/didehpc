@@ -2,12 +2,22 @@
 ##'
 ##' Queues are R6 objects with many methods.  They need documenting still.
 ##' @title Create a queue object
+##'
 ##' @param context A context
+##'
 ##' @param config Optional dide configuration information.
+##'
 ##' @param login log in to the cluster on queue creation (recommended)
+##'
+##' @param rtools Indicates if Rtools is required (needed in cases
+##'   where you need a C/C++ compiler, such as using Rcpp's inline
+##'   support, or rstan).  The default will try to detect if it is
+##'   required.
+##'
 ##' @export
-queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
-  .R6_queue_didewin$new(context, config, login)
+queue_didewin <- function(context, config=didewin_config(), login=TRUE,
+                          rtools=NULL) {
+  .R6_queue_didewin$new(context, config, login, rtools)
 }
 
 .R6_queue_didewin <- R6::R6Class(
@@ -15,7 +25,7 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
   inherit=queuer:::.R6_queue_base,
   public=list(
     config=NULL,
-    initialize=function(context, config, login) {
+    initialize=function(context, config, login, rtools) {
       super$initialize(context)
       self$config <- config
 
@@ -31,6 +41,10 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE) {
       }
 
       initialise_packages(self)
+
+      if (needs_rtools(rtools, self$config, self$context)) {
+        self$config$rtools <- rtools_info(self$config)
+      }
     },
 
     login=function() {
@@ -104,14 +118,12 @@ initialise_packages <- function(obj) {
 
   path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
   packages <- c("context", unlist(context$packages, use.names=FALSE))
-  if (all(packages %in% .packages(TRUE, path_lib))) {
-    return()
+  if (!all(packages %in% .packages(TRUE, path_lib))) {
+    ## Next, look to see if any of the packages in the local drat need
+    ## compilation.
+    r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
+    context::cross_install_context(path_lib, "windows", r_version_2, context)
   }
-
-  ## Next, look to see if any of the packages in the local drat need
-  ## compilation.
-  r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
-  context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
 
 initialise_packages_on_cluster <- function(obj) {

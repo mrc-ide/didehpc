@@ -130,3 +130,33 @@ packages <- list(loaded="geiger", attached="ape")
 ## In contrast, packages listed in `attached` will be loaded with
 ## `library` so they will be available without qualification (e.g.,
 ## `read.tree` rather than `ape::read.tree`).
+
+## # Misc
+
+## ## Jobs that require compiled code
+
+## If you are running stan, or Rcpp with `sourceCpp` (in the latter
+## case you *should* be using a package) you'll need a working
+## compiler.  For stan this is detected automatically.  But in
+## general, pass `rtools=TRUE` to `queue_didewin()`.
+
+## ## rstan
+
+## To use parallel chains, do something like:
+
+## ```r
+## config <- didewin::didewin_config(cores=4, parallel=FALSE)
+## obj <- didewin::queue_didewin(ctx, config)
+## ```
+
+## to request four cores or
+
+## ```r
+## config <- didewin::didewin_config(wholenode=TRUE, parallel=FALSE)
+## obj <- didewin::queue_didewin(ctx, config)
+## ```
+
+## to request a whole node.  The `parallel=FALSE` tells the system not
+## to set up a cluster for use with the `parallel` pacakge.  However,
+## you'll still need to specify options(mc.cores) appropriately and I
+## don't expose that yet...

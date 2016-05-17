@@ -1,10 +1,11 @@
 @echo off
 REM automatically generated
-ECHO host: %COMPUTERNAME%
-ECHO date: {{{date}}}
+ECHO generated on host: %COMPUTERNAME%
+ECHO generated on date: {{{date}}}
 ECHO didewin version: {{{didewin_version}}}
 ECHO context version: {{{context_version}}}
 ECHO dide task id: %CCP_TASKSYSTEMID%
+ECHO running on: %COMPUTERNAME%
 set CONTEXT_TASK_ID={{{context_task_id}}}
 set CONTEXT_WORKDRIVE={{{context_workdrive}}}
 set CONTEXT_WORKDIR={{{context_workdir}}}
@@ -23,6 +24,11 @@ net use {{{drive}}} {{{path}}} /y
 ECHO This is a parallel job: will use %CPP_NUMCPUS%
 set CONTEXT_CORES=%CCP_NUMCPUS%
 {{{/parallel}}}
+
+{{{#rtools}}}
+ECHO Using Rtools at {{{rtools.path}}}
+set PATH={{{rtools.path}}}\bin;{{{rtools.path}}}\gcc-{{{rtools.gcc}}}\bin;%PATH%
+{{{/rtools}}}
 
 %CONTEXT_WORKDRIVE%
 cd \%CONTEXT_WORKDIR%
