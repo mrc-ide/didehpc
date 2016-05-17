@@ -36,7 +36,8 @@ ECHO working directory: %CD%
 
 ECHO logfile: %CONTEXT_LOGFILE%
 
+@REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript %CONTEXT_ROOT%\bin\context_runner %CONTEXT_ROOT% %CONTEXT_TASK_ID% > %CONTEXT_LOGFILE% 2>&1
+Rscript "%CONTEXT_ROOT%\bin\context_runner" "%CONTEXT_ROOT%" %CONTEXT_TASK_ID% > "%CONTEXT_LOGFILE%" 2>&1
 
 @echo Quitting
