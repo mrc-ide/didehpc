@@ -16,7 +16,7 @@ Imports:
     getPass,
     httr (>= 1.0.0),
     progress,
-    queuer (>= 0.0.2),
+    queuer (>= 0.0.3),
     rematch,
     storr,
     whisker,

@@ -7,7 +7,9 @@
 ##'
 ##' @param config Optional dide configuration information.
 ##'
-##' @param login log in to the cluster on queue creation (recommended)
+##' @param initialise initialise context and log in to the cluster on
+##'   queue creation (recommended on initial creation, but not
+##'   required if you want to check on jobs).
 ##'
 ##' @param rtools Indicates if Rtools is required (needed in cases
 ##'   where you need a C/C++ compiler, such as using Rcpp's inline
@@ -15,9 +17,9 @@
 ##'   required.
 ##'
 ##' @export
-queue_didewin <- function(context, config=didewin_config(), login=TRUE,
+queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
                           rtools=NULL) {
-  .R6_queue_didewin$new(context, config, login, rtools)
+  .R6_queue_didewin$new(context, config, initialise, rtools)
 }
 
 .R6_queue_didewin <- R6::R6Class(
@@ -25,8 +27,10 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE,
   inherit=queuer:::.R6_queue_base,
   public=list(
     config=NULL,
-    initialize=function(context, config, login, rtools) {
-      super$initialize(context)
+    logged_in=FALSE,
+    
+    initialize=function(context, config, initialise, rtools) {
+      super$initialize(context, initialise)
       self$config <- config
 
       dir.create(path_batch(context$root), FALSE, TRUE)
@@ -36,20 +40,27 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE,
       ##   dir.create(path_dide_cluster(context$root), FALSE, TRUE)
       ## -- instead, do this via submit()
 
-      if (login) {
+      if (initialise) {
         self$login()
       }
 
-      initialise_packages(self)
+      initialise_windows_packages(self)
 
       if (needs_rtools(rtools, self$config, self$context)) {
         self$config$rtools <- rtools_info(self$config)
       }
     },
 
-    login=function() {
-      web_login(self$config)
+    login=function(always=TRUE) {
+      if (always || !self$logged_in) {
+        web_login(self$config)
+        self$logged_in <- TRUE
+      }
     },
+
+    ## I don't think that this is wise.  Better would be a function
+    ## for *generally* updating the configuration.  But in general
+    ## we're better off just making a new object probably.
     set_cluster=function(cluster=NULL) {
       if (is.null(cluster)) {
         cluster <- setdiff(valid_clusters(), self$config$cluster)
@@ -59,19 +70,25 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE,
       self$config$cluster <- cluster
     },
 
+    ## TODO: this needs a summarise option or something because at
+    ## present it's basically useless.
     cluster_load=function(cluster=NULL) {
-      web_shownodes(if (is.null(cluster)) self$config$cluster else cluster)
+      self$login(FALSE)
+      web_shownodes(cluster %||% self$config$cluster)
     },
 
     tasks_status_dide=function(task_ids=NULL) {
+      self$login(FALSE)
       tasks_status_dide(self, task_ids)
     },
 
     submit=function(task_ids) {
+      self$login(FALSE)
       ## See below:
       submit(self, task_ids)
     },
     unsubmit=function(task_ids) {
+      self$login(FALSE)
       unsubmit(self, task_ids)
     },
 
@@ -91,6 +108,7 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE,
     },
 
     dide_log=function(task_id) {
+      self$login(FALSE)
       dide_id <- self$dide_id(task_id)
       assert_scalar_character(dide_id, "task_id") # bit of trickery
       web_joblog(self$config, dide_id)
@@ -112,7 +130,7 @@ queue_didewin <- function(context, config=didewin_config(), login=TRUE,
 ## installation.  It's really only worth doing that if the packages do
 ## not appear to be installed though so we will have to do a check
 ## here.
-initialise_packages <- function(obj) {
+initialise_windows_packages <- function(obj) {
   context <- obj$context
   build_server <- obj$config$build_server
 
@@ -126,11 +144,16 @@ initialise_packages <- function(obj) {
   }
 }
 
-initialise_packages_on_cluster <- function(obj) {
+initialise_packages_on_cluster <- function(obj, timeout=Inf) {
   t <- obj$enqueue_(quote(sessionInfo()))
   message("Initialising packages on the cluster itself")
   message("You'll need to check the status of the job if this doesn't complete")
-  t$wait(timeout=600)
+  ## TODO: This one should poll the actual job status of the task on
+  ## the cluster rather than the result in context because the failure
+  ## will not be correctly logged.  I should actually tweak that I
+  ## think; once we have context loaded there's no reason why a job
+  ## cannot error.  This would be really good and not too bad to test.
+  t$wait(timeout=timeout)
 }
 
 check_binary_packages <- function(db, path_drat) {
