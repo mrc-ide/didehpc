@@ -70,11 +70,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       self$config$cluster <- cluster
     },
 
-    ## TODO: this needs a summarise option or something because at
-    ## present it's basically useless.
-    cluster_load=function(cluster=NULL) {
+    cluster_load=function(cluster=NULL, nodes=TRUE) {
       self$login(FALSE)
-      web_shownodes(cluster %||% self$config$cluster)
+      print(web_shownodes(cluster %||% self$config$cluster), nodes=nodes)
     },
 
     tasks_status_dide=function(task_ids=NULL) {

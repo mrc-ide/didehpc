@@ -157,8 +157,61 @@ web_shownodes <- function(cluster=NULL) {
   task_id <- rep(NA_character_, length(d))
   i <- nchar(rest) > 0L
   task_id[i] <- sub("^([0-9]+).*", "\\1", rest[i])
-  data.frame(node=node, core=core, status=status, dide_task_id=task_id,
-             stringsAsFactors=FALSE)
+  res <- data.frame(node=tolower(node), core=core, status=status,
+                    dide_task_id=task_id, stringsAsFactors=FALSE)
+  res <- res[res$node != "fi--dideclusthn", ]
+  res <- res[order(res$node), ]
+  free <- tapply(res$status == "Idle", res$node, sum)
+  total <- tapply(res$node, res$node, length)
+  summary <- data.frame(name=names(free), free=unname(free),
+                        used=unname(total - free),
+                        total=unname(total), stringsAsFactors=FALSE)
+
+  overall <- list(name=cluster, free=sum(free),
+                  used=sum(total) - sum(free), total=sum(total))
+
+  ret <- list(cluster=cluster, detail=res, summary=summary, overall=overall)
+  class(ret) <- "dide_clusterload"
+  ret
+}
+
+##' @export
+print.dide_clusterload <- function(x, ..., nodes=TRUE) {
+  ## There's a bit of faff here to get alignments to work nicely.
+  f <- function(name) {
+    format(c(name, x$overall[[name]], x$summary[[name]]), justify="right")
+  }
+  m <- cbind(f("name"), f("free"), f("used"), f("total"))
+
+  ## Header:
+  mh <- vcapply(m[1, ], crayon::bold)
+
+  ## Divider:
+  md <- vcapply(nchar(m[1,]), strrep, x="-")
+
+  ## Summary
+  if (nodes) {
+    ms <- m[-(1:2), , drop=FALSE]
+    col <- load_cols(x$summary$used / x$summary$total)
+    ms[, 1] <- crayon::blue(ms[, 1])
+    ms[, -1] <- t(vapply(seq_along(col),
+                         function(i) crayon::make_style(col[[i]])(ms[i, -1]),
+                         character(ncol(m) - 1L)))
+    ms <- rbind(ms, md)
+  } else {
+    ms <- NULL
+  }
+
+  ## Overall
+  mo <- m[2, ]
+  col <- load_cols(x$overall$used / x$overall$total)
+  mo[1] <- crayon::make_style("blue")$bold(mo[1])
+  mo[-1] <- vcapply(mo[-1], crayon::make_style(col)$bold)
+
+  mm <- rbind(mh, md, ms, mo)
+
+  cat(paste0(apply(mm, 1, paste, collapse=" "), "\n", collapse=""))
+  invisible(x)
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
