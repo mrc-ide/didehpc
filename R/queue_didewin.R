@@ -28,7 +28,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
   public=list(
     config=NULL,
     logged_in=FALSE,
-    
+
     initialize=function(context, config, initialise, rtools) {
       super$initialize(context, initialise)
       self$config <- config
