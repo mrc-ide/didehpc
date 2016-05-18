@@ -80,10 +80,10 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       tasks_status_dide(self, task_ids)
     },
 
-    submit=function(task_ids) {
+    submit=function(task_ids, names=NULL) {
       self$login(FALSE)
       ## See below:
-      submit(self, task_ids)
+      submit(self, task_ids, names)
     },
     unsubmit=function(task_ids) {
       self$login(FALSE)
@@ -201,7 +201,7 @@ check_binary_packages <- function(db, path_drat) {
 }
 
 
-submit <- function(obj, task_ids) {
+submit <- function(obj, task_ids, names) {
   db <- context::context_db(obj)
   root <- obj$context$root
   config <- obj$config
@@ -209,13 +209,21 @@ submit <- function(obj, task_ids) {
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
                                    total=length(task_ids))
 
+  if (is.null(names)) {
+    names <- setNames(task_ids, task_ids)
+  } else if (length(names) == length(task_ids)) {
+    names <- setNames(sprintf("%s (%s)", names, task_ids), task_ids)
+  } else {
+    stop("incorrect length names")
+  }
+
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
     batch <- write_batch(root, id, config, obj$workdir)
     path <- remote_path(prepare_path(batch, config$shares))
     pb$tick()
-    dide_id <- web_submit(path, config, id)
+    dide_id <- web_submit(path, config, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL, id), "log_path")
