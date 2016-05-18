@@ -133,13 +133,12 @@ initialise_windows_packages <- function(obj) {
   build_server <- obj$config$build_server
 
   path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
-  packages <- c("context", unlist(context$packages, use.names=FALSE))
-  if (!all(packages %in% .packages(TRUE, path_lib))) {
-    ## Next, look to see if any of the packages in the local drat need
-    ## compilation.
-    r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
-    context::cross_install_context(path_lib, "windows", r_version_2, context)
-  }
+
+  ## TODO: look to see if any of the packages in the local drat need
+  ## compilation.  If so we might be best trying for an on-cluster
+  ## installation.
+  r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
+  context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
 
 initialise_packages_on_cluster <- function(obj, timeout=Inf) {
