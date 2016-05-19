@@ -42,42 +42,12 @@ web_logout <- function() {
   invisible(TRUE)
 }
 
-##' Submit tasks to the cluster
-##' @title Submit tasks to the cluster
-##'
-##' @param task Filenames, as \emph{network paths}.
-##'
-##' @param config Configuration information, via \code{\link{didewin_config}}.
-##'
-##' @param name Optional name for the task.
-##'
-##' @export
-web_submit <- function(task, config, name="") {
-  if (length(task) == 0L) {
-    stop("Must specify at least one task")
-  } else {
-    assert_character(task)
+web_submit <- function(config, path, name) {
+  if (any(!grepl("^\\\\\\\\", path))) {
+    stop("All paths must be Windows network paths")
   }
-  err <- !grepl("^\\\\\\\\", task)
-  if (any(err)) {
-    stop("All tasks must be Windows network paths")
-  }
-  if (length(name) != 1L) {
-    stop("name must be a scalar")
-  }
-  if (length(task) > 1L && nzchar(name)) {
-    stop("Can't use name when submitting >1 task")
-  }
-
-  if (config$template == "GeneralNodes") {
-    resource_count <- 1L
-  } else {
-    resource_count <- as.integer(sub("Core", "", config$template))
-  }
-
-  i <- grepl(" ", task)
-  if (any(i)) {
-    task[i] <- shQuote(task[i], "cmd")
+  if (is.null(name)) {
+    name <- ""
   }
 
   workdir <- ""
@@ -92,7 +62,7 @@ web_submit <- function(task, config, name="") {
     wd=encode64(workdir),
     se=encode64(stderr),
     so=encode64(stdout),
-    jobs=encode64(paste(task, collapse="\n")),
+    jobs=encode64(paste(path, collapse="\n")),
     dep=encode64(""),
     hpcfunc="submit")
 
@@ -104,126 +74,11 @@ web_submit <- function(task, config, name="") {
 
   txt <- httr::content(r, as="text", encoding="UTF-8")
   res <- strsplit(txt, "\n")[[1]]
-  re <- "^Job has been submitted. ID: +([0-9]+)\\.$"
-  i <- grepl(re, res)
-
-  extra <- res[!i]
-  if (length(extra) > 0L) {
-    warning(paste(extra, collapse="\n"), immediate.=TRUE)
-  }
-
-  nok <- sum(i)
-  if (nok > 0L) {
-    if (nok != length(task)) {
-      ## Hopefully never triggers
-      stop("Unexpected response length from server")
-    }
-    sub(re, "\\1", res[i])
-  } else {
-    ## TODO: Detect this and hit login and try again?
-    stop("Job submission has likely failed; could be a login error")
-  }
-}
-
-##' Get status of the nodes.  This is just a holding place until the
-##' website can return something like JSON.
-##' @title Node status
-##' @param cluster Name of the cluster
-##' @export
-web_shownodes <- function(cluster=NULL) {
-  ## TODO: This doesn't get the node names because reading HTML from
-  ## tables is unpleasant.
-  if (is.null(cluster)) {
-    cluster <- getOption("didewin.cluster", valid_clusters()[[1]])
-  } else {
-    cluster <- match_value(cluster, valid_clusters())
-  }
-  data <- list(cluster=encode64(cluster),
-               hpcfunc="shownodes",
-               cluster_no=as.character(match(cluster, valid_clusters())))
-  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/shownodes.php",
-                  curl_insecure(),
-                  httr::accept("text/plain"),
-                  body=data, encode="form")
-  check_status(r)
-  txt <- httr::content(r, as="text", encoding="UTF-8")
-  dat <- strsplit(txt, "\n")[[1]]
-  re <- "^([^ ]+) +- +([0-9]+) +([^ ]+) *(.*)$"
-  d <- dat[-(1:2)]
-  node <- sub(re, "\\1", d)
-  core <- as.integer(sub(re, "\\2", d)) + 1L
-  status <- sub(re, "\\3", d)
-  rest <- sub(re, "\\4", d)
-  task_id <- rep(NA_character_, length(d))
-  i <- nchar(rest) > 0L
-  task_id[i] <- sub("^([0-9]+).*", "\\1", rest[i])
-  res <- data.frame(node=tolower(node), core=core, status=status,
-                    dide_task_id=task_id, stringsAsFactors=FALSE)
-  res <- res[res$node != "fi--dideclusthn", ]
-  res <- res[order(res$node), ]
-  free <- tapply(res$status == "Idle", res$node, sum)
-  total <- tapply(res$node, res$node, length)
-  summary <- data.frame(name=names(free), free=unname(free),
-                        used=unname(total - free),
-                        total=unname(total), stringsAsFactors=FALSE)
-
-  overall <- list(name=cluster, free=sum(free),
-                  used=sum(total) - sum(free), total=sum(total))
-
-  ret <- list(cluster=cluster, detail=res, summary=summary, overall=overall)
-  class(ret) <- "dide_clusterload"
-  ret
-}
-
-##' @export
-print.dide_clusterload <- function(x, ..., nodes=TRUE) {
-  ## There's a bit of faff here to get alignments to work nicely.
-  f <- function(name) {
-    format(c(name, x$overall[[name]], x$summary[[name]]), justify="right")
-  }
-  m <- cbind(f("name"), f("free"), f("used"), f("total"))
-
-  ## Header:
-  mh <- vcapply(m[1, ], crayon::bold)
-
-  ## Divider:
-  md <- vcapply(nchar(m[1,]), strrep, x="-")
-
-  ## Summary
-  if (nodes) {
-    ms <- m[-(1:2), , drop=FALSE]
-    col <- load_cols(x$summary$used / x$summary$total)
-    ms[, 1] <- crayon::blue(ms[, 1])
-    ms[, -1] <- t(vapply(seq_along(col),
-                         function(i) crayon::make_style(col[[i]])(ms[i, -1]),
-                         character(ncol(m) - 1L)))
-    ms <- rbind(ms, md)
-  } else {
-    ms <- NULL
-  }
-
-  ## Overall
-  mo <- m[2, ]
-  col <- load_cols(x$overall$used / x$overall$total)
-  mo[1] <- crayon::make_style("blue")$bold(mo[1])
-  mo[-1] <- vcapply(mo[-1], crayon::make_style(col)$bold)
-
-  mm <- rbind(mh, md, ms, mo)
-
-  cat(paste0(apply(mm, 1, paste, collapse=" "), "\n", collapse=""))
-  invisible(x)
+  parse_job_submit(res, length(path))
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
 web_cancel <- function(cluster, dide_task_id) {
-  if (is.null(cluster)) {
-    cluster <- getOption("didewin.cluster", valid_clusters()[[1]])
-  } else {
-    cluster <- match_value(cluster, valid_clusters())
-  }
-  if (length(dide_task_id) == 0L) {
-    stop("Need at least one task to cancel")
-  }
   jobs <- setNames(as.list(dide_task_id), paste0("c", dide_task_id))
   data <- c(list(cluster=encode64(cluster),
                  hpcfunc=encode64("cancel")),
@@ -243,43 +98,24 @@ web_cancel <- function(cluster, dide_task_id) {
   txt
 }
 
-##' Get job status from the cluster
-##' @title Job status
-##'
-##' @param x Either a username or configuration object
-##'
-##' @param cluster The cluster to check (default taken from
-##'   configuration if passed as \code{x}).
-##'
-##' @param state State of jobs to check; default is all states ("*").
-##'   Other valid options are "Running", "Finished", "Queued",
-##'   "Failed" and "Cancelled".
-##'
-##' @param n number of rows to return (default is Inf, which returns
-##'   all available jobs).
-##'
-##' @export
-web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
-                          state="*", n=Inf) {
-  if (inherits(x, "didewin_config")) {
-    username <- x$username
-    if (missing(cluster)) {
-      cluster <- x$cluster
-    }
-  } else {
-    assert_scalar_character(x)
-    username <- x
-  }
-  cluster <- match_value(cluster, valid_clusters())
-  valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
-  state <- match_value(state, valid)
-  if (n == Inf) {
-    n <- -1
-  } else {
-    if (!is.finite(n) || n <= 0) {
-      stop("n must be a positive integer (including Inf)")
-    }
-  }
+web_shownodes <- function(cluster) {
+  data <- list(cluster=encode64(cluster),
+               hpcfunc="shownodes",
+               cluster_no=as.character(match(cluster, valid_clusters())))
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/shownodes.php",
+                  curl_insecure(),
+                  httr::accept("text/plain"),
+                  body=data, encode="form")
+  check_status(r)
+  txt <- httr::content(r, as="text", encoding="UTF-8")
+  parse_node_listcores(strsplit(txt, "\n")[[1L]], cluster)
+}
+
+web_jobstatus <- function(config, state) {
+  username <- config$username
+  cluster <- config$cluster
+
+  n <- -1
   data <- list(user=encode64(username),
                scheduler=encode64(cluster),
                state=encode64(state),
@@ -319,17 +155,10 @@ web_jobstatus <- function(x, cluster=valid_clusters()[[1]],
   res
 }
 
-##' Get the log of a command from the HPC server.  Note that logs are
-##' only available for jobs that have finished or failed (not availab e
-##'
-##' @title Get job log
-##' @param config A config object
-##' @param dide_id A \emph{DIDE} id number
-##' @export
-web_joblog <- function(config, dide_id) {
+web_joblog <- function(config, dide_task_id) {
   data <- list(hpcfunc="showfail",
                cluster=encode64(config$cluster),
-               id=dide_id)
+               id=dide_task_id)
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/showjobfail.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
@@ -343,104 +172,10 @@ web_joblog <- function(config, dide_id) {
   value
 }
 
-##' @export
-print.dide_log <- function(x, ...) {
-  ## Deal with newline issues:
-  value <- sub("\n*$", "", gsub("\n\n", "\n", x))
-  ## TODO: might be worth some processing here...
-  ## re <- "(.*?)Output\\s*:\\n(.*)"
-  ## pre <- sub(re, "\\1", value)
-  ## ret <- sub(re, "\\2", value)
-  ## if (nzchar(pre)) {
-  ##   attr(ret, "message") <- pre
-  ## }
-  ## ret
-  cat(paste0(value, "\n"))
-}
-
-status_map <- function(x, reverse=FALSE) {
-  map <- c(Running="RUNNING",
-           Finished="COMPLETE",
-           Queued="PENDING",
-           Failed="ERROR",
-           Cancelled="ORPHAN")
-  ## for reverse,
-  ##   MISSING -> NA
-  ##   REDIRECT -> ?
-  if (reverse) {
-    unname(map[match(x, names(map))])
-  } else {
-    unname(map[x])
-  }
-}
-
 dide_time_parse <- function(x) {
   ## YYYYMMDDHHMMSS
   ## 20151109170805
   strptime(x, "%Y%m%d%H%M%S")
-}
-
-get_credentials <- function(credentials, need_password=TRUE) {
-  if (is.null(credentials)) {
-    if (!interactive()) {
-      stop("Credentials file needed for non-interactive use")
-    }
-    credentials <- trimws(readline(prompt="DIDE username: "))
-    if (credentials == "") {
-      stop("Invalid empty username")
-    }
-  }
-  ## Jesus.  Some cleaning here to do.
-  ## Check that username/password is OK
-  ## Perhaps allow and parse environment variables
-  if (is.list(credentials)) {
-    ret <- check_credentials(credentials, need_password)
-  } else if (is.character(credentials)) {
-    if (file.exists(credentials)) {
-      ret <- read_credentials(credentials)
-    } else {
-      ## Assume we have a username.
-      ret <- list(username=credentials)
-      if (need_password) {
-        if (!interactive()) {
-          stop("Credentials file needed for non-interactive use")
-        }
-        ret$password <- getPass::getPass(
-          sprintf("Enter DIDE password for %s: ", ret$username))
-      }
-    }
-  } else {
-    stop("Unexpected type")
-  }
-
-  ret$username <- sub("^DIDE\\\\", "", ret$username)
-  ret
-}
-
-## Format is
-## username=<username>
-## password=<password>
-read_credentials <- function(filename) {
-  dat <- strsplit(readLines(filename), "=")
-  dat <- setNames(as.list(trimws(vapply(dat, "[[", character(1), 2L))),
-                  trimws(vapply(dat, "[[", character(1), 1L)))
-  check_credentials(dat, TRUE)
-}
-
-check_credentials <- function(credentials, need_password) {
-  if (is.null(names(credentials))) {
-    stop("Credentials must be named")
-  }
-  extra <- setdiff(names(credentials), c("username", "password"))
-  if (length(extra) > 0L) {
-    stop("Unknown fields in credentials: ", paste(extra, collapse=", "))
-  }
-  req <- c("username", if (need_password) "password")
-  msg <- setdiff(req, names(credentials))
-  if (length(msg) > 0L) {
-    stop("Missing fields in credentials: ", paste(msg, collapse=", "))
-  }
-  credentials # consider credentials[req]
 }
 
 ## It might be worth having another shot here; recalling if the

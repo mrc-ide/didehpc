@@ -40,7 +40,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ##   dir.create(path_dide_cluster(context$root), FALSE, TRUE)
       ## -- instead, do this via submit()
 
-      if (initialise) {
+      if (use_hpctools(self$config)) {
+        self$logged_in <- TRUE
+      } else if (initialise) {
         self$login()
       }
 
@@ -72,12 +74,13 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 
     cluster_load=function(cluster=NULL, nodes=TRUE) {
       self$login(FALSE)
-      print(web_shownodes(cluster %||% self$config$cluster), nodes=nodes)
+      print(didewin_shownodes(self$config, cluster %||% self$config$cluster),
+            nodes=nodes)
     },
 
     tasks_status_dide=function(task_ids=NULL) {
       self$login(FALSE)
-      tasks_status_dide(self, task_ids)
+      check_tasks_status_dide(self, task_ids)
     },
 
     submit=function(task_ids, names=NULL) {
@@ -107,9 +110,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 
     dide_log=function(task_id) {
       self$login(FALSE)
-      dide_id <- self$dide_id(task_id)
-      assert_scalar_character(dide_id, "task_id") # bit of trickery
-      web_joblog(self$config, dide_id)
+      dide_task_id <- self$dide_id(task_id)
+      assert_scalar_character(dide_task_id, "task_id") # bit of trickery
+      didewin_joblog(self$config, dide_task_id)
     }
   ))
 
@@ -222,7 +225,7 @@ submit <- function(obj, task_ids, names) {
     batch <- write_batch(root, id, config, obj$workdir)
     path <- remote_path(prepare_path(batch, config$shares))
     pb$tick()
-    dide_id <- web_submit(path, config, names[[id]])
+    dide_id <- didewin_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL, id), "log_path")
@@ -240,7 +243,7 @@ unsubmit <- function(obj, task_ids) {
     id <- task_ids[[i]]
     dide_id <- db$get(id, "dide_id")
     cluster <- db$get(id, "dide_cluster")
-    ret[[i]] <- web_cancel(cluster, dide_id)
+    ret[[i]] <- didewin_cancel(config, dide_id)
   }
   ret
 }
@@ -251,7 +254,7 @@ unsubmit <- function(obj, task_ids) {
 ##  PENDING  ERROR   -> setup, has failed       -> update to ERROR
 ##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
 ##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
-tasks_status_dide <- function(obj, task_ids=NULL) {
+check_tasks_status_dide <- function(obj, task_ids=NULL) {
   if (is.null(task_ids)) {
     task_ids <- obj$tasks_list()
   }
@@ -276,7 +279,7 @@ tasks_status_dide <- function(obj, task_ids=NULL) {
 
   ## Realistically we're not interested in Finished here, and that does
   ## bank up after a bit.  Talk with Wes about improvements perhaps?
-  dat <- web_jobstatus(obj$config$username, obj$config$cluster)
+  dat <- didewin_jobstatus(obj$config)
   i <- match(task_ids, dat$name)
   if (any(is.na(i))) {
     stop("Did not find information on tasks: ",
