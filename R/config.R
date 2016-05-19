@@ -85,11 +85,13 @@
 ##'   manage your own job level parallelism (e.g. using OpenMP) or if
 ##'   you're just after the whole node for the memory).
 ##'
+##' @param hpctools Use HPC tools if available?
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
                            template=NULL, cores=NULL,
-                           wholenode=NULL, parallel=NULL) {
+                           wholenode=NULL, parallel=NULL, hpctools=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -100,7 +102,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 template=template,
                 cores=cores,
                 wholenode=wholenode,
-                parallel=parallel)
+                parallel=parallel,
+                hpctools=hpctools)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -114,6 +117,14 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
+  if (isTRUE(dat$hpctools)) {
+    if (!has_hpctools()) {
+      stop("HPC tools are requested but not found")
+    }
+  } else {
+    dat$hpctools <- FALSE
+  }
+
   ret <- list(cluster=cluster,
               credentials=dat$credentials,
               username=username,
@@ -122,6 +133,7 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               cores=dat$cores,
               wholenode=dat$wholenode,
               parallel=dat$parallel,
+              hpctools=dat$hpctools,
               resource=resource,
               shares=shares)
 
@@ -168,7 +180,8 @@ didewin_config_defaults <- function() {
     template     = getOption("didewin.template",     "GeneralNodes"),
     cores        = getOption("didewin.cores",        NULL),
     wholenode    = getOption("didewin.wholenode",    NULL),
-    parallel     = getOption("didewin.parallel",     NULL))
+    parallel     = getOption("didewin.parallel",     NULL),
+    hpctools     = getOption("didewin.hpctools",     FALSE))
 
   if (is.null(defaults$credentials)) {
     username <- getOption("didewin.username", NULL)
