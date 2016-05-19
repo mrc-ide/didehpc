@@ -32,6 +32,9 @@ hpc_run <- function(cmd, ...) {
 }
 
 hpc_submit <- function(config, path, name) {
+  if (any(!file.exists(path))) {
+    stop("All paths must exist")
+  }
   args <- list(scheduler=config$cluster,
                jobtemplate=config$template)
   if (!is.null(name)) {

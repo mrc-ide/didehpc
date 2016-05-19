@@ -6,9 +6,6 @@ didewin_submit <- function(config, path, name=NULL) {
   if (!is.null(name)) {
     assert_scalar_character(name)
   }
-  if (any(!file.exists(path))) {
-    stop("All paths must exist")
-  }
 
   if (use_hpctools(config)) {
     hpc_submit(config, path, name)

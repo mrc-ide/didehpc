@@ -168,6 +168,7 @@ web_joblog <- function(config, dide_task_id) {
   value <- xml2::xml_attr(xml2::xml_find_one(xml, '//input[@id="res"]'),
                           "value")
   value <- decode64(value)
+  value <- sub("^Output\\s*:\\s*?\n", "", value)
   class(value) <- "dide_log"
   value
 }
