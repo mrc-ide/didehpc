@@ -77,3 +77,11 @@ vlapply <- function(X, FUN, ...) {
 strrep <- function(x, n) {
   paste(rep(x, n), collapse="")
 }
+
+is_directory <- function(path) {
+  file.exists(path) && file.info(path, extra_cols=FALSE)[["isdir"]]
+}
+
+hostname <- function() {
+  Sys.info()[["nodename"]]
+}

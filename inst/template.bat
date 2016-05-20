@@ -1,16 +1,15 @@
 @echo off
 REM automatically generated
-ECHO generated on host: %COMPUTERNAME%
+ECHO generated on host: {{{hostname}}}
 ECHO generated on date: {{{date}}}
 ECHO didewin version: {{{didewin_version}}}
 ECHO context version: {{{context_version}}}
-ECHO dide task id: %CCP_TASKSYSTEMID%
 ECHO running on: %COMPUTERNAME%
 set CONTEXT_TASK_ID={{{context_task_id}}}
 set CONTEXT_WORKDRIVE={{{context_workdrive}}}
 set CONTEXT_WORKDIR={{{context_workdir}}}
 set CONTEXT_ROOT={{{context_root}}}
-set CONTEXT_LOGFILE={{{context_logfile}}}
+set CONTEXT_LOGFILE=%CONTEXT_ROOT%\{{{context_logdir}}}\%CONTEXT_TASK_ID%
 set CONTEXT_PROPAGATE_ERROR=TRUE
 
 call setr{{{r_version}}}.bat

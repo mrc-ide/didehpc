@@ -87,11 +87,14 @@
 ##'
 ##' @param hpctools Use HPC tools if available?
 ##'
+##' @param workdir The path to work in on the cluster, if running out of place.
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
                            template=NULL, cores=NULL,
-                           wholenode=NULL, parallel=NULL, hpctools=NULL) {
+                           wholenode=NULL, parallel=NULL, hpctools=NULL,
+                           workdir=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -103,7 +106,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 cores=cores,
                 wholenode=wholenode,
                 parallel=parallel,
-                hpctools=hpctools)
+                hpctools=hpctools,
+                workdir=workdir)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -112,8 +116,16 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     dat$credentials <- username
   }
 
+  if (!is.null(dat$workdir)) {
+    assert_scalar_character(dat$workdir, "workdir")
+    if (!is_directory(dat$workdir)) {
+      stop("workdir must be an existing directory")
+    }
+    workdir <- normalizePath(dat$workdir)
+  }
+
   cluster <- match_value(dat$cluster, valid_clusters())
-  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares, username)
+  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares, workdir, username)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
@@ -135,7 +147,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               parallel=dat$parallel,
               hpctools=dat$hpctools,
               resource=resource,
-              shares=shares)
+              shares=shares,
+              workdir=workdir)
 
   class(ret) <- "didewin_config"
   ret
@@ -181,6 +194,7 @@ didewin_config_defaults <- function() {
     cores        = getOption("didewin.cores",        NULL),
     wholenode    = getOption("didewin.wholenode",    NULL),
     parallel     = getOption("didewin.parallel",     NULL),
+    workdir      = getOption("didewin.workdir",      NULL),
     hpctools     = getOption("didewin.hpctools",     FALSE))
 
   if (is.null(defaults$credentials)) {
@@ -254,7 +268,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 ##
 ## TODO: I don't know if this will work for all possible issues with
 ## path normalisation (e.g. if a mount occurs against a symlink?)
-dide_detect_mount <- function(home, temp, shares, username) {
+dide_detect_mount <- function(home, temp, shares, workdir, username) {
   dat <- detect_mount()
   ret <- list()
 
@@ -312,18 +326,25 @@ dide_detect_mount <- function(home, temp, shares, username) {
   ## TODO: The tolower needs to be done in a platform dependent way I
   ## think.  For now assume that Linux users don't store multiple
   ## relevant paths that differ in case.
-  wd <- tolower(getwd())
-  ok <- vlapply(tolower(mapped), string_starts_with, x=tolower(wd))
+  if (is.null(workdir)) {
+    workdir <- getwd()
+  }
+  ## TODO: this tolower should be windows only
+  workdir <- tolower(workdir)
+
+  ok <- vlapply(tolower(mapped), string_starts_with, x=workdir)
   if (!any(ok)) {
     i <- (nzchar(dat[, "local"]) &
-          vlapply(tolower(dat[, "local"]), string_starts_with, x=tolower(wd)))
+          vlapply(tolower(dat[, "local"]), string_starts_with, x=workdir))
     if (sum(i) == 1L) {
-      workdir <- path_mapping("workdir", dat[i, "local"],
-                              dat[i, "remote"], available_drive(ret))
-      ret <- c(ret, list(workdir=workdir))
+      workdir_map <- path_mapping("workdir", dat[i, "local"],
+                                  dat[i, "remote"], available_drive(ret))
+      ret <- c(ret, list(workdir=workdir_map))
     } else if (sum(i) > 1L) {
       ## Could take the *longest* here?
       warning("Having trouble determining the working directory mount point")
+    } else { # sum(i) == 0
+      stop(sprintf("Running out of place: %s is not on a network share", workdir))
     }
   }
 

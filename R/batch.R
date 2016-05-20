@@ -7,19 +7,19 @@ build_batch <- function(root, task_id, config, workdir) {
   ## Build the absolute path to the context on the remote, even if it
   ## differs in drive from the workdir (which really probably is not a
   ## clever idea).
+  root <- normalizePath(root)
+
   context_root <- prepare_path(root, config$shares)
   context_root_abs <- windows_path(file.path(context_root$drive_remote,
                                              context_root$rel))
 
-  if (string_starts_with(normalizePath(root), normalizePath(getwd()))) {
-    context_logfile <- windows_path(path_logs(root, task_id))
-  } else {
-    context_logfile <- windows_path(path_logs(context_root_abs, task_id))
-  }
+  ## In theory we could shorten context_root here if it lies within
+  ## the workdir.
 
   r_version <- paste0(R_BITS, "_",
                       paste(unclass(R_VERSION)[[1]], collapse="_"))
-  dat <- list(date=as.character(Sys.time()),
+  dat <- list(hostname=hostname(),
+              date=as.character(Sys.time()),
               didewin_version=as.character(packageVersion("didewin")),
               context_version=as.character(packageVersion("context")),
               r_version=r_version,
@@ -27,7 +27,7 @@ build_batch <- function(root, task_id, config, workdir) {
               context_workdrive=wd$drive_remote,
               context_workdir=windows_path(wd$rel),
               context_root=context_root_abs,
-              context_logfile=context_logfile,
+              context_logdir=path_logs(NULL),
               parallel=config$resource$parallel,
               ## NOTE: don't forget the unname()
               network_shares=unname(lapply(config$shares, function(x)

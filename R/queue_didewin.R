@@ -30,15 +30,17 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     logged_in=FALSE,
 
     initialize=function(context, config, initialise, rtools) {
+      if (!inherits(config, "didewin_config")) {
+        stop("Expected a didewin_config for 'config'")
+      }
       super$initialize(context, initialise)
       self$config <- config
 
+      ## Will throw if the context is not network accessible.
+      prepare_path(context::context_root(context), config$shares)
+
       dir.create(path_batch(context$root), FALSE, TRUE)
       dir.create(path_logs(context$root), FALSE, TRUE)
-      ## Not sure about these two:
-      ##   dir.create(path_dide_task_id(context$root), FALSE, TRUE)
-      ##   dir.create(path_dide_cluster(context$root), FALSE, TRUE)
-      ## -- instead, do this via submit()
 
       if (use_hpctools(self$config)) {
         self$logged_in <- TRUE
@@ -205,8 +207,9 @@ check_binary_packages <- function(db, path_drat) {
 
 submit <- function(obj, task_ids, names) {
   db <- context::context_db(obj)
-  root <- obj$context$root
+  root <- context::context_root(obj)
   config <- obj$config
+  workdir <- obj$config$workdir %||% obj$workdir
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
                                    total=length(task_ids))
@@ -222,7 +225,7 @@ submit <- function(obj, task_ids, names) {
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
-    batch <- write_batch(root, id, config, obj$workdir)
+    batch <- write_batch(root, id, config, workdir)
     path <- remote_path(prepare_path(batch, config$shares))
     pb$tick()
     dide_id <- didewin_submit(config, path, names[[id]])
