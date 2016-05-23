@@ -18,8 +18,8 @@
 ##'
 ##' @export
 queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
-                          rtools=NULL) {
-  .R6_queue_didewin$new(context, config, initialise, rtools)
+                          rtools=NULL, sync=NULL) {
+  .R6_queue_didewin$new(context, config, initialise, rtools, sync)
 }
 
 .R6_queue_didewin <- R6::R6Class(
@@ -28,8 +28,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
   public=list(
     config=NULL,
     logged_in=FALSE,
+    sync=NULL,
 
-    initialize=function(context, config, initialise, rtools) {
+    initialize=function(context, config, initialise, rtools, sync) {
       if (!inherits(config, "didewin_config")) {
         stop("Expected a didewin_config for 'config'")
       }
@@ -39,6 +40,21 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## Will throw if the context is not network accessible.
       prepare_path(context::context_root(context), config$shares)
 
+      if (is.null(prepare_path(getwd(), self$config$shares, FALSE))) {
+        if (!is.null(sync)) {
+          assert_character(sync)
+        }
+        self$sync <- union(self$context$sources, sync)
+        if (length(self$sync) > 0L && is.null(config$workdir)) {
+          stop("Specify 'workdir' in didewin config to run out of place")
+        }
+      } else if (!is.null(sync)) {
+        ## There are probably times when this needs relaxing, for
+        ## example to synchronise data files that are on a local
+        ## computer.
+        stop("No not specify sync if running on a network share")
+      }
+
       dir.create(path_batch(context$root), FALSE, TRUE)
       dir.create(path_logs(context$root), FALSE, TRUE)
 
@@ -46,6 +62,10 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
         self$logged_in <- TRUE
       } else if (initialise) {
         self$login()
+      }
+
+      if (initialise) {
+        self$sync_files()
       }
 
       initialise_windows_packages(self)
@@ -59,6 +79,17 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       if (always || !self$logged_in) {
         web_login(self$config)
         self$logged_in <- TRUE
+      }
+    },
+
+    sync_files=function(verbose=TRUE, delete=TRUE) {
+      if (length(self$sync) > 0L) {
+        check_rsync(self$config)
+        ## TODO: save self$config$workdir as a prepared path?
+        wd <- prepare_path(self$config$workdir, self$config$shares)
+        dest <- file_path(wd$path_local, wd$rel)
+        message("Syncronising files")
+        syncr::syncr(self$sync, dest, verbose=verbose, delete=delete)
       }
     },
 
@@ -338,4 +369,23 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
     message("Reported statuses seem accurate to me")
   }
   invisible(NULL)
+}
+
+check_rsync <- function(config) {
+  withCallingHandlers(
+    loadNamespace("syncr"),
+    error=function(e)
+      "See https://dide-tools.github.io/didewin for syncr installation")
+  if (!syncr::has_rsync()) {
+    if (is_windows()) {
+      path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")
+      if (file.exists(path_rsync)) {
+        options("syncr.rsync"=path_rsync)
+        if (syncr::has_rsync()) {
+          return()
+        }
+      }
+    }
+    stop("Could not find rsync binary; can't run out of place")
+  }
 }

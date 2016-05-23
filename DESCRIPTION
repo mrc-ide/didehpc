@@ -23,8 +23,9 @@ Imports:
     xml2
 Suggests:
     buildr,
-    testthat,
     knitr,
-    rmarkdown
+    rmarkdown,
+    syncr,
+    testthat
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr

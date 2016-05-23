@@ -1,4 +1,4 @@
-prepare_path <- function(path, mappings) {
+prepare_path <- function(path, mappings, error=TRUE) {
   if (!file.exists(path)) {
     stop("path does not exist: ", path)
   }
@@ -12,7 +12,11 @@ prepare_path <- function(path, mappings) {
       return(m)
     }
   }
-  stop("did not find network mapping for path ", path)
+  if (error) {
+    stop("did not find network mapping for path ", path)
+  } else {
+    NULL
+  }
 }
 
 ## It may be possible on many systems to infer the path_remote from

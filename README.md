@@ -462,6 +462,7 @@ This package requires [context](https://github.com/dide-tools/context) so instal
 ```r
 devtools::install_github(c(
   "richfitz/ids",
+  "richfitz/syncr",
   "dide-tools/context",
   "richfitz/queuer",
   "dide-tools/didewin"))
