@@ -17,10 +17,9 @@ if [ ! -d $(dirname $TARGET) ]; then
     exit 1
 fi
 
-## rm -rf $TARGET
-
 mkdir -p $TARGET
-cp $SRC/vignettes/src/*.R $SRC/vignettes/src/Makefile $TARGET
+cp -p $SRC/vignettes/src/*.R $SRC/vignettes/src/Makefile $TARGET
+echo $SRC > $TARGET/upstream
 make -C $TARGET
 
 cp $TARGET/*.md vignettes

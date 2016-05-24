@@ -1,6 +1,7 @@
 RSCRIPT = Rscript --no-init-file
+UPSTREAM = $(cat upstream)
 
-all: quickstart.md didewin.md
+all: refresh quickstart.md didewin.md
 
 %.Rmd: %.R
 	${RSCRIPT} -e 'sowsear::sowsear("$<", output="$@")'
@@ -10,3 +11,7 @@ all: quickstart.md didewin.md
 	${RSCRIPT} -e 'knitr::knit("$<")'
 	sed -i.bak 's/[[:space:]]*$$//' $@
 	rm -f $@.bak
+	rm -rf contexts
+
+refresh:
+	cp -p `cat UPSTREAM`/vignettes/src/*.R .

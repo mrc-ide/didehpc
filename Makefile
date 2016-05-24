@@ -51,7 +51,7 @@ website: staticdocs
 vignettes: vignettes/quickstart.Rmd vignettes/didewin.Rmd
 	${RSCRIPT} -e "library(methods); devtools::build_vignettes()"
 
-vignettes/quickstart.Rmd: vignettes/src/quickstart.R
+vignettes/%.Rmd: vignettes/src/%.R
 	sh build_vignettes.sh
 
 .PHONY: all test document install vignettes

@@ -1,41 +1,35 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-05-16"
-output: rmarkdown::html_vignette
+date: "2016-05-24"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
 vignette: >
   %\VignetteIndexEntry{R and the DIDE cluster}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Background and concepts
 
 Parallel computing on a cluster can be more challenging than
 running things locally because it's often the first time that you
-need to package up code to run elsewhere.  Much of the difficulty
-of getting things running involves working out what your code
-depends on, and getting that installed in the right place on a
-computer that you can't physically poke at.  The next set of
-problems is dealing with the balloning set of files that end up
-being created - templates, scripts, output files, etc.
+need to package up code to run elsewhere, and when things go wrong
+it's more difficult to get information on why things failed.
 
-This set of packages (`didewin`, `queuer` and `context`) aims to
-remove the pain of getting everything set up, and in keeping
-cluster tasks running.
+Much of the difficulty of getting things running involves working
+out what your code depends on, and getting that installed in the
+right place on a computer that you can't physically poke at.  The
+next set of problems is dealing with the balloning set of files
+that end up being created - templates, scripts, output files, etc.
+
+This set of packages (`didewin`, `queuer` and `context`, along with
+a couple of support packages) aims to remove the pain of getting
+everything set up, and in keeping cluster tasks running.
 
 Once everything is set up, running a job on the cluster should be
-as straightforward as writing (approximately):
-
-```r
-didewin_enqueue(long_running_calculation(x))
-```
-
-or running a series of calculations with
-
-```r
-queuer::qlapply(1:10, long_running_calculation)
-```
+as straightforward as running things locally.
 
 The documentation here runs through a few of the key concepts, then
 walks through setting this all up.  There's also a "quick start"
@@ -48,13 +42,14 @@ The biggest conceptual move is from thinking about running
 return *objects*.  The reason for this is that gives a well defined
 interface to build everything else around.
 
-Scripts do almost anything.  They depend on untold files and
-packages which they load wherever.  The produce any number of
-objects.  That's fine, but it becomes hard to reason about them to
-plan deploying them elsewhere, to capture the outputs
-appropriately, or to orchestrate looping over a bunch of paramter
-values.  If you've found yourself writing a number of script files
-changing values with text substitution you have run into this.
+The problem with scripts is that they might do almost anything.
+They depend on untold files and packages which they load wherever.
+The produce any number of objects.  That's fine, but it becomes
+hard to reason about them to plan deploying them elsewhere, to
+capture the outputs appropriately, or to orchestrate looping over a
+bunch of paramter values.  If you've found yourself writing a
+number of script files changing values with text substitution you
+have run into this.
 
 In contrast, functions do (ideally) one thing.  They have a well
 defined set of inputs (their arguments) and outputs (their return
@@ -71,19 +66,28 @@ and the packages will arrange for them to be saved and reloaded.
 The DIDE cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
 //fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
-For Windows users these are probably mapped to drives (`Q:` or `T:`
-or similar) already, but for other platforms you will need to do a
-little extra work to get things set up (see below).
+You probably have access to network shares that are specific to a
+project, too.  For Windows users these are probably mapped to
+drives (`Q:` or `T:` or similar) already, but for other platforms
+you will need to do a little extra work to get things set up (see
+below).
 
-At present, *everything* that is needed for a project must be in the directory that is visible on the cluster.  Soon, I do hope to implement
+It is simplest if *everything* that is needed for a project is
+present in a single directory that is visible on the cluster.
+However, other patterns are possible; see "Running out of place"
+towards the bottom of this page.
 
+However for the most of this document I will assume that everything
+is in one directory, which is on a network share.
 
 # Getting started
 
-See the section [configuration](#configuration) below for much more
-detail on what to use here.
+The initial setup will feel like a headache at first, but it should
+ultimately take only a few lines.  Once everything is set up, then
+the payback is that is the job submission part will become a lot
+simpler.
 
-# Configuration
+## Configuration
 
 The configuration is handled in a two stage process.  First, some
 bits that are machine specific are set using
@@ -95,7 +99,7 @@ be passed along via the `config` argument that will use the
 The reason for this separation is that ideally the machine-specific
 options will not end up in scripts, because that makes things less
 portable (for example,we need to get your username, but your
-username is unlikely to work for your collaborators.
+username is unlikely to work for your collaborators).
 
 Ideally in your ~/.Rprofile file, you will add something like:
 
@@ -108,19 +112,132 @@ options(
 and then set only options (such as cluster and cores or template)
 that vary with a project.
 
-## Packages
+At the moment (while things change) it might be simplest to set
+things using the `didewin::didewin_config_global` function.  The
+help file `?didewin::didewin_config` outlines the options here.  At
+the moment a minimal set of options is your credentials (not needed
+on Windows domain machines) and the cluster you wish to use (if you
+don't want to use the small cluster).
 
-If you list packages as a character vector then all packages will
-be installed fo you, but they will also be *attached*.  This is not
-always what is required, especially if you have packages that
-clobber functions in base packages (e.g., `dplyr`!).  An
-alternative is to list a set of packages that you want installed
-and split them into packages you would like attached and packages
-you would like loaded:
+### Credentials
+
+If you have a Linux system and have configured your smb mounts as
+described below, you might as well take advantage of this and set
+`credentials="~/.smbcredentials"` and you will never be prompted
+for your password:
 
 
 ```r
-packages <- list(loaded="geiger", attached="ape")
+didewin::didewin_config_global(credentials="~/.smbcredentials")
+```
+
+Mac users will need to provide their username here.
+
+```r
+didewin::didewin_config_global(credentials="yourusername")
+```
+
+Windows users will not need to provide anything unless they are on
+a non-domain machine.
+
+### Additional shares
+
+If you refer to network shares in your functions, e.g., to refer to
+data, you'll need to map these too.  To do that, pass them as the
+`shares` argument to `didewin_config_global`.
+
+To describe each share, use the `didewin::path_mapping` function
+which takes arguments:
+
+* name: a desctiptive name for the share
+* `path_local`: the point where the share is mounted on your computer
+* `path_remote`: the network path that the share refers to (forward
+  slashes are much easier to enter here than backward slashes)
+* `drive_remote`: the drive this should be mapped to on the cluster.
+
+So to map your "M drive" to which points at `\\fi--didef2\malaria`
+to `M:` on the cluster you can write
+
+```r
+share <- didewin::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+didewin::didewin_config_global(shares=share)
+```
+
+If you have more than one share to map, pass them through as a
+list.
+
+### Seeing the default configuration
+
+To see the configuration that will be run if you don't do anything
+(else), run:
+
+```r
+didewin::didewin_config()
+```
+
+```
+## <didewin_config>
+##  - cluster: fi--didemrchnb
+##  - credentials: ~/.smbcredentials
+##  - username: rfitzjoh
+##  - build_server: 129.31.25.12
+##  - template: GeneralNodes
+##  - hpctools: FALSE
+##  - resource:
+##     - parallel: FALSE
+##     - count: 1
+##     - type: Cores
+##  - shares:
+##     - home: (local) /home/rich/net/home => //fi--san02/homes/rfitzjoh => Q: (remote)
+##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+```
+
+In here you can see the cluster (here, `fi--didemrchnb`),
+credentials and username, the job template (`GeneralNodes`),
+information about the resources that will be requested (1 core) and
+information on filesystem mappings.  There are a few other bits of
+information that may be explained further down.
+
+## Contexts
+
+To recreate your work environment on the cluster, we use a package
+called `context`.  This package uses the assumption that most
+working environments can be recreated by a combination of R
+packages and sourcing a set of function definitions.
+
+### Root
+
+Every context has a "root"; this is the directory that everything
+will be saved in.  Most of the examples in the help use `contexts`
+which is fairly self explanatory but it can be any directory.
+Generally it will be in the current directory.
+
+```r
+root <- "contexts"
+```
+
+### Packages
+
+If you list packages as a character vector then all packages will
+be installed for you, and they will also be *attached*; this is
+what happens when you use the function `library()` So for example
+if you need to depend on the `rstan` and `ape` packages you could
+write:
+
+
+```r
+ctx <- context::context_save(root, packages=c("rstan", "ape"))
+```
+
+Attaching packages is not always what is wanted, especially if you
+have packages that clobber functions in base packages (e.g.,
+`dplyr`!).  An alternative is to list a set of packages that you
+want installed and split them into packages you would like attached
+and packages you would only like loaded:
+
+```r
+ctx <- context::context_save(root,
+                             packages=list(loaded="geiger", attached="ape"))
 ```
 
 In this case, the packages in the `loaded` section will be
@@ -133,3 +250,1049 @@ will not be attached so will not modify the search path.
 In contrast, packages listed in `attached` will be loaded with
 `library` so they will be available without qualification (e.g.,
 `read.tree` rather than `ape::read.tree`).
+
+### Source files for function definitions
+
+If you define any of your own functions you will need to tell the
+cluster about them.  The easiest way to do this is to save them in
+a file that contains only function definitions (and does not read
+data, etc).
+
+For example, I have a file `mysources.R` with a very simple tree
+simulation in it.  Imagine this is some slow function that given an
+integer `nspp` after a bunch of calculation yields a tree with
+`nspp` tips:
+
+```r
+make_tree <- function(nspp) {
+  message("I am building a tree!")
+  ape::rtree(nspp)
+}
+```
+
+To set this up, we'd write:
+
+```r
+ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+```
+
+`sources` can be a character vector, `NULL` or `character(0)` if
+you have no sources, or just omit it as above.
+
+### Custom packages
+
+If you depend on packages that are not on CRAN (e.g., your personal
+research code) you'll need to tell `context` where to find them
+with its `package_sources` argument.
+
+If the packages are on GitHub and public you can pass the github
+username/repo pair, in `devtools` style:
+
++eval=FALSE
+context::context_save(...,
+  package_sources=context::package_sources(github="richfitz/ids"))
+
+Like with `devtools` you can use subdirectories, specific commits
+or tags in the specification.
+
+If the packages are private, it is simplest to pass the path to
+where the package can be found on your computer with the `local`
+argument to `package_sources`.
+
+## Creating the queue
+
+The next step can take a little while so it's useful to enable
+logging to see where things are up to:
+
+```r
+context::context_log_start()
+```
+
+Once a context has been created, we can create a queue with it.
+This is separate from the actual cluster queue, but will be our
+interface to it:
+
+```r
+obj <- didewin::queue_didewin(ctx)
+```
+
+```
+## Loading context b7b2d57d4b3f6346d4d4f82fddb6040a
+```
+
+```
+## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
+```
+
+```
+## [ library   ]  ape
+```
+
+```
+## [ namespace ]
+```
+
+```
+## [ source    ]  mysources.R
+```
+
+```
+## [ cross     ]  checking available packages
+```
+
+```
+## [ cross     ]  Downloading binary packages for: crayon, curl, digest, drat, memoise, R6, storr, uuid
+```
+
+```
+## [ cross     ]  Cross installing source packages for: context
+```
+
+```
+## [ cross     ]  checking available packages
+```
+
+```
+## [ cross     ]  Downloading binary packages for: ape
+```
+
+If the above command does not throw an error, then you have
+successfully logged in.  When you run `queue_didewin` it will
+install windows versions of all required packages within the `root`
+directory (here, "contexts").  This is necessary even when you are
+on windows because the cluster cannot see files that are on your
+computer.
+
+`obj` is a weird sort of object called an `R6` class.  It's a bit
+like a Python or Java class if you've come from those languages.
+The thing you need to know is that the object is like a list and
+contains a number of functions that can be run by runing
+`obj$functionname()`.  These functions all act by *side effect*;
+they interact with a little database stored in the context root
+directory or by communicating with the cluster using the web
+interface that Wes created.
+
+```r
+obj
+```
+
+```
+## <queue_didewin>
+##   Inherits from: <queue_base>
+##   Public:
+##     clone: function (deep = FALSE)
+##     cluster_load: function (cluster = NULL, nodes = TRUE)
+##     config: didewin_config
+##     context: context
+##     context_envir: environment
+##     db: environment
+##     dide_id: function (task_ids)
+##     dide_log: function (task_id)
+##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
+##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
+##     initialise_context: function ()
+##     initialize: function (context, config, initialise, rtools, sync)
+##     logged_in: TRUE
+##     login: function (always = TRUE)
+##     root: contexts
+##     set_cluster: function (cluster = NULL)
+##     submit: function (task_ids, names = NULL)
+##     submit_or_delete: function (task, name = NULL)
+##     sync: NULL
+##     sync_files: function (verbose = TRUE, delete = TRUE)
+##     task_bundle_get: function (id)
+##     task_bundles_info: function ()
+##     task_bundles_list: function ()
+##     task_get: function (task_id)
+##     task_result: function (task_id)
+##     tasks_delete: function (task_ids)
+##     tasks_list: function ()
+##     tasks_status: function (task_ids = NULL, named = TRUE)
+##     tasks_status_dide: function (task_ids = NULL)
+##     tasks_times: function (task_ids = NULL, unit_elapsed = "secs")
+##     unsubmit: function (task_ids)
+##     workdir: /home/rich/net/home/cluster_test/vignette
+```
+
+For example, to list the tasks that we know about:
+
+```r
+obj$tasks_list()
+```
+
+```
+## character(0)
+```
+
+(of course there are no tasks yet because we haven't added any).
+As a slightly more interesting example we can see how busy the
+cluster is:
+
+```r
+obj$cluster_load()
+```
+
+```
+##           name free used total
+## -------------- ---- ---- -----
+##  fi--didemrc06    1   11    12
+##  fi--didemrc07    0   12    12
+##  fi--didemrc08    0   12    12
+##  fi--didemrc09    0   12    12
+##  fi--didemrc10    4    8    12
+##  fi--didemrc11    0   12    12
+##  fi--didemrc12    0   12    12
+##  fi--didemrc13    0   24    24
+##  fi--didemrc14    0   24    24
+##  fi--didemrc15    0   24    24
+##  fi--didemrc16    0   24    24
+##  fi--didemrc17    0   12    12
+##  fi--didemrc18    4    8    12
+##  fi--didemrc19    0   12    12
+##  fi--didemrc20    0   12    12
+##  fi--didemrc21    4    8    12
+##  fi--didemrc22    1   11    12
+##  fi--didemrc23    0   12    12
+##  fi--didemrc24    5    7    12
+##  fi--didemrc25   12    0    12
+##  fi--didemrc26    0   12    12
+##  fi--didemrc27    0   12    12
+##  fi--didemrc28    0   12    12
+##  fi--didemrc38    0   16    16
+##  fi--didemrc39    0   16    16
+##  fi--didemrc40    0   16    16
+##  fi--didemrc41    0   16    16
+##  fi--didemrc42    0   16    16
+##  fi--didemrc43   15    1    16
+##  fi--didemrc44    0   16    16
+##  fi--didemrc45    0   16    16
+##  fi--didemrc46    0   16    16
+##  fi--didemrc47   16    0    16
+##  fi--didemrc48    0   16    16
+##  fi--didemrc49   14    2    16
+##  fi--didemrc50   16    0    16
+##  fi--didemrc51    0   20    20
+##  fi--didemrc52    0   20    20
+##  fi--didemrc53    0   20    20
+##  fi--didemrc54    0   20    20
+##  fi--didemrc55    0   20    20
+##  fi--didemrc56    0   20    20
+##  fi--didemrc57    0   20    20
+##  fi--didemrc58    0   20    20
+##  fi--didemrc59   18    2    20
+##  fi--didemrc60   20    0    20
+##  fi--didemrc61    0   20    20
+##  fi--didemrc62    0   20    20
+##  fi--didemrc63    0   20    20
+##  fi--didemrc64    0   20    20
+##  fi--didemrc65    0   32    32
+##  fi--didemrc66    0   32    32
+##  fi--didemrc67   24    0    24
+##  fi--didemrc68   24    0    24
+##  fi--didemrc69   24    0    24
+##  fi--didemrc70   24    0    24
+##  fi--didemrc71   24    0    24
+##  fi--didemrc72   24    0    24
+##  fi--didemrc73   24    0    24
+##  fi--didemrc74   24    0    24
+##  fi--didemrc75   12    4    16
+##  fi--didemrc76    0   16    16
+##  fi--didemrc77   16    0    16
+##  fi--didemrc78   22    6    28
+## -------------- ---- ---- -----
+## fi--didemrchnb  372  772  1144
+```
+
+(if you're on a ANSI-compatible terminal this will be in glorious
+colour).
+
+## Testing that the queue works correctly
+
+Before running a real job, let's test that everything works
+correctly by running the `sessionInfo` command on the cluster.
+When run locally, `sessionInfo` prints information about the state
+of your R session:
+
+```r
+sessionInfo()
+```
+
+```
+## R version 3.3.0 (2016-05-03)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 14.04.4 LTS
+##
+## locale:
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C
+##
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  base
+##
+## other attached packages:
+## [1] ape_3.4
+##
+## loaded via a namespace (and not attached):
+##  [1] lattice_0.20-33  codetools_0.2-14 crayon_1.3.2     digest_0.6.9
+##  [5] grid_3.3.0       context_0.0.8    R6_2.1.2         nlme_3.1-127
+##  [9] storr_1.0.1      formatR_1.4      magrittr_1.5     evaluate_0.9
+## [13] httr_1.1.0       stringi_1.0-1    curl_0.9.7       rematch_1.0.1
+## [17] queuer_0.0.4     tools_3.3.0      stringr_1.0.0    didewin_0.0.3
+## [21] knitr_1.13       methods_3.3.0
+```
+
+To run this on the cluster, we wrap it in `obj$enqueue`.  This
+prevents the evaluation of the expression and instead organises it
+to be run on the cluster:
+
+```r
+t <- obj$enqueue(sessionInfo())
+```
+
+We can then poll the cluster for results until it completes:
+
+```r
+t$wait(100)
+```
+
+```
+## R version 3.2.4 Revised (2016-03-16 r70336)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows Server 2012 R2 x64 (build 9600)
+##
+## locale:
+## [1] LC_COLLATE=English_United Kingdom.1252
+## [2] LC_CTYPE=English_United Kingdom.1252
+## [3] LC_MONETARY=English_United Kingdom.1252
+## [4] LC_NUMERIC=C
+## [5] LC_TIME=English_United Kingdom.1252
+##
+## attached base packages:
+## [1] methods   stats     graphics  grDevices utils     datasets  base
+##
+## other attached packages:
+## [1] ape_3.4
+##
+## loaded via a namespace (and not attached):
+## [1] R6_2.1.2        context_0.0.8   nlme_3.1-125    grid_3.2.4
+## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
+```
+
+(see the next section for more information about this).
+
+The important part to notice here is that the R "Platform" (second
+and third line) is Windows Server, as opposed to the host machine
+which is running Linux.  In addition note that `ape` is lited under
+"other attached packages" and that `context`, as well as some other
+packages (`R6` `storr` and `digest` in particular) have been
+installed and are loaded (but not attached).  This shows that the
+system has set up a working environment like our local one on the
+remote machine, and we can evaluate tasks in it!
+
+## Running single jobs
+
+Let's run something more interesting now by running the `make_tree`
+function defined in the `mysources.R` file.
+
+As above, jobs are queueed by running:
+
+```r
+t <- obj$enqueue(make_tree(10))
+```
+
+Like the queue object, `obj`, task objects are R6 objects that can
+be used to get information and results back from the task.
+
+```r
+t
+```
+
+```
+## <task>
+##   Public:
+##     clone: function (deep = FALSE)
+##     context_id: function ()
+##     db: environment
+##     expr: function (locals = FALSE)
+##     handle: task_handle
+##     id: f37b382b0d4f467eb8f621dea02ef75c
+##     initialize: function (obj, id, check_exists = TRUE)
+##     log: function ()
+##     result: function (sanitise = FALSE)
+##     status: function ()
+##     times: function (unit_elapsed = "secs")
+##     wait: function (timeout, every = 0.5, progress = TRUE)
+```
+
+the task's status
+
+```r
+t$status()
+```
+
+```
+## [1] "PENDING"
+```
+
+...which will move from `PENDING` to `RUNNING` to `COMPLETE` or
+`ERROR`.  You can get information on submission and running times
+
+```r
+t$times()
+```
+
+```
+##                            task_id           submitted started finished
+## 1 f37b382b0d4f467eb8f621dea02ef75c 2016-05-24 09:25:14    <NA>     <NA>
+##     waiting running idle
+## 1 0.3984182      NA   NA
+```
+
+and you can try and get the result of running the task:
+
+```r
+t$result()
+```
+
+```
+## Error: task f37b382b0d4f467eb8f621dea02ef75c is unfetchable: PENDING
+```
+
+The `wait` function, used above, is like `result` but it will
+repeatedly poll for the task to be completed for up to `timeout`
+seconds.
+
+```r
+t$wait(100)
+```
+
+```
+##
+## Phylogenetic tree with 10 tips and 9 internal nodes.
+##
+## Tip labels:
+## 	t8, t6, t7, t10, t4, t9, ...
+##
+## Rooted; includes branch lengths.
+```
+
+once the task has completed, `t$result()` and `t$wait` are equivalent
+
+```r
+t$result()
+```
+
+```
+##
+## Phylogenetic tree with 10 tips and 9 internal nodes.
+##
+## Tip labels:
+## 	t8, t6, t7, t10, t4, t9, ...
+##
+## Rooted; includes branch lengths.
+```
+
+Every task creates a log:
+
+```r
+t$log()
+```
+
+```
+## [ bootstrap ]  Q:\cluster_test\vignette\contexts
+## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ ok        ]
+## [ init      ]  2016-05-24 09:25:37.386
+## [ hostname  ]  FI--DIDEMRC06
+## [ version   ]  0.0.8
+## [ parallel  ]  running as single core job
+## [ root      ]  Q:\cluster_test\vignette\contexts
+## [ task      ]  f37b382b0d4f467eb8f621dea02ef75c
+## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
+## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ library   ]  ape
+## [ namespace ]
+## [ source    ]  mysources.R
+## [ expr      ]  make_tree(10)
+## [ start     ]  2016-05-24 09:25:37.651
+##     I am building a tree!
+## [ ok        ]
+## [ end       ]  2016-05-24 09:25:37.745
+##     Warning message:
+##     package 'ape' was built under R version 3.2.5
+```
+
+Warning messages and other output will be printed here.  So if you
+include `message()`, `cat()` or `print()` calls in your task they
+will appear between `start` and `end`.
+
+There is another bit of log that happens before this and contains
+information about getting the system started up.  You should only
+need to look at this when a job seems to get stuck with status
+`PENDING` for ages.
+
+```r
+obj$dide_log(t)
+```
+
+```
+## generated on host: wpia-dide136.dide.ic.ac.uk
+## generated on date: 2016-05-24 09:25:14
+## didewin version: 0.0.3
+## context version: 0.0.8
+## running on: FI--DIDEMRC06
+## mapping Q: -> \\fi--san02\homes\rfitzjoh
+## The command completed successfully.
+## mapping T: -> \\fi--didef2\tmp
+## The command completed successfully.
+## working directory: Q:\cluster_test\vignette
+## logfile: Q:\cluster_test\vignette\contexts\logs\f37b382b0d4f467eb8f621dea02ef75c
+## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" f37b382b0d4f467eb8f621dea02ef75c  1>"Q:\cluster_test\vignette\contexts\logs\f37b382b0d4f467eb8f621dea02ef75c" 2>&1
+## Quitting
+```
+
+The queue knows which tasks it has created and you can list them:
+
+```r
+obj$tasks_list()
+```
+
+```
+## [1] "e223c52a29524c8aa75866fed559d4bf" "f37b382b0d4f467eb8f621dea02ef75c"
+```
+
+The long identifiers are random and are long enough that collisions
+are unlikely.
+
+Notice that the task ran remotely but we never had to indicate
+which filename things were written to.  There is a small database
+based on [`storr`](https://richfitz.github.com/storr) that holds
+all the information within the context root (here, "contexts").
+This means you can close down R and later on regenerate the `ctx`
+and `obj` objects and recreate the task objects, and re-get your
+results.  But at the same time it provides the _illusion_ that the
+cluster has passed an object directly back to you.
+
+```r
+id <- t$id
+id
+```
+
+```
+## [1] "f37b382b0d4f467eb8f621dea02ef75c"
+```
+
+```r
+t2 <- obj$task_get(id)
+t2$result()
+```
+
+```
+##
+## Phylogenetic tree with 10 tips and 9 internal nodes.
+##
+## Tip labels:
+## 	t8, t6, t7, t10, t4, t9, ...
+##
+## Rooted; includes branch lengths.
+```
+
+## Running many jobs
+
+There are two broad options here;
+
+1. Apply a function to each element of a list, similar to `lapply`
+with `queuer::qlapply`
+2. Apply a function to each row of a data.frame perhaps using each
+column as a different argument with `queuer::enqueue_bulk`
+
+Suppose we want to make a bunch of trees of different sizes.  This
+would involve mapping our `make_tree` function over a vector of
+sizes:
+
+```r
+sizes <- 3:8
+grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+```
+
+```
+## Creating bundle: 'displeasing_frog'
+```
+
+```
+## saving 6 tasks...
+```
+
+```
+## submitting 6 tasks...
+```
+
+By default, `queuer::qlapply` returns a "task_bundle" with an
+automatically generated name.  You can customise the name with the
+`name` argument.
+
+Get the startus of all the jobs
+
+```r
+grp$status()
+```
+
+```
+## 822abc438e6a4dac801452248b2f8155 63f6c9ddc667423bab79ee723f7b1c45
+##                       "COMPLETE"                       "COMPLETE"
+## cac52a12ac6d400181f681cc9dac2c9b eeb1750d695546d8acdabdd685a0db22
+##                       "COMPLETE"                        "PENDING"
+## 93ac494715374e5faf47a2418fff9380 c815eb4c468842798c78ca43780547d4
+##                        "PENDING"                        "PENDING"
+```
+
+Wait until they are all complete and get the results
+
+```r
+res <- grp$wait(120)
+```
+
+The other bulk interface is where you want to run a function over a
+combination of parameters.  Use `queuer::enqueue_bulk` here.
+
+```r
+pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+pars
+```
+
+```
+##   a         b        c
+## 1 a 0.5728534 3.141593
+## 2 b 0.5728534 3.141593
+## 3 c 0.5728534 3.141593
+## 4 a 0.9082078 3.141593
+## 5 b 0.9082078 3.141593
+## 6 c 0.9082078 3.141593
+```
+
+```r
+grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+```
+
+```
+## Creating bundle: 'crazy_tsetsefly'
+```
+
+```
+## saving 6 tasks...
+```
+
+```
+## submitting 6 tasks...
+```
+
+By default this runs
+
+* `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
+* `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+* ...
+* `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+
+
+```r
+res <- grp$wait(120)
+res
+```
+
+```
+## [[1]]
+## [[1]][[1]]
+## [[1]][[1]]$a
+## [1] "a"
+##
+## [[1]][[1]]$b
+## [1] 0.5728534
+##
+## [[1]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[2]]
+## [[2]][[1]]
+## [[2]][[1]]$a
+## [1] "b"
+##
+## [[2]][[1]]$b
+## [1] 0.5728534
+##
+## [[2]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[3]]
+## [[3]][[1]]
+## [[3]][[1]]$a
+## [1] "c"
+##
+## [[3]][[1]]$b
+## [1] 0.5728534
+##
+## [[3]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[4]]
+## [[4]][[1]]
+## [[4]][[1]]$a
+## [1] "a"
+##
+## [[4]][[1]]$b
+## [1] 0.9082078
+##
+## [[4]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[5]]
+## [[5]][[1]]
+## [[5]][[1]]$a
+## [1] "b"
+##
+## [[5]][[1]]$b
+## [1] 0.9082078
+##
+## [[5]][[1]]$c
+## [1] 3.141593
+##
+##
+##
+## [[6]]
+## [[6]][[1]]
+## [[6]][[1]]$a
+## [1] "c"
+##
+## [[6]][[1]]$b
+## [1] 0.9082078
+##
+## [[6]][[1]]$c
+## [1] 3.141593
+```
+
+# Misc
+
+## Jobs that require compiled code
+
+If you are running stan, or Rcpp with `sourceCpp` (in the latter
+case you *should* be using a package) you'll need a working
+compiler.  For rstan this is detected automatically.  But in
+general, pass `rtools=TRUE` to `queue_didewin()`.
+
+## Parallel computation on the cluster
+
+If you are running tasks that can use more than one core, you can
+request more resources for your task and use process level
+parallism with the `parallel` package.  To request 8 cores, you
+could run:
+
+
+```r
+didewin::didewin_config(cores=8)
+```
+
+When your task starts, 8 cores will be allocated to it and a
+`parallel` cluster will be created.  You can use it with things
+like `parallel::parLapply`, specifying `cl` as `NULL`.  So if
+within your cluster job you needed to apply function `f` to a each
+element of a list `x`, you could write:
+
+
+```r
+run_f <- function(x) {
+  parallel::parLapply(NULL, x, f)
+}
+obj$enqueue(run_f(x))
+```
+
+The parallel bits can be embedded within larger blocks of code.
+All functions in `parallel` that take `cl` as a first argument can
+be used.  You do not need to (and should not) set up the cluster as
+this will happen automatically as the job starts.
+
+Alternatively, if you want to control cluster creation (e.g., you
+are using software that does this for you) then, pass
+`parallel=FALSE` to the config call:
+
+
+```r
+didewin::didewin_config(cores=8, parallel=FALSE)
+```
+
+In this case you are responsible for setting up the cluster.
+
+As an alternative to requesting cores, you can use a different job
+template:
+
+```r
+didewin::didewin_config(template="16Core")
+```
+
+```
+## <didewin_config>
+##  - cluster: fi--didemrchnb
+##  - credentials: ~/.smbcredentials
+##  - username: rfitzjoh
+##  - build_server: 129.31.25.12
+##  - template: 16Core
+##  - hpctools: FALSE
+##  - resource:
+##     - parallel: TRUE
+##     - count: 1
+##     - type: Nodes
+##  - shares:
+##     - home: (local) /home/rich/net/home => //fi--san02/homes/rfitzjoh => Q: (remote)
+##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+```
+
+which will reserve you the entire node.  Again, a cluster will be
+started with all availabe cores unless you also specify
+`parallel=FALSE`.
+
+## `rstan`
+
+To use parallel chains, do something like:
+
+```r
+config <- didewin::didewin_config(cores=4, parallel=FALSE)
+obj <- didewin::queue_didewin(ctx, config)
+```
+
+to request four cores or
+
+```r
+config <- didewin::didewin_config(wholenode=TRUE, parallel=FALSE)
+obj <- didewin::queue_didewin(ctx, config)
+```
+
+to request a whole node.  The `parallel=FALSE` tells the system not
+to set up a cluster for use with the `parallel` pacakge.  However,
+you'll still need to specify options(mc.cores) appropriately and I
+don't expose that yet...
+
+## Using Microsoft HPC tools
+
+This section is only relevant for Windows users who are used to
+using the Windows Job Manager software in Microsoft HPC Pack.
+
+If you have used the cluster tools from windows before, then you
+may be used to seeing your name show up in the HPC job manager.  By
+default if you submit jobs with this tool, you will not see that as
+they're actually submitted by a process on the cluster but run *as*
+you.  See the [cluster
+wiki](https://mrcdata.dide.ic.ac.uk/wiki/index.php/HPC_Web_Portal#Notes_for_Windows_Job_Manager_Users)
+for more information.
+
+If you want this behaviour back, `didewin` can be configured to use
+the HPC tools on your computer.  Just run:
+
+
+```r
+didewin::didewin_config_global(hpctools=TRUE)
+```
+
+or
+
+
+```r
+options(didewin.hpctools=TRUE)
+```
+
+before creating the queue, or run
+
+
+```r
+obj <- didewin::queue(ctx, config=didewin::didewin_config(hpctools=TRUE))
+```
+
+This is experimental but I welcome feedback.
+
+# Mapping network drives
+
+For all operating systems, if you are on the wireless network you
+will need to connect to the VPN.  If you can get on a wired network
+you'll likely have a better time because the VPN and wireless
+network seems less stable in general.  Instructions for setting up
+a VPN are
+[here](https://www1.imperial.ac.uk/publichealth/departments/ide/it/remote)
+
+## Windows
+
+Your network drives are likely already mapped for you.  In fact you
+should not even need to map drives as fully qualified network names
+(e.g. `//fi--didef2/tmp`) should work for you.
+
+## Mac OS/X
+
+In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
+In the address field write the name of the share you want to
+connect to.  Useful ones are
+
+* `smb://fi--san02.dide.ic.ac.uk/homes/<username>` -- your home share
+* `smb://fi--didef2.dide.ic.ac.uk/tmp` -- the temporary share
+
+At some point in the process you should get prompted for your
+username and password, but I can't remember what that looks like.
+
+These directories will be mounted at `/Volumes/<username>` and
+`/Volumes/tmp` (so the last bit of the filename will be used as the
+mountpoint within `Volumes`).  There may be a better way of doing
+this, and the connection will not be restablished automatically so
+if anyone has a better way let me know.
+
+## Linux
+
+This is what I have done for my computer and it seems to work,
+though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
+
+First, install cifs-utils
+
+```
+sudo apt-get install cifs-utils
+```
+
+In your `/etc/fstab` file, add
+
+```
+//fi--san02/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+where:
+
+- `<dide-username>` is your dide username without the `DIDE\` bit.
+- `<local-username>` is your local username (i.e., `echo $USER`).
+- `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
+- `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
+- `<home-mount-point>` is where you want your DIDE home directory mounted
+- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
+
+**please back this file up before editing**.
+
+So for example, I have:
+
+```
+//fi--san02/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+//fi--didef2/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+```
+
+The file `.smbcredentials` contains
+
+```
+username=<dide-username>
+password=<dide-password>
+```
+
+and set this to be chmod 600 for a modicum of security, but be
+aware your password is stored in plaintext.
+
+This set up is clearly insecure.  I believe if you omit the
+credentials line you can have the system prompt you for a password
+interactively, but I'm not sure how that works with automatic
+mounting.
+
+Finally, run
+
+```
+mount -a
+```
+
+to mount all drives and with any luck it will all work and you
+don't have to do this until you get a new computer.
+
+# Running out of place
+
+The instructions above require that you are running on a network
+drive.  This might be inconvenient for people who run off the
+private network (e.g., mac users) or where you want to run things
+on the cluster part way through a project and don't want to copy
+everything over to a network drive.
+
+In this case there is (experimental) support for running "out of
+place" where the interaction with the cluster happens in a
+different directory to where your R session is running and where
+your files reside.  The wrinkle is getting the files you need
+synchronised.
+
+To do the syncronisation we use `rsync` via the
+[`syncr`](https://github.com/richfitz/syncr) package.  Install it
+with:
+
+```r
+install.packages("syncr",
+                 repos=c(CRAN="https://cran.rstudio.com",
+                         drat="https://richfitz.github.io/drat"))
+```
+
+Then, when constructing the queue, you need to specify a working
+directory for the cluster that is on the shared drive.
+
+```r
+workdir <- "Q:/cluster/context"
+didewin::didewin_config_global(workdir=workdir)
+```
+
+When you construct the context, that needs to be on a network
+share, so you might write:
+
+```r
+root <- file.path(workdir, "contexts")
+ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+```
+
+Then construct the queue as normal.
+
+```r
+obj <- didewin::queue_didewin(ctx)
+```
+
+This will automatically syncronise the sources, copying them if
+they need updating.
+
+If you had other files to synchronise they would be listed with the
+argument `sync` to `queue_didewin`.  You can update the remote
+files by running
+
+```r
+obj$sync_files()
+```
+
+at any time.
+
+# Installation
+
+There are quite a few packages here that are not on CRAN.  The
+simplest way to install the required packages should be to run:
+
+```r
+install.packages("didewin",
+                 repos=c(CRAN="https://cran.rstudio.com",
+                         drat="https://richfitz.github.io/drat"))
+```
+
+Alternatively, with devtools you can run:
+
+```r
+devtools::install_github(c(
+  "richfitz/ids",
+  "richfitz/syncr",
+  "dide-tools/context",
+  "richfitz/queuer",
+  "dide-tools/didewin"))
+```
+
+(if devtools is not install, install it with
+`install.packages("devtools")`)
+
+When upgrading, be sure to run everything in a fresh R session.

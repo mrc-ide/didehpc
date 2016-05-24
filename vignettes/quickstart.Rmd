@@ -1,7 +1,7 @@
 ---
 title: "Quickstart for R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-05-16"
+date: "2016-05-24"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quickstart for R and the DIDE cluster}
@@ -111,21 +111,14 @@ And of files that define functions that you ned to run things:
 sources <- "mysources.R"
 ```
 
-(if you had a vector here that would be OK too).  The source file
+If you had a vector here that would be OK too.  The source file
 here is very simple:
 
-
 ```r
-writeLines(c("```r", readLines(sources), "```"))
-```
-
-```
-## ```r
-## make_tree <- function(nspp) {
-##   message("I am building a tree!")
-##   ape::rtree(nspp)
-## }
-## ```
+make_tree <- function(nspp) {
+  message("I am building a tree!")
+  ape::rtree(nspp)
+}
 ```
 
 Then save this together to form a "context".
@@ -133,6 +126,9 @@ Then save this together to form a "context".
 ```r
 ctx <- context::context_save("contexts", packages=packages, sources=sources)
 ```
+
+If you have no packages or no sources, use `NULL` or omit them in
+the call below (which is the default anyway).
 
 The first argument here, `"contexts"` is the name of a directory
 that we will use to hold a lot of information about your jobs.  You
@@ -190,7 +186,7 @@ t$wait(120)
 ## [1] ape_3.4     MASS_7.3-45
 ##
 ## loaded via a namespace (and not attached):
-## [1] R6_2.1.2        context_0.0.7   nlme_3.1-125    grid_3.2.4
+## [1] R6_2.1.2        context_0.0.8   nlme_3.1-125    grid_3.2.4
 ## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
 ```
 
@@ -214,7 +210,7 @@ tree
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t4, t1, t9, t6, t2, t8, ...
+## 	t4, t9, t1, t8, t10, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -233,7 +229,7 @@ t
 ##     db: environment
 ##     expr: function (locals = FALSE)
 ##     handle: task_handle
-##     id: be8c84d4646943649504e0a1d4a50e7f
+##     id: 15b22b069b6441f89833f032eb7e740a
 ##     initialize: function (obj, id, check_exists = TRUE)
 ##     log: function ()
 ##     result: function (sanitise = FALSE)
@@ -253,7 +249,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t4, t1, t9, t6, t2, t8, ...
+## 	t4, t9, t1, t8, t10, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -288,9 +284,9 @@ t$times()
 
 ```
 ##                            task_id           submitted             started
-## 1 be8c84d4646943649504e0a1d4a50e7f 2016-05-16 12:04:40 2016-05-16 12:04:05
-##              finished   waiting  running     idle
-## 1 2016-05-16 12:04:05 -34.51194 0.015625 36.00339
+## 1 15b22b069b6441f89833f032eb7e740a 2016-05-24 09:03:33 2016-05-24 09:03:57
+##              finished  waiting    running      idle
+## 1 2016-05-24 09:03:57 23.72405 0.03125095 -21.97055
 ```
 
 You may see negative numbers for "waiting" as the submitted time is
@@ -307,21 +303,22 @@ t$log()
 ## [ bootstrap ]  Q:\cluster_test\vignette\contexts
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ ok        ]
-## [ init      ]  2016-05-16 12:04:05.526
-## [ version   ]  0.0.7
-## [ debug     ]  running as single core job
+## [ init      ]  2016-05-24 09:03:56.568
+## [ hostname  ]  FI--DIDEMRC10
+## [ version   ]  0.0.8
+## [ parallel  ]  running as single core job
 ## [ root      ]  Q:\cluster_test\vignette\contexts
-## [ task      ]  be8c84d4646943649504e0a1d4a50e7f
+## [ task      ]  15b22b069b6441f89833f032eb7e740a
 ## [ context   ]  8a89c62653fe70e1a63b735e7833be2c
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ library   ]  ape, MASS
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2016-05-16 12:04:05.761
+## [ start     ]  2016-05-24 09:03:56.927
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2016-05-16 12:04:05.808
+## [ end       ]  2016-05-24 09:03:57.036
 ##     Warning message:
 ##     package 'ape' was built under R version 3.2.5
 ```
@@ -334,19 +331,18 @@ obj$dide_log(t)
 ```
 
 ```
-## Output                          :
-## host: FI--DIDEMRC53
-## date: 2016-05-16 12:04:40
-## didewin version: 0.0.2
-## context version: 0.0.7
-## dide task id: 10259892
+## generated on host: wpia-dide136.dide.ic.ac.uk
+## generated on date: 2016-05-24 09:03:33
+## didewin version: 0.0.3
+## context version: 0.0.8
+## running on: FI--DIDEMRC10
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
 ## The command completed successfully.
 ## mapping T: -> \\fi--didef2\tmp
 ## The command completed successfully.
 ## working directory: Q:\cluster_test\vignette
-## logfile: contexts\logs\be8c84d4646943649504e0a1d4a50e7f
-## Q:\cluster_test\vignette>Rscript Q:\cluster_test\vignette\contexts\bin\context_runner Q:\cluster_test\vignette\contexts be8c84d4646943649504e0a1d4a50e7f  1>contexts\logs\be8c84d4646943649504e0a1d4a50e7f 2>&1
+## logfile: Q:\cluster_test\vignette\contexts\logs\15b22b069b6441f89833f032eb7e740a
+## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" 15b22b069b6441f89833f032eb7e740a  1>"Q:\cluster_test\vignette\contexts\logs\15b22b069b6441f89833f032eb7e740a" 2>&1
 ## Quitting
 ```
 
@@ -369,7 +365,7 @@ grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
 ```
 
 ```
-## Creating bundle: 'pasty_amurstarfish'
+## Creating bundle: 'displeasing_frog'
 ```
 
 ```
@@ -391,11 +387,11 @@ grp$status()
 ```
 
 ```
-## 8dd868a487d04501a1b8a08c4fd1781e 8a5c312403c34f1e9008f4fd67c8a426
+## 7e0c186576974d25949118edd6266fbe c02880bbebf841e6b0903a54b9ca67fb
 ##                       "COMPLETE"                       "COMPLETE"
-## fbc741da2a294ba0b82e1c5cef3c5ef6 f69751a742a14f7980fd427f3de1365e
+## b6593d8626e047c98a504aa95769a6ae b9fabb9a3b7b422c904fb103e8d83264
 ##                       "COMPLETE"                        "PENDING"
-## da49801fbc4d45d5813f34b272fd250a dd53f8efc8084b958f2e994ee9189c65
+## a0bed680b486424cb362254a4ced1817 297a85126e104ec88a7485887a8dbe3d
 ##                        "PENDING"                        "PENDING"
 ```
 
@@ -415,12 +411,12 @@ pars
 
 ```
 ##   a         b        c
-## 1 a 0.2059746 3.141593
-## 2 b 0.2059746 3.141593
-## 3 c 0.2059746 3.141593
-## 4 a 0.1765568 3.141593
-## 5 b 0.1765568 3.141593
-## 6 c 0.1765568 3.141593
+## 1 a 0.5728534 3.141593
+## 2 b 0.5728534 3.141593
+## 3 c 0.5728534 3.141593
+## 4 a 0.9082078 3.141593
+## 5 b 0.9082078 3.141593
+## 6 c 0.9082078 3.141593
 ```
 
 ```r
@@ -428,7 +424,7 @@ grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
 ```
 
 ```
-## Creating bundle: 'psychopharmacological_gangesdolphin'
+## Creating bundle: 'crazy_tsetsefly'
 ```
 
 ```
@@ -459,7 +455,7 @@ res
 ## [1] "a"
 ##
 ## [[1]][[1]]$b
-## [1] 0.2059746
+## [1] 0.5728534
 ##
 ## [[1]][[1]]$c
 ## [1] 3.141593
@@ -472,7 +468,7 @@ res
 ## [1] "b"
 ##
 ## [[2]][[1]]$b
-## [1] 0.2059746
+## [1] 0.5728534
 ##
 ## [[2]][[1]]$c
 ## [1] 3.141593
@@ -485,7 +481,7 @@ res
 ## [1] "c"
 ##
 ## [[3]][[1]]$b
-## [1] 0.2059746
+## [1] 0.5728534
 ##
 ## [[3]][[1]]$c
 ## [1] 3.141593
@@ -498,7 +494,7 @@ res
 ## [1] "a"
 ##
 ## [[4]][[1]]$b
-## [1] 0.1765568
+## [1] 0.9082078
 ##
 ## [[4]][[1]]$c
 ## [1] 3.141593
@@ -511,7 +507,7 @@ res
 ## [1] "b"
 ##
 ## [[5]][[1]]$b
-## [1] 0.1765568
+## [1] 0.9082078
 ##
 ## [[5]][[1]]$c
 ## [1] 3.141593
@@ -524,7 +520,7 @@ res
 ## [1] "c"
 ##
 ## [[6]][[1]]$b
-## [1] 0.1765568
+## [1] 0.9082078
 ##
 ## [[6]][[1]]$c
 ## [1] 3.141593
