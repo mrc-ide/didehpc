@@ -295,7 +295,7 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
   st_ctx <- obj$tasks_status(task_ids)
   db <- context::context_db(obj)
 
-  i <- st_ctx %in% c("PENDING", "RUNNING")
+  i <- st_ctx %in% c("PENDING", "RUNNING", "CANCELLED")
   if (!any(i)) {
     message("No tasks need checking")
     return()
@@ -309,6 +309,11 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
     message("manually erroring task ", id)
     db$set(id, "ERROR", "task_status")
     db$set(id, simpleError("Queued job failure"), "task_results")
+  }
+  set_task_cancel <- function(id) {
+    message(sprintf("marking task %s as cancelled", id))
+    db$set(id, "CANCELLED", "task_status")
+    db$set(id, simpleError("Task cancelled"), "task_results")
   }
 
   ## Realistically we're not interested in Finished here, and that does
@@ -355,6 +360,22 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
       message("Tasks have started on cluster, unexpectedly stopped:\n",
               paste(sprintf("\t- %s", task_ids[i][res]), collapse="\n"))
     }
+    ok <- FALSE
+  }
+
+  i <- st_dide == "CANCELLED"
+  if (any(i)) {
+    j <- i & st_ctx == "PENDING"
+    if (any(j)) {
+      message("Tasks cancelled while context booting:\n",
+              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+    }
+    j <- i & st_ctx == "RUNNING"
+    if (any(j)) {
+      message("Tasks cancelled after starting:\n",
+              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+    }
+    lapply(task_ids[i], set_task_error)
     ok <- FALSE
   }
 

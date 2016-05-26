@@ -26,7 +26,7 @@ didewin_cancel <- function(config, dide_task_id) {
   if (use_hpctools(config)) {
     hpc_cancel(cluster, dide_task_id)
   } else {
-    web_submit(cluster, dide_task_id)
+    web_cancel(cluster, dide_task_id)
   }
 }
 
@@ -187,7 +187,8 @@ status_map <- function(x, reverse=FALSE) {
            Finished="COMPLETE",
            Queued="PENDING",
            Failed="ERROR",
-           Cancelled="ORPHAN")
+           Canceled="CANCELLED"
+           Cancelled="CANCELLED") # I don't think the cluster gives this.
   ## for reverse,
   ##   MISSING -> NA
   ##   REDIRECT -> ?
