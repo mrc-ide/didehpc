@@ -187,7 +187,7 @@ status_map <- function(x, reverse=FALSE) {
            Finished="COMPLETE",
            Queued="PENDING",
            Failed="ERROR",
-           Canceled="CANCELLED"
+           Canceled="CANCELLED",
            Cancelled="CANCELLED") # I don't think the cluster gives this.
   ## for reverse,
   ##   MISSING -> NA

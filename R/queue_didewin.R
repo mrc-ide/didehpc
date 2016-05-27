@@ -89,6 +89,11 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
         wd <- prepare_path(self$config$workdir, self$config$shares)
         dest <- file_path(wd$path_local, wd$rel)
         message("Syncronising files")
+        ## TODO: this should check that everything exists below the
+        ## current directory and arrange to sync it *relatively*.
+        ## There's no point synchronising paths that are elsewhere
+        ## because that's not going to automatically remap paths
+        ## correctly.
         syncr::syncr(self$sync, dest, verbose=verbose, delete=delete)
       }
     },
@@ -124,6 +129,10 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     unsubmit=function(task_ids) {
       self$login(FALSE)
       unsubmit(self, task_ids)
+    },
+    submit_workers=function(n) {
+      self$login(FALSE)
+      submit_workers(self, n)
     },
 
     dide_id=function(task_ids) {
@@ -175,6 +184,15 @@ initialise_windows_packages <- function(obj) {
   ## installation.
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
+  if (isTRUE(obj$config$use_workers)) {
+    ## TODO: Not in the right place but keeping this stuff together
+    ## for now.
+    dir.create(path_worker_logs(context$root), FALSE, TRUE)
+    repos <- c(CRAN="https://cran.rstudio.com",
+               richfitz="https://richfitz.github.io/drat/")
+    context::cross_install_packages(path_lib, "windows", r_version_2, repos,
+                                    c("queuer", "seagull"))
+  }
 }
 
 initialise_packages_on_cluster <- function(obj, timeout=Inf) {
@@ -235,8 +253,18 @@ check_binary_packages <- function(db, path_drat) {
        dest=path_bin)
 }
 
-
+## TODO: rework queuer to pass names as the *names* of task_ids which
+## is way simpler.
 submit <- function(obj, task_ids, names) {
+  if (isTRUE(obj$config$use_workers)) {
+    ## TODO: unexported function.
+    queuer:::queue_local_submit(obj, task_ids)
+  } else {
+    submit_dide(obj, task_ids, names)
+  }
+}
+
+submit_dide <- function(obj, task_ids, names) {
   db <- context::context_db(obj)
   root <- context::context_root(obj)
   config <- obj$config
@@ -262,32 +290,83 @@ submit <- function(obj, task_ids, names) {
     dide_id <- didewin_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
-    db$set(id, path_logs(NULL, id), "log_path")
   }
 }
 
-unsubmit <- function(obj, task_ids) {
+unsubmit <- function(obj, task_ids, names) {
+  if (isTRUE(obj$config$use_workers)) {
+    ## TODO: unexported function.
+    queuer:::queue_local_unsubmit(obj, task_ids)
+  } else {
+    unsubmit_dide(obj, task_ids, names)
+  }
+}
+
+unsubmit_dide <- function(obj, task_ids) {
   db <- context::context_db(obj)
   dide_id <- vcapply(task_ids, db$get, "dide_id")
   dide_cluster <- vcapply(task_ids, db$get, "dide_cluster")
+  config <- obj$config
 
-  ## It's possible this is vectorised.
+  pb <- progress::progress_bar$new("Cancelling [:bar] :current / :total",
+                                   total=length(task_ids))
   ret <- vector("list", length(task_ids))
   for (i in seq_along(task_ids)) {
     id <- task_ids[[i]]
     dide_id <- db$get(id, "dide_id")
-    cluster <- db$get(id, "dide_cluster")
+    ## TODO: should alter the cluster here?  For now assumes that this
+    ## is not needed.
+    ##   config$cluster <- db$get(id, "dide_cluster")
+    pb$tick()
     ret[[i]] <- didewin_cancel(config, dide_id)
+    db$set(id, "CANCELLED", "task_status")
+    db$set(id, simpleError("Task cancelled"), "task_results")
   }
   ret
+}
+
+submit_workers <- function(obj, n) {
+  db <- context::context_db(obj)
+  root <- context::context_root(obj)
+  config <- obj$config
+  workdir <- obj$config$workdir %||% obj$workdir
+  id <- obj$context$id
+
+  pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
+                                   total=n)
+  ## I think that I will need to give the workers an ID so they can
+  ## write to things appropriately.  At the moment they don't do
+  ## anything with it, so that's not really happening.
+  names <- ids::adjective_animal(n)
+
+  ## TODO: it would be good if the workers could self-register on
+  ## startup so that we know if they're still up.  Otherwise this
+  ## going to be a bit of a trick.
+
+  ## TODO: I might have enough stuff here that I need another cluster
+  ## object.
+  for (nm in names) {
+    batch <- write_batch(root, id, config, workdir, nm)
+    path <- remote_path(prepare_path(batch, config$shares))
+    pb$tick()
+    dide_id <- didewin_submit(config, path, nm)
+    ## TODO: These will need dealing with at some point.
+    db$set(nm, dide_id,        "worker_dide_id")
+    db$set(nm, config$cluster, "worker_dide_cluster")
+    ## db$set(i, dide_id,        "dide_id")
+    ## db$set(i, config$cluster, "dide_cluster")
+    ## db$set(id, path_logs(NULL, id), "log_path")
+  }
 }
 
 ## What we're really looking for here is:
 ##  ctx      dide
 ##  PENDING  RUNNING -> setup, possibly stalled -> update to RUNNING
 ##  PENDING  ERROR   -> setup, has failed       -> update to ERROR
+##  PENDING  CANCELLED -> setup, manually cancelled -> update to CANCELLED
 ##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
 ##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
+##  RUNNING  CANCELLED -> was running, manually cancelled -> update to CANCELLED
 check_tasks_status_dide <- function(obj, task_ids=NULL) {
   if (is.null(task_ids)) {
     task_ids <- obj$tasks_list()
