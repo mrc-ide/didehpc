@@ -126,33 +126,28 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## See below:
       submit(self, task_ids, names)
     },
-    unsubmit=function(task_ids) {
+    unsubmit=function(t) {
       self$login(FALSE)
-      unsubmit(self, task_ids)
+      ## TODO: The task_get_id functionality would be nice throughout
+      ## the class, probably at the base level.  But need to be
+      ## careful to get it really consistent or it will just be
+      ## confusing.
+      unsubmit(self, task_get_id(t))
     },
     submit_workers=function(n) {
       self$login(FALSE)
       submit_workers(self, n)
     },
 
-    dide_id=function(task_ids) {
-      if (inherits(task_ids, "task")) {
-        task_ids <- task_ids$id
-      } else if (inherits(task_ids, "task_bundle")) {
-        task_ids <- task_ids$ids
-      } else if (is.null(task_ids)) {
-        task_ids <- self$tasks_list()
-        names(task_ids) <- task_ids
-      } else if (!is.character(task_ids)) {
-        stop("Invalid input for task_ids")
-      }
+    dide_id=function(t) {
+      task_ids <- task_get_id(t, self)
       db <- context::context_db(self)
       setNames(vcapply(task_ids, db$get, "dide_id"), names(task_ids))
     },
 
-    dide_log=function(task_id) {
+    dide_log=function(t) {
       self$login(FALSE)
-      dide_task_id <- self$dide_id(task_id)
+      dide_task_id <- self$dide_id(t)
       assert_scalar_character(dide_task_id, "task_id") # bit of trickery
       didewin_joblog(self$config, dide_task_id)
     }
@@ -290,15 +285,19 @@ submit_dide <- function(obj, task_ids, names) {
     dide_id <- didewin_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
+    db$set(id, path_logs(NULL), "log_path")
   }
 }
 
-unsubmit <- function(obj, task_ids, names) {
+unsubmit <- function(obj, task_ids) {
   if (isTRUE(obj$config$use_workers)) {
     ## TODO: unexported function.
+    ##
+    ## NOTE: This does not unsubmit the *worker* but pulls task ids
+    ## out of the local queue.
     queuer:::queue_local_unsubmit(obj, task_ids)
   } else {
-    unsubmit_dide(obj, task_ids, names)
+    unsubmit_dide(obj, task_ids)
   }
 }
 
@@ -310,17 +309,26 @@ unsubmit_dide <- function(obj, task_ids) {
 
   pb <- progress::progress_bar$new("Cancelling [:bar] :current / :total",
                                    total=length(task_ids))
-  ret <- vector("list", length(task_ids))
+  ret <- character(length(task_ids))
   for (i in seq_along(task_ids)) {
-    id <- task_ids[[i]]
-    dide_id <- db$get(id, "dide_id")
-    ## TODO: should alter the cluster here?  For now assumes that this
-    ## is not needed.
-    ##   config$cluster <- db$get(id, "dide_cluster")
     pb$tick()
-    ret[[i]] <- didewin_cancel(config, dide_id)
-    db$set(id, "CANCELLED", "task_status")
-    db$set(id, simpleError("Task cancelled"), "task_results")
+    id <- task_ids[[i]]
+    st <- tryCatch(db$get(id, "task_status"),
+                   KeyError=function(e) NULL)
+    ## Only try and cancel tasks if they seem cancellable:
+    if (!is.null(st) && st %in% c("RUNNING", "PENDING")) {
+      dide_id <- db$get(id, "dide_id")
+      ## TODO: should alter the cluster here?  For now assumes that this
+      ## is not needed.
+      ##   config$cluster <- db$get(id, "dide_cluster")
+      ret[[i]] <- didewin_cancel(config, dide_id)
+      if (ret[[i]] == "OK") {
+        db$set(id, "CANCELLED", "task_status")
+        db$set(id, simpleError("Task cancelled"), "task_results")
+      }
+    } else {
+      ret[[i]] <- "NOT_RUNNING"
+    }
   }
   ret
 }
@@ -488,4 +496,21 @@ check_rsync <- function(config) {
     }
     stop("Could not find rsync binary; can't run out of place")
   }
+}
+
+## A helper function that will probably move into queue_base
+task_get_id <- function(x, obj=NULL) {
+  if (inherits(x, "task")) {
+    task_ids <- x$id
+  } else if (inherits(x, "task_bundle")) {
+    task_ids <- x$ids
+  } else if (is.character(x)) {
+    task_ids <- x
+  } else if (is.null(x) && is.recursive(obj) && is.function(obj$tasks_list)) {
+    task_ids <- obj$tasks_list()
+    names(task_ids) <- task_ids
+  } else {
+    stop("Can't determine task id")
+  }
+  task_ids
 }

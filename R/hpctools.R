@@ -54,6 +54,7 @@ hpc_submit <- function(config, path, name) {
 hpc_cancel <- function(cluster, dide_task_id) {
   res <- tryCatch(hpc_run("job", "cancel", dide_task_id, scheduler=cluster),
                   error=function(e) e)
+  ## TODO: This seems unlikely to be correct...
   if (identical(res, character(0))) {
     ret <- "OK"
   } else {

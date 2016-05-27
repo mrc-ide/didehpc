@@ -95,7 +95,7 @@ web_cancel <- function(cluster, dide_task_id) {
   ##   - WRONG_USER
   ##   - WRONG_STATE
   ##   - ID_ERROR
-  txt
+  sub("[0-9]+\t([A-Z]+)\\s+", "\\1", txt)
 }
 
 web_shownodes <- function(cluster) {
