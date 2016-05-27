@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-05-24"
+date: "2016-05-27"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -386,8 +386,8 @@ obj
 ##     context: context
 ##     context_envir: environment
 ##     db: environment
-##     dide_id: function (task_ids)
-##     dide_log: function (task_id)
+##     dide_id: function (t)
+##     dide_log: function (t)
 ##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     initialise_context: function ()
@@ -398,6 +398,7 @@ obj
 ##     set_cluster: function (cluster = NULL)
 ##     submit: function (task_ids, names = NULL)
 ##     submit_or_delete: function (task, name = NULL)
+##     submit_workers: function (n)
 ##     sync: NULL
 ##     sync_files: function (verbose = TRUE, delete = TRUE)
 ##     task_bundle_get: function (id)
@@ -410,7 +411,7 @@ obj
 ##     tasks_status: function (task_ids = NULL, named = TRUE)
 ##     tasks_status_dide: function (task_ids = NULL)
 ##     tasks_times: function (task_ids = NULL, unit_elapsed = "secs")
-##     unsubmit: function (task_ids)
+##     unsubmit: function (t)
 ##     workdir: /home/rich/net/home/cluster_test/vignette
 ```
 
@@ -435,41 +436,41 @@ obj$cluster_load()
 ```
 ##           name free used total
 ## -------------- ---- ---- -----
-##  fi--didemrc06    1   11    12
-##  fi--didemrc07    0   12    12
-##  fi--didemrc08    0   12    12
+##  fi--didemrc06   12    0    12
+##  fi--didemrc07   12    0    12
+##  fi--didemrc08   10    2    12
 ##  fi--didemrc09    0   12    12
-##  fi--didemrc10    4    8    12
-##  fi--didemrc11    0   12    12
-##  fi--didemrc12    0   12    12
-##  fi--didemrc13    0   24    24
-##  fi--didemrc14    0   24    24
-##  fi--didemrc15    0   24    24
-##  fi--didemrc16    0   24    24
+##  fi--didemrc10    0   12    12
+##  fi--didemrc11   11    1    12
+##  fi--didemrc12   12    0    12
+##  fi--didemrc13   24    0    24
+##  fi--didemrc14   24    0    24
+##  fi--didemrc15   24    0    24
+##  fi--didemrc16   24    0    24
 ##  fi--didemrc17    0   12    12
-##  fi--didemrc18    4    8    12
-##  fi--didemrc19    0   12    12
-##  fi--didemrc20    0   12    12
-##  fi--didemrc21    4    8    12
-##  fi--didemrc22    1   11    12
-##  fi--didemrc23    0   12    12
-##  fi--didemrc24    5    7    12
+##  fi--didemrc18   12    0    12
+##  fi--didemrc19   11    1    12
+##  fi--didemrc20    8    4    12
+##  fi--didemrc21    8    4    12
+##  fi--didemrc22   11    1    12
+##  fi--didemrc23    8    4    12
+##  fi--didemrc24   12    0    12
 ##  fi--didemrc25   12    0    12
-##  fi--didemrc26    0   12    12
-##  fi--didemrc27    0   12    12
-##  fi--didemrc28    0   12    12
-##  fi--didemrc38    0   16    16
-##  fi--didemrc39    0   16    16
-##  fi--didemrc40    0   16    16
-##  fi--didemrc41    0   16    16
-##  fi--didemrc42    0   16    16
-##  fi--didemrc43   15    1    16
-##  fi--didemrc44    0   16    16
-##  fi--didemrc45    0   16    16
-##  fi--didemrc46    0   16    16
+##  fi--didemrc26   12    0    12
+##  fi--didemrc27   12    0    12
+##  fi--didemrc28   12    0    12
+##  fi--didemrc38   16    0    16
+##  fi--didemrc39   16    0    16
+##  fi--didemrc40   16    0    16
+##  fi--didemrc41   16    0    16
+##  fi--didemrc42   16    0    16
+##  fi--didemrc43   16    0    16
+##  fi--didemrc44   16    0    16
+##  fi--didemrc45   16    0    16
+##  fi--didemrc46   16    0    16
 ##  fi--didemrc47   16    0    16
-##  fi--didemrc48    0   16    16
-##  fi--didemrc49   14    2    16
+##  fi--didemrc48   16    0    16
+##  fi--didemrc49   16    0    16
 ##  fi--didemrc50   16    0    16
 ##  fi--didemrc51    0   20    20
 ##  fi--didemrc52    0   20    20
@@ -477,14 +478,14 @@ obj$cluster_load()
 ##  fi--didemrc54    0   20    20
 ##  fi--didemrc55    0   20    20
 ##  fi--didemrc56    0   20    20
-##  fi--didemrc57    0   20    20
-##  fi--didemrc58    0   20    20
-##  fi--didemrc59   18    2    20
+##  fi--didemrc57   20    0    20
+##  fi--didemrc58   20    0    20
+##  fi--didemrc59   20    0    20
 ##  fi--didemrc60   20    0    20
-##  fi--didemrc61    0   20    20
-##  fi--didemrc62    0   20    20
-##  fi--didemrc63    0   20    20
-##  fi--didemrc64    0   20    20
+##  fi--didemrc61   20    0    20
+##  fi--didemrc62   20    0    20
+##  fi--didemrc63   20    0    20
+##  fi--didemrc64   20    0    20
 ##  fi--didemrc65    0   32    32
 ##  fi--didemrc66    0   32    32
 ##  fi--didemrc67   24    0    24
@@ -495,12 +496,12 @@ obj$cluster_load()
 ##  fi--didemrc72   24    0    24
 ##  fi--didemrc73   24    0    24
 ##  fi--didemrc74   24    0    24
-##  fi--didemrc75   12    4    16
-##  fi--didemrc76    0   16    16
+##  fi--didemrc75   16    0    16
+##  fi--didemrc76   16    0    16
 ##  fi--didemrc77   16    0    16
-##  fi--didemrc78   22    6    28
+##  fi--didemrc78   27    1    28
 ## -------------- ---- ---- -----
-## fi--didemrchnb  372  772  1144
+## fi--didemrchnb  906  238  1144
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -575,7 +576,7 @@ t$wait(100)
 ## [1] methods   stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_3.4
+## [1] ape_3.5
 ##
 ## loaded via a namespace (and not attached):
 ## [1] R6_2.1.2        context_0.0.8   nlme_3.1-125    grid_3.2.4
@@ -619,7 +620,7 @@ t
 ##     db: environment
 ##     expr: function (locals = FALSE)
 ##     handle: task_handle
-##     id: f37b382b0d4f467eb8f621dea02ef75c
+##     id: 0a9f2bf4dcc74b7cabf41a19263e6b46
 ##     initialize: function (obj, id, check_exists = TRUE)
 ##     log: function ()
 ##     result: function (sanitise = FALSE)
@@ -647,9 +648,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 f37b382b0d4f467eb8f621dea02ef75c 2016-05-24 09:25:14    <NA>     <NA>
+## 1 0a9f2bf4dcc74b7cabf41a19263e6b46 2016-05-27 12:09:29    <NA>     <NA>
 ##     waiting running idle
-## 1 0.3984182      NA   NA
+## 1 0.6493144      NA   NA
 ```
 
 and you can try and get the result of running the task:
@@ -659,7 +660,7 @@ t$result()
 ```
 
 ```
-## Error: task f37b382b0d4f467eb8f621dea02ef75c is unfetchable: PENDING
+## Error: task 0a9f2bf4dcc74b7cabf41a19263e6b46 is unfetchable: PENDING
 ```
 
 The `wait` function, used above, is like `result` but it will
@@ -675,7 +676,7 @@ t$wait(100)
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t7, t10, t4, t9, ...
+## 	t8, t6, t10, t5, t2, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -691,7 +692,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t7, t10, t4, t9, ...
+## 	t8, t6, t10, t5, t2, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -706,22 +707,22 @@ t$log()
 ## [ bootstrap ]  Q:\cluster_test\vignette\contexts
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ ok        ]
-## [ init      ]  2016-05-24 09:25:37.386
-## [ hostname  ]  FI--DIDEMRC06
+## [ init      ]  2016-05-27 12:09:48.801
+## [ hostname  ]  FI--DIDEMRC20
 ## [ version   ]  0.0.8
 ## [ parallel  ]  running as single core job
 ## [ root      ]  Q:\cluster_test\vignette\contexts
-## [ task      ]  f37b382b0d4f467eb8f621dea02ef75c
+## [ task      ]  0a9f2bf4dcc74b7cabf41a19263e6b46
 ## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ library   ]  ape
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2016-05-24 09:25:37.651
+## [ start     ]  2016-05-27 12:09:48.988
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2016-05-24 09:25:37.745
+## [ end       ]  2016-05-27 12:09:49.051
 ##     Warning message:
 ##     package 'ape' was built under R version 3.2.5
 ```
@@ -741,17 +742,18 @@ obj$dide_log(t)
 
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
-## generated on date: 2016-05-24 09:25:14
+## generated on date: 2016-05-27 12:09:29
 ## didewin version: 0.0.3
 ## context version: 0.0.8
-## running on: FI--DIDEMRC06
+## running on: FI--DIDEMRC20
+## this is a single task
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
 ## The command completed successfully.
 ## mapping T: -> \\fi--didef2\tmp
 ## The command completed successfully.
 ## working directory: Q:\cluster_test\vignette
-## logfile: Q:\cluster_test\vignette\contexts\logs\f37b382b0d4f467eb8f621dea02ef75c
-## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" f37b382b0d4f467eb8f621dea02ef75c  1>"Q:\cluster_test\vignette\contexts\logs\f37b382b0d4f467eb8f621dea02ef75c" 2>&1
+## logfile: Q:\cluster_test\vignette\contexts\logs\0a9f2bf4dcc74b7cabf41a19263e6b46
+## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" 0a9f2bf4dcc74b7cabf41a19263e6b46  1>"Q:\cluster_test\vignette\contexts\logs\0a9f2bf4dcc74b7cabf41a19263e6b46" 2>&1
 ## Quitting
 ```
 
@@ -762,7 +764,7 @@ obj$tasks_list()
 ```
 
 ```
-## [1] "e223c52a29524c8aa75866fed559d4bf" "f37b382b0d4f467eb8f621dea02ef75c"
+## [1] "0a9f2bf4dcc74b7cabf41a19263e6b46" "927f552345164e35a5bdae2cf263dcf6"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -783,7 +785,7 @@ id
 ```
 
 ```
-## [1] "f37b382b0d4f467eb8f621dea02ef75c"
+## [1] "0a9f2bf4dcc74b7cabf41a19263e6b46"
 ```
 
 ```r
@@ -796,7 +798,7 @@ t2$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t7, t10, t4, t9, ...
+## 	t8, t6, t10, t5, t2, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -842,11 +844,11 @@ grp$status()
 ```
 
 ```
-## 822abc438e6a4dac801452248b2f8155 63f6c9ddc667423bab79ee723f7b1c45
+## ff2bcd3a365146c48728c435edaa3861 2cf18f8ec8c74ab3ae3b430408bf1abf
 ##                       "COMPLETE"                       "COMPLETE"
-## cac52a12ac6d400181f681cc9dac2c9b eeb1750d695546d8acdabdd685a0db22
-##                       "COMPLETE"                        "PENDING"
-## 93ac494715374e5faf47a2418fff9380 c815eb4c468842798c78ca43780547d4
+## b02b441869eb4c35badb43f64f557a61 356d937b5a2a45f6a51ddfca88351835
+##                       "COMPLETE"                       "COMPLETE"
+## a3d94e773bab4a4e8fe49b5bfe942ed3 7e5439d00fd3403c88fab2680f116f62
 ##                        "PENDING"                        "PENDING"
 ```
 
@@ -980,6 +982,105 @@ res
 ## [[6]][[1]]$c
 ## [1] 3.141593
 ```
+
+## Cancelling and stopping jobs
+
+Suppose you fire off a bunch of jobs and realise that you have the
+wrong data or they're all going to fail - you can stop them fairly
+easily.
+
+Here's a job that will run for an hour and return nothing:
+
+```r
+t <- obj$enqueue(Sys.sleep(3600))
+```
+
+Wait for the job to start up:
+
+```r
+while (t$status() == "PENDING") {
+  Sys.sleep(.5)
+}
+```
+
+Now that it's started it can be cancelled with the `$unsubmit` method:
+
+```r
+obj$unsubmit(t$id)
+```
+
+```
+## [1] "OK"
+```
+
+unsubmitting multiple times is safe, and will have no effect.
+
+```r
+obj$unsubmit(t$id)
+```
+
+```
+## [1] "NOT_RUNNING"
+```
+
+Note that the task is not actually deleted (see below); you can
+still get at the expression:
+
+```r
+t$expr()
+```
+
+```
+## Sys.sleep(3600)
+```
+
+but you cannot retrieve results:
+
+```r
+t$result()
+```
+
+```
+## Error: task d61bccd2b6704e739ff700cbda689906 is unfetchable: CANCELLED
+```
+
+The argument to `unsubmit` can be a vector.  For example, to
+unsubmit a whole task bundle:
+
+```r
+grp <- queuer::qlapply(rep(3600, 4), Sys.sleep, obj)
+```
+
+```
+## Creating bundle: 'unsuspecting_nematode'
+```
+
+```
+## saving 4 tasks...
+```
+
+```
+## submitting 4 tasks...
+```
+
+```r
+obj$unsubmit(grp$ids)
+```
+
+```
+## [1] "OK" "OK" "OK" "OK"
+```
+
+### Deleting jobs
+
+Deleting tasks is supported but it isn't entirely encouraged.  Not
+all of the functions behave well with missing tasks, so if you
+delete things and still have old task handles floating around you
+might get confusing results.
+
+There is a delete method (`obj$delete`) that will delete a job,
+first unsubmitting it if it has been submitted.  It takes a single
+id as an argument.
 
 # Misc
 

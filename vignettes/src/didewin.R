@@ -446,6 +446,50 @@ grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
 res <- grp$wait(120)
 res
 
+## ## Cancelling and stopping jobs
+
+## Suppose you fire off a bunch of jobs and realise that you have the
+## wrong data or they're all going to fail - you can stop them fairly
+## easily.
+
+## Here's a job that will run for an hour and return nothing:
+t <- obj$enqueue(Sys.sleep(3600))
+
+## Wait for the job to start up:
+while (t$status() == "PENDING") {
+  Sys.sleep(.5)
+}
+
+## Now that it's started it can be cancelled with the `$unsubmit` method:
+obj$unsubmit(t$id)
+
+## unsubmitting multiple times is safe, and will have no effect.
+obj$unsubmit(t$id)
+
+## Note that the task is not actually deleted (see below); you can
+## still get at the expression:
+t$expr()
+
+## but you cannot retrieve results:
+##+ error=TRUE
+t$result()
+
+## The argument to `unsubmit` can be a vector.  For example, to
+## unsubmit a whole task bundle:
+grp <- queuer::qlapply(rep(3600, 4), Sys.sleep, obj)
+obj$unsubmit(grp$ids)
+
+## ### Deleting jobs
+
+## Deleting tasks is supported but it isn't entirely encouraged.  Not
+## all of the functions behave well with missing tasks, so if you
+## delete things and still have old task handles floating around you
+## might get confusing results.
+
+## There is a delete method (`obj$delete`) that will delete a job,
+## first unsubmitting it if it has been submitted.  It takes a single
+## id as an argument.
+
 ## # Misc
 
 ## ## Jobs that require compiled code
