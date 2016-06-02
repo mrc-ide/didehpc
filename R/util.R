@@ -74,8 +74,8 @@ vlapply <- function(X, FUN, ...) {
   if (is.null(a)) b else a
 }
 
-strrep <- function(x, n) {
-  paste(rep(x, n), collapse="")
+strrep <- function(x, times) {
+  paste(rep(x, times), collapse="")
 }
 
 is_directory <- function(path) {
@@ -84,4 +84,8 @@ is_directory <- function(path) {
 
 hostname <- function() {
   Sys.info()[["nodename"]]
+}
+
+read_lines <- function(...) {
+  paste(readLines(...), collapse="\n")
 }

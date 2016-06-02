@@ -124,6 +124,10 @@ path_logs <- function(root, id=NULL) {
 path_worker_logs <- function(root, id=NULL) {
   file_path(root, "workers", id)
 }
+## NOTE: This must match the value in the template.
+path_rrq_worker_logs <- function(root, id=NULL) {
+  file_path(root, "rrq_workers", id)
+}
 
 ## These will change.
 dide_home <- function(path, username) {

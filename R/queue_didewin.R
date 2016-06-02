@@ -29,6 +29,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     config=NULL,
     logged_in=FALSE,
     sync=NULL,
+    templates=NULL,
 
     initialize=function(context, config, initialise, rtools, sync) {
       if (!inherits(config, "didewin_config")) {
@@ -73,6 +74,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       if (needs_rtools(rtools, self$config, self$context)) {
         self$config$rtools <- rtools_info(self$config)
       }
+
+      workdir <- self$config$workdir %||% self$workdir
+      self$templates <- batch_templates(context, config, workdir)
     },
 
     login=function(always=TRUE) {
@@ -134,9 +138,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## confusing.
       unsubmit(self, task_get_id(t))
     },
-    submit_workers=function(n) {
+    submit_workers=function(n, rrq) {
       self$login(FALSE)
-      submit_workers(self, n)
+      submit_workers(self, n, rrq)
     },
 
     dide_id=function(t) {
@@ -179,14 +183,28 @@ initialise_windows_packages <- function(obj) {
   ## installation.
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
+
+  ## TODO: These bits are really not very nice!
   if (isTRUE(obj$config$use_workers)) {
     ## TODO: Not in the right place but keeping this stuff together
     ## for now.
     dir.create(path_worker_logs(context$root), FALSE, TRUE)
     repos <- c(CRAN="https://cran.rstudio.com",
                richfitz="https://richfitz.github.io/drat/")
-    context::cross_install_packages(path_lib, "windows", r_version_2, repos,
-                                    c("queuer", "seagull"))
+    context::cross_install_packages(
+      path_lib, "windows", r_version_2, repos, c("queuer", "seagull"))
+  }
+
+  if (isTRUE(obj$config$use_rrq_workers)) {
+    loadNamespace("rrq") # force presence of these packages
+    dir.create(path_rrq_worker_logs(context$root), FALSE, TRUE)
+    repos <- c(CRAN="https://cran.rstudio.com",
+               richfitz="https://richfitz.github.io/drat/")
+    context::cross_install_packages(
+      path_lib, "windows", r_version_2, repos, "rrq")
+    ## TODO: once settled, make optional.
+    dest <- file.path(context::context_root(obj), "bin", "rrq_worker")
+    file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
   }
 }
 
@@ -264,6 +282,7 @@ submit_dide <- function(obj, task_ids, names) {
   root <- context::context_root(obj)
   config <- obj$config
   workdir <- obj$config$workdir %||% obj$workdir
+  template <- obj$templates$runner
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
                                    total=length(task_ids))
@@ -279,7 +298,7 @@ submit_dide <- function(obj, task_ids, names) {
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
-    batch <- write_batch(root, id, config, workdir)
+    batch <- write_batch(id, root, template)
     path <- remote_path(prepare_path(batch, config$shares))
     pb$tick()
     dide_id <- didewin_submit(config, path, names[[id]])
@@ -333,38 +352,45 @@ unsubmit_dide <- function(obj, task_ids) {
   ret
 }
 
-submit_workers <- function(obj, n) {
+submit_workers <- function(obj, n, rrq=FALSE) {
   db <- context::context_db(obj)
   root <- context::context_root(obj)
   config <- obj$config
   workdir <- obj$config$workdir %||% obj$workdir
   id <- obj$context$id
+  template <- if (rrq) obj$templates$rrq_worker else obj$templates$worker
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
                                    total=n)
-  ## I think that I will need to give the workers an ID so they can
-  ## write to things appropriately.  At the moment they don't do
-  ## anything with it, so that's not really happening.
-  names <- ids::adjective_animal(n)
+  names <- paste0(ids::adjective_animal(), "_", seq_len(n))
 
   ## TODO: it would be good if the workers could self-register on
   ## startup so that we know if they're still up.  Otherwise this
   ## going to be a bit of a trick.
+  ##
+  ## The Redis workers can, but it's a bit of a faff.  Realistically,
+  ## this does not need to be done though because we can start while
+  ## we wait for the workers to come up.
+  path_log <- if (rrq) path_rrq_worker_logs(NULL) else path_worker_logs(NULL)
 
   ## TODO: I might have enough stuff here that I need another cluster
   ## object.
   for (nm in names) {
-    batch <- write_batch(root, id, config, workdir, nm)
+    batch <- write_batch(nm, root, template, FALSE)
     path <- remote_path(prepare_path(batch, config$shares))
     pb$tick()
     dide_id <- didewin_submit(config, path, nm)
-    ## TODO: These will need dealing with at some point.
-    db$set(nm, dide_id,        "worker_dide_id")
-    db$set(nm, config$cluster, "worker_dide_cluster")
-    ## db$set(i, dide_id,        "dide_id")
-    ## db$set(i, config$cluster, "dide_cluster")
-    ## db$set(id, path_logs(NULL, id), "log_path")
+    didewin_joblog(config, dide_id)
+    ## NOTE: there is nothing here to organise the interaction with
+    ## these yet, though some things might work directly.
+    db$set(nm, dide_id,        "dide_id")
+    db$set(nm, config$cluster, "dide_cluster")
+    db$set(id, path_log,       "log_path")
   }
+
+  ## There is a question here of whether we should wait for these to
+  ## come up.  That's in rrq
+  names
 }
 
 ## What we're really looking for here is:
