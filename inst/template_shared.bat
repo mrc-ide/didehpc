@@ -28,6 +28,10 @@ ECHO This is a parallel job: will use %CPP_NUMCPUS%
 set CONTEXT_CORES=%CCP_NUMCPUS%
 {{{/parallel}}}
 
+{{{#redis_host}}}
+set REDIS_HOST={{{redis_host}}}
+{{{/redis_host}}}
+
 %CONTEXT_WORKDRIVE%
 cd \%CONTEXT_WORKDIR%
 ECHO working directory: %CD%

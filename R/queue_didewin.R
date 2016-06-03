@@ -36,6 +36,15 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
         stop("Expected a didewin_config for 'config'")
       }
       super$initialize(context, initialise)
+
+      if (isTRUE(config$use_rrq_workers)) {
+        ## TODO: This is annoying because it means that all workers
+        ## will share a key across multiple invocations.  So this may
+        ## change in future.  Probably this should happen in the
+        ## config bit but that requires fixing that so it knows about
+        ## workers.
+        config$rrq_key_alive <- rrq::rrq_key_worker_alive(context$id)
+      }
       self$config <- config
 
       ## Will throw if the context is not network accessible.
@@ -138,9 +147,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## confusing.
       unsubmit(self, task_get_id(t))
     },
-    submit_workers=function(n, rrq) {
+    submit_workers=function(n, rrq, wait=FALSE) {
       self$login(FALSE)
-      submit_workers(self, n, rrq)
+      submit_workers(self, n, rrq, wait)
     },
 
     dide_id=function(t) {
@@ -352,7 +361,7 @@ unsubmit_dide <- function(obj, task_ids) {
   ret
 }
 
-submit_workers <- function(obj, n, rrq=FALSE) {
+submit_workers <- function(obj, n, rrq=FALSE, wait=FALSE) {
   db <- context::context_db(obj)
   root <- context::context_root(obj)
   config <- obj$config
@@ -388,8 +397,10 @@ submit_workers <- function(obj, n, rrq=FALSE) {
     db$set(id, path_log,       "log_path")
   }
 
-  ## There is a question here of whether we should wait for these to
-  ## come up.  That's in rrq
+  if (wait && rrq) {
+    con <- redux::hiredis(host=obj$config$cluster)
+    rrq::workers_wait(con, n, obj$config$rrq_key_alive)
+  }
   names
 }
 

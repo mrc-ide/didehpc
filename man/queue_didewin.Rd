@@ -5,7 +5,7 @@
 \title{Create a queue object}
 \usage{
 queue_didewin(context, config = didewin_config(), initialise = TRUE,
-  rtools = NULL)
+  rtools = NULL, sync = NULL)
 }
 \arguments{
 \item{context}{A context}

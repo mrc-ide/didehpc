@@ -7,7 +7,8 @@
 \usage{
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
-  cores = NULL, wholenode = NULL, parallel = NULL)
+  cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
+  workdir = NULL)
 
 didewin_config_global(...)
 }
@@ -61,6 +62,10 @@ Details).  If \code{parallel} is set to \code{FALSE} then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
 you're just after the whole node for the memory).}
+
+\item{hpctools}{Use HPC tools if available?}
+
+\item{workdir}{The path to work in on the cluster, if running out of place.}
 
 \item{...}{arguments to \code{didewin_config}}
 }

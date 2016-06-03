@@ -36,10 +36,6 @@ batch_templates <- function(context, config, workdir) {
   ## TODO: Date might be wrong, because this is cached.
   r_version <- paste0(R_BITS, "_",
                       paste(unclass(R_VERSION)[[1]], collapse="_"))
-  redis_host <- switch(config$cluster,
-                       "fi--didemrchnb"="11.0.0.1",
-                       "fi--dideclusthn"="12.0.0.1",
-                       "")
 
   dat <- list(hostname=hostname(),
               date=as.character(Sys.Date()),
@@ -56,7 +52,8 @@ batch_templates <- function(context, config, workdir) {
                 list(drive=x$drive_remote,
                      path=windows_path(x$path_remote)))),
               rtools=config$rtools,
-              redis_host=redis_host)
+              redis_host=redis_host(config$cluster),
+              rrq_key_alive=config$rrq_key_alive)
 
   lapply(read_templates(), function(x)
     drop_blank(whisker::whisker.render(x, dat)))

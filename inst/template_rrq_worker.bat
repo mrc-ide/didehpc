@@ -5,7 +5,7 @@ set RRQ_WORKER_ID={{{worker_id}}}
 <%={{ }}=%>
 
 set REDIS_HOST={{{redis_host}}}
-set RRQ_WORKER_KEY_ALIVE=rrq:%CONTEXT_ID%:workers:alive
+set RRQ_WORKER_KEY_ALIVE={{{rrq_key_alive}}}
 set CONTEXT_LOGFILE={{{context_root}}}\rrq_workers\%RRQ_WORKER_ID%
 ECHO logfile: %CONTEXT_LOGFILE%
 
