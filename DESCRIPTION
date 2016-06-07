@@ -25,6 +25,8 @@ Suggests:
     buildr,
     knitr,
     rmarkdown,
+    rrq,
+    seagull,
     syncr,
     testthat
 RoxygenNote: 5.0.1

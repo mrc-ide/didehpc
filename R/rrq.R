@@ -1,11 +1,16 @@
+##' @importFrom rrq get_rrq_controller
 ##' @export
 get_rrq_controller.queue_didewin <- function(x, ...) {
+  if (!isTRUE(x$config$use_rrq)) {
+    stop("rrq is not enabled")
+  }
   con <- redux::hiredis(host=x$config$cluster)
   rrq::rrq_controller(x$context, con, x$context_envir)
 }
 
 initialise_rrq <- function(obj) {
-  if (obj$config$use_rrq_workers) {
+  if (isTRUE(obj$config$use_rrq)) {
+    loadNamespace("rrq")
     root <- context::context_root(obj)
     ## TODO: This is annoying because it means that all workers
     ## will share a key across multiple invocations.  So this may

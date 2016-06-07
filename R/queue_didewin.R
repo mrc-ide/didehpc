@@ -143,9 +143,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## confusing.
       unsubmit(self, task_get_id(t))
     },
-    submit_workers=function(n, rrq, wait=FALSE) {
+    submit_workers=function(n, wait=FALSE) {
       self$login(FALSE)
-      submit_workers(self, n, rrq, wait)
+      submit_workers(self, n, wait)
     },
 
     dide_id=function(t) {
@@ -159,6 +159,10 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       dide_task_id <- self$dide_id(t)
       assert_scalar_character(dide_task_id, "task_id") # bit of trickery
       didewin_joblog(self$config, dide_task_id)
+    },
+
+    rrq_controller=function() {
+      get_rrq_controller(self)
     }
   ))
 

@@ -8,7 +8,7 @@
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
   cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
-  workdir = NULL)
+  workdir = NULL, use_workers = NULL, use_rrq = NULL)
 
 didewin_config_global(...)
 }
@@ -66,6 +66,22 @@ you're just after the whole node for the memory).}
 \item{hpctools}{Use HPC tools if available?}
 
 \item{workdir}{The path to work in on the cluster, if running out of place.}
+
+\item{use_workers}{Submit jobs to an internal queue, and run them
+on a set of workers submitted separately?  If \code{TRUE}, then
+\code{enqueue} and the bulk submission commands no longer submit
+to the DIDE queue.  Instead they create an \emph{internal} queue
+that workers can poll.  After queuing tasks, use
+\code{submit_workers} to submit workers that will process these
+tasks, terminating when they are done.  You can use this
+approach to throttle the resources you need.}
+
+\item{use_rrq}{Use \code{rrq} to run a set of workers on the
+cluster.  This is an experimental option, and the interface here
+may change.  For now all this does is ensure a few additional
+packages are installed, and tweaks some environment variables in
+the generated batch files.  Actual rrq workers are submitted
+with the \code{submit_workers} method of the object.}
 
 \item{...}{arguments to \code{didewin_config}}
 }

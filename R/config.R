@@ -89,12 +89,28 @@
 ##'
 ##' @param workdir The path to work in on the cluster, if running out of place.
 ##'
+##' @param use_workers Submit jobs to an internal queue, and run them
+##'   on a set of workers submitted separately?  If \code{TRUE}, then
+##'   \code{enqueue} and the bulk submission commands no longer submit
+##'   to the DIDE queue.  Instead they create an \emph{internal} queue
+##'   that workers can poll.  After queuing tasks, use
+##'   \code{submit_workers} to submit workers that will process these
+##'   tasks, terminating when they are done.  You can use this
+##'   approach to throttle the resources you need.
+##'
+##' @param use_rrq Use \code{rrq} to run a set of workers on the
+##'   cluster.  This is an experimental option, and the interface here
+##'   may change.  For now all this does is ensure a few additional
+##'   packages are installed, and tweaks some environment variables in
+##'   the generated batch files.  Actual rrq workers are submitted
+##'   with the \code{submit_workers} method of the object.
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
                            template=NULL, cores=NULL,
                            wholenode=NULL, parallel=NULL, hpctools=NULL,
-                           workdir=NULL) {
+                           workdir=NULL, use_workers=NULL, use_rrq=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -107,7 +123,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 wholenode=wholenode,
                 parallel=parallel,
                 hpctools=hpctools,
-                workdir=workdir)
+                workdir=workdir,
+                use_workers=use_workers,
+                use_rrq=use_rrq)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -122,6 +140,10 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
       stop("workdir must be an existing directory")
     }
     workdir <- normalizePath(dat$workdir)
+  }
+
+  if (isTRUE(use_workers) && isTRUE(use_rrq)) {
+    stop("You can't specify both use_workers and use_rrq")
   }
 
   cluster <- match_value(dat$cluster, valid_clusters())
@@ -148,7 +170,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               hpctools=dat$hpctools,
               resource=resource,
               shares=shares,
-              workdir=workdir)
+              workdir=workdir,
+              use_workers=dat$use_workers,
+              use_rrq=dat$use_rrq)
 
   class(ret) <- "didewin_config"
   ret
@@ -195,6 +219,8 @@ didewin_config_defaults <- function() {
     wholenode    = getOption("didewin.wholenode",    NULL),
     parallel     = getOption("didewin.parallel",     NULL),
     workdir      = getOption("didewin.workdir",      NULL),
+    use_workers  = getOption("didewin.use_workers",  FALSE),
+    use_rrq      = getOption("didewin.use_rrq",      FALSE),
     hpctools     = getOption("didewin.hpctools",     FALSE))
 
   if (is.null(defaults$credentials)) {

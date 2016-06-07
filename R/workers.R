@@ -1,5 +1,6 @@
 initialise_seagull <- function(obj) {
   if (isTRUE(obj$config$use_workers)) {
+    loadNamespace("seagull")
     root <- context::context_root(obj)
     dir.create(path_worker_logs(context$root), FALSE, TRUE)
     repos <- c(CRAN="https://cran.rstudio.com",
@@ -12,7 +13,14 @@ initialise_seagull <- function(obj) {
   }
 }
 
-submit_workers <- function(obj, n, rrq=FALSE, wait=NULL) {
+submit_workers <- function(obj, n, wait=NULL) {
+  if (isTRUE(obj$config$use_rrq)) {
+    rrq <- TRUE
+  } else if (isTRUE(obj$config$use_workers)) {
+    rrq <- FALSE
+  } else {
+    stop("workers not enabled")
+  }
   wait <- wait %||% rrq
   if (wait && !rrq) {
     ## TODO: it would be good if the workers could self-register on
