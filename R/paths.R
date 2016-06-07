@@ -141,7 +141,8 @@ dide_temp <- function(path) {
 }
 
 detect_mount_fail <- function() {
-  cbind(host=character(), path=character(), local=character())
+  cbind(host=character(), path=character(), local=character(),
+        remote=character())
 }
 
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
