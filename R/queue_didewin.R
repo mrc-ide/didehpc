@@ -37,14 +37,6 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       }
       super$initialize(context, initialise)
 
-      if (isTRUE(config$use_rrq_workers)) {
-        ## TODO: This is annoying because it means that all workers
-        ## will share a key across multiple invocations.  So this may
-        ## change in future.  Probably this should happen in the
-        ## config bit but that requires fixing that so it knows about
-        ## workers.
-        config$rrq_key_alive <- rrq::rrq_key_worker_alive(context$id)
-      }
       self$config <- config
 
       ## Will throw if the context is not network accessible.
@@ -79,13 +71,17 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       }
 
       initialise_windows_packages(self)
+      initialise_seagull(self)
+      initialise_rrq(self)
 
       if (needs_rtools(rtools, self$config, self$context)) {
         self$config$rtools <- rtools_info(self$config)
       }
 
-      workdir <- self$config$workdir %||% self$workdir
-      self$templates <- batch_templates(context, config, workdir)
+      ## NOTE: templates need to be done last because any of the bits
+      ## above might alter things that are used in constructing the
+      ## templates.
+      initialise_templates(self)
     },
 
     login=function(always=TRUE) {
@@ -192,29 +188,6 @@ initialise_windows_packages <- function(obj) {
   ## installation.
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
-
-  ## TODO: These bits are really not very nice!
-  if (isTRUE(obj$config$use_workers)) {
-    ## TODO: Not in the right place but keeping this stuff together
-    ## for now.
-    dir.create(path_worker_logs(context$root), FALSE, TRUE)
-    repos <- c(CRAN="https://cran.rstudio.com",
-               richfitz="https://richfitz.github.io/drat/")
-    context::cross_install_packages(
-      path_lib, "windows", r_version_2, repos, c("queuer", "seagull"))
-  }
-
-  if (isTRUE(obj$config$use_rrq_workers)) {
-    loadNamespace("rrq") # force presence of these packages
-    dir.create(path_rrq_worker_logs(context$root), FALSE, TRUE)
-    repos <- c(CRAN="https://cran.rstudio.com",
-               richfitz="https://richfitz.github.io/drat/")
-    context::cross_install_packages(
-      path_lib, "windows", r_version_2, repos, "rrq")
-    ## TODO: once settled, make optional.
-    dest <- file.path(context::context_root(obj), "bin", "rrq_worker")
-    file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
-  }
 }
 
 initialise_packages_on_cluster <- function(obj, timeout=Inf) {
@@ -227,6 +200,11 @@ initialise_packages_on_cluster <- function(obj, timeout=Inf) {
   ## think; once we have context loaded there's no reason why a job
   ## cannot error.  This would be really good and not too bad to test.
   t$wait(timeout=timeout)
+}
+
+initialise_templates <- function(obj) {
+  workdir <- obj$config$workdir %||% obj$workdir
+  obj$templates <- batch_templates(obj$context, obj$config, workdir)
 }
 
 check_binary_packages <- function(db, path_drat) {
@@ -359,49 +337,6 @@ unsubmit_dide <- function(obj, task_ids) {
     }
   }
   ret
-}
-
-submit_workers <- function(obj, n, rrq=FALSE, wait=FALSE) {
-  db <- context::context_db(obj)
-  root <- context::context_root(obj)
-  config <- obj$config
-  workdir <- obj$config$workdir %||% obj$workdir
-  id <- obj$context$id
-  template <- if (rrq) obj$templates$rrq_worker else obj$templates$worker
-
-  pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
-                                   total=n)
-  names <- paste0(ids::adjective_animal(), "_", seq_len(n))
-
-  ## TODO: it would be good if the workers could self-register on
-  ## startup so that we know if they're still up.  Otherwise this
-  ## going to be a bit of a trick.
-  ##
-  ## The Redis workers can, but it's a bit of a faff.  Realistically,
-  ## this does not need to be done though because we can start while
-  ## we wait for the workers to come up.
-  path_log <- if (rrq) path_rrq_worker_logs(NULL) else path_worker_logs(NULL)
-
-  ## TODO: I might have enough stuff here that I need another cluster
-  ## object.
-  for (nm in names) {
-    batch <- write_batch(nm, root, template, FALSE)
-    path <- remote_path(prepare_path(batch, config$shares))
-    pb$tick()
-    dide_id <- didewin_submit(config, path, nm)
-    didewin_joblog(config, dide_id)
-    ## NOTE: there is nothing here to organise the interaction with
-    ## these yet, though some things might work directly.
-    db$set(nm, dide_id,        "dide_id")
-    db$set(nm, config$cluster, "dide_cluster")
-    db$set(id, path_log,       "log_path")
-  }
-
-  if (wait && rrq) {
-    con <- redux::hiredis(host=obj$config$cluster)
-    rrq::workers_wait(con, n, obj$config$rrq_key_alive)
-  }
-  names
 }
 
 ## What we're really looking for here is:
