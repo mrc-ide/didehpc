@@ -279,13 +279,13 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
-    ret <- list(parallel=parallel %||% TRUE, count=cores, type="Cores")
+    ret <- list(parallel=parallel %||% cores > 1, count=cores, type="Cores")
   } else if (template != "GeneralNodes" || isTRUE(wholenode)) {
     ret <- list(parallel=parallel %||% TRUE, count=1L, type="Nodes")
   } else {
     ret <- list(parallel=parallel %||% FALSE, count=1L, type="Cores")
   }
-  invisible(ret)
+  ret
 }
 
 ## This function will detect home, temp and if the current working
