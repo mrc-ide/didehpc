@@ -264,7 +264,7 @@ valid_clusters <- function() {
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   if (cluster == "fi--didemrchnb") {
     valid_templates <- c("GeneralNodes", "12Core", "12and16Core", "16Core",
-                         "24Core")
+                         "20Core", "24Core")
   } else {
     valid_templates <- c("GeneralNodes", "4Core", "8Core")
   }
