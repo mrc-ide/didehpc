@@ -370,7 +370,10 @@ dide_detect_mount <- function(home, temp, shares, workdir, username) {
       ## Could take the *longest* here?
       warning("Having trouble determining the working directory mount point")
     } else { # sum(i) == 0
-      stop(sprintf("Running out of place: %s is not on a network share", workdir))
+      ## NOTE: This needs to be checked later when firing up the
+      ## queue, but I believe that it is.
+      message(sprintf("Running out of place: %s is not on a network share",
+                      workdir))
     }
   }
 
