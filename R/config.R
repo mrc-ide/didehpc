@@ -422,11 +422,9 @@ needs_rtools <- function(rtools, config, context) {
   isTRUE(unname(rtools)) || any(rtools_pkgs %in% context$packages)
 }
 
-## TODO: I think that these should be different (dideclusthn being
-## 12.0.0.1 but I might be wrong)
 redis_host <- function(cluster) {
   switch(cluster,
-         "fi--didemrchnb"="11.0.0.1",
+         "fi--didemrchnb"="12.0.0.1",
          "fi--dideclusthn"="11.0.0.1",
          "")
 }
