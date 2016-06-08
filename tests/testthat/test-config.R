@@ -107,3 +107,9 @@ test_that("template logic", {
   expect_equal(didewin_config(template="8Core", cores=3)$resource,
                list(parallel=TRUE, count=3, type="Cores"))
 })
+
+test_that("parallel and cores", {
+  expect_false(didewin_config()$resource$parallel)
+  expect_false(didewin_config(cores=1)$resource$parallel)
+  expect_true(didewin_config(cores=2)$resource$parallel)
+})
