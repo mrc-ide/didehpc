@@ -48,6 +48,13 @@ web_submit <- function(config, path, name) {
   }
   if (is.null(name)) {
     name <- ""
+  } else if (length(name) != length(path)) {
+    stop("Incorrect number of names")
+  } else if (length(name) > 1L) {
+    ## TODO: Hack for now, later we'll newline collapse the names, but
+    ## that requires a tweak at the cluster level.
+    path <- sprintf('/jobname:"%s" "%s"', name, path)
+    name <- ""
   }
 
   workdir <- ""

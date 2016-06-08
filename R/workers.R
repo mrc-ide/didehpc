@@ -44,6 +44,13 @@ submit_workers <- function(obj, n, wait=NULL) {
 
   path_log <- if (rrq) path_rrq_worker_logs(NULL) else path_worker_logs(NULL)
 
+  ## It would seem that it should be possible to bulk submit here, but
+  ## that's not straightforward because the php script can then take
+  ## ages (because the underlying HPC programs are slow).  So bulk
+  ## submission would need to run in batch and would be pretty error
+  ## prone.  At some point I may set up a batched bulk submission
+  ## here, but it's not actually going to make things much faster
+  ## because the job submission part is the bottleneck.
   for (nm in names) {
     batch <- write_batch(nm, root, template, FALSE)
     path <- remote_path(prepare_path(batch, config$shares))
