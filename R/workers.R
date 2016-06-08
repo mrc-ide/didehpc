@@ -61,7 +61,7 @@ submit_workers <- function(obj, n, wait=NULL) {
     ## these yet, though some things might work directly.
     db$set(nm, dide_id,        "dide_id")
     db$set(nm, config$cluster, "dide_cluster")
-    db$set(id, path_log,       "log_path")
+    db$set(nm, path_log,       "log_path")
   }
 
   ## TODO: The logic here is really nasty.
