@@ -147,7 +147,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   }
 
   cluster <- match_value(dat$cluster, valid_clusters())
-  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares, workdir, username)
+  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
+                              workdir, username, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
@@ -294,7 +295,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 ##
 ## TODO: I don't know if this will work for all possible issues with
 ## path normalisation (e.g. if a mount occurs against a symlink?)
-dide_detect_mount <- function(home, temp, shares, workdir, username) {
+dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
   dat <- detect_mount()
   ret <- list()
 
@@ -377,6 +378,12 @@ dide_detect_mount <- function(home, temp, shares, workdir, username) {
     }
   }
 
+  if (cluster == "fi--didemrchnb") {
+    for (i in seq_along(ret)) {
+      ret[[i]]$path_remote <-
+               sub("^//(fi--didenas[0-9])/", "\\1-app/", ret[[i]]$path_remote)
+    }
+  }
   ret
 }
 
