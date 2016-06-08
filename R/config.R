@@ -364,8 +364,10 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
     i <- (nzchar(dat[, "local"]) &
           vlapply(tolower(dat[, "local"]), string_starts_with, x=workdir))
     if (sum(i) == 1L) {
+      ## On windows this should go elsewhere.
+      drive <- if (is_windows()) dat[i, "local"] else available_drive(ret)
       workdir_map <- path_mapping("workdir", dat[i, "local"],
-                                  dat[i, "remote"], available_drive(ret))
+                                  dat[i, "remote"], drive)
       ret <- c(ret, list(workdir=workdir_map))
     } else if (sum(i) > 1L) {
       ## Could take the *longest* here?
