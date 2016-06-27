@@ -1,4 +1,3 @@
-##' @importFrom rrq get_rrq_controller
 ##' @export
 get_rrq_controller.queue_didewin <- function(x, ...) {
   if (!isTRUE(x$config$use_rrq)) {
