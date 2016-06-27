@@ -162,7 +162,11 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     },
 
     rrq_controller=function() {
-      get_rrq_controller(self)
+      if (!isTRUE(self$config$use_rrq)) {
+        stop("rrq is not enabled")
+      }
+      con <- redux::hiredis(host=self$config$cluster)
+      rrq::rrq_controller(self$context, con, self$context_envir)
     }
   ))
 

@@ -1,11 +1,16 @@
-##' @export
-get_rrq_controller.queue_didewin <- function(x, ...) {
-  if (!isTRUE(x$config$use_rrq)) {
-    stop("rrq is not enabled")
-  }
-  con <- redux::hiredis(host=x$config$cluster)
-  rrq::rrq_controller(x$context, con, x$context_envir)
-}
+## TODO: this should be an S3 method (and called from
+## queue_didewin$rrq_controller) but that means that rrq needs to move
+## into Imports: for this to work correctly (or possibly even Depends)
+## which causes a dependency on redux and then everything gets harder.
+## So for now pulling this out.
+##
+## get_rrq_controller.queue_didewin <- function(x, ...) {
+##   if (!isTRUE(x$config$use_rrq)) {
+##     stop("rrq is not enabled")
+##   }
+##   con <- redux::hiredis(host=x$config$cluster)
+##   rrq::rrq_controller(x$context, con, x$context_envir)
+## }
 
 initialise_rrq <- function(obj) {
   if (isTRUE(obj$config$use_rrq)) {
