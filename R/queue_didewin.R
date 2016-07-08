@@ -11,14 +11,9 @@
 ##'   queue creation (recommended on initial creation, but not
 ##'   required if you want to check on jobs).
 ##'
-##' @param rtools Indicates if Rtools is required (needed in cases
-##'   where you need a C/C++ compiler, such as using Rcpp's inline
-##'   support, or rstan).  The default will try to detect if it is
-##'   required.
-##'
 ##' @export
 queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
-                          rtools=NULL, sync=NULL) {
+                          sync=NULL) {
   .R6_queue_didewin$new(context, config, initialise, rtools, sync)
 }
 
@@ -31,7 +26,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     sync=NULL,
     templates=NULL,
 
-    initialize=function(context, config, initialise, rtools, sync) {
+    initialize=function(context, config, initialise, sync) {
       if (!inherits(config, "didewin_config")) {
         stop("Expected a didewin_config for 'config'")
       }

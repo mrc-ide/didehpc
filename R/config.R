@@ -105,12 +105,20 @@
 ##'   the generated batch files.  Actual rrq workers are submitted
 ##'   with the \code{submit_workers} method of the object.
 ##'
+##' @param rtools Make sure that rtools are installed (even if they
+##'   aren't implicitly required by one of the required packages).  If
+##'   \code{TRUE}, then network paths will be set up appropriately
+##'   such that R on the cluster should find the appropriate version
+##'   of rtools so that packages such as \code{rstan} and
+##'   \code{Rcpp}'s inline functionality work correctly.
+##'
 ##' @export
 didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                            cluster=NULL, build_server=NULL, shares=NULL,
                            template=NULL, cores=NULL,
                            wholenode=NULL, parallel=NULL, hpctools=NULL,
-                           workdir=NULL, use_workers=NULL, use_rrq=NULL) {
+                           workdir=NULL, use_workers=NULL, use_rrq=NULL,
+                           rtools=NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials=credentials,
                 home=home,
@@ -125,7 +133,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
                 hpctools=hpctools,
                 workdir=workdir,
                 use_workers=use_workers,
-                use_rrq=use_rrq)
+                use_rrq=use_rrq,
+                rtools=rtools)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -142,6 +151,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     workdir <- normalizePath(dat$workdir)
   }
 
+  ## TODO: I'm not certain why this is the case.  Probably it can be
+  ## got around with a couple of tweaks to rrq so that the same
+  ## workers can be used for both approaches.
   if (isTRUE(use_workers) && isTRUE(use_rrq)) {
     stop("You can't specify both use_workers and use_rrq")
   }
@@ -173,7 +185,8 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
               shares=shares,
               workdir=workdir,
               use_workers=dat$use_workers,
-              use_rrq=dat$use_rrq)
+              use_rrq=dat$use_rrq,
+              rtools=dat$rtools)
 
   class(ret) <- "didewin_config"
   ret
@@ -222,6 +235,7 @@ didewin_config_defaults <- function() {
     workdir      = getOption("didewin.workdir",      NULL),
     use_workers  = getOption("didewin.use_workers",  FALSE),
     use_rrq      = getOption("didewin.use_rrq",      FALSE),
+    rtools       = getOption("didewin.rtools",       FALSE),
     hpctools     = getOption("didewin.hpctools",     FALSE))
 
   if (is.null(defaults$credentials)) {
@@ -426,9 +440,9 @@ rtools_info <- function(config) {
   rtools_versions(R_VERSION, tmpdrive)
 }
 
-needs_rtools <- function(rtools, config, context) {
+needs_rtools <- function(config, context) {
   rtools_pkgs <- c("rstan", "odin")
-  isTRUE(unname(rtools)) || any(rtools_pkgs %in% context$packages)
+  isTRUE(unname(config$rtools)) || any(rtools_pkgs %in% context$packages)
 }
 
 redis_host <- function(cluster) {

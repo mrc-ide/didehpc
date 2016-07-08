@@ -8,7 +8,7 @@
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
   cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
-  workdir = NULL, use_workers = NULL, use_rrq = NULL)
+  workdir = NULL, use_workers = NULL, use_rrq = NULL, rtools = NULL)
 
 didewin_config_global(...)
 }
@@ -82,6 +82,13 @@ may change.  For now all this does is ensure a few additional
 packages are installed, and tweaks some environment variables in
 the generated batch files.  Actual rrq workers are submitted
 with the \code{submit_workers} method of the object.}
+
+\item{rtools}{Make sure that rtools are installed (even if they
+aren't implicitly required by one of the required packages).  If
+\code{TRUE}, then network paths will be set up appropriately
+such that R on the cluster should find the appropriate version
+of rtools so that packages such as \code{rstan} and
+\code{Rcpp}'s inline functionality work correctly.}
 
 \item{...}{arguments to \code{didewin_config}}
 }

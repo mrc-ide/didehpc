@@ -51,7 +51,7 @@ batch_templates <- function(context, config, workdir) {
               network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,
                      path=windows_path(x$path_remote)))),
-              rtools=config$rtools,
+              rtools=config$rtools_info,
               redis_host=redis_host(config$cluster),
               rrq_key_alive=config$rrq_key_alive)
 

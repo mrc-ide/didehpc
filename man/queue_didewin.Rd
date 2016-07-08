@@ -5,7 +5,7 @@
 \title{Create a queue object}
 \usage{
 queue_didewin(context, config = didewin_config(), initialise = TRUE,
-  rtools = NULL, sync = NULL)
+  sync = NULL)
 }
 \arguments{
 \item{context}{A context}
@@ -15,11 +15,6 @@ queue_didewin(context, config = didewin_config(), initialise = TRUE,
 \item{initialise}{initialise context and log in to the cluster on
 queue creation (recommended on initial creation, but not
 required if you want to check on jobs).}
-
-\item{rtools}{Indicates if Rtools is required (needed in cases
-where you need a C/C++ compiler, such as using Rcpp's inline
-support, or rstan).  The default will try to detect if it is
-required.}
 }
 \description{
 Create a queue object
