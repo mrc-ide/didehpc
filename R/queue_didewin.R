@@ -14,17 +14,20 @@
 ##' @export
 queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
                           sync=NULL) {
-  .R6_queue_didewin$new(context, config, initialise, rtools, sync)
+  .R6_queue_didewin$new(context, config, initialise, sync)
 }
 
 .R6_queue_didewin <- R6::R6Class(
   "queue_didewin",
+  ## TODO: this needs exporting properly at some point.
   inherit=queuer:::.R6_queue_base,
   public=list(
     config=NULL,
     logged_in=FALSE,
     sync=NULL,
     templates=NULL,
+    workers=NULL,
+    rrq=NULL,
 
     initialize=function(context, config, initialise, sync) {
       if (!inherits(config, "didewin_config")) {
@@ -63,15 +66,13 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 
       if (initialise) {
         self$sync_files()
+        initialise_windows_packages(self)
       }
 
-      initialise_windows_packages(self)
-      initialise_seagull(self)
+      ## This is needed for both use_workers and use_rrq, will do
+      ## nothing if neither are used.  This sets up the `workers` and
+      ## `rrq` elements as required.
       initialise_rrq(self)
-
-      if (needs_rtools(rtools, self$config, self$context)) {
-        self$config$rtools <- rtools_info(self$config)
-      }
 
       ## NOTE: templates need to be done last because any of the bits
       ## above might alter things that are used in constructing the
@@ -105,6 +106,9 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     ## I don't think that this is wise.  Better would be a function
     ## for *generally* updating the configuration.  But in general
     ## we're better off just making a new object probably.
+    ##
+    ## TODO: delete this as it will break the templates I think; we'll
+    ## need to rebuild everything...
     set_cluster=function(cluster=NULL) {
       if (is.null(cluster)) {
         cluster <- setdiff(valid_clusters(), self$config$cluster)
@@ -138,9 +142,13 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       ## confusing.
       unsubmit(self, task_get_id(t))
     },
-    submit_workers=function(n, wait=FALSE) {
+
+    submit_workers=function(n, wait=TRUE) {
       self$login(FALSE)
       submit_workers(self, n, wait)
+    },
+    stop_workers=function(worker_ids=NULL) {
+      self$workers$workers_stop(worker_ids)
     },
 
     dide_id=function(t) {
@@ -156,12 +164,15 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       didewin_joblog(self$config, dide_task_id)
     },
 
+    ## TODO: These could check that the connection is still OK, but
+    ## that's hard to do in general.  People should just not serialise
+    ## these objects!  I might remove these in favour of just hitting
+    ## the fields directly.
     rrq_controller=function() {
-      if (!isTRUE(self$config$use_rrq)) {
-        stop("rrq is not enabled")
-      }
-      con <- redux::hiredis(host=self$config$cluster)
-      rrq::rrq_controller(self$context, con, self$context_envir)
+      self$rrq %||% stop("rrq is not enabled")
+    },
+    worker_controller=function() {
+      self$workers %||% stop("workers are not enabled")
     }
   ))
 
@@ -256,12 +267,15 @@ check_binary_packages <- function(db, path_drat) {
        dest=path_bin)
 }
 
-## TODO: rework queuer to pass names as the *names* of task_ids which
-## is way simpler.
+## TODO: It would be heaps nicer if there was per-context log
+## directory setting...
 submit <- function(obj, task_ids, names) {
   if (isTRUE(obj$config$use_workers)) {
-    ## TODO: unexported function.
-    queuer:::queue_local_submit(obj, task_ids)
+    log_path <- path_logs(NULL)
+    for (id in task_ids) {
+      db$set(id, log_path, "log_path")
+    }
+    obj$workers$queue_submit(task_ids)
   } else {
     submit_dide(obj, task_ids, names)
   }
@@ -271,7 +285,6 @@ submit_dide <- function(obj, task_ids, names) {
   db <- context::context_db(obj)
   root <- context::context_root(obj)
   config <- obj$config
-  workdir <- obj$config$workdir %||% obj$workdir
   template <- obj$templates$runner
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
@@ -304,7 +317,7 @@ unsubmit <- function(obj, task_ids) {
     ##
     ## NOTE: This does not unsubmit the *worker* but pulls task ids
     ## out of the local queue.
-    queuer:::queue_local_unsubmit(obj, task_ids)
+    obj$workers$queue_unsubmit(task_ids)
   } else {
     unsubmit_dide(obj, task_ids)
   }
@@ -455,10 +468,8 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
 }
 
 check_rsync <- function(config) {
-  withCallingHandlers(
-    loadNamespace("syncr"),
-    error=function(e)
-      "See https://dide-tools.github.io/didewin for syncr installation")
+  requireNamespace("syncr", quietly=TRUE) ||
+    stop("Please install syncr; see https://dide-tools.github.io/didewin")
   if (!syncr::has_rsync()) {
     if (is_windows()) {
       path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")

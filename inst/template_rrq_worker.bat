@@ -1,4 +1,4 @@
-ECHO this is an rrq worker
+ECHO this is an worker
 
 {{=<% %>=}}
 set RRQ_WORKER_ID={{{worker_id}}}
@@ -6,11 +6,11 @@ set RRQ_WORKER_ID={{{worker_id}}}
 
 set REDIS_HOST={{{redis_host}}}
 set RRQ_WORKER_KEY_ALIVE={{{rrq_key_alive}}}
-set CONTEXT_LOGFILE={{{context_root}}}\rrq_workers\%RRQ_WORKER_ID%
+set CONTEXT_LOGFILE={{{context_root}}}\workers\%RRQ_WORKER_ID%
 ECHO logfile: %CONTEXT_LOGFILE%
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript "{{{context_root}}}\bin\rrq_worker" --context-root "%CONTEXT_ROOT%" --context-id {{{context_id}}} --redis-host %REDIS_HOST% --key-alive "%RRQ_WORKER_KEY_ALIVE%" --worker-name %RRQ_WORKER_ID% > "%CONTEXT_LOGFILE%" 2>&1
+Rscript "{{{context_root}}}\bin\rrq_worker" --context-root "%CONTEXT_ROOT%" --context-id {{{context_id}}} --redis-host %REDIS_HOST% --key-alive "%RRQ_WORKER_KEY_ALIVE%" --worker-name %RRQ_WORKER_ID% --timeout {{{worker_timeout}}} > "%CONTEXT_LOGFILE%" 2>&1
 
 @echo Quitting

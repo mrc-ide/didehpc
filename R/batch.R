@@ -37,6 +37,8 @@ batch_templates <- function(context, config, workdir) {
   r_version <- paste0(R_BITS, "_",
                       paste(unclass(R_VERSION)[[1]], collapse="_"))
 
+  rtools <- if (needs_rtools(config, context)) rtools_info(config) else NULL
+
   dat <- list(hostname=hostname(),
               date=as.character(Sys.Date()),
               didewin_version=as.character(packageVersion("didewin")),
@@ -51,9 +53,10 @@ batch_templates <- function(context, config, workdir) {
               network_shares=unname(lapply(config$shares, function(x)
                 list(drive=x$drive_remote,
                      path=windows_path(x$path_remote)))),
-              rtools=config$rtools_info,
+              rtools=rtools,
               redis_host=redis_host(config$cluster),
-              rrq_key_alive=config$rrq_key_alive)
+              rrq_key_alive=config$rrq_key_alive,
+              worker_timeout=config$worker_timeout)
 
   lapply(read_templates(), function(x)
     drop_blank(whisker::whisker.render(x, dat)))

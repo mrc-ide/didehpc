@@ -8,7 +8,8 @@
 didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
   cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
-  workdir = NULL, use_workers = NULL, use_rrq = NULL, rtools = NULL)
+  workdir = NULL, use_workers = NULL, use_rrq = NULL,
+  worker_timeout = NULL, rtools = NULL)
 
 didewin_config_global(...)
 }
@@ -83,6 +84,20 @@ packages are installed, and tweaks some environment variables in
 the generated batch files.  Actual rrq workers are submitted
 with the \code{submit_workers} method of the object.}
 
+\item{worker_timeout}{When using workers (via \code{use_workers}
+or \code{use_rrq}, the length of time (in seconds) that workers
+should be willing to set idle before exiting.  If set to zero
+then workers will be added to the queue, run jobs, and
+immediatly exit.  If greater than zero, then the workers will
+wait at least this many seconds after running the last task
+before quitting.  The number provoided can be `Inf`, in which
+case the worker will never exit (but be careful to clean the
+worker up in this case!).  The default is 600s (10 minutes)
+should be more than enough to get your jobs up and running.
+Once workers are established you can extend or reset the timeout
+by sending the \code{TIMEOUT_SET} message (proper documentation
+will come for this soon).}
+
 \item{rtools}{Make sure that rtools are installed (even if they
 aren't implicitly required by one of the required packages).  If
 \code{TRUE}, then network paths will be set up appropriately
@@ -128,5 +143,27 @@ In either case, if more than 1 core is implied (either by using
   related functions by passing \code{NULL} as the first argument.
   The cluster will be shut down politely on exit, and logs will be
   output to the "workers" directory below your context root.
+}
+
+\section{Workers and rrq}{
+
+
+The options \code{use_workers} and \code{use_rrq} interact, share
+some functionality, but are quite different.
+
+With \code{use_workers}, jobs are never submitted when you run
+\code{enqueue} or one of the bulk submission commands in
+\code{queuer}.  Instead you submit workers using
+\code{submit_workers} and then the submission commands push task
+ids onto a Redis queue that the workers monitor.
+
+With \code{use_rrq}, \code{enqueue} etc still work as before, plus
+you \emph{must} submit workers with \code{submit_workers}.  The
+difference is that any job may access the \code{rrq_controller}
+and push jobs onto a central pool of tasks.
+
+I'm not sure at this point if it makes any sense for the two
+approaches to work together so this is disabled for now.  If you
+think you have a use case please let me know.
 }
 

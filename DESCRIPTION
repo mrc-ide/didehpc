@@ -24,9 +24,9 @@ Imports:
 Suggests:
     buildr,
     knitr,
+    redux,
     rmarkdown,
     rrq,
-    seagull,
     syncr,
     testthat
 RoxygenNote: 5.0.1

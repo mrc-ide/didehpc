@@ -1,34 +1,50 @@
-initialise_seagull <- function(obj) {
-  if (isTRUE(obj$config$use_workers)) {
-    loadNamespace("seagull")
+initialise_rrq <- function(obj) {
+  if (isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers)) {
+    loadNamespace("rrq")
     root <- context::context_root(obj)
-    dir.create(path_worker_logs(context$root), FALSE, TRUE)
+    ## TODO: This is annoying because it means that all workers
+    ## will share a key across multiple invocations.  So this may
+    ## change in future.  Probably this should happen in the
+    ## config bit but that requires fixing that so it knows about
+    ## workers.
+    obj$config$rrq_key_alive <- rrq::rrq_key_worker_alive(obj$context$id)
+    loadNamespace("rrq") # force presence of these packages
+    dir.create(path_worker_logs(root), FALSE, TRUE)
     repos <- c(CRAN="https://cran.rstudio.com",
                richfitz="https://richfitz.github.io/drat/")
     path_lib <- file.path(root, "R", R_PLATFORM, R_VERSION)
     ## TODO: duplicated all over the show:
     r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
     context::cross_install_packages(
-      path_lib, "windows", r_version_2, repos, c("queuer", "seagull"))
+      path_lib, "windows", r_version_2, repos, "rrq")
+    dest <- file.path(root, "bin", "rrq_worker")
+    file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
+    initialise_rrq_controllers(obj)
   }
 }
 
-submit_workers <- function(obj, n, wait=NULL) {
-  if (isTRUE(obj$config$use_rrq)) {
-    rrq <- TRUE
-  } else if (isTRUE(obj$config$use_workers)) {
-    rrq <- FALSE
-  } else {
-    stop("workers not enabled")
+## This is here because we might need to rerun it periodically and I
+## don't want to have to redo the installation....
+initialise_rrq_controllers <- function(obj) {
+  if (isTRUE(obj$config$use_workers)) {
+    con <- rrq_redis_con(obj$config)
+    obj$workers <- rrq::worker_controller(obj$context$id, con)
   }
-  wait <- wait %||% rrq
-  if (wait && !rrq) {
-    ## TODO: it would be good if the workers could self-register on
-    ## startup so that we know if they're still up.  Otherwise this
-    ## going to be a bit of a trick.  However, given that these are
-    ## submitted after the tasks and the tasks are the main aim it's
-    ## less useful to know this.
-    stop("Waiting for seagull workers is not supported")
+  if (isTRUE(obj$config$use_rrq)) {
+    con <- rrq_redis_con(obj$config)
+    obj$rrq <- rrq::rrq_controller(obj$context, con, obj$context_envir)
+  }
+}
+
+## TODO: we need to make sure that it's easy to set the "no job"
+## timeout.  I think that ~10 minutes is a reasonable amount of time,
+## but whatever it is, it needs to be configurable easily.
+## Unfortunately `worker_spawn` doesn't even take this as an option,
+## so that needs adding (it didn't exist in the queue_local
+## arrangement).
+submit_workers <- function(obj, n, wait=TRUE) {
+  if (!(isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers))) {
+    stop("workers not enabled")
   }
 
   db <- context::context_db(obj)
@@ -36,13 +52,12 @@ submit_workers <- function(obj, n, wait=NULL) {
   config <- obj$config
   workdir <- obj$config$workdir %||% obj$workdir
   id <- obj$context$id
-  template <- if (rrq) obj$templates$rrq_worker else obj$templates$worker
+  template <- obj$templates$rrq_worker
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
                                    total=n)
   names <- paste0(ids::adjective_animal(), "_", seq_len(n))
-
-  path_log <- if (rrq) path_rrq_worker_logs(NULL) else path_worker_logs(NULL)
+  path_log <- path_worker_logs(NULL)
 
   ## It would seem that it should be possible to bulk submit here, but
   ## that's not straightforward because the php script can then take
@@ -65,9 +80,12 @@ submit_workers <- function(obj, n, wait=NULL) {
   }
 
   ## TODO: The logic here is really nasty.
-  if (wait && rrq) {
-    con <- redux::hiredis(host=obj$config$cluster)
-    rrq::workers_wait(con, n, obj$config$rrq_key_alive)
+  if (wait) {
+    rrq::workers_wait(rrq_redis_con(obj$config), n, obj$config$rrq_key_alive)
   }
   names
+}
+
+rrq_redis_con <- function(config) {
+  redux::hiredis(host=paste0(config$cluster, ".dide.ic.ac.uk"))
 }
