@@ -56,7 +56,9 @@ batch_templates <- function(context, config, workdir) {
               rtools=rtools,
               redis_host=redis_host(config$cluster),
               rrq_key_alive=config$rrq_key_alive,
-              worker_timeout=config$worker_timeout)
+              worker_timeout=config$worker_timeout,
+              worker_log_path=path_worker_logs(NULL),
+              log_path=path_logs(NULL))
 
   lapply(read_templates(), function(x)
     drop_blank(whisker::whisker.render(x, dat)))

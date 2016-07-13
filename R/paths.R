@@ -116,11 +116,10 @@ path_batch <- function(root, id=NULL) {
   }
   file_path(root, "batch", id)
 }
-## NOTE: This must match the value in the template.
 path_logs <- function(root, id=NULL) {
   file_path(root, "logs", id)
 }
-## NOTE: This must match the value in the template.
+
 path_worker_logs <- function(root, id=NULL) {
   file_path(root, "workers", id)
 }
