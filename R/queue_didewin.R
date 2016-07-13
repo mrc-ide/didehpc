@@ -271,10 +271,6 @@ check_binary_packages <- function(db, path_drat) {
 ## directory setting...
 submit <- function(obj, task_ids, names) {
   if (isTRUE(obj$config$use_workers)) {
-    log_path <- path_logs(NULL)
-    for (id in task_ids) {
-      db$set(id, log_path, "log_path")
-    }
     obj$workers$queue_submit(task_ids)
   } else {
     submit_dide(obj, task_ids, names)
