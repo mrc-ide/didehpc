@@ -16,7 +16,7 @@ initialise_rrq <- function(obj) {
     ## TODO: duplicated all over the show:
     r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
     context::cross_install_packages(
-      path_lib, "windows", r_version_2, repos, "rrq")
+      path_lib, "windows", r_version_2, repos, c("rrq", "redux"))
     dest <- file.path(root, "bin", "rrq_worker")
     file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
     initialise_rrq_controllers(obj)
