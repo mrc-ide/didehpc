@@ -109,6 +109,8 @@ test_that("template logic", {
 })
 
 test_that("parallel and cores", {
+  oo <- didewin_config_global(credentials="foo")
+  on.exit(options(oo))
   expect_false(didewin_config()$resource$parallel)
   expect_false(didewin_config(cores=1)$resource$parallel)
   expect_true(didewin_config(cores=2)$resource$parallel)
