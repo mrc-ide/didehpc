@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-05-27"
+date: "2016-07-14"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -177,7 +177,7 @@ didewin::didewin_config()
 
 ```
 ## <didewin_config>
-##  - cluster: fi--didemrchnb
+##  - cluster: fi--dideclusthn
 ##  - credentials: ~/.smbcredentials
 ##  - username: rfitzjoh
 ##  - build_server: 129.31.25.12
@@ -190,6 +190,10 @@ didewin::didewin_config()
 ##  - shares:
 ##     - home: (local) /home/rich/net/home => //fi--san02/homes/rfitzjoh => Q: (remote)
 ##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+##  - use_workers: FALSE
+##  - use_rrq: FALSE
+##  - worker_timeout: 600
+##  - rtools: FALSE
 ```
 
 In here you can see the cluster (here, `fi--didemrchnb`),
@@ -337,23 +341,8 @@ obj <- didewin::queue_didewin(ctx)
 ```
 
 ```
-## [ cross     ]  checking available packages
-```
-
-```
-## [ cross     ]  Downloading binary packages for: crayon, curl, digest, drat, memoise, R6, storr, uuid
-```
-
-```
-## [ cross     ]  Cross installing source packages for: context
-```
-
-```
-## [ cross     ]  checking available packages
-```
-
-```
-## [ cross     ]  Downloading binary packages for: ape
+## [ cross     ]  Packages already installed
+## [ cross     ]  Packages already installed
 ```
 
 If the above command does not throw an error, then you have
@@ -391,14 +380,17 @@ obj
 ##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     initialise_context: function ()
-##     initialize: function (context, config, initialise, rtools, sync)
+##     initialize: function (context, config, initialise, sync)
 ##     logged_in: TRUE
 ##     login: function (always = TRUE)
 ##     root: contexts
+##     rrq: NULL
+##     rrq_controller: function ()
 ##     set_cluster: function (cluster = NULL)
+##     stop_workers: function (worker_ids = NULL)
 ##     submit: function (task_ids, names = NULL)
 ##     submit_or_delete: function (task, name = NULL)
-##     submit_workers: function (n)
+##     submit_workers: function (n, wait = TRUE)
 ##     sync: NULL
 ##     sync_files: function (verbose = TRUE, delete = TRUE)
 ##     task_bundle_get: function (id)
@@ -411,8 +403,11 @@ obj
 ##     tasks_status: function (task_ids = NULL, named = TRUE)
 ##     tasks_status_dide: function (task_ids = NULL)
 ##     tasks_times: function (task_ids = NULL, unit_elapsed = "secs")
+##     templates: list
 ##     unsubmit: function (t)
 ##     workdir: /home/rich/net/home/cluster_test/vignette
+##     worker_controller: function ()
+##     workers: NULL
 ```
 
 For example, to list the tasks that we know about:
@@ -422,7 +417,10 @@ obj$tasks_list()
 ```
 
 ```
-## character(0)
+## [1] "30efdc450d4144abaec78a6a9eb078e4" "57039de4f0fe45d68eeb090ccd186502"
+## [3] "6f8a7dc65908401792f4244764af35ab" "7b0b3df18aa5436c838de9a047dd5d27"
+## [5] "865c1ac8d8854e778a99a44896132306" "9e794c7960f649f4a822406ac3ad4f6c"
+## [7] "ab767169651c45f69d27ed9b80b75651"
 ```
 
 (of course there are no tasks yet because we haven't added any).
@@ -434,74 +432,29 @@ obj$cluster_load()
 ```
 
 ```
-##           name free used total
-## -------------- ---- ---- -----
-##  fi--didemrc06   12    0    12
-##  fi--didemrc07   12    0    12
-##  fi--didemrc08   10    2    12
-##  fi--didemrc09    0   12    12
-##  fi--didemrc10    0   12    12
-##  fi--didemrc11   11    1    12
-##  fi--didemrc12   12    0    12
-##  fi--didemrc13   24    0    24
-##  fi--didemrc14   24    0    24
-##  fi--didemrc15   24    0    24
-##  fi--didemrc16   24    0    24
-##  fi--didemrc17    0   12    12
-##  fi--didemrc18   12    0    12
-##  fi--didemrc19   11    1    12
-##  fi--didemrc20    8    4    12
-##  fi--didemrc21    8    4    12
-##  fi--didemrc22   11    1    12
-##  fi--didemrc23    8    4    12
-##  fi--didemrc24   12    0    12
-##  fi--didemrc25   12    0    12
-##  fi--didemrc26   12    0    12
-##  fi--didemrc27   12    0    12
-##  fi--didemrc28   12    0    12
-##  fi--didemrc38   16    0    16
-##  fi--didemrc39   16    0    16
-##  fi--didemrc40   16    0    16
-##  fi--didemrc41   16    0    16
-##  fi--didemrc42   16    0    16
-##  fi--didemrc43   16    0    16
-##  fi--didemrc44   16    0    16
-##  fi--didemrc45   16    0    16
-##  fi--didemrc46   16    0    16
-##  fi--didemrc47   16    0    16
-##  fi--didemrc48   16    0    16
-##  fi--didemrc49   16    0    16
-##  fi--didemrc50   16    0    16
-##  fi--didemrc51    0   20    20
-##  fi--didemrc52    0   20    20
-##  fi--didemrc53    0   20    20
-##  fi--didemrc54    0   20    20
-##  fi--didemrc55    0   20    20
-##  fi--didemrc56    0   20    20
-##  fi--didemrc57   20    0    20
-##  fi--didemrc58   20    0    20
-##  fi--didemrc59   20    0    20
-##  fi--didemrc60   20    0    20
-##  fi--didemrc61   20    0    20
-##  fi--didemrc62   20    0    20
-##  fi--didemrc63   20    0    20
-##  fi--didemrc64   20    0    20
-##  fi--didemrc65    0   32    32
-##  fi--didemrc66    0   32    32
-##  fi--didemrc67   24    0    24
-##  fi--didemrc68   24    0    24
-##  fi--didemrc69   24    0    24
-##  fi--didemrc70   24    0    24
-##  fi--didemrc71   24    0    24
-##  fi--didemrc72   24    0    24
-##  fi--didemrc73   24    0    24
-##  fi--didemrc74   24    0    24
-##  fi--didemrc75   16    0    16
-##  fi--didemrc76   16    0    16
-##  fi--didemrc77   16    0    16
-##  fi--didemrc78   27    1    28
-## -------------- ---- ---- -----
-## fi--didemrchnb  906  238  1144
+##            name free used total
+## --------------- ---- ---- -----
+## fi--dideclust01    0    8     8
+## fi--dideclust02    2    6     8
+## fi--dideclust03    8    0     8
+## fi--dideclust04    8    0     8
+## fi--dideclust05    8    0     8
+## fi--dideclust06    8    0     8
+## fi--dideclust07    8    0     8
+## fi--dideclust08    8    0     8
+## fi--dideclust09    1    7     8
+## fi--dideclust10    5    3     8
+## fi--dideclust23   12    0    12
+## fi--dideclust24    0    8     8
+## fi--dideclust25   12    0    12
+## fi--dideclust26    0    8     8
+## fi--dideclust27    0    8     8
+## fi--dideclust28    3    5     8
+## fi--dideclust29    0    8     8
+## fi--dideclust30    1    7     8
+## fi--dideclust31    8    0     8
+## --------------- ---- ---- -----
+## fi--dideclusthn   92   68   160
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -519,7 +472,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.3.0 (2016-05-03)
+## R version 3.3.1 (2016-06-21)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 14.04.4 LTS
 ##
@@ -535,15 +488,15 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_3.4
+## [1] ape_3.5
 ##
 ## loaded via a namespace (and not attached):
-##  [1] lattice_0.20-33  codetools_0.2-14 crayon_1.3.2     digest_0.6.9
-##  [5] grid_3.3.0       context_0.0.8    R6_2.1.2         nlme_3.1-127
-##  [9] storr_1.0.1      formatR_1.4      magrittr_1.5     evaluate_0.9
-## [13] httr_1.1.0       stringi_1.0-1    curl_0.9.7       rematch_1.0.1
-## [17] queuer_0.0.4     tools_3.3.0      stringr_1.0.0    didewin_0.0.3
-## [21] knitr_1.13       methods_3.3.0
+##  [1] lattice_0.20-33 crayon_1.3.2    digest_0.6.9    grid_3.3.1
+##  [5] context_0.0.10  R6_2.1.2        nlme_3.1-128    storr_1.0.1
+##  [9] formatR_1.4     magrittr_1.5    evaluate_0.9    httr_1.1.0
+## [13] stringi_1.1.1   curl_0.9.7      rematch_1.0.1   whisker_0.3-2
+## [17] queuer_0.0.4    tools_3.3.1     stringr_1.0.0   didewin_0.0.3
+## [21] knitr_1.13      methods_3.3.1
 ```
 
 To run this on the cluster, we wrap it in `obj$enqueue`.  This
@@ -579,7 +532,7 @@ t$wait(100)
 ## [1] ape_3.5
 ##
 ## loaded via a namespace (and not attached):
-## [1] R6_2.1.2        context_0.0.8   nlme_3.1-125    grid_3.2.4
+## [1] R6_2.1.2        context_0.0.10  nlme_3.1-125    grid_3.2.4
 ## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
 ```
 
@@ -620,7 +573,7 @@ t
 ##     db: environment
 ##     expr: function (locals = FALSE)
 ##     handle: task_handle
-##     id: 0a9f2bf4dcc74b7cabf41a19263e6b46
+##     id: db8d60a9a7004864af5a0e4234db00d8
 ##     initialize: function (obj, id, check_exists = TRUE)
 ##     log: function ()
 ##     result: function (sanitise = FALSE)
@@ -648,9 +601,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 0a9f2bf4dcc74b7cabf41a19263e6b46 2016-05-27 12:09:29    <NA>     <NA>
-##     waiting running idle
-## 1 0.6493144      NA   NA
+## 1 db8d60a9a7004864af5a0e4234db00d8 2016-07-14 16:19:12    <NA>     <NA>
+##    waiting running idle
+## 1 1.280609      NA   NA
 ```
 
 and you can try and get the result of running the task:
@@ -660,7 +613,7 @@ t$result()
 ```
 
 ```
-## Error: task 0a9f2bf4dcc74b7cabf41a19263e6b46 is unfetchable: PENDING
+## Error: task db8d60a9a7004864af5a0e4234db00d8 is unfetchable: PENDING
 ```
 
 The `wait` function, used above, is like `result` but it will
@@ -676,7 +629,7 @@ t$wait(100)
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t10, t5, t2, t3, ...
+## 	t2, t1, t10, t7, t5, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -692,7 +645,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t10, t5, t2, t3, ...
+## 	t2, t1, t10, t7, t5, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -707,22 +660,22 @@ t$log()
 ## [ bootstrap ]  Q:\cluster_test\vignette\contexts
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ ok        ]
-## [ init      ]  2016-05-27 12:09:48.801
-## [ hostname  ]  FI--DIDEMRC20
-## [ version   ]  0.0.8
+## [ init      ]  2016-07-14 16:19:48.540
+## [ hostname  ]  FI--DIDECLUST30
+## [ version   ]  0.0.10
 ## [ parallel  ]  running as single core job
 ## [ root      ]  Q:\cluster_test\vignette\contexts
-## [ task      ]  0a9f2bf4dcc74b7cabf41a19263e6b46
+## [ task      ]  db8d60a9a7004864af5a0e4234db00d8
 ## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
 ## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
 ## [ library   ]  ape
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2016-05-27 12:09:48.988
+## [ start     ]  2016-07-14 16:19:48.790
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2016-05-27 12:09:49.051
+## [ end       ]  2016-07-14 16:19:48.868
 ##     Warning message:
 ##     package 'ape' was built under R version 3.2.5
 ```
@@ -742,18 +695,18 @@ obj$dide_log(t)
 
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
-## generated on date: 2016-05-27 12:09:29
+## generated on date: 2016-07-14
 ## didewin version: 0.0.3
-## context version: 0.0.8
-## running on: FI--DIDEMRC20
-## this is a single task
+## context version: 0.0.10
+## running on: FI--DIDECLUST30
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
 ## The command completed successfully.
 ## mapping T: -> \\fi--didef2\tmp
 ## The command completed successfully.
 ## working directory: Q:\cluster_test\vignette
-## logfile: Q:\cluster_test\vignette\contexts\logs\0a9f2bf4dcc74b7cabf41a19263e6b46
-## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" 0a9f2bf4dcc74b7cabf41a19263e6b46  1>"Q:\cluster_test\vignette\contexts\logs\0a9f2bf4dcc74b7cabf41a19263e6b46" 2>&1
+## this is a single task
+## logfile: Q:\cluster_test\vignette\contexts\logs\db8d60a9a7004864af5a0e4234db00d8
+## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" db8d60a9a7004864af5a0e4234db00d8  1>"Q:\cluster_test\vignette\contexts\logs\db8d60a9a7004864af5a0e4234db00d8" 2>&1
 ## Quitting
 ```
 
@@ -764,7 +717,11 @@ obj$tasks_list()
 ```
 
 ```
-## [1] "0a9f2bf4dcc74b7cabf41a19263e6b46" "927f552345164e35a5bdae2cf263dcf6"
+## [1] "30efdc450d4144abaec78a6a9eb078e4" "376314da8aab43d89c2a351c51210207"
+## [3] "57039de4f0fe45d68eeb090ccd186502" "6f8a7dc65908401792f4244764af35ab"
+## [5] "7b0b3df18aa5436c838de9a047dd5d27" "865c1ac8d8854e778a99a44896132306"
+## [7] "9e794c7960f649f4a822406ac3ad4f6c" "ab767169651c45f69d27ed9b80b75651"
+## [9] "db8d60a9a7004864af5a0e4234db00d8"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -785,7 +742,7 @@ id
 ```
 
 ```
-## [1] "0a9f2bf4dcc74b7cabf41a19263e6b46"
+## [1] "db8d60a9a7004864af5a0e4234db00d8"
 ```
 
 ```r
@@ -798,7 +755,7 @@ t2$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t6, t10, t5, t2, t3, ...
+## 	t2, t1, t10, t7, t5, t3, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -844,11 +801,11 @@ grp$status()
 ```
 
 ```
-## ff2bcd3a365146c48728c435edaa3861 2cf18f8ec8c74ab3ae3b430408bf1abf
+## 17a51a9d7a674786b89a5e3225f7bdae 4a9a7a25d8394f2faf19742c6a9e7bee
 ##                       "COMPLETE"                       "COMPLETE"
-## b02b441869eb4c35badb43f64f557a61 356d937b5a2a45f6a51ddfca88351835
-##                       "COMPLETE"                       "COMPLETE"
-## a3d94e773bab4a4e8fe49b5bfe942ed3 7e5439d00fd3403c88fab2680f116f62
+## 16f13073b8d64a2f9afd0f0dffaf8457 5f13ab8407a24d11a8e94bbb983a33f8
+##                       "COMPLETE"                        "PENDING"
+## 196fc3e17ac84521b28868e50de2ed0d 2e580e3fdb8e4b7ea37b218733b53d4b
 ##                        "PENDING"                        "PENDING"
 ```
 
@@ -1041,7 +998,7 @@ t$result()
 ```
 
 ```
-## Error: task d61bccd2b6704e739ff700cbda689906 is unfetchable: CANCELLED
+## Error: task fd26b1fbbc674a5f91a8896b5769bf65 is unfetchable: CANCELLED
 ```
 
 The argument to `unsubmit` can be a vector.  For example, to
@@ -1140,26 +1097,28 @@ template:
 didewin::didewin_config(template="16Core")
 ```
 
-```
-## <didewin_config>
-##  - cluster: fi--didemrchnb
-##  - credentials: ~/.smbcredentials
-##  - username: rfitzjoh
-##  - build_server: 129.31.25.12
-##  - template: 16Core
-##  - hpctools: FALSE
-##  - resource:
-##     - parallel: TRUE
-##     - count: 1
-##     - type: Nodes
-##  - shares:
-##     - home: (local) /home/rich/net/home => //fi--san02/homes/rfitzjoh => Q: (remote)
-##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
-```
-
 which will reserve you the entire node.  Again, a cluster will be
 started with all availabe cores unless you also specify
 `parallel=FALSE`.
+
+## Running heaps of jobs without annoying your colleagues
+
+If you have thousands and thousands of jobs to submit at once you
+may not want to flood the cluster with them all at once.  Each job
+submission is relatively slow (the HPC tools that the web interface
+has to use are relatively slow).  The actual queue that the cluster
+uses doesn't seem to like processing tens of thousands of job, and
+can slow down.  And if you take up the whole cluster someone may
+come and knock on your office and complain at you.  At the same
+time, batching your jobs up into little bits and manually sending
+them off is a pain and work better done by a computer.
+
+An alternative is to submit a set of "workers" to the cluster, and
+then submit jobs to them.  This is done with the
+[`rrq`](https://github.com/richfitz/rrq) package, along with a
+[`redis`](http://redis.io) server running on the cluster.
+
+See the "workers" vignette for details.
 
 ## `rstan`
 
