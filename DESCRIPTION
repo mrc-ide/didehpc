@@ -12,7 +12,7 @@ Depends:
     R (>= 3.2.2)
 Imports:
     crayon,
-    context (>= 0.0.7),
+    context (>= 0.0.10),
     getPass,
     httr (>= 1.0.0),
     progress,

@@ -20,6 +20,11 @@ initialise_rrq <- function(obj) {
     dest <- file.path(root, "bin", "rrq_worker")
     file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
     initialise_rrq_controllers(obj)
+
+    if (is.null(context::context_read(obj$context)$unique_value)) {
+      message(
+        "I recommend saving a unique_value into your context for use with rrq")
+    }
   }
 }
 
