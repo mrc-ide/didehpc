@@ -172,7 +172,7 @@ web_joblog <- function(config, dide_task_id) {
                   body=data, encode="form")
   check_status(r)
   xml <- xml2::read_html(httr::content(r, as="text", encoding="UTF-8"))
-  value <- xml2::xml_attr(xml2::xml_find_one(xml, '//input[@id="res"]'),
+  value <- xml2::xml_attr(xml2::xml_find_first(xml, '//input[@id="res"]'),
                           "value")
   value <- decode64(value)
   value <- sub("^Output\\s*:\\s*?\n", "", value)

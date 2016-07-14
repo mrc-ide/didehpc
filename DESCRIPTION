@@ -20,7 +20,7 @@ Imports:
     rematch,
     storr,
     whisker,
-    xml2
+    xml2 (>= 1.0.0)
 Suggests:
     buildr,
     knitr,
