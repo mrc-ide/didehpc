@@ -65,7 +65,7 @@ and the packages will arrange for them to be saved and reloaded.
 
 The DIDE cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
-//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
+`//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
 You probably have access to network shares that are specific to a
 project, too.  For Windows users these are probably mapped to
 drives (`Q:` or `T:` or similar) already, but for other platforms
