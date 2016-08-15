@@ -262,7 +262,7 @@ didewin_config_defaults <- function() {
     credentials    = getOption("didewin.credentials",    NULL),
     home           = getOption("didewin.home",           NULL),
     temp           = getOption("didewin.temp",           NULL),
-    build_server   = getOption("didewin.build_server",   "129.31.25.12"),
+    build_server   = getOption("didewin.build_server",   BUILD_SERVER),
     shares         = getOption("didewin.shares",         NULL),
     template       = getOption("didewin.template",       "GeneralNodes"),
     cores          = getOption("didewin.cores",          NULL),
@@ -450,6 +450,7 @@ available_drive <- function(shares) {
 R_VERSION <- numeric_version("3.2.4")
 R_BITS <- 64L
 R_PLATFORM <- if (R_BITS == 64L) "x86_64-w64-mingw32" else "i386-w64-mingw32"
+BUILD_SERVER <- "builderhv.dide.ic.ac.uk"
 
 ## TODO: document how updates happen as there's some manual
 ## downloading and installation of rtools.

@@ -195,11 +195,29 @@ initialise_windows_packages <- function(obj) {
   context <- obj$context
   build_server <- obj$config$build_server
 
+  db <- context::context_db(obj)
+  root <- context::context_root(obj)
+  path_drat <- file.path(root, "drat")
+  res <- check_binary_packages(path_drat)
+  nok <- !vlapply(res$hash, db$exists, "binary_packages")
+  if (any(nok)) {
+    message("Trying to build required binary packages; may take a minute")
+    loadNamespace("buildr")
+    r_version_2 <- paste(R_VERSION[[1,1:2]], collapse="")
+    buildr_host <- "builderhv.dide.ic.ac.uk"
+    buildr_port <- as.integer(paste0(87, r_version_2))
+    bin <- buildr::build_binaries(res$packages_source[nok],
+                                  buildr_host, buildr_port)
+    src_hash <- res$hash[nok]
+    bin_hash <- unname(tools::md5sum(bin))
+    for (i in seq_along(bin)) {
+      drat::insertPackage(bin[[i]], path_drat, commit=FALSE)
+      db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
+    }
+  }
+
   path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
 
-  ## TODO: look to see if any of the packages in the local drat need
-  ## compilation.  If so we might be best trying for an on-cluster
-  ## installation.
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
   context::cross_install_context(path_lib, "windows", r_version_2, context)
 }
@@ -221,7 +239,7 @@ initialise_templates <- function(obj) {
   obj$templates <- batch_templates(obj$context, obj$config, workdir)
 }
 
-check_binary_packages <- function(db, path_drat) {
+check_binary_packages <- function(path_drat) {
   fields <- c("Package", "Version", "MD5sum", "NeedsCompilation")
   path_src <- file.path(path_drat, "src/contrib")
   pkgs <- as.data.frame(read.dcf(file.path(path_src, "PACKAGES"),
@@ -241,23 +259,6 @@ check_binary_packages <- function(db, path_drat) {
   ## as the build server ideally).
   r_version_2 <- paste(unclass(R_VERSION)[[1]][1:2], collapse=".")
   path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
-
-  ## This is no longer sufficient because we'd want to check to see if
-  ## binaries had been added anyway...
-  if (file.exists(path_bin)) {
-    f <- function(hash) {
-      bin <- tryCatch(db$get(hash, "binary"), KeyError=function(e) NULL)
-      if (is.null(bin)) {
-        TRUE
-      } else {
-        dest <- file.path(path_bin, names(bin))
-        !file.exists(dest) || unname(tools::md5sum(dest)) != bin[[1]]
-      }
-    }
-    rebuild <- vlapply(pkgs$MD5sum, f)
-
-    pkgs <- pkgs[rebuild, , drop=FALSE]
-  }
 
   packages_source <-
     file.path(path_src, sprintf("%s_%s.tar.gz", pkgs$Package, pkgs$Version))

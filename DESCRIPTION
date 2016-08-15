@@ -22,7 +22,8 @@ Imports:
     whisker,
     xml2 (>= 1.0.0)
 Suggests:
-    buildr,
+    buildr (>= 0.0.2),
+    drat,
     knitr,
     redux,
     rmarkdown,
