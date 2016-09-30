@@ -36,10 +36,32 @@ web_login <- function(config=didewin_config()) {
 ##' @export
 ##' @rdname web_login
 web_logout <- function() {
-  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
+  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/logout.php",
                  curl_insecure())
   httr::stop_for_status(r)
   invisible(TRUE)
+}
+
+##' @export
+##' @rdname web_login
+web_logged_in <- function() {
+  ## This *should* work but the website needs tweaking so that it
+  ## checks that we're logged in before running this.
+  ##
+  ##   data <- list(action = "submit.php",
+  ##                hpcfunc = "submit",
+  ##                cluster = encode64("fi--dideclusthn"),
+  ##                cluster_no = "0")
+  ##   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/submit.php",
+  ##                   curl_insecure(),
+  ##                   httr::accept("text/plain"),
+  ##                   body=data, encode="form")
+  ##   httr::status_code(r) < 300
+  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
+                 curl_insecure())
+  xml <- httr::content(r, "parsed", encoding = "UTF-8")
+  inherits(xml2::xml_find_first(xml, "//form[@name = 'flogin']"),
+           "xml_missing")
 }
 
 web_submit <- function(config, path, name) {
