@@ -82,7 +82,11 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 
     login=function(always=TRUE) {
       if (always || !self$logged_in) {
-        web_login(self$config)
+        if (web_logged_in()) {
+          message("Already logged in")
+        } else {
+          web_login(self$config)
+        }
         self$logged_in <- TRUE
       }
     },
