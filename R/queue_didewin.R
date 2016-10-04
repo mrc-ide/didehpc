@@ -214,19 +214,22 @@ initialise_cluster_packages <- function(obj) {
   ## TODO: this while binary package bit needs serious work for linux.
   ## But OTOH it might actually be simpler because we're contracting
   ## out the compilation anyway.
-  res <- check_binary_packages(path_drat, r_version)
-  nok <- !vlapply(res$hash, db$exists, "binary_packages")
-  if (any(nok)) {
-    message("Trying to build required binary packages; may take a minute")
-    loadNamespace("buildr")
-    bin <- buildr::build_binaries(res$packages_source[nok],
-                                  buildr_host, buildr_port)
-    src_hash <- res$hash[nok]
-    bin_hash <- unname(tools::md5sum(bin))
-    ## Hmm, this is not going to work correctly for linux...
-    for (i in seq_along(bin)) {
-      drat::insertPackage(bin[[i]], path_drat, commit=FALSE)
-      db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
+
+  if (windows_cluster(cluster)) {
+    res <- check_binary_packages(path_drat, r_version)
+    nok <- !vlapply(res$hash, db$exists, "binary_packages")
+    if (any(nok)) {
+      message("Trying to build required binary packages; may take a minute")
+      loadNamespace("buildr")
+      bin <- buildr::build_binaries(res$packages_source[nok],
+                                    buildr_host, buildr_port)
+      src_hash <- res$hash[nok]
+      bin_hash <- unname(tools::md5sum(bin))
+      ## Hmm, this is not going to work correctly for linux...
+      for (i in seq_along(bin)) {
+        drat::insertPackage(bin[[i]], path_drat, commit=FALSE)
+        db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
+      }
     }
   }
 
@@ -240,6 +243,7 @@ initialise_cluster_packages <- function(obj) {
 
     path <- tempfile()
     dir.create(path)
+    on.exit(unlink(path, recursive = TRUE))
 
     url <- sprintf("%s/%s_%s.%s", msg[, "Repository"],
                    msg[, "Package"], msg[, "Version"], "tar.gz")
