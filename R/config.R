@@ -20,7 +20,7 @@
 ##'   This can leave your job queing forever (e.g., selecting 20 cores
 ##'   on a 16Core template) so be careful.  The \code{cores} option is
 ##'   most useful with the \code{GeneralNodes} template, which is the
-##'   default.
+##'   default (\code{LinuxNodes} on \code{fi--didelxhn}).
 ##'
 ##' In either case, if more than 1 core is implied (either by using
 ##'   any template other than \code{GeneralNodes} or by specifying a
@@ -77,20 +77,22 @@
 ##' @param template A job template.  On fi--dideclusthn this can be
 ##'   "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
 ##'   this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
-##'   "20Core", or "24Core".  See the main cluster documentation if
-##'   you tweak these parameters, as you may not have permission to
-##'   use all templates (and if you use one that you don't have
-##'   permission for the job will fail).
+##'   "20Core", or "24Core".  For fi--didelxhn the only valid template
+##'   is "LinuxNodes".  See the main cluster documentation if you
+##'   tweak these parameters, as you may not have permission to use
+##'   all templates (and if you use one that you don't have permission
+##'   for the job will fail).
 ##'
 ##' @param cores The number of cores to request.  This is mostly
-##'   useful when using the \code{GeneralNodes} template.  If
-##'   specified, then we will request this many cores from the windows
-##'   queuer.  If you request too many cores then your task will queue
-##'   forever!  8 is the largest this should be on fi--didehusthn and
-##'   16 on fi--didemrchnb (while there are 20 core nodes you may not
-##'   have access to them).  If omitted then a single core is selected
-##'   for the GeneralNodes template or the \emph{entire machine} for
-##'   the other templates (unless modified by \code{wholenode}).
+##'   useful when using the \code{GeneralNodes} or \code{LinuxNodes}
+##'   template.  If specified, then we will request this many cores
+##'   from the windows queuer.  If you request too many cores then
+##'   your task will queue forever!  8 is the largest this should be
+##'   on fi--didehusthn and 16 on fi--didemrchnb (while there are 20
+##'   core nodes you may not have access to them).  If omitted then a
+##'   single core is selected for the GeneralNodes template or the
+##'   \emph{entire machine} for the other templates (unless modified
+##'   by \code{wholenode}).
 ##'
 ##' @param wholenode Request the whole node?  This will default to
 ##'   \code{TRUE} if any template other than \code{GeneralNodes} is
@@ -194,10 +196,35 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
   }
 
   cluster <- match_value(dat$cluster, valid_clusters())
+  if (is.null(dat$template)) {
+    dat$template <- valid_templates()[[cluster]][[1L]]
+  }
   shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
                               workdir, username, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
+
+  if (linux_cluster(cluster)) {
+    ## TODO: this relies on _very_ specific names of shares; we should
+    ## look this up based on the server mapping, but it might be OK.
+    ##
+    ## TODO: This username might not be the correct one; I know that
+    ## OJ had issues with a dual username.
+    shares$home$drive_remote <- sprintf("/homes/%s/dide/home", username)
+    shares$temp$drive_remote <- sprintf("/homes/%s/dide/temp", username)
+    ## Here, we need to know if context_root is going to be home or
+    ## temp (or something else) so we know how to map it.  This will
+    ## require a bit of a fiddle without tweaking.  We should read (if
+    ## present) ~/.pam_mount.conf.xml, parse it (we already depend on
+    ## xml2) and from this work out the mapping from UNC paths to
+    ## remote mountpoints.  We should also check this when checking
+    ## through any extra mount points.  Doing this requires that we
+    ## are able to determine which mount is the home, which is a bit
+    ## of a trick.
+    if (length(shares) > 2) {
+      stop("FIXME")
+    }
+  }
 
   if (isTRUE(dat$hpctools)) {
     if (!has_hpctools()) {
@@ -205,6 +232,9 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     }
   } else {
     dat$hpctools <- FALSE
+  }
+  if (is.null(dat$build_server)) {
+    dat$build_server <- build_server(cluster)
   }
 
   ret <- list(cluster=cluster,
@@ -262,9 +292,9 @@ didewin_config_defaults <- function() {
     credentials    = getOption("didewin.credentials",    NULL),
     home           = getOption("didewin.home",           NULL),
     temp           = getOption("didewin.temp",           NULL),
-    build_server   = getOption("didewin.build_server",   BUILD_SERVER),
+    build_server   = getOption("didewin.build_server",   NULL),
     shares         = getOption("didewin.shares",         NULL),
-    template       = getOption("didewin.template",       "GeneralNodes"),
+    template       = getOption("didewin.template",       NULL),
     cores          = getOption("didewin.cores",          NULL),
     wholenode      = getOption("didewin.wholenode",      NULL),
     parallel       = getOption("didewin.parallel",       NULL),
@@ -310,17 +340,19 @@ print.didewin_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb")
+  c("fi--dideclusthn", "fi--didemrchnb", "fi--didelxhn")
+}
+
+valid_templates <- function() {
+  list("fi--dideclusthn" = c("GeneralNodes", "4Core", "8Core"),
+       "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
+                            "20Core", "24Core"),
+       "fi--didelxhn" = "LinuxNodes")
 }
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
-  if (cluster == "fi--didemrchnb") {
-    valid_templates <- c("GeneralNodes", "12Core", "12and16Core", "16Core",
-                         "20Core", "24Core")
-  } else {
-    valid_templates <- c("GeneralNodes", "4Core", "8Core")
-  }
-  assert_value(template, valid_templates)
+  assert_value(template, valid_templates()[[cluster]])
+  general <- template %in% c("GeneralNodes", "LinuxNodes")
 
   if (!is.null(cores)) {
     if (isTRUE(wholenode)) {
@@ -332,7 +364,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
     ret <- list(parallel=parallel %||% cores > 1, count=cores, type="Cores")
-  } else if (template != "GeneralNodes" || isTRUE(wholenode)) {
+  } else if (!general || isTRUE(wholenode)) {
     ret <- list(parallel=parallel %||% TRUE, count=1L, type="Nodes")
   } else {
     ret <- list(parallel=parallel %||% FALSE, count=1L, type="Cores")
@@ -448,9 +480,8 @@ available_drive <- function(shares) {
 ## TODO: This will eventually be configurable, but for now is assumed
 ## in a few places -- search for R_VERSION (all caps).
 R_VERSION <- numeric_version("3.2.4")
-R_BITS <- 64L
-R_PLATFORM <- if (R_BITS == 64L) "x86_64-w64-mingw32" else "i386-w64-mingw32"
-BUILD_SERVER <- "builderhv.dide.ic.ac.uk"
+BUILD_SERVER_WINDOWS <- "builderhv.dide.ic.ac.uk"
+BUILD_SERVER_LINUX <- "129.31.25.7"
 
 ## TODO: document how updates happen as there's some manual
 ## downloading and installation of rtools.
@@ -488,4 +519,31 @@ redis_host <- function(cluster) {
          "fi--didemrchnb"="12.0.0.1",
          "fi--dideclusthn"="11.0.0.1",
          "")
+}
+
+build_server <- function(cluster) {
+  if (linux_cluster(cluster)) BUILD_SERVER_LINUX else BUILD_SERVER_WINDOWS
+}
+
+r_platform <- function(cluster) {
+  if (linux_cluster(cluster)) {
+    "x86_64-pc-linux-gnu"
+  } else {
+    "x86_64-w64-mingw32"
+  }
+}
+
+cran_platform <- function(cluster) {
+  if (linux_cluster(cluster)) {
+    "linux"
+  } else {
+    "windows"
+  }
+}
+
+linux_cluster <- function(cluster) {
+  cluster == "fi--didelxhn"
+}
+windows_cluster <- function(cluster) {
+  !linux_cluster(cluster)
 }

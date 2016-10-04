@@ -66,7 +66,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 
       if (initialise) {
         self$sync_files()
-        initialise_windows_packages(self)
+        initialise_cluster_packages(self)
       }
 
       ## This is needed for both use_workers and use_rrq, will do
@@ -195,35 +195,66 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
 ## installation.  It's really only worth doing that if the packages do
 ## not appear to be installed though so we will have to do a check
 ## here.
-initialise_windows_packages <- function(obj) {
+initialise_cluster_packages <- function(obj) {
+  ## NOTE: This can leave things in an inconsistent state if
+  ## installation fails; if a dependency is not installed but the
+  ## required packages are (e.g. context is a source non-compiled
+  ## package but uuid is a dependent binary package) then things can
+  ## be left broken.  We should remove things in this case.
   context <- obj$context
-  build_server <- obj$config$build_server
+  cluster <- obj$config$cluster
+
+  r_version_2 <- paste(R_VERSION[[1,1:2]], collapse="")
+  buildr_host <- obj$config$build_server
+  buildr_port <- as.integer(paste0(87, r_version_2))
 
   db <- context::context_db(obj)
   root <- context::context_root(obj)
   path_drat <- file.path(root, "drat")
+  ## TODO: this while binary package bit needs serious work for linux.
+  ## But OTOH it might actually be simpler because we're contracting
+  ## out the compilation anyway.
   res <- check_binary_packages(path_drat)
   nok <- !vlapply(res$hash, db$exists, "binary_packages")
   if (any(nok)) {
     message("Trying to build required binary packages; may take a minute")
     loadNamespace("buildr")
-    r_version_2 <- paste(R_VERSION[[1,1:2]], collapse="")
-    buildr_host <- "builderhv.dide.ic.ac.uk"
-    buildr_port <- as.integer(paste0(87, r_version_2))
     bin <- buildr::build_binaries(res$packages_source[nok],
                                   buildr_host, buildr_port)
     src_hash <- res$hash[nok]
     bin_hash <- unname(tools::md5sum(bin))
+    ## Hmm, this is not going to work correctly for linux...
     for (i in seq_along(bin)) {
       drat::insertPackage(bin[[i]], path_drat, commit=FALSE)
       db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
     }
   }
 
-  path_lib <- file.path(context$root, "R", R_PLATFORM, R_VERSION)
-
+  path_lib <- file.path(context$root, "R", r_platform(cluster), R_VERSION)
   r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
-  context::cross_install_context(path_lib, "windows", r_version_2, context)
+  msg <- context::cross_install_context(path_lib, cran_platform(cluster),
+                                        r_version_2, context, TRUE)
+  if (!is.null(msg)) {
+    context_log("build", "Building binary packages")
+    loadNamespace("buildr")
+
+    path <- tempfile()
+    dir.create(path)
+
+    url <- sprintf("%s/%s_%s.%s", msg[, "Repository"],
+                   msg[, "Package"], msg[, "Version"], "tar.gz")
+    for (u in url) {
+      download.file(u, file.path(path, basename(u)))
+    }
+
+    bin <- buildr::build_binaries(file.path(path, basename(url)),
+                                  buildr_host, buildr_port,
+                                  timeout = 600)
+    extract <- if (linux_cluster(cluster)) untar else unzip
+    for (b in bin) {
+      extract(b, exdir = path_lib)
+    }
+  }
 }
 
 initialise_packages_on_cluster <- function(obj, timeout=Inf) {
@@ -299,11 +330,18 @@ submit_dide <- function(obj, task_ids, names) {
     stop("incorrect length names")
   }
 
+  linux <- linux_cluster(config$cluster)
+
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
-    batch <- write_batch(id, root, template)
-    path <- remote_path(prepare_path(batch, config$shares))
+    batch <- write_batch(id, root, template, TRUE, linux)
+    dat <- prepare_path(batch, config$shares)
+    if (linux) {
+      path <- file.path(dat$drive_remote, dat$rel, fsep = "/")
+    } else {
+      path <- remote_path(dat)
+    }
     pb$tick()
     dide_id <- didewin_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")

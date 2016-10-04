@@ -1,14 +1,14 @@
-write_batch <- function(id, root, template, task=TRUE) {
+write_batch <- function(id, root, template, task = TRUE, linux = FALSE) {
   dat <- if (task) list(task_id=id) else list(worker_id=id)
-  filename <- path_batch(root, id)
+  filename <- path_batch(root, id, linux)
   dir.create(dirname(filename), FALSE, TRUE)
   writeLines(whisker::whisker.render(template, dat), filename)
   filename
 }
 
-read_templates <- function() {
+read_templates <- function(ext) {
   path <- system.file(package="didewin")
-  re <- "^template_(.*)\\.bat$"
+  re <- sprintf("^template_(.*)\\.%s$", ext)
   files <- dir(path, re)
   ret <- setNames(vcapply(file.path(path, files), read_lines),
                   sub(re, "\\1", files))
@@ -17,6 +17,7 @@ read_templates <- function() {
 }
 
 batch_templates <- function(context, config, workdir) {
+  linux <- linux_cluster(config$cluster)
   root <- context::context_root(context)
 
   ## Build the absolute path to the context on the remote, even if it
@@ -24,8 +25,13 @@ batch_templates <- function(context, config, workdir) {
   ## clever idea).
   root <- normalizePath(root)
   context_root <- prepare_path(root, config$shares)
-  context_root_abs <- windows_path(file.path(context_root$drive_remote,
-                                             context_root$rel))
+  if (linux) {
+    context_root_abs <- unix_path(file.path(context_root$drive_remote,
+                                            context_root$rel))
+  } else {
+    context_root_abs <- windows_path(file.path(context_root$drive_remote,
+                                               context_root$rel))
+  }
   context_id <- context$id
 
   wd <- prepare_path(workdir, config$shares)
@@ -34,10 +40,13 @@ batch_templates <- function(context, config, workdir) {
   ## the workdir.
   ##
   ## TODO: Date might be wrong, because this is cached.
-  r_version <- paste0(R_BITS, "_",
-                      paste(unclass(R_VERSION)[[1]], collapse="_"))
-
-  rtools <- if (needs_rtools(config, context)) rtools_info(config) else NULL
+  if (linux) {
+    r_version <- as.character(R_VERSION)
+    context_workdir <- unix_path(file.path(wd$drive_remote, wd$rel))
+  } else {
+    r_version <- paste0("64_", paste(unclass(R_VERSION)[[1]], collapse="_"))
+    context_workdir <- windows_path(wd$rel)
+  }
 
   dat <- list(hostname=hostname(),
               date=as.character(Sys.Date()),
@@ -45,21 +54,25 @@ batch_templates <- function(context, config, workdir) {
               context_version=as.character(packageVersion("context")),
               r_version=r_version,
               context_workdrive=wd$drive_remote,
-              context_workdir=windows_path(wd$rel),
+              context_workdir=context_workdir,
               context_root=context_root_abs,
               context_id=context_id,
               parallel=config$resource$parallel,
-              ## NOTE: don't forget the unname()
-              network_shares=unname(lapply(config$shares, function(x)
-                list(drive=x$drive_remote,
-                     path=windows_path(x$path_remote)))),
-              rtools=rtools,
               redis_host=redis_host(config$cluster),
               rrq_key_alive=config$rrq_key_alive,
               worker_timeout=config$worker_timeout,
               worker_log_path=path_worker_logs(NULL),
               log_path=path_logs(NULL))
 
-  lapply(read_templates(), function(x)
+  if (!linux) {
+    ## NOTE: don't forget the unname()
+    dat$network_shares <-
+      unname(lapply(config$shares, function(x)
+        list(drive=x$drive_remote, path=windows_path(x$path_remote))))
+    dat$rtools <- if (needs_rtools(config, context)) rtools_info(config) else NULL
+  }
+
+  templates <- read_templates(if (linux) "sh" else "bat")
+  lapply(templates, function(x)
     drop_blank(whisker::whisker.render(x, dat)))
 }

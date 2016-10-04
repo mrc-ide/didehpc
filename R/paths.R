@@ -98,7 +98,10 @@ clean_path <- function(x) {
   sub("/+$", "", gsub("\\", "/", x, fixed=TRUE))
 }
 windows_path <- function(x) {
-  gsub("/", "\\\\", x)
+  gsub("/", "\\\\", x, fixed = TRUE)
+}
+unix_path <- function(x) {
+  gsub("\\", "/", x, fixed = TRUE)
 }
 
 remote_path <- function(x) {
@@ -110,9 +113,10 @@ file_path <- function(...) {
   paths <- paths[!vapply(paths, is.null, logical(1))]
   do.call("file.path", paths, quote=TRUE)
 }
-path_batch <- function(root, id=NULL) {
+path_batch <- function(root, id = NULL, linux = FALSE) {
   if (!is.null(id)) {
-    id <- paste0(id, ".bat")
+    ext <- if (linux) ".sh" else ".bat"
+    id <- paste0(id, ext)
   }
   file_path(root, "batch", id)
 }

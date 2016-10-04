@@ -65,8 +65,12 @@ web_logged_in <- function() {
 }
 
 web_submit <- function(config, path, name) {
-  if (any(!grepl("^\\\\\\\\", path))) {
-    stop("All paths must be Windows network paths")
+  if (linux_cluster(config$cluster)) {
+    path <- paste("bash", path)
+  } else {
+    if (any(!grepl("^\\\\\\\\", path))) {
+      stop("All paths must be Windows network paths")
+    }
   }
   if (is.null(name)) {
     name <- ""
