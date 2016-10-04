@@ -13,10 +13,11 @@ initialise_rrq <- function(obj) {
     repos <- c(CRAN="https://cran.rstudio.com",
                richfitz="https://richfitz.github.io/drat/")
     platform <- r_platform(obj$config$cluster)
-    path_lib <- file.path(root, "R", platform, R_VERSION)
+    r_version <- obj$config$r_version
+    path_lib <- file.path(root, "R", platform, r_version)
     ## TODO: duplicated all over the show:
     ## TODO: This is not going to work on Linux
-    r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
+    r_version_2 <- as.character(r_version[1, 1:2]) # used for talking to CRAN
     ## TODO: use a wrapper
     context::cross_install_packages(
       path_lib, "windows", r_version_2, repos, c("rrq", "redux"))

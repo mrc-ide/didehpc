@@ -9,7 +9,7 @@ didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
   cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
   workdir = NULL, use_workers = NULL, use_rrq = NULL,
-  worker_timeout = NULL, rtools = NULL)
+  worker_timeout = NULL, rtools = NULL, r_version = NULL)
 
 didewin_config_global(...)
 }
@@ -36,20 +36,22 @@ or a list of such calls.}
 \item{template}{A job template.  On fi--dideclusthn this can be
 "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
 this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
-"20Core", or "24Core".  See the main cluster documentation if
-you tweak these parameters, as you may not have permission to
-use all templates (and if you use one that you don't have
-permission for the job will fail).}
+"20Core", or "24Core".  For fi--didelxhn the only valid template
+is "LinuxNodes".  See the main cluster documentation if you
+tweak these parameters, as you may not have permission to use
+all templates (and if you use one that you don't have permission
+for the job will fail).}
 
 \item{cores}{The number of cores to request.  This is mostly
-useful when using the \code{GeneralNodes} template.  If
-specified, then we will request this many cores from the windows
-queuer.  If you request too many cores then your task will queue
-forever!  8 is the largest this should be on fi--didehusthn and
-16 on fi--didemrchnb (while there are 20 core nodes you may not
-have access to them).  If omitted then a single core is selected
-for the GeneralNodes template or the \emph{entire machine} for
-the other templates (unless modified by \code{wholenode}).}
+useful when using the \code{GeneralNodes} or \code{LinuxNodes}
+template.  If specified, then we will request this many cores
+from the windows queuer.  If you request too many cores then
+your task will queue forever!  8 is the largest this should be
+on fi--didehusthn and 16 on fi--didemrchnb (while there are 20
+core nodes you may not have access to them).  If omitted then a
+single core is selected for the GeneralNodes template or the
+\emph{entire machine} for the other templates (unless modified
+by \code{wholenode}).}
 
 \item{wholenode}{Request the whole node?  This will default to
 \code{TRUE} if any template other than \code{GeneralNodes} is
@@ -105,6 +107,12 @@ such that R on the cluster should find the appropriate version
 of rtools so that packages such as \code{rstan} and
 \code{Rcpp}'s inline functionality work correctly.}
 
+\item{r_version}{A string, or \code{numeric_version} object,
+describing the R version required.  Not all R versions are known
+to be supported, so this will check against a list of installed
+R versions for the cluster you are using (see
+\code{r_versions}).}
+
 \item{...}{arguments to \code{didewin_config}}
 }
 \description{
@@ -131,7 +139,7 @@ If you specify \code{cores}, the HPC will queue your job until an
   This can leave your job queing forever (e.g., selecting 20 cores
   on a 16Core template) so be careful.  The \code{cores} option is
   most useful with the \code{GeneralNodes} template, which is the
-  default.
+  default (\code{LinuxNodes} on \code{fi--didelxhn}).
 
 In either case, if more than 1 core is implied (either by using
   any template other than \code{GeneralNodes} or by specifying a

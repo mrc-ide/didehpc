@@ -204,9 +204,9 @@ initialise_cluster_packages <- function(obj) {
   context <- obj$context
   cluster <- obj$config$cluster
 
-  r_version_2 <- paste(R_VERSION[[1,1:2]], collapse="")
+  r_version <- obj$config$r_version
   buildr_host <- obj$config$build_server
-  buildr_port <- as.integer(paste0(87, r_version_2))
+  buildr_port <- as.integer(paste0(87, paste(r_version[[1,1:2]], collapse="")))
 
   db <- context::context_db(obj)
   root <- context::context_root(obj)
@@ -214,7 +214,7 @@ initialise_cluster_packages <- function(obj) {
   ## TODO: this while binary package bit needs serious work for linux.
   ## But OTOH it might actually be simpler because we're contracting
   ## out the compilation anyway.
-  res <- check_binary_packages(path_drat)
+  res <- check_binary_packages(path_drat, r_version)
   nok <- !vlapply(res$hash, db$exists, "binary_packages")
   if (any(nok)) {
     message("Trying to build required binary packages; may take a minute")
@@ -230,8 +230,8 @@ initialise_cluster_packages <- function(obj) {
     }
   }
 
-  path_lib <- file.path(context$root, "R", r_platform(cluster), R_VERSION)
-  r_version_2 <- as.character(R_VERSION[1, 1:2]) # used for talking to CRAN
+  path_lib <- file.path(context$root, "R", r_platform(cluster), r_version)
+  r_version_2 <- as.character(r_version[1, 1:2])
   msg <- context::cross_install_context(path_lib, cran_platform(cluster),
                                         r_version_2, context, TRUE)
   if (!is.null(msg)) {
@@ -274,7 +274,7 @@ initialise_templates <- function(obj) {
   obj$templates <- batch_templates(obj$context, obj$config, workdir)
 }
 
-check_binary_packages <- function(path_drat) {
+check_binary_packages <- function(path_drat, r_version) {
   fields <- c("Package", "Version", "MD5sum", "NeedsCompilation")
   path_src <- file.path(path_drat, "src/contrib")
   pkgs <- as.data.frame(read.dcf(file.path(path_src, "PACKAGES"),
@@ -292,7 +292,7 @@ check_binary_packages <- function(path_drat) {
   ## At this point, check the appropriate binary directory.  That's
   ## going to depend on the target R version (which will be the same
   ## as the build server ideally).
-  r_version_2 <- paste(unclass(R_VERSION)[[1]][1:2], collapse=".")
+  r_version_2 <- paste(unclass(r_version)[[1]][1:2], collapse=".")
   path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
 
   packages_source <-

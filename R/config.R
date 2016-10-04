@@ -148,30 +148,38 @@
 ##'   of rtools so that packages such as \code{rstan} and
 ##'   \code{Rcpp}'s inline functionality work correctly.
 ##'
+##' @param r_version A string, or \code{numeric_version} object,
+##'   describing the R version required.  Not all R versions are known
+##'   to be supported, so this will check against a list of installed
+##'   R versions for the cluster you are using (see
+##'   \code{r_versions}).
+##'
 ##' @export
-didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
-                           cluster=NULL, build_server=NULL, shares=NULL,
-                           template=NULL, cores=NULL,
-                           wholenode=NULL, parallel=NULL, hpctools=NULL,
-                           workdir=NULL, use_workers=NULL, use_rrq=NULL,
-                           worker_timeout=NULL, rtools=NULL) {
+didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
+                           cluster = NULL, build_server = NULL, shares = NULL,
+                           template = NULL, cores = NULL,
+                           wholenode = NULL, parallel = NULL, hpctools = NULL,
+                           workdir = NULL, use_workers = NULL, use_rrq = NULL,
+                           worker_timeout = NULL, rtools = NULL,
+                           r_version = NULL) {
   defaults <- didewin_config_defaults()
-  given <- list(credentials=credentials,
-                home=home,
-                temp=temp,
-                cluster=cluster,
-                build_server=build_server,
-                shares=shares,
-                template=template,
-                cores=cores,
-                wholenode=wholenode,
-                parallel=parallel,
-                hpctools=hpctools,
-                workdir=workdir,
-                use_workers=use_workers,
-                use_rrq=use_rrq,
-                worker_timeout=worker_timeout,
-                rtools=rtools)
+  given <- list(credentials = credentials,
+                home = home,
+                temp = temp,
+                cluster = cluster,
+                build_server = build_server,
+                shares = shares,
+                template = template,
+                cores = cores,
+                wholenode = wholenode,
+                parallel = parallel,
+                hpctools = hpctools,
+                workdir = workdir,
+                use_workers = use_workers,
+                use_rrq = use_rrq,
+                worker_timeout = worker_timeout,
+                rtools = rtools,
+                r_version = r_version)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -237,22 +245,34 @@ didewin_config <- function(credentials=NULL, home=NULL, temp=NULL,
     dat$build_server <- build_server(cluster)
   }
 
-  ret <- list(cluster=cluster,
-              credentials=dat$credentials,
-              username=username,
-              build_server=dat$build_server,
-              template=dat$template,
-              cores=dat$cores,
-              wholenode=dat$wholenode,
-              parallel=dat$parallel,
-              hpctools=dat$hpctools,
-              resource=resource,
-              shares=shares,
-              workdir=workdir,
-              use_workers=dat$use_workers,
-              use_rrq=dat$use_rrq,
-              worker_timeout=dat$worker_timeout,
-              rtools=dat$rtools)
+  if (is.null(r_version)) {
+    dat$r_version <- tail(r_versions(cluster), 1L)
+  } else {
+    if (is.character(dat$r_version)) {
+      dat$r_version <- numeric_version(dat$r_version)
+    }
+    if (!(dat$r_version %in% r_versions(cluster))) {
+      stop("Unsupported version: ", as.character(dat$r_version))
+    }
+  }
+
+  ret <- list(cluster = cluster,
+              credentials = dat$credentials,
+              username = username,
+              build_server = dat$build_server,
+              template = dat$template,
+              cores = dat$cores,
+              wholenode = dat$wholenode,
+              parallel = dat$parallel,
+              hpctools = dat$hpctools,
+              resource = resource,
+              shares = shares,
+              workdir = workdir,
+              use_workers = dat$use_workers,
+              use_rrq = dat$use_rrq,
+              worker_timeout = dat$worker_timeout,
+              rtools = dat$rtools,
+              r_version = dat$r_version)
 
   class(ret) <- "didewin_config"
   ret
@@ -303,7 +323,8 @@ didewin_config_defaults <- function() {
     use_rrq        = getOption("didewin.use_rrq",        FALSE),
     worker_timeout = getOption("didewin.worker_timeout", 600),
     rtools         = getOption("didewin.rtools",         FALSE),
-    hpctools       = getOption("didewin.hpctools",       FALSE))
+    hpctools       = getOption("didewin.hpctools",       FALSE),
+    r_version      = getOption("didewin.r_version",      NULL))
 
   if (is.null(defaults$credentials)) {
     username <- getOption("didewin.username", NULL)
@@ -325,12 +346,13 @@ didewin_config_defaults <- function() {
 print.didewin_config <- function(x, ...) {
   cat("<didewin_config>\n")
   for (i in seq_along(x)) {
-    if (is.atomic(x[[i]])) {
-      cat(sprintf(" - %s: %s\n", names(x)[[i]], x[[i]]))
-    } else if (is.list(x[[i]])) {
+    el <- x[[i]]
+    if (is.atomic(el) || inherits(el, "numeric_version")) {
+      cat(sprintf(" - %s: %s\n", names(x)[[i]], as.character(el)))
+    } else if (is.list(el)) {
       cat(sprintf(" - %s:\n", names(x)[[i]]))
-      cat(paste(sprintf("    - %s: %s\n", names(x[[i]]),
-                        vcapply(x[[i]], as.character)), collapse=""))
+      cat(paste(sprintf("    - %s: %s\n", names(el),
+                        vcapply(el, as.character)), collapse=""))
     }
   }
   invisible(x)
@@ -477,9 +499,6 @@ available_drive <- function(shares) {
   paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
 }
 
-## TODO: This will eventually be configurable, but for now is assumed
-## in a few places -- search for R_VERSION (all caps).
-R_VERSION <- numeric_version("3.2.4")
 BUILD_SERVER_WINDOWS <- "builderhv.dide.ic.ac.uk"
 BUILD_SERVER_LINUX <- "129.31.25.7"
 
@@ -506,7 +525,7 @@ rtools_info <- function(config) {
   if (is.null(tmpdrive)) {
     tmpdrive <- "//fi--didef2/tmp"
   }
-  rtools_versions(R_VERSION, tmpdrive)
+  rtools_versions(config$r_version, tmpdrive)
 }
 
 needs_rtools <- function(config, context) {
@@ -546,4 +565,15 @@ linux_cluster <- function(cluster) {
 }
 windows_cluster <- function(cluster) {
   !linux_cluster(cluster)
+}
+
+## NOTE: Only some versions of R are supported by context; at present
+## we require >= 3.2.2.
+r_versions <- function(cluster) {
+  if (linux_cluster(cluster)) {
+    v <- "3.2.4"
+  } else {
+    v <- c("3.2.2", "3.2.4", "3.3.0")
+  }
+  numeric_version(v)
 }

@@ -41,10 +41,11 @@ batch_templates <- function(context, config, workdir) {
   ##
   ## TODO: Date might be wrong, because this is cached.
   if (linux) {
-    r_version <- as.character(R_VERSION)
+    r_version <- as.character(config$r_version)
     context_workdir <- unix_path(file.path(wd$drive_remote, wd$rel))
   } else {
-    r_version <- paste0("64_", paste(unclass(R_VERSION)[[1]], collapse="_"))
+    r_version <- paste0("64_", paste(unclass(config$r_version)[[1]],
+                                     collapse="_"))
     context_workdir <- windows_path(wd$rel)
   }
 
