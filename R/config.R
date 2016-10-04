@@ -152,7 +152,10 @@
 ##'   describing the R version required.  Not all R versions are known
 ##'   to be supported, so this will check against a list of installed
 ##'   R versions for the cluster you are using (see
-##'   \code{r_versions}).
+##'   \code{r_versions}).  If omitted then: if your R version matches
+##'   a version on the cluster that will be used, or the oldest
+##'   cluster version that is newer than yours, or the most recent
+##'   cluster version.
 ##'
 ##' @export
 didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
@@ -245,16 +248,7 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$build_server <- build_server(cluster)
   }
 
-  if (is.null(r_version)) {
-    dat$r_version <- tail(r_versions(cluster), 1L)
-  } else {
-    if (is.character(dat$r_version)) {
-      dat$r_version <- numeric_version(dat$r_version)
-    }
-    if (!(dat$r_version %in% r_versions(cluster))) {
-      stop("Unsupported version: ", as.character(dat$r_version))
-    }
-  }
+  dat$r_version <- select_r_version(cluster, dat$r_version)
 
   ret <- list(cluster = cluster,
               credentials = dat$credentials,
@@ -576,4 +570,28 @@ r_versions <- function(cluster) {
     v <- c("3.2.2", "3.2.4", "3.3.0")
   }
   numeric_version(v)
+}
+
+select_r_version <- function(cluster, r_version) {
+  if (is.null(r_version)) {
+    ## Here, try and get the
+    valid <- r_versions(cluster)
+    ours <- getRversion()
+    if (ours %in% valid) {
+      r_version <- ours
+    } else {
+      i <- valid > ours
+      j <- if (any(i)) which(i)[[1L]] else length(valid)
+      if (any(i)) valid[]
+      r_version <- valid[[j]]
+    }
+  } else {
+    if (is.character(r_version)) {
+      r_version <- numeric_version(r_version)
+    }
+    if (!(r_version %in% r_versions(cluster))) {
+      stop("Unsupported version: ", as.character(r_version))
+    }
+  }
+  r_version
 }

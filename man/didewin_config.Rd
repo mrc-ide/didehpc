@@ -111,7 +111,10 @@ of rtools so that packages such as \code{rstan} and
 describing the R version required.  Not all R versions are known
 to be supported, so this will check against a list of installed
 R versions for the cluster you are using (see
-\code{r_versions}).}
+\code{r_versions}).  If omitted then: if your R version matches
+a version on the cluster that will be used, or the oldest
+cluster version that is newer than yours, or the most recent
+cluster version.}
 
 \item{...}{arguments to \code{didewin_config}}
 }
