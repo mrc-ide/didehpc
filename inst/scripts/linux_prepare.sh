@@ -1,11 +1,11 @@
 #!/bin/sh
 apt-get update
-apt-get install \
+apt-get install -y \
     default-jdk \
     default-jre \
     g++ \
     gfortran \
-    libXt-dev \
+    libxt-dev \
     libatlas3-base \
     libbz2-dev \
     libcurl4-openssl-dev \
