@@ -216,25 +216,7 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
                               dat$wholenode, dat$parallel)
 
   if (linux_cluster(cluster)) {
-    ## TODO: this relies on _very_ specific names of shares; we should
-    ## look this up based on the server mapping, but it might be OK.
-    ##
-    ## TODO: This username might not be the correct one; I know that
-    ## OJ had issues with a dual username.
-    shares$home$drive_remote <- sprintf("/homes/%s/dide/home", username)
-    shares$temp$drive_remote <- sprintf("/homes/%s/dide/temp", username)
-    ## Here, we need to know if context_root is going to be home or
-    ## temp (or something else) so we know how to map it.  This will
-    ## require a bit of a fiddle without tweaking.  We should read (if
-    ## present) ~/.pam_mount.conf.xml, parse it (we already depend on
-    ## xml2) and from this work out the mapping from UNC paths to
-    ## remote mountpoints.  We should also check this when checking
-    ## through any extra mount points.  Doing this requires that we
-    ## are able to determine which mount is the home, which is a bit
-    ## of a trick.
-    if (length(shares) > 2) {
-      stop("FIXME")
-    }
+    check_linux_shares(username, shares)
   }
 
   if (isTRUE(dat$hpctools)) {
@@ -565,9 +547,10 @@ windows_cluster <- function(cluster) {
 ## we require >= 3.2.2.
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
-    v <- "3.2.4"
+    v <- c("3.2.4", "3.2.4", "3.3.0", "3.3.1")
   } else {
-    v <- c("3.2.2", "3.2.4", "3.3.0")
+    ## NOTE: I'm not updating this because it may break some people's code
+    v <- c("3.2.2", "3.2.4") # , "3.3.0")
   }
   numeric_version(v)
 }
@@ -594,4 +577,93 @@ select_r_version <- function(cluster, r_version) {
     }
   }
   r_version
+}
+
+## This is a really horrific function and it's likely to be a source
+## of misbehaviour.  Probably a much better way would be to get people
+## to use a different format and generate the XML from it.
+check_linux_shares <- function(username, shares) {
+  ## This bit _always_ holds, we hope:
+  mount_root <- sprintf("/homes/%s/dide", username)
+  shares$home$drive_remote <- file.path(mount_root, "home", fsep = "/")
+
+  dide_home_local <- shares$home$path_local
+  pam_conf <- file.path(dide_home_local, ".pam_mount.conf.xml")
+
+  re_fqn <- "\\.dide\\.(ic|imperial)\\.ac.\\uk"
+  has_conf <- file.exists(pam_conf)
+
+  if (has_conf) {
+    pam_xml <- xml2::read_xml(pam_conf)
+    volumes <- xml2::xml_attrs(xml2::xml_find_all(pam_xml, "/pam_mount/volume"))
+
+    v_mountpoint <- vcapply(volumes, "[[", "mountpoint")
+    v_server <- paste0("//", sub(re_fqn, "", vcapply(volumes, "[[", "server")))
+    v_path <- vcapply(volumes, "[[", "path")
+    v_full <- file.path(v_server, v_path, fsep = "/")
+
+    for (i in which(names(shares) != "home")) {
+      s <- shares[[i]]
+      j <- match(sub(re_fqn, "", s$path_remote), v_full)
+      if (is.na(j)) {
+        s$drive_remote <- NULL
+      } else {
+        s$drive_remote <- v_mountpoint[[j]]
+      }
+      shares[[i]] <- s
+    }
+  } else {
+    v_mountpoint <- "home"
+    for (i in which(names(shares) != "home")) {
+      shares[[i]]$drive_remote <- NULL
+    }
+    volumes <- NULL
+  }
+
+  ## This is all super ugly, partly because xml2 doesn't yet support
+  ## writing xml nicely (and doesn't pretty print what it does write).
+  msg <- vlapply(shares, function(x) is.null(x$drive_remote))
+  if (any(msg)) {
+    base <- cbind(options = "vers=2.1,nodev,nosuid", user = "*",
+                  fstype = "cifs")
+    remote <- vcapply(shares[msg], "[[", "path_remote")
+    re_remote <- "^//(?<server>[^/]*)/(?<path>.*)/*"
+    dat <- rematch::re_match(re_remote, remote)
+    dat <- dat[, c("server", "path"), drop = FALSE]
+    dat[, "server"] <- paste0(dat[, "server"], ".dide.ic.ac.uk")
+    dat <- cbind(base, dat,
+                 mountpoint = file.path(mount_root, basename(remote)))
+
+    for (i in seq_len(nrow(dat))) {
+      shares[[which(msg)[i]]]$drive_remote <- dat[i, "mountpoint"]
+    }
+
+    if (has_conf) {
+      tmp <- c(v_mountpoint, dat[, "mountpoint"])
+      nok <- duplicated(tmp)
+      if (any(nok)) {
+        stop("Avoiding creating duplicate mountpoints")
+      }
+      message(sprintf("Adding %d entries into existing pam file %s",
+                      nrow(dat), pam_conf))
+      backup(pam_conf)
+    } else {
+      message(sprintf("Writing %d entries into new pam file %s",
+                      nrow(dat), pam_conf))
+    }
+    dat <- c(volumes, lapply(seq_len(nrow(dat)), function(i) dat[i, ]))
+
+    ## Then, format:
+    opts <- vcapply(dat, function(x)
+      paste(names(x), dquote(unname(x)), sep="=", collapse=" "))
+    volumes <- sprintf("<volume %s />", opts)
+    opts <- paste(colnames(dat), sprintf('"%s"', unname(dat)),
+                  sep="=", collapse=" ")
+    xml <- c('<?xml version="1.0" encoding="utf-8" ?>',
+             '<pam_mount>',
+             paste0("  ", volumes),
+             '</pam_mount>')
+    writeLines(xml, pam_conf)
+  }
+  shares
 }
