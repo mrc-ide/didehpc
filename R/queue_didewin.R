@@ -238,7 +238,7 @@ initialise_cluster_packages <- function(obj) {
   msg <- context::cross_install_context(path_lib, cran_platform(cluster),
                                         r_version_2, context, TRUE)
   if (!is.null(msg)) {
-    context::context_log("build", "Building binary packages")
+    ## context::context_log("build", "Building binary packages")
     loadNamespace("buildr")
 
     path <- tempfile()
