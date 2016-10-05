@@ -216,7 +216,7 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
                               dat$wholenode, dat$parallel)
 
   if (linux_cluster(cluster)) {
-    check_linux_shares(username, shares)
+    shares <- check_linux_shares(username, shares)
   }
 
   if (isTRUE(dat$hpctools)) {
