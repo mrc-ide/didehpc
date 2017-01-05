@@ -292,9 +292,10 @@ with its `package_sources` argument.
 If the packages are on GitHub and public you can pass the github
 username/repo pair, in `devtools` style:
 
-+eval=FALSE
+```r
 context::context_save(...,
   package_sources=context::package_sources(github="richfitz/ids"))
+```
 
 Like with `devtools` you can use subdirectories, specific commits
 or tags in the specification.
