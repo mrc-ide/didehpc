@@ -10,24 +10,24 @@
 ##'   have been mde global this can be omitted.
 ##'
 ##' @export
-web_login <- function(config=didewin_config()) {
+web_login <- function(config = didewin_config()) {
   ## What should be stored (and reused if the connection expires) is
   ## the *call* so that we can rerun back through this.
   ##
   ## TODO: It would be great if the website returned a non 3xx code on
   ## login failure.
   dat <- get_credentials(config$credentials, TRUE)
-  data <- list(us=encode64(dat$username),
-               pw=encode64(dat$password),
-               hpcfunc=encode64("login"))
+  data <- list(us = encode64(dat$username),
+               pw = encode64(dat$password),
+               hpcfunc = encode64("login"))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
-                  curl_insecure(), body=data, encode="form")
+                  curl_insecure(), body = data, encode = "form")
   httr::stop_for_status(r)
-  txt <- httr::content(r, as="text", encoding="UTF-8")
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
 
   ## TODO: grep on HTML is terrible but there's no id or anything to
   ## hook against here.
-  if (grepl("You don't seem to have any HPC access.", txt, fixed=TRUE)) {
+  if (grepl("You don't seem to have any HPC access.", txt, fixed = TRUE)) {
     stop("Error logging on")
   }
   invisible(TRUE)
@@ -87,25 +87,25 @@ web_submit <- function(config, path, name) {
   stderr <- ""
   stdout <- ""
   data <- list(
-    cluster=encode64(config$cluster),
-    template=encode64(config$template),
-    rc=encode64(as.character(config$resource$count)),
-    rt=encode64(config$resource$type),
-    jn=encode64(name),
-    wd=encode64(workdir),
-    se=encode64(stderr),
-    so=encode64(stdout),
-    jobs=encode64(paste(path, collapse="\n")),
-    dep=encode64(""),
-    hpcfunc="submit")
+    cluster = encode64(config$cluster),
+    template = encode64(config$template),
+    rc = encode64(as.character(config$resource$count)),
+    rt = encode64(config$resource$type),
+    jn = encode64(name),
+    wd = encode64(workdir),
+    se = encode64(stderr),
+    so = encode64(stdout),
+    jobs = encode64(paste(path, collapse = "\n")),
+    dep = encode64(""),
+    hpcfunc = "submit")
 
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/submit_1.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
-                  body=data, encode="form")
+                  body = data, encode = "form")
   httr::stop_for_status(r)
 
-  txt <- httr::content(r, as="text", encoding="UTF-8")
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
   res <- strsplit(txt, "\n")[[1]]
   parse_job_submit(res, length(path))
 }
@@ -113,15 +113,15 @@ web_submit <- function(config, path, name) {
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
 web_cancel <- function(cluster, dide_task_id) {
   jobs <- setNames(as.list(dide_task_id), paste0("c", dide_task_id))
-  data <- c(list(cluster=encode64(cluster),
-                 hpcfunc=encode64("cancel")),
+  data <- c(list(cluster = encode64(cluster),
+                 hpcfunc = encode64("cancel")),
             jobs)
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/cancel.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
-                  body=data, encode="form")
+                  body = data, encode = "form")
   check_status(r)
-  txt <- httr::content(r, as="text", encoding="UTF-8")
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
   ## Possibilities here are:
   ##   - OK
   ##   - NOT_FOUND
@@ -132,15 +132,15 @@ web_cancel <- function(cluster, dide_task_id) {
 }
 
 web_shownodes <- function(cluster) {
-  data <- list(cluster=encode64(cluster),
-               hpcfunc="shownodes",
-               cluster_no=as.character(match(cluster, valid_clusters())))
+  data <- list(cluster = encode64(cluster),
+               hpcfunc = "shownodes",
+               cluster_no = as.character(match(cluster, valid_clusters())))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/shownodes.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
-                  body=data, encode="form")
+                  body = data, encode = "form")
   check_status(r)
-  txt <- httr::content(r, as="text", encoding="UTF-8")
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
   parse_node_listcores(strsplit(txt, "\n")[[1L]], cluster)
 }
 
@@ -149,16 +149,16 @@ web_jobstatus <- function(config, state) {
   cluster <- config$cluster
 
   n <- -1
-  data <- list(user=encode64(username),
-               scheduler=encode64(cluster),
-               state=encode64(state),
-               jobs=encode64(as.character(n)))
+  data <- list(user = encode64(username),
+               scheduler = encode64(cluster),
+               state = encode64(state),
+               jobs = encode64(as.character(n)))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/_listalljobs.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
-                  body=data, encode="form")
+                  body = data, encode = "form")
   check_status(r)
-  txt <- httr::content(r, as="text", encoding="UTF-8")
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
 
   cols <- c("dide_task_id", "name", "status", "resources", "user",
             "time_start", "time_submit", "time_end", "template")
@@ -169,10 +169,10 @@ web_jobstatus <- function(config, state) {
     if (any(len != length(cols))) {
       stop("Parse error; unexpected output from server")
     }
-    res <- as.data.frame(do.call(rbind, res), stringsAsFactors=FALSE)
+    res <- as.data.frame(do.call(rbind, res), stringsAsFactors = FALSE)
   } else {
     res <- as.data.frame(matrix(character(0), 0, length(cols)),
-                         stringsAsFactors=FALSE)
+                         stringsAsFactors = FALSE)
   }
   names(res) <- cols
 
@@ -189,15 +189,15 @@ web_jobstatus <- function(config, state) {
 }
 
 web_joblog <- function(config, dide_task_id) {
-  data <- list(hpcfunc="showfail",
-               cluster=encode64(config$cluster),
-               id=dide_task_id)
+  data <- list(hpcfunc = "showfail",
+               cluster = encode64(config$cluster),
+               id = dide_task_id)
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/showjobfail.php",
                   curl_insecure(),
                   httr::accept("text/plain"),
-                  body=data, encode="form")
+                  body = data, encode = "form")
   check_status(r)
-  xml <- xml2::read_html(httr::content(r, as="text", encoding="UTF-8"))
+  xml <- xml2::read_html(httr::content(r, as = "text", encoding = "UTF-8"))
   value <- xml2::xml_attr(xml2::xml_find_first(xml, '//input[@id="res"]'),
                           "value")
   value <- decode64(value)

@@ -1,7 +1,7 @@
 initialise_rrq <- function(obj) {
   if (isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers)) {
     loadNamespace("rrq")
-    root <- context::context_root(obj)
+    root <- obj$root$path
     ## TODO: This is annoying because it means that all workers
     ## will share a key across multiple invocations.  So this may
     ## change in future.  Probably this should happen in the
@@ -18,13 +18,16 @@ initialise_rrq <- function(obj) {
     ## TODO: duplicated all over the show:
     ## TODO: This is not going to work on Linux
     r_version_2 <- as.character(r_version[1, 1:2]) # used for talking to CRAN
-    ## TODO: use a wrapper
+    stop("FIXME")
+    ## TODO: this should be done during provisioning
     context::cross_install_packages(
       path_lib, "windows", r_version_2, repos, c("rrq", "redux"))
     dest <- file.path(root, "bin", "rrq_worker")
     file.copy(system.file("rrq_worker_bootstrap", package="rrq"), dest)
     initialise_rrq_controllers(obj)
 
+    ## TODO: this should be dealt with elsewhere (i.e., the context is
+    ## loaded already ffs)
     if (is.null(context::context_read(obj$context)$unique_value)) {
       message(
         "I recommend saving a unique_value into your context for use with rrq")
@@ -56,8 +59,8 @@ submit_workers <- function(obj, n, wait=TRUE) {
     stop("workers not enabled")
   }
 
-  db <- context::context_db(obj)
-  root <- context::context_root(obj)
+  db <- obj$context$db
+  root <- obj$root$path
   config <- obj$config
   workdir <- obj$config$workdir %||% obj$workdir
   id <- obj$context$id

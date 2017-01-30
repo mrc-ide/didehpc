@@ -98,7 +98,7 @@ clean_path <- function(x) {
   sub("/+$", "", gsub("\\", "/", x, fixed=TRUE))
 }
 windows_path <- function(x) {
-  gsub("/", "\\\\", x, fixed = TRUE)
+  gsub("/", "\\", x, fixed = TRUE)
 }
 unix_path <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)

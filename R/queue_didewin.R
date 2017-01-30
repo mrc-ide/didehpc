@@ -12,33 +12,34 @@
 ##'   required if you want to check on jobs).
 ##'
 ##' @export
-queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
-                          sync=NULL) {
-  .R6_queue_didewin$new(context, config, initialise, sync)
+##' @importFrom provisionr package_sources
+queue_didewin <- function(context, config = didewin_config(), root = NULL,
+                          initialise = TRUE, sync = NULL) {
+  .R6_queue_didewin$new(context, config, root, initialise, sync)
 }
 
 .R6_queue_didewin <- R6::R6Class(
   "queue_didewin",
   ## TODO: this needs exporting properly at some point.
-  inherit=queuer:::.R6_queue_base,
-  public=list(
-    config=NULL,
-    logged_in=FALSE,
-    sync=NULL,
-    templates=NULL,
-    workers=NULL,
-    rrq=NULL,
+  inherit = queuer:::R6_queue_base,
+  public = list(
+    config = NULL,
+    logged_in = FALSE,
+    sync = NULL,
+    templates = NULL,
+    workers = NULL,
+    rrq = NULL,
 
-    initialize=function(context, config, initialise, sync) {
+    initialize = function(context, config, root, initialise, sync) {
       if (!inherits(config, "didewin_config")) {
         stop("Expected a didewin_config for 'config'")
       }
-      super$initialize(context, initialise)
+      super$initialize(context, root, initialise)
 
       self$config <- config
 
       ## Will throw if the context is not network accessible.
-      prepare_path(context::context_root(context), config$shares)
+      prepare_path(self$context$root$path, config$shares)
 
       if (is.null(prepare_path(getwd(), self$config$shares, FALSE))) {
         if (!is.null(sync)) {
@@ -55,8 +56,8 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
         stop("No not specify sync if running on a network share")
       }
 
-      dir.create(path_batch(context$root), FALSE, TRUE)
-      dir.create(path_logs(context$root), FALSE, TRUE)
+      dir.create(path_batch(self$context$root$path), FALSE, TRUE)
+      dir.create(path_logs(self$context$root$path), FALSE, TRUE)
 
       if (use_hpctools(self$config)) {
         self$logged_in <- TRUE
@@ -80,7 +81,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       initialise_templates(self)
     },
 
-    login=function(always=TRUE) {
+    login = function(always = TRUE) {
       if (always || !self$logged_in) {
         if (web_logged_in()) {
           message("Already logged in")
@@ -91,7 +92,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       }
     },
 
-    sync_files=function(verbose=TRUE, delete=TRUE) {
+    sync_files = function(verbose = TRUE, delete = TRUE) {
       if (length(self$sync) > 0L) {
         check_rsync(self$config)
         ## TODO: save self$config$workdir as a prepared path?
@@ -103,7 +104,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
         ## There's no point synchronising paths that are elsewhere
         ## because that's not going to automatically remap paths
         ## correctly.
-        syncr::syncr(self$sync, dest, verbose=verbose, delete=delete)
+        syncr::syncr(self$sync, dest, verbose = verbose, delete = delete)
       }
     },
 
@@ -113,7 +114,7 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     ##
     ## TODO: delete this as it will break the templates I think; we'll
     ## need to rebuild everything...
-    set_cluster=function(cluster=NULL) {
+    set_cluster = function(cluster = NULL) {
       if (is.null(cluster)) {
         cluster <- setdiff(valid_clusters(), self$config$cluster)
       } else {
@@ -122,23 +123,23 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       self$config$cluster <- cluster
     },
 
-    cluster_load=function(cluster=NULL, nodes=TRUE) {
+    cluster_load = function(cluster = NULL, nodes = TRUE) {
       self$login(FALSE)
       print(didewin_shownodes(self$config, cluster %||% self$config$cluster),
-            nodes=nodes)
+            nodes = nodes)
     },
 
-    tasks_status_dide=function(task_ids=NULL) {
+    tasks_status_dide = function(task_ids = NULL) {
       self$login(FALSE)
       check_tasks_status_dide(self, task_ids)
     },
 
-    submit=function(task_ids, names=NULL) {
+    submit = function(task_ids, names = NULL) {
       self$login(FALSE)
       ## See below:
       submit(self, task_ids, names)
     },
-    unsubmit=function(t) {
+    unsubmit = function(t) {
       self$login(FALSE)
       ## TODO: The task_get_id functionality would be nice throughout
       ## the class, probably at the base level.  But need to be
@@ -147,21 +148,22 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
       unsubmit(self, task_get_id(t))
     },
 
-    submit_workers=function(n, wait=TRUE) {
+    submit_workers = function(n, wait = TRUE) {
       self$login(FALSE)
       submit_workers(self, n, wait)
     },
-    stop_workers=function(worker_ids=NULL) {
+    stop_workers = function(worker_ids = NULL) {
       self$workers$workers_stop(worker_ids)
     },
 
-    dide_id=function(t) {
+    dide_id = function(t) {
       task_ids <- task_get_id(t, self)
-      db <- context::context_db(self)
+      db <- self$db
+      db$mget(task_ids, "dide_id")
       setNames(vcapply(task_ids, db$get, "dide_id"), names(task_ids))
     },
 
-    dide_log=function(t) {
+    dide_log = function(t) {
       self$login(FALSE)
       dide_task_id <- self$dide_id(t)
       assert_scalar_character(dide_task_id, "task_id") # bit of trickery
@@ -172,10 +174,10 @@ queue_didewin <- function(context, config=didewin_config(), initialise=TRUE,
     ## that's hard to do in general.  People should just not serialise
     ## these objects!  I might remove these in favour of just hitting
     ## the fields directly.
-    rrq_controller=function() {
+    rrq_controller = function() {
       self$rrq %||% stop("rrq is not enabled")
     },
-    worker_controller=function() {
+    worker_controller = function() {
       self$workers %||% stop("workers are not enabled")
     }
   ))
@@ -201,67 +203,85 @@ initialise_cluster_packages <- function(obj) {
   ## required packages are (e.g. context is a source non-compiled
   ## package but uuid is a dependent binary package) then things can
   ## be left broken.  We should remove things in this case.
+  ## browser()
+
   context <- obj$context
   cluster <- obj$config$cluster
 
   r_version <- obj$config$r_version
+  r_version_2 <- as.character(r_version[1, 1:2])
   buildr_host <- obj$config$build_server
-  buildr_port <- as.integer(paste0(87, paste(r_version[[1,1:2]], collapse="")))
+  buildr_port <- as.integer(paste0(87, paste(r_version_2, collapse = "")))
 
-  db <- context::context_db(obj)
-  root <- context::context_root(obj)
-  path_drat <- file.path(root, "drat")
-  ## TODO: this while binary package bit needs serious work for linux.
-  ## But OTOH it might actually be simpler because we're contracting
-  ## out the compilation anyway.
+  db <- context$db
+  path_drat <- file.path(context$root$path, "drat")
+  path_lib <- file.path(context$root$path, "R", r_platform(cluster), r_version)
 
-  if (windows_cluster(cluster)) {
-    res <- check_binary_packages(path_drat, r_version)
-    nok <- !vlapply(res$hash, db$exists, "binary_packages")
-    if (any(nok)) {
-      message("Trying to build required binary packages; may take a minute")
-      loadNamespace("buildr")
-      bin <- buildr::build_binaries(res$packages_source[nok],
-                                    buildr_host, buildr_port)
-      src_hash <- res$hash[nok]
-      bin_hash <- unname(tools::md5sum(bin))
-      ## Hmm, this is not going to work correctly for linux...
-      for (i in seq_along(bin)) {
-        drat::insertPackage(bin[[i]], path_drat, commit=FALSE)
-        db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
-      }
-    }
+  ## TODO: this needs generalising and possibly merging with r_platform!
+  platform <- "windows"
+
+  ## TODO: need to get additional arguments passed through here;
+  ## installed_action is the key one (quiet might be useful too).
+  res <- context::provision_context(context, platform, r_version,
+                                    allow_missing = TRUE)
+  if (!is.null(res$missing)) {
+    browser()
+    stop("FIXME")
   }
 
-  path_lib <- file.path(context$root, "R", r_platform(cluster), r_version)
-  r_version_2 <- as.character(r_version[1, 1:2])
-  msg <- context::cross_install_context(path_lib, cran_platform(cluster),
-                                        r_version_2, context, TRUE)
-  if (!is.null(msg)) {
-    ## context::context_log("build", "Building binary packages")
-    loadNamespace("buildr")
+  if (!is.null(res$missing)) {
+    initialise_cluster_packages_build(missing)
+  }
+}
 
-    path <- tempfile()
-    dir.create(path)
-    on.exit(unlink(path, recursive = TRUE))
+initialise_cluster_packages_build <- function(missing, ...) {
+  browser()
+  stop("FIXME")
 
-    url <- sprintf("%s/%s_%s.%s", msg[, "Repository"],
-                   msg[, "Package"], msg[, "Version"], "tar.gz")
-    for (u in url) {
-      download.file(u, file.path(path, basename(u)))
-    }
+  message("Trying to build required binary packages; may take a minute")
+  loadNamespace("buildr")
 
-    bin <- buildr::build_binaries(file.path(path, basename(url)),
-                                  buildr_host, buildr_port,
-                                  timeout = 600)
-    extract <- if (linux_cluster(cluster)) untar else unzip
-    for (b in bin) {
-      extract(b, exdir = path_lib)
+  path <- tempfile()
+  dir.create(path)
+  on.exit(unlink(path, recursive = TRUE))
+
+  url <- sprintf("%s/%s_%s.%s", missing[, "Repository"],
+                 missing[, "Package"], missing[, "Version"], "tar.gz")
+  for (u in url) {
+    download.file(u, file.path(path, basename(u)))
+  }
+  bin <- buildr::build_binaries(file.path(path, basename(url)),
+                                buildr_host, buildr_port,
+                                timeout = 3600, topological_order = TRUE)
+
+  ## TODO: this somewhat duplicates a little of the cross
+  ## installation, but it's not a great big deal really.  We *do*
+  ## need to remove existing package directories first though, or
+  ## the packages could be inconsistent.  Thankfully getting the
+  ## full name is not a huge deal
+  extract <- if (linux_cluster(cluster)) untar else unzip
+  for (b in bin) {
+    extract(b, exdir = path_lib)
+  }
+
+  ## then something like this, so that binaries are updated in into
+  ## the drat repo and subsequent installation will be much faster.
+  ## OTOH it does lead to potential cache problems, and there is a
+  ## caching layer in buildr anyway.
+  if (windows_cluster()) {
+    res <- check_binary_packages(path_drat, r_version)
+    nok <- !db$exists(res$hash, "binary_packages")
+    src_hash <- res$hash[nok]
+    bin_hash <- unname(tools::md5sum(bin))
+    ## Hmm, this is not going to work correctly for linux...
+    for (i in seq_along(bin)) {
+      drat::insertPackage(bin[[i]], path_drat, commit = FALSE)
+      db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
     }
   }
 }
 
-initialise_packages_on_cluster <- function(obj, timeout=Inf) {
+initialise_packages_on_cluster <- function(obj, timeout = Inf) {
   t <- obj$enqueue_(quote(sessionInfo()))
   message("Initialising packages on the cluster itself")
   message("You'll need to check the status of the job if this doesn't complete")
@@ -270,7 +290,7 @@ initialise_packages_on_cluster <- function(obj, timeout=Inf) {
   ## will not be correctly logged.  I should actually tweak that I
   ## think; once we have context loaded there's no reason why a job
   ## cannot error.  This would be really good and not too bad to test.
-  t$wait(timeout=timeout)
+  t$wait(timeout = timeout)
 }
 
 initialise_templates <- function(obj) {
@@ -282,29 +302,29 @@ check_binary_packages <- function(path_drat, r_version) {
   fields <- c("Package", "Version", "MD5sum", "NeedsCompilation")
   path_src <- file.path(path_drat, "src/contrib")
   pkgs <- as.data.frame(read.dcf(file.path(path_src, "PACKAGES"),
-                                 fields=fields),
-                        stringsAsFactors=FALSE)
+                                 fields = fields),
+                        stringsAsFactors = FALSE)
   i <- pkgs$NeedsCompilation == "yes"
   if (any(i)) {
-    pkgs <- pkgs[i, , drop=FALSE]
+    pkgs <- pkgs[i, , drop = FALSE]
   } else {
-    return(list(packages=character(0),
-                packages_source=character(0),
-                hash=character(0)))
+    return(list(packages = character(0),
+                packages_source = character(0),
+                hash = character(0)))
   }
 
   ## At this point, check the appropriate binary directory.  That's
   ## going to depend on the target R version (which will be the same
   ## as the build server ideally).
-  r_version_2 <- paste(unclass(r_version)[[1]][1:2], collapse=".")
+  r_version_2 <- paste(unclass(r_version)[[1]][1:2], collapse = ".")
   path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
 
   packages_source <-
     file.path(path_src, sprintf("%s_%s.tar.gz", pkgs$Package, pkgs$Version))
-  list(packages=pkgs$Package,
-       packages_source=packages_source,
-       hash=pkgs$MD5sum,
-       dest=path_bin)
+  list(packages = pkgs$Package,
+       packages_source = packages_source,
+       hash = pkgs$MD5sum,
+       dest = path_bin)
 }
 
 ## TODO: It would be heaps nicer if there was per-context log
@@ -318,13 +338,13 @@ submit <- function(obj, task_ids, names) {
 }
 
 submit_dide <- function(obj, task_ids, names) {
-  db <- context::context_db(obj)
-  root <- context::context_root(obj)
+  db <- obj$db
+  root <- obj$context$root$path
   config <- obj$config
   template <- obj$templates$runner
 
   pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
-                                   total=length(task_ids))
+                                   total = length(task_ids))
 
   if (is.null(names)) {
     names <- setNames(task_ids, task_ids)
@@ -367,19 +387,19 @@ unsubmit <- function(obj, task_ids) {
 }
 
 unsubmit_dide <- function(obj, task_ids) {
-  db <- context::context_db(obj)
+  db <- obj$db
   dide_id <- vcapply(task_ids, db$get, "dide_id")
   dide_cluster <- vcapply(task_ids, db$get, "dide_cluster")
   config <- obj$config
 
   pb <- progress::progress_bar$new("Cancelling [:bar] :current / :total",
-                                   total=length(task_ids))
+                                   total = length(task_ids))
   ret <- character(length(task_ids))
   for (i in seq_along(task_ids)) {
     pb$tick()
     id <- task_ids[[i]]
     st <- tryCatch(db$get(id, "task_status"),
-                   KeyError=function(e) NULL)
+                   KeyError = function(e) NULL)
     ## Only try and cancel tasks if they seem cancellable:
     if (!is.null(st) && st %in% c("RUNNING", "PENDING")) {
       dide_id <- db$get(id, "dide_id")
@@ -406,12 +426,12 @@ unsubmit_dide <- function(obj, task_ids) {
 ##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
 ##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
 ##  RUNNING  CANCELLED -> was running, manually cancelled -> update to CANCELLED
-check_tasks_status_dide <- function(obj, task_ids=NULL) {
+check_tasks_status_dide <- function(obj, task_ids = NULL) {
   if (is.null(task_ids)) {
     task_ids <- obj$tasks_list()
   }
   st_ctx <- obj$tasks_status(task_ids)
-  db <- context::context_db(obj)
+  db <- obj$db
 
   i <- st_ctx %in% c("PENDING", "RUNNING", "CANCELLED")
   if (!any(i)) {
@@ -440,7 +460,7 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
   i <- match(task_ids, dat$name)
   if (any(is.na(i))) {
     stop("Did not find information on tasks: ",
-         paste(task_ids[is.na(i)], collapse=", "))
+         paste(task_ids[is.na(i)], collapse = ", "))
   }
 
   ok <- TRUE
@@ -451,12 +471,12 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
     j <- i & st_ctx == "PENDING"
     if (any(j)) {
       message("Tasks have failed while context booting:\n",
-              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+              paste(sprintf("\t- %s", task_ids[j]), collapse = "\n"))
     }
     j <- i & st_ctx == "RUNNING"
     if (any(j)) {
       message("Tasks have crashed after starting:\n",
-              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+              paste(sprintf("\t- %s", task_ids[j]), collapse = "\n"))
     }
     lapply(task_ids[i], set_task_error)
     ok <- FALSE
@@ -476,7 +496,7 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
     res <- vlapply(task_ids[i], f)
     if (any(res)) {
       message("Tasks have started on cluster, unexpectedly stopped:\n",
-              paste(sprintf("\t- %s", task_ids[i][res]), collapse="\n"))
+              paste(sprintf("\t- %s", task_ids[i][res]), collapse = "\n"))
     }
     ok <- FALSE
   }
@@ -486,12 +506,12 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
     j <- i & st_ctx == "PENDING"
     if (any(j)) {
       message("Tasks cancelled while context booting:\n",
-              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+              paste(sprintf("\t- %s", task_ids[j]), collapse = "\n"))
     }
     j <- i & st_ctx == "RUNNING"
     if (any(j)) {
       message("Tasks cancelled after starting:\n",
-              paste(sprintf("\t- %s", task_ids[j]), collapse="\n"))
+              paste(sprintf("\t- %s", task_ids[j]), collapse = "\n"))
     }
     lapply(task_ids[i], set_task_error)
     ok <- FALSE
@@ -500,7 +520,7 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
   i <- st_ctx == "PENDING" & st_dide == "RUNNING"
   if (any(i)) {
     message("Tasks have started on cluster, but context still booting:\n",
-            paste(sprintf("\t- %s", task_ids[i]), collapse="\n"))
+            paste(sprintf("\t- %s", task_ids[i]), collapse = "\n"))
     ok <- FALSE
   }
 
@@ -511,13 +531,13 @@ check_tasks_status_dide <- function(obj, task_ids=NULL) {
 }
 
 check_rsync <- function(config) {
-  requireNamespace("syncr", quietly=TRUE) ||
+  requireNamespace("syncr", quietly = TRUE) ||
     stop("Please install syncr; see https://dide-tools.github.io/didewin")
   if (!syncr::has_rsync()) {
     if (is_windows()) {
       path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")
       if (file.exists(path_rsync)) {
-        options("syncr.rsync"=path_rsync)
+        options("syncr.rsync" = path_rsync)
         if (syncr::has_rsync()) {
           return()
         }
@@ -528,8 +548,8 @@ check_rsync <- function(config) {
 }
 
 ## A helper function that will probably move into queue_base
-task_get_id <- function(x, obj=NULL) {
-  if (inherits(x, "task")) {
+task_get_id <- function(x, obj = NULL) {
+  if (inherits(x, "queuer_task")) {
     task_ids <- x$id
   } else if (inherits(x, "task_bundle")) {
     task_ids <- x$ids
@@ -542,4 +562,22 @@ task_get_id <- function(x, obj=NULL) {
     stop("Can't determine task id")
   }
   task_ids
+}
+
+provision_context <- function(context, r_version, platform, lib = NULL,
+                              installed_action = "skip",
+                              allow_missing = TRUE) {
+  loadNamespace("provisionr")
+
+  src <- context$package_sources
+  if (!is.null(src) && src$needs_build()) {
+    path_drat <- file.path(context$root$path, "drat")
+    src <- src$clone()
+    src$build(file.path(context$root$path, "drat"))
+  }
+
+  provisionr::provision_library(packages, lib, platform,
+                                check_dependencies = TRUE,
+                                installed_action = installed_action,
+                                allow_missing = allow_missing)
 }

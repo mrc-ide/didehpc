@@ -16,9 +16,10 @@ Imports:
     getPass,
     httr (>= 1.0.0),
     progress,
+    provisionr,
     queuer (>= 0.0.4),
     rematch,
-    storr,
+    storr (>= 1.0.3),
     whisker,
     xml2 (>= 1.0.0)
 Suggests:
