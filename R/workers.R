@@ -66,8 +66,7 @@ submit_workers <- function(obj, n, wait=TRUE) {
   id <- obj$context$id
   template <- obj$templates$rrq_worker
 
-  pb <- progress::progress_bar$new("Submitting [:bar] :current / :total",
-                                   total=n)
+  pb <- progress_bar("Submitting", n)
   names <- paste0(ids::adjective_animal(), "_", seq_len(n))
   path_log <- path_worker_logs(NULL)
 
@@ -81,7 +80,7 @@ submit_workers <- function(obj, n, wait=TRUE) {
   for (nm in names) {
     batch <- write_batch(nm, root, template, FALSE)
     path <- remote_path(prepare_path(batch, config$shares))
-    pb$tick()
+    pb()
     dide_id <- didewin_submit(config, path, nm)
     didewin_joblog(config, dide_id)
     ## NOTE: there is nothing here to organise the interaction with

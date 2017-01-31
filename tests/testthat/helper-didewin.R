@@ -1,5 +1,10 @@
 DIDEWIN_PATH <- "~/net/home/cluster_testing"
-options("didewin.cluster" = "fi--didemrchnb")
+options("didewin.cluster" = "fi--didemrchnb",
+        ## this suppresses all submission progress; better would be to
+        ## scope the exints within the test blocks?  It's necessary,
+        ## otherwise "delete to end of line" bit in the progress bar
+        ## will delete all the test output.
+        "didewin.suppress_progress" = TRUE)
 
 prepare_didewin_root <- function() {
   file.path(DIDEWIN_PATH, gsub("-", "", as.character(Sys.Date())))
