@@ -7,7 +7,6 @@ test_that("basic", {
   on.exit(setwd(owd))
 
   path <- "context"
-  context::context_log_start()
   ctx <- context::context_save(path = path, packages = "ape",
                                sources = "mysources.R")
   obj <- didewin::queue_didewin(ctx)

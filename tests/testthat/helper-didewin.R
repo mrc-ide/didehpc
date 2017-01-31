@@ -15,5 +15,18 @@ prepare_didewin <- function(name, ..., files = c(...)) {
   path <- tempfile(paste0(name, "_"), root)
   dir.create(path, FALSE, TRUE)
   file.copy(files, path, recursive = TRUE)
+  context::context_log_start()
   owd <- setwd(path)
+}
+
+wait_pending <- function(t, timeout = 20) {
+  times_up <- queuer:::time_checker(timeout)
+  while (!times_up()) {
+    if (all(t$status() != "PENDING")) {
+      return()
+    }
+    message(".")
+    Sys.sleep(0.5)
+  }
+  stop("Did not start in time")
 }
