@@ -76,7 +76,11 @@ batch_templates <- function(context, config, workdir) {
     dat$network_shares <-
       unname(lapply(config$shares, function(x)
         list(drive = x$drive_remote, path = windows_path(x$path_remote))))
-    dat$rtools <- if (needs_rtools(config, context)) rtools_info(config) else NULL
+    ## NOTE: this does not strictly need to run through needs_rtools,
+    ## but it's harmless.
+    if (needs_rtools(config, context)) {
+      dat$rtools <- rtools_info(config)
+    }
   }
 
   templates <- read_templates(if (linux) "sh" else "bat")

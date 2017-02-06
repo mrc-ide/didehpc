@@ -506,7 +506,8 @@ rtools_info <- function(config) {
 
 needs_rtools <- function(config, context) {
   rtools_pkgs <- c("rstan", "odin")
-  isTRUE(unname(config$rtools)) || any(rtools_pkgs %in% context$packages)
+  isTRUE(unname(config$rtools)) ||
+    any(rtools_pkgs %in% unlist(context$packages))
 }
 
 redis_host <- function(cluster) {

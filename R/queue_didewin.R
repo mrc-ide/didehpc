@@ -38,6 +38,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       super$initialize(context, root, initialise)
 
       self$config <- config
+      self$config$rtools <- needs_rtools(self$config, self$context)
 
       ## Will throw if the context is not network accessible.
       prepare_path(self$context$root$path, config$shares)
