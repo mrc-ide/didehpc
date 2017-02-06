@@ -18,7 +18,7 @@ test_that("delayed", {
   t <- obj$enqueue(sessionInfo())
   expect_true(obj$logged_in)
   expect_true(file.exists(path_lib))
-  res <- t$wait(10)
+  res <- t$wait(10, progress = FALSE)
 
   expect_equal(names(res$otherPkgs), "ape")
 })

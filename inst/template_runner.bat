@@ -11,4 +11,10 @@ ECHO logfile: %CONTEXT_LOGFILE%
 ECHO on
 Rscript "{{{context_root}}}\bin\task_run" "%CONTEXT_ROOT%" %CONTEXT_TASK_ID% > "%CONTEXT_LOGFILE%" 2>&1
 
-@echo Quitting
+@ECHO off
+if %ERRORLEVEL% neq 0 (
+  ECHO Error running task
+  EXIT /b %ERRORLEVEL%
+)
+
+@ECHO Quitting

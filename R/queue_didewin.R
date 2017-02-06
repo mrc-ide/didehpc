@@ -96,7 +96,6 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
         ## conditional.
         self$sync_files()
         initialise_cluster_packages(self)
-        self$provisioned <- TRUE
       }
     },
 
@@ -255,6 +254,8 @@ initialise_cluster_packages <- function(obj) {
   if (!is.null(res$missing)) {
     initialise_cluster_packages_build(missing)
   }
+
+  obj$provisioned <- TRUE
 }
 
 initialise_cluster_packages_build <- function(missing, ...) {
