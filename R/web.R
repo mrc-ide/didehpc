@@ -72,6 +72,15 @@ web_submit <- function(config, path, name) {
       stop("All paths must be Windows network paths")
     }
   }
+
+  ## This is required for working with spaces in filenames; tested in
+  ## test-path-with-spaces.R; it's likely that a similar set of tests
+  ## using the HPC tools might be required.
+  i <- grepl(" ", path, fixed = TRUE)
+  if (any(i)) {
+    path[i] <- shQuote(path[i], "cmd")
+  }
+
   if (is.null(name)) {
     name <- ""
   } else if (length(name) != length(path)) {
