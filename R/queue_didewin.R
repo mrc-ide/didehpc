@@ -25,6 +25,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
   public = list(
     config = NULL,
     logged_in = FALSE,
+    provisioned = FALSE,
     sync = NULL,
     templates = NULL,
     workers = NULL,
@@ -81,6 +82,24 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       initialise_templates(self)
     },
 
+    ## Similar to login() but tests for package initialisation too.
+    ## As I fix up the file sync stuff, I'll see if this belongs in
+    ## here too, or if it should be moved elsewhere.  It's not clear
+    ## that it should happen _every_ job submission (because that gets
+    ## a bit heavy on the IO) but it should happen _at least_ once on
+    ## queue startup.
+    preflight = function() {
+      self$login(FALSE)
+      if (!self$provisioned) {
+        ## TODO: this is not quite the right place to put the syncing,
+        ## but the idea is right.  It probably just needs its own
+        ## conditional.
+        self$sync_files()
+        initialise_cluster_packages(self)
+        self$provisioned <- TRUE
+      }
+    },
+
     login = function(always = TRUE) {
       if (always || !self$logged_in) {
         if (web_logged_in()) {
@@ -135,7 +154,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
     },
 
     submit = function(task_ids, names = NULL) {
-      self$login(FALSE)
+      self$preflight()
       ## See below:
       submit(self, task_ids, names)
     },
@@ -145,11 +164,13 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       ## the class, probably at the base level.  But need to be
       ## careful to get it really consistent or it will just be
       ## confusing.
+      ##
+      ## Also would be really nice in delete at queue_base level
       unsubmit(self, task_get_id(t))
     },
 
     submit_workers = function(n, wait = TRUE) {
-      self$login(FALSE)
+      self$preflight()
       submit_workers(self, n, wait)
     },
     stop_workers = function(worker_ids = NULL) {
@@ -198,13 +219,6 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
 ## not appear to be installed though so we will have to do a check
 ## here.
 initialise_cluster_packages <- function(obj) {
-  ## NOTE: This can leave things in an inconsistent state if
-  ## installation fails; if a dependency is not installed but the
-  ## required packages are (e.g. context is a source non-compiled
-  ## package but uuid is a dependent binary package) then things can
-  ## be left broken.  We should remove things in this case.
-  ## browser()
-
   context <- obj$context
   cluster <- obj$config$cluster
 
@@ -215,7 +229,15 @@ initialise_cluster_packages <- function(obj) {
 
   db <- context$db
   path_drat <- file.path(context$root$path, "drat")
-  path_lib <- file.path(context$root$path, "R", r_platform(cluster), r_version)
+  ## TODO: this is a bit ugly as it duplicates context:::path_library;
+  ## this should route through there I think.  This is a bit of a
+  ## nasty trick because we need to nail the short version of platform
+  ## names there and make it consistent; so didewin::r_platform needs
+  ## to match up with context:::r_platform_name.  Better will be to
+  ## have provision_context return the lib path
+  ## path_lib <- file.path(context$root$path, "R", r_platform(cluster),
+  ##                       r_version)
+  ## NOTE: now comes from provision context
 
   ## TODO: this needs generalising and possibly merging with r_platform!
   platform <- "windows"
@@ -227,6 +249,7 @@ initialise_cluster_packages <- function(obj) {
   if (!is.null(res$missing)) {
     browser()
     stop("FIXME")
+    ## Install extra packages into res$path_lib
   }
 
   if (!is.null(res$missing)) {

@@ -8,7 +8,7 @@ initialise_rrq <- function(obj) {
     ## config bit but that requires fixing that so it knows about
     ## workers.
     obj$config$rrq_key_alive <- rrq::rrq_key_worker_alive(obj$context$id)
-    loadNamespace("rrq") # force presence of these packages
+    stop("FIXME")
     dir.create(path_worker_logs(root), FALSE, TRUE)
     repos <- c(CRAN="https://cran.rstudio.com",
                richfitz="https://richfitz.github.io/drat/")
