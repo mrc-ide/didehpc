@@ -158,6 +158,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       ## See below:
       submit(self, task_ids, names)
     },
+
     unsubmit = function(t) {
       self$login(FALSE)
       ## TODO: The task_get_id functionality would be nice throughout
@@ -173,6 +174,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       self$preflight()
       submit_workers(self, n, wait)
     },
+
     stop_workers = function(worker_ids = NULL) {
       self$workers$workers_stop(worker_ids)
     },
@@ -198,6 +200,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
     rrq_controller = function() {
       self$rrq %||% stop("rrq is not enabled")
     },
+
     worker_controller = function() {
       self$workers %||% stop("workers are not enabled")
     }
@@ -219,90 +222,64 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
 ## not appear to be installed though so we will have to do a check
 ## here.
 initialise_cluster_packages <- function(obj) {
-  context <- obj$context
-  cluster <- obj$config$cluster
-
-  r_version <- obj$config$r_version
-  r_version_2 <- as.character(r_version[1, 1:2])
-  buildr_host <- obj$config$build_server
-  buildr_port <- as.integer(paste0(87, paste(r_version_2, collapse = "")))
-
-  db <- context$db
-  path_drat <- file.path(context$root$path, "drat")
-  ## TODO: this is a bit ugly as it duplicates context:::path_library;
-  ## this should route through there I think.  This is a bit of a
-  ## nasty trick because we need to nail the short version of platform
-  ## names there and make it consistent; so didewin::r_platform needs
-  ## to match up with context:::r_platform_name.  Better will be to
-  ## have provision_context return the lib path
-  ## path_lib <- file.path(context$root$path, "R", r_platform(cluster),
-  ##                       r_version)
-  ## NOTE: now comes from provision context
-
-  ## TODO: this needs generalising and possibly merging with r_platform!
-  platform <- "windows"
+  lib_r_platform <- cran_platform(obj$config$cluster)
+  lib_r_version <- obj$config$r_version
 
   ## TODO: need to get additional arguments passed through here;
   ## installed_action is the key one (quiet might be useful too).
-  res <- context::provision_context(context, platform, r_version,
+  ##
+  ## Something to force refreshing the drat on build too, but that
+  ## will best be combined with non-versioned updates based on MD5.
+  res <- context::provision_context(obj$context, lib_r_platform, lib_r_version,
                                     allow_missing = TRUE)
   if (!is.null(res$missing)) {
-    browser()
-    stop("FIXME")
-    ## Install extra packages into res$path_lib
-  }
-
-  if (!is.null(res$missing)) {
-    initialise_cluster_packages_build(missing)
+    initialise_cluster_packages_build(res, obj$config)
   }
 
   obj$provisioned <- TRUE
 }
 
-initialise_cluster_packages_build <- function(missing, ...) {
-  browser()
-  stop("FIXME")
-
+initialise_cluster_packages_build <- function(dat, config) {
   message("Trying to build required binary packages; may take a minute")
   loadNamespace("buildr")
 
-  path <- tempfile()
-  dir.create(path)
-  on.exit(unlink(path, recursive = TRUE))
+  missing <- dat$missing # or dat$db$src[dat$missing, , drop = FALSE]
+  path_lib <- dat$path_lib
+
+  tmp <- tempfile()
+  dir.create(tmp)
+  on.exit(unlink(tmp, recursive = TRUE))
+
+  buildr_host <- config$build_server
+  buildr_port <-
+    as.integer(paste(c("87", unclass(config$r_version)[[1]][1:2]),
+                     collapse = ""))
 
   url <- sprintf("%s/%s_%s.%s", missing[, "Repository"],
                  missing[, "Package"], missing[, "Version"], "tar.gz")
   for (u in url) {
-    download.file(u, file.path(path, basename(u)))
+    download.file(u, file.path(tmp, basename(u)))
   }
-  bin <- buildr::build_binaries(file.path(path, basename(url)),
+  ## TODO: this is a 1 hour timeout which seems more than enough.  I
+  ## think that we could make this configurable pretty happily but
+  ## we'd want to do that via either an option, possibly paired with a
+  ## config option.  For now, leaving it as it is.
+  bin <- buildr::build_binaries(file.path(tmp, basename(url)),
                                 buildr_host, buildr_port,
-                                timeout = 3600, topological_order = TRUE)
+                                timeout = 3600)
 
   ## TODO: this somewhat duplicates a little of the cross
   ## installation, but it's not a great big deal really.  We *do*
   ## need to remove existing package directories first though, or
   ## the packages could be inconsistent.  Thankfully getting the
   ## full name is not a huge deal
-  extract <- if (linux_cluster(cluster)) untar else unzip
+  extract <- if (linux_cluster(config$cluster)) untar else unzip
+
+  dest_full <- file.path(path_lib, rownames(missing))
+  unlink(dest_full[file.exists(dest_full)], recursive = TRUE)
+
   for (b in bin) {
     extract(b, exdir = path_lib)
-  }
-
-  ## then something like this, so that binaries are updated in into
-  ## the drat repo and subsequent installation will be much faster.
-  ## OTOH it does lead to potential cache problems, and there is a
-  ## caching layer in buildr anyway.
-  if (windows_cluster()) {
-    res <- check_binary_packages(path_drat, r_version)
-    nok <- !db$exists(res$hash, "binary_packages")
-    src_hash <- res$hash[nok]
-    bin_hash <- unname(tools::md5sum(bin))
-    ## Hmm, this is not going to work correctly for linux...
-    for (i in seq_along(bin)) {
-      drat::insertPackage(bin[[i]], path_drat, commit = FALSE)
-      db$set(src_hash[[i]], bin_hash[[i]], "binary_packages")
-    }
   }
 }
 
@@ -321,35 +298,6 @@ initialise_packages_on_cluster <- function(obj, timeout = Inf) {
 initialise_templates <- function(obj) {
   workdir <- obj$config$workdir %||% obj$workdir
   obj$templates <- batch_templates(obj$context, obj$config, workdir)
-}
-
-check_binary_packages <- function(path_drat, r_version) {
-  fields <- c("Package", "Version", "MD5sum", "NeedsCompilation")
-  path_src <- file.path(path_drat, "src/contrib")
-  pkgs <- as.data.frame(read.dcf(file.path(path_src, "PACKAGES"),
-                                 fields = fields),
-                        stringsAsFactors = FALSE)
-  i <- pkgs$NeedsCompilation == "yes"
-  if (any(i)) {
-    pkgs <- pkgs[i, , drop = FALSE]
-  } else {
-    return(list(packages = character(0),
-                packages_source = character(0),
-                hash = character(0)))
-  }
-
-  ## At this point, check the appropriate binary directory.  That's
-  ## going to depend on the target R version (which will be the same
-  ## as the build server ideally).
-  r_version_2 <- paste(unclass(r_version)[[1]][1:2], collapse = ".")
-  path_bin <- file.path(path_drat, "bin/windows/contrib", r_version_2)
-
-  packages_source <-
-    file.path(path_src, sprintf("%s_%s.tar.gz", pkgs$Package, pkgs$Version))
-  list(packages = pkgs$Package,
-       packages_source = packages_source,
-       hash = pkgs$MD5sum,
-       dest = path_bin)
 }
 
 ## TODO: It would be heaps nicer if there was per-context log
@@ -586,22 +534,4 @@ task_get_id <- function(x, obj = NULL) {
     stop("Can't determine task id")
   }
   task_ids
-}
-
-provision_context <- function(context, r_version, platform, lib = NULL,
-                              installed_action = "skip",
-                              allow_missing = TRUE) {
-  loadNamespace("provisionr")
-
-  src <- context$package_sources
-  if (!is.null(src) && src$needs_build()) {
-    path_drat <- file.path(context$root$path, "drat")
-    src <- src$clone()
-    src$build(file.path(context$root$path, "drat"))
-  }
-
-  provisionr::provision_library(packages, lib, platform,
-                                check_dependencies = TRUE,
-                                installed_action = installed_action,
-                                allow_missing = allow_missing)
 }
