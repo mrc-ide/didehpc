@@ -1,5 +1,6 @@
 #!/bin/sh
-set -ex
+set -e
+## set -x # for verbose output
 
 # automatically generated
 echo "generated on host: {{{hostname}}}"

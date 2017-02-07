@@ -65,12 +65,9 @@ web_logged_in <- function() {
 }
 
 web_submit <- function(config, path, name) {
-  if (linux_cluster(config$cluster)) {
-    path <- paste("bash", path)
-  } else {
-    if (any(!grepl("^\\\\\\\\", path))) {
-      stop("All paths must be Windows network paths")
-    }
+  is_windows <- windows_cluster(config$cluster)
+  if (is_windows && any(!grepl("^\\\\\\\\", path))) {
+    stop("All paths must be Windows network paths")
   }
 
   ## This is required for working with spaces in filenames; tested in
@@ -78,7 +75,11 @@ web_submit <- function(config, path, name) {
   ## using the HPC tools might be required.
   i <- grepl(" ", path, fixed = TRUE)
   if (any(i)) {
-    path[i] <- shQuote(path[i], "cmd")
+    path[i] <- shQuote(path[i], if (is_windows) "cmd" else "sh")
+  }
+
+  if (!is_windows) {
+    path <- paste("bash", path)
   }
 
   if (is.null(name)) {
