@@ -548,10 +548,9 @@ windows_cluster <- function(cluster) {
 ## we require >= 3.2.2.
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
-    v <- c("3.2.4", "3.2.4", "3.3.0", "3.3.1")
+    v <- c("3.2.4", "3.3.0", "3.3.1")
   } else {
-    ## NOTE: I'm not updating this because it may break some people's code
-    v <- c("3.2.2", "3.2.4") # , "3.3.0")
+    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2")
   }
   numeric_version(v)
 }
@@ -562,11 +561,10 @@ select_r_version <- function(cluster, r_version) {
     valid <- r_versions(cluster)
     ours <- getRversion()
     if (ours %in% valid) {
-      r_version <- ours
+      r_version <- numeric_version(ours)
     } else {
       i <- valid > ours
       j <- if (any(i)) which(i)[[1L]] else length(valid)
-      if (any(i)) valid[]
       r_version <- valid[[j]]
     }
   } else {
@@ -574,7 +572,7 @@ select_r_version <- function(cluster, r_version) {
       r_version <- numeric_version(r_version)
     }
     if (!(r_version %in% r_versions(cluster))) {
-      stop("Unsupported version: ", as.character(r_version))
+      stop("Unsupported R version: ", as.character(r_version))
     }
   }
   r_version
