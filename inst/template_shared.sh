@@ -19,9 +19,8 @@ echo This is a parallel job: will use $CPP_NUMCPUS
 set CONTEXT_CORES=$CCP_NUMCPUS
 {{{/parallel}}}
 
-{{{#redis_host}}}
 set REDIS_HOST={{{redis_host}}}
-{{{/redis_host}}}
+set REDIS_URL=redis://{{{redis_host}}}:6379
 
 cd ${CONTEXT_WORKDIR}
 echo "working directory: $PWD"
