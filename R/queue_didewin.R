@@ -170,9 +170,9 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       unsubmit(self, task_get_id(t))
     },
 
-    submit_workers = function(n, wait = TRUE) {
+    submit_workers = function(n, timeout = 600, progress = TRUE) {
       self$preflight()
-      submit_workers(self, n, wait)
+      submit_workers(self, n, timeout, progress)
     },
 
     stop_workers = function(worker_ids = NULL) {
@@ -224,6 +224,11 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
 initialise_cluster_packages <- function(obj) {
   lib_r_platform <- cran_platform(obj$config$cluster)
   lib_r_version <- obj$config$r_version
+
+  if (isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers)) {
+    ## Need to ensure that 'rrq' is loaded for the workers to use
+    obj$context$packages$loaded <- c(obj$context$packages$loaded, "rrq")
+  }
 
   ## TODO: need to get additional arguments passed through here;
   ## installed_action is the key one (quiet might be useful too).
@@ -331,7 +336,7 @@ submit_dide <- function(obj, task_ids, names) {
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   for (id in task_ids) {
-    batch <- write_batch(id, root, template, TRUE, linux)
+    batch <- write_batch(id, root, template, list(task_id = id), linux)
     dat <- prepare_path(batch, config$shares)
     if (linux) {
       path <- file.path(dat$drive_remote, dat$rel, fsep = "/")

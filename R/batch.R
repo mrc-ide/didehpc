@@ -1,8 +1,7 @@
 ## TODO: I'd prefer it if the paths in the generated templates were
 ## *relative* paths, not absolute paths.  This is an issue for the
 ## task runner, the context root and the log
-write_batch <- function(id, root, template, task = TRUE, linux = FALSE) {
-  dat <- if (task) list(task_id = id) else list(worker_id = id)
+write_batch <- function(id, root, template, dat, linux = FALSE) {
   filename <- path_batch(root, id, linux)
   dir.create(dirname(filename), FALSE, TRUE)
   if (!file.exists(filename)) {
@@ -68,8 +67,9 @@ batch_templates <- function(context, config, workdir) {
               redis_host = redis_host(config$cluster),
               rrq_key_alive = config$rrq_key_alive,
               worker_timeout = config$worker_timeout,
-              worker_log_path = path_worker_logs(NULL),
-              log_path = path_logs(NULL))
+              rrq_worker_log_path = path_worker_logs(NULL),
+              log_path = path_logs(NULL),
+              cluster_name = config$cluster)
 
   if (!linux) {
     ## NOTE: don't forget the unname()

@@ -1,8 +1,8 @@
-prepare_path <- function(path, mappings, error=TRUE) {
+prepare_path <- function(path, mappings, error = TRUE) {
   if (!file.exists(path)) {
     stop("path does not exist: ", path)
   }
-  path <- clean_path(normalizePath(path, mustWork=TRUE))
+  path <- clean_path(normalizePath(path, mustWork = TRUE))
   ## TODO: currently assume that mappings does not end in a trailing slash.
   ## TODO: not sure about slash direction disagreements.
   ## TODO: 'rel' is not relative to *our* working directory
@@ -67,10 +67,10 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
     stop("Local mount point does not exist: ", path_local)
   }
   clean_path <- function(x) {
-    sub("/+$", "", gsub("\\", "/", x, fixed=TRUE))
+    sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
   }
   ret <-
-    list(name=name,
+    list(name = name,
          path_remote = clean_path(path_remote),
          path_local  = clean_path(normalizePath(path_local, mustWork=TRUE)),
          drive_remote = drive_remote)
@@ -95,7 +95,7 @@ print.path_mapping <- function(x, ...) {
 }
 
 clean_path <- function(x) {
-  sub("/+$", "", gsub("\\", "/", x, fixed=TRUE))
+  sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
 }
 windows_path <- function(x) {
   gsub("/", "\\", x, fixed = TRUE)
@@ -105,13 +105,13 @@ unix_path <- function(x) {
 }
 
 remote_path <- function(x) {
-  windows_path(file.path(x$path_remote, x$rel, fsep="/"))
+  windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
 }
 
 file_path <- function(...) {
   paths <- list(...)
   paths <- paths[!vapply(paths, is.null, logical(1))]
-  do.call("file.path", paths, quote=TRUE)
+  do.call("file.path", paths, quote = TRUE)
 }
 path_batch <- function(root, id = NULL, linux = FALSE) {
   if (!is.null(id)) {
@@ -120,11 +120,11 @@ path_batch <- function(root, id = NULL, linux = FALSE) {
   }
   file_path(root, "batch", id)
 }
-path_logs <- function(root, id=NULL) {
+path_logs <- function(root, id = NULL) {
   file_path(root, "logs", id)
 }
 
-path_worker_logs <- function(root, id=NULL) {
+path_worker_logs <- function(root, id = NULL) {
   file_path(root, "workers", id)
 }
 
@@ -140,8 +140,8 @@ dide_temp <- function(path) {
 }
 
 detect_mount_fail <- function() {
-  cbind(host=character(), path=character(), local=character(),
-        remote=character())
+  cbind(host = character(), path = character(), local = character(),
+        remote = character())
 }
 
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
@@ -157,11 +157,11 @@ detect_mount_unix <- function() {
   ##   mount -t cifs  # (linux)
   ##   mount -t smbfs # (osx)
   re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
-  dat <- system2(mount, c("-t", type), stdout=TRUE, stderr=FALSE)
-  i <- grepl(re, dat, perl=TRUE)
+  dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
+  i <- grepl(re, dat, perl = TRUE)
   if (!all(i)) {
     ## This will be useful to see until I get this correct.
-    warning("Ignoring mounts:\n", paste(re[!i], collapse="\n"))
+    warning("Ignoring mounts:\n", paste(re[!i], collapse = "\n"))
   }
   dat <- dat[i]
 
@@ -174,26 +174,26 @@ detect_mount_unix <- function() {
   ## on on the wired network and Linux I see //shorthost/path
   ##
   ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
-  m <- rematch::re_match(re, dat)[, c("host", "path", "local"), drop=FALSE]
+  m <- rematch::re_match(re, dat)[, c("host", "path", "local"), drop = FALSE]
 
   host <- sub("\\.dide\\.ic\\.ac\\.uk$", "", m[, "host"])
   remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
-  cbind(remote=remote, local=m[, "local"])
+  cbind(remote = remote, local = m[, "local"])
 }
 
 detect_mount_windows <- function() {
   windir <- Sys.getenv("WINDIR", "C:\\windows")
   format_csv <- sprintf('/format:"%s\\System32\\wbem\\en-US\\csv"', windir)
 
-  ## Using stdout=path does not work here, yielding a file that has
+  ## Using stdout = path does not work here, yielding a file that has
   ## embedded NULs and failing to be read.
   path <- tempfile()
-  tmp <- system2("wmic", c("netuse", "list", "brief", format_csv), stdout=TRUE)
+  tmp <- system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)
   writeLines(tmp[-1], path)
   on.exit(file.remove(path))
-  dat <- read.csv(path, stringsAsFactors=FALSE)
+  dat <- read.csv(path, stringsAsFactors = FALSE)
 
-  cbind(remote=dat$RemoteName, local=dat$LocalName)
+  cbind(remote = dat$RemoteName, local = dat$LocalName)
 }
 
 detect_mount <- function() {

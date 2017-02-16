@@ -1,16 +1,22 @@
 ECHO this is an worker
 
+set RRQ_CONFIG={{{cluster_name}}}
 {{=<% %>=}}
-set RRQ_WORKER_ID={{{worker_id}}}
+set RRQ_WORKER_ID={{{rrq_worker_id}}}
+set RRQ_KEY_ALIVE={{{rrq_key_alive}}}
 <%={{ }}=%>
 
-set REDIS_HOST={{{redis_host}}}
-set RRQ_WORKER_KEY_ALIVE={{{rrq_key_alive}}}
-set CONTEXT_LOGFILE={{{context_root}}}\{{{worker_log_path}}}\%RRQ_WORKER_ID%
+set CONTEXT_LOGFILE={{{context_root}}}\{{{rrq_worker_log_path}}}\%RRQ_WORKER_ID%
 ECHO logfile: %CONTEXT_LOGFILE%
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript "{{{context_root}}}\bin\rrq_worker" --context-root "%CONTEXT_ROOT%" --context-id {{{context_id}}} --redis-host %REDIS_HOST% --key-alive "%RRQ_WORKER_KEY_ALIVE%" --worker-name %RRQ_WORKER_ID% --timeout {{{worker_timeout}}} --log-path {{{log_path}}} > "%CONTEXT_LOGFILE%" 2>&1
+Rscript "{{{context_root}}}\bin\rrq_worker" "%CONTEXT_ROOT%" %CONTEXT_ID% %RRQ_CONFIG% %RRQ_WORKER_ID% %RRQ_KEY_ALIVE% > "%CONTEXT_LOGFILE%" 2>&1
+
+@ECHO off
+if %ERRORLEVEL% neq 0 (
+  ECHO Error running task
+  EXIT /b %ERRORLEVEL%
+)
 
 @echo Quitting
