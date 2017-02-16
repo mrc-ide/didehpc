@@ -50,8 +50,8 @@ batch_templates <- function(context, config, workdir) {
     r_version <- as.character(config$r_version)
     context_workdir <- unix_path(file.path(wd$drive_remote, wd$rel))
   } else {
-    r_version <- paste0("64_", paste(unclass(config$r_version)[[1]],
-                                     collapse = "_"))
+    r_version <- sprintf("%d_%s", R_BITS,
+                         paste(unclass(config$r_version)[[1]], collapse = "_"))
     context_workdir <- windows_path(wd$rel)
   }
 

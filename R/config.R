@@ -477,21 +477,26 @@ available_drive <- function(shares) {
 
 BUILD_SERVER_WINDOWS <- "builderhv.dide.ic.ac.uk"
 BUILD_SERVER_LINUX <- "129.31.25.7"
+R_BITS <- 64
 
 ## TODO: document how updates happen as there's some manual
 ## downloading and installation of rtools.
-rtools_versions <- function(r_version, path=NULL) {
+rtools_versions <- function(r_version, path = NULL) {
   r_version_2 <- as.character(r_version[1, 1:2])
   ret <- switch(r_version_2,
-                "3.2"=list(path="Rtools33", gcc="4.6.3"),
-                "3.3"=list(path="Rtools33", gcc="4.6.3"),
+                "3.2" = list(path = "Rtools33", gcc = "4.6.3"),
+                "3.3" = list(path = "Rtools33", gcc = "4.6.3"),
                 stop("Get Rich to upgrade Rtools"))
+  mingw <- sprintf("mingw_%d", R_BITS)
+  ret$binpref <-
+    unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
   ret$path <- windows_path(file_path(path, "Rtools", ret$path))
   ret
 }
 
 rtools_info <- function(config) {
   tmpdrive <- NULL
+
   for (s in config$shares) {
     if (grepl("//fi--didef2/tmp/?", tolower(unname(s$path_remote)))) {
       tmpdrive <- s$drive_remote
