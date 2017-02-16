@@ -16,3 +16,13 @@ error_if_negative <- function(x) {
 pass_through <- function(x) {
   error_if_negative(x) * 2
 }
+
+slow_double <- function(x) {
+  Sys.sleep(runif(1, 0, x))
+  x * 2
+}
+
+slow_rnorm <- function(x) {
+  Sys.sleep(sqrt(abs(x)) / 3)
+  rnorm(1, x)
+}

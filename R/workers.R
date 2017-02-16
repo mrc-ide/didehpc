@@ -7,10 +7,14 @@ initialise_rrq <- function(obj) {
       stop("context must contain a unique_value; please rerun context_save()")
     }
 
-    ## This script definitely needs work, and should be added
-    ## (perhaps) to the rrq package
-    file.copy(system.file("rrq_worker_bootstrap", package = "rrq"),
-              file.path(obj$root$path, "bin", "rrq_worker"))
+    config <- obj$config
+    rrq:::write_rrq_worker(obj$context)
+    rrq:::worker_config_save(obj$context,
+                             config$cluster,
+                             redis_host = redis_host(config$cluster),
+                             redis_port = 6379,
+                             timeout = config$worker_timeout,
+                             log_path = path_logs(NULL))
 
     ## Both approaches use workers:
     initialise_rrq_controllers(obj)
@@ -20,14 +24,6 @@ initialise_rrq <- function(obj) {
 ## This is here because we might need to rerun it periodically and I
 ## don't want to have to redo the installation....
 initialise_rrq_controllers <- function(obj) {
-  config <- obj$config
-  ## TODO: this will need exporting:
-  rrq:::worker_config_save(obj$context,
-                           config$cluster,
-                           redis_host = redis_host(config$cluster),
-                           redis_port = 6379,
-                           timeout = config$worker_timeout,
-                           log_path = path_logs(NULL))
   con <- rrq_redis_con(config)
   if (isTRUE(obj$config$use_workers)) {
     obj$workers <- rrq::worker_controller(obj$context$id, con)

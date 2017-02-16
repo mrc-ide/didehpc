@@ -1,4 +1,5 @@
 DIDEWIN_PATH <- "~/net/home/cluster_testing"
+PROGRESS <- TRUE
 options("didewin.cluster" = "fi--didemrchnb",
         ## this suppresses all submission progress; better would be to
         ## scope the exints within the test blocks?  It's necessary,

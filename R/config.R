@@ -517,21 +517,13 @@ needs_rtools <- function(config, context) {
 
 redis_host <- function(cluster) {
   switch(cluster,
-         "fi--didemrchnb"="12.0.0.1",
-         "fi--dideclusthn"="11.0.0.1",
-         "")
+         "fi--didemrchnb" = "12.0.0.1",
+         "fi--dideclusthn" = "11.0.0.1",
+         "") # TODO: get working on the linux cluster too
 }
 
 build_server <- function(cluster) {
   if (linux_cluster(cluster)) BUILD_SERVER_LINUX else BUILD_SERVER_WINDOWS
-}
-
-r_platform <- function(cluster) {
-  if (linux_cluster(cluster)) {
-    "x86_64-pc-linux-gnu"
-  } else {
-    "x86_64-w64-mingw32"
-  }
 }
 
 cran_platform <- function(cluster) {
