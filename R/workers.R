@@ -42,14 +42,15 @@ submit_workers <- function(obj, n, timeout = 600, progress = TRUE) {
   root <- obj$root$path
   config <- obj$config
   template <- obj$templates$rrq_worker
-  rrq_key_alive <- rrq::rrq_key_worker_alive(obj$context$id)
+
   path_log <- path_worker_logs(NULL)
   linux <- linux_cluster(config$cluster)
+
   names <- sprintf("%s_%d", ids::adjective_animal(), seq_len(n))
+  rrq_key_alive <- rrq::rrq_expect_workers(obj, names)
 
   message(sprintf("Submitting %d %s", n, ngettext(n, "worker", "workers")))
   pb <- queuer:::progress(n, show = progress)
-
 
   ## It would seem that it should be possible to bulk submit here, but
   ## that's not straightforward because the php script can then take
