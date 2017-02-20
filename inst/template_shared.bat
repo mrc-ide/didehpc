@@ -10,6 +10,7 @@ set CONTEXT_WORKDIR={{{context_workdir}}}
 set CONTEXT_ROOT={{{context_root}}}
 set CONTEXT_ID={{{context_id}}}
 set CONTEXT_PROPAGATE_ERROR=TRUE
+set CONTEXT_BOOTSTRAP=TRUE
 
 call setr{{{r_version}}}.bat
 

@@ -12,6 +12,7 @@ export CONTEXT_WORKDIR={{{context_workdir}}}
 export CONTEXT_ROOT={{{context_root}}}
 export CONTEXT_ID={{{context_id}}}
 export CONTEXT_PROPAGATE_ERROR=TRUE
+export CONTEXT_BOOTSTRAP=TRUE
 
 export PATH="/opt/local/R/{{{r_version}}}/bin:$PATH"
 
