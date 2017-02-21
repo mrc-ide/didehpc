@@ -522,6 +522,12 @@ redis_host <- function(cluster) {
          "") # TODO: get working on the linux cluster too
 }
 
+postgres_host <- function(cluster) {
+  switch(cluster,
+         "fi--didemrchnb" = "12.0.0.249",
+         "129.31.26.142")
+}
+
 build_server <- function(cluster) {
   if (linux_cluster(cluster)) BUILD_SERVER_LINUX else BUILD_SERVER_WINDOWS
 }
