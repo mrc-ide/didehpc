@@ -115,13 +115,3 @@ backup <- function(filename, verbose=TRUE, move=FALSE) {
     }
   }
 }
-
-## TODO: port to use queuer's progress bars now
-progress_bar <- function(name, total) {
-  if (isTRUE(getOption("didehpc.suppress_progress", FALSE))) {
-    function(...) {} # noop
-  } else {
-    str <- sprintf("%s [:bar] :current / :total", name)
-    progress::progress_bar$new(name, total = total)$tick
-  }
-}

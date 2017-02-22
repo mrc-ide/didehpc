@@ -319,8 +319,6 @@ submit_dide <- function(obj, task_ids, names) {
   config <- obj$config
   template <- obj$templates$runner
 
-  pb <- progress_bar("Submitting", length(task_ids))
-
   if (is.null(names)) {
     names <- setNames(task_ids, task_ids)
   } else if (length(names) == length(task_ids)) {
@@ -333,6 +331,9 @@ submit_dide <- function(obj, task_ids, names) {
 
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
+  show <- !isTRUE(getOption("didehpc.suppress_progress", FALSE))
+  p <- queuer:::progress_timeout(length(task_ids), Inf, show = show,
+                                 prefix = "submitting ")
   for (id in task_ids) {
     batch <- write_batch(id, root, template, list(task_id = id), linux)
     dat <- prepare_path(batch, config$shares)
@@ -341,7 +342,7 @@ submit_dide <- function(obj, task_ids, names) {
     } else {
       path <- remote_path(dat)
     }
-    pb()
+    p()
     dide_id <- didehpc_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
@@ -367,11 +368,11 @@ unsubmit_dide <- function(obj, task_ids) {
   dide_cluster <- vcapply(task_ids, db$get, "dide_cluster")
   config <- obj$config
 
-  pb <- progress_bar("Cancelling", length(task_ids))
-
+  p <- queuer:::progress_timeout(length(task_ids), Inf, show = show,
+                                 prefix = "cancelling ")
   ret <- character(length(task_ids))
   for (i in seq_along(task_ids)) {
-    pb()
+    p()
     id <- task_ids[[i]]
     st <- tryCatch(db$get(id, "task_status"),
                    KeyError = function(e) NULL)
