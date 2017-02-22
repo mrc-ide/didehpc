@@ -7,7 +7,7 @@ test_that("sql", {
   skip_on_travis()
   skip_if_not_installed("RPostgres")
 
-  owd <- prepare_didewin("sql", "mysources.R")
+  owd <- prepare_didehpc("sql", "mysources.R")
   on.exit(setwd(owd))
 
   path <- "context"
@@ -15,9 +15,9 @@ test_that("sql", {
                                sources = "mysources.R",
                                storage_type = storage_driver_psql())
 
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
-  expect_is(obj, "queue_didewin")
+  expect_is(obj, "queue_didehpc")
   path_lib <- file.path(path, "lib", "windows", obj$config$r_version[1, 1:2])
   expect_true(file.exists(path_lib))
   expect_true(file.exists(file.path(path_lib, "context")))

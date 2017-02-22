@@ -66,10 +66,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = TRUE) {
     batch <- write_batch(nm, root, template, dat, linux)
     path <- remote_path(prepare_path(batch, config$shares))
     pb()
-    dide_id <- didewin_submit(config, path, nm)
-    ## didewin_joblog(config, dide_id)
-    ## NOTE: there is nothing here to organise the interaction with
-    ## these yet, though some things might work directly.
+    dide_id <- didehpc_submit(config, path, nm)
     db$mset(nm,
             c(dide_id,   path_log,   config$cluster),
             c("dide_id", "log_path", "dide_cluster"))

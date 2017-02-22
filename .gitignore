@@ -6,5 +6,5 @@ TODO.md
 inst/staticdocs
 inst/web
 inst/doc
-didewin_*.tar.gz
-didewin.Rcheck
+didehpc_*.tar.gz
+didehpc.Rcheck

@@ -167,14 +167,14 @@
 ##'   your computer.
 ##'
 ##' @export
-didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
+didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL, build_server = NULL, shares = NULL,
                            template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
                            r_version = NULL, use_common_lib = NULL) {
-  defaults <- didewin_config_defaults()
+  defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
                 temp = temp,
@@ -275,30 +275,30 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
               r_version = dat$r_version,
               common_lib = dat$common_lib)
 
-  class(ret) <- "didewin_config"
+  class(ret) <- "didehpc_config"
   ret
 }
 
-##' @param ... arguments to \code{didewin_config}
+##' @param ... arguments to \code{didehpc_config}
 ##' @export
-##' @rdname didewin_config
-didewin_config_global <- function(...) {
+##' @rdname didehpc_config
+didehpc_config_global <- function(...) {
   opts <- list(...)
   if (length(opts) > 0L) {
     nms <- names(opts)
     if (is.null(nms) || any(nms == "")) {
       stop("All options must be named")
     }
-    extra <- setdiff(nms, names(formals(didewin_config)))
+    extra <- setdiff(nms, names(formals(didehpc_config)))
     if (length(extra)) {
       stop("Unknown options: ", paste(extra, collapse=", "))
     }
-    names(opts) <- paste0("didewin.", nms)
+    names(opts) <- paste0("didehpc.", nms)
     oo <- options(opts)
     on.exit(options(oo))
     if (!all(vlapply(opts, is.null))) {
       ## check that we're ok, if we actually set anything.
-      tmp <- didewin_config()
+      tmp <- didehpc_config()
     }
     on.exit()
     invisible(oo)
@@ -307,30 +307,30 @@ didewin_config_global <- function(...) {
   }
 }
 
-didewin_config_defaults <- function() {
+didehpc_config_defaults <- function() {
   defaults <- list(
-    cluster        = getOption("didewin.cluster",        valid_clusters()[[1]]),
-    credentials    = getOption("didewin.credentials",    NULL),
-    home           = getOption("didewin.home",           NULL),
-    temp           = getOption("didewin.temp",           NULL),
-    build_server   = getOption("didewin.build_server",   NULL),
-    shares         = getOption("didewin.shares",         NULL),
-    template       = getOption("didewin.template",       NULL),
-    cores          = getOption("didewin.cores",          NULL),
-    wholenode      = getOption("didewin.wholenode",      NULL),
-    parallel       = getOption("didewin.parallel",       NULL),
-    workdir        = getOption("didewin.workdir",        NULL),
-    use_workers    = getOption("didewin.use_workers",    FALSE),
-    use_rrq        = getOption("didewin.use_rrq",        FALSE),
-    worker_timeout = getOption("didewin.worker_timeout", 600),
-    rtools         = getOption("didewin.rtools",         FALSE),
-    hpctools       = getOption("didewin.hpctools",       FALSE),
-    r_version      = getOption("didewin.r_version",      NULL),
-    use_common_lib = getOption("didewin.use_common_lib", FALSE))
+    cluster        = getOption("didehpc.cluster",        valid_clusters()[[1]]),
+    credentials    = getOption("didehpc.credentials",    NULL),
+    home           = getOption("didehpc.home",           NULL),
+    temp           = getOption("didehpc.temp",           NULL),
+    build_server   = getOption("didehpc.build_server",   NULL),
+    shares         = getOption("didehpc.shares",         NULL),
+    template       = getOption("didehpc.template",       NULL),
+    cores          = getOption("didehpc.cores",          NULL),
+    wholenode      = getOption("didehpc.wholenode",      NULL),
+    parallel       = getOption("didehpc.parallel",       NULL),
+    workdir        = getOption("didehpc.workdir",        NULL),
+    use_workers    = getOption("didehpc.use_workers",    FALSE),
+    use_rrq        = getOption("didehpc.use_rrq",        FALSE),
+    worker_timeout = getOption("didehpc.worker_timeout", 600),
+    rtools         = getOption("didehpc.rtools",         FALSE),
+    hpctools       = getOption("didehpc.hpctools",       FALSE),
+    r_version      = getOption("didehpc.r_version",      NULL),
+    use_common_lib = getOption("didehpc.use_common_lib", FALSE))
 
 
   if (is.null(defaults$credentials)) {
-    username <- getOption("didewin.username", NULL)
+    username <- getOption("didehpc.username", NULL)
     if (!is.null(username)) {
       defaults$credentials <- username
     }
@@ -346,8 +346,8 @@ didewin_config_defaults <- function() {
 }
 
 ##' @export
-print.didewin_config <- function(x, ...) {
-  cat("<didewin_config>\n")
+print.didehpc_config <- function(x, ...) {
+  cat("<didehpc_config>\n")
   expand <- c("numeric_version", "path_mapping")
   for (i in seq_along(x)) {
     el <- x[[i]]

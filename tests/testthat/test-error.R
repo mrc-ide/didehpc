@@ -3,12 +3,12 @@ context("errors")
 test_that("error", {
   skip_on_travis()
 
-  owd <- prepare_didewin("error", "mysources.R")
+  owd <- prepare_didehpc("error", "mysources.R")
   on.exit(setwd(owd))
 
   path <- "context"
   ctx <- context::context_save(path = path, sources = "mysources.R")
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
   t1 <- obj$enqueue(sessionInfo())
   t2 <- obj$enqueue(pass_through(10))

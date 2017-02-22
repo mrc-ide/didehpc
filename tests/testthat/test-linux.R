@@ -4,14 +4,14 @@ test_that("linux", {
   skip_on_travis()
   skip_if_not_installed("buildr")
 
-  owd <- prepare_didewin("linux", "mysources.R")
+  owd <- prepare_didehpc("linux", "mysources.R")
   on.exit(setwd(owd))
 
   path <- "context"
   ctx <- context::context_save(path = path, packages = "ape",
                                sources = "mysources.R")
-  cfg <- didewin_config(cluster = "fi--didelxhn")
-  obj <- didewin::queue_didewin(ctx, config = cfg)
+  cfg <- didehpc_config(cluster = "fi--didelxhn")
+  obj <- didehpc::queue_didehpc(ctx, config = cfg)
 
   path_lib <- file.path(path, "lib", "linux", obj$config$r_version[, 1:2])
   expect_true(file.exists(file.path(path_lib, "ape")))

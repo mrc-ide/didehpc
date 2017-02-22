@@ -4,14 +4,14 @@ test_that("github", {
   skip_on_travis()
   skip_if_not_installed("kitten")
 
-  owd <- prepare_didewin("github")
+  owd <- prepare_didehpc("github")
   on.exit(setwd(owd))
 
   path <- "context"
   src <- provisionr::package_sources(github = "richfitz/kitten")
   ctx <- context::context_save(path = path, packages = "kitten",
                                package_sources = src)
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
   expect_true(obj$provisioned)
   expect_silent(obj$preflight())

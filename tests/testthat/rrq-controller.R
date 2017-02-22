@@ -26,6 +26,9 @@ simulation_local <- function(nsteps, nsamples, r) {
 ## in its environment that we could hook onto.  I think that
 ## redux::hiredis() will Just Work with REDIS_HOST set, if not, set
 ## REDIS_URL
+##
+## Then consider using the config approach here to get the redis host
+## information out?  This would all go into rrq of course.
 get_rrq_controller <- function(x, ...) {
   con <- redux::hiredis(host = Sys.getenv("REDIS_HOST"))
   ctx <- context::context_read(Sys.getenv("CONTEXT_ID"),

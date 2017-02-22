@@ -3,13 +3,13 @@ context("cancel")
 test_that("cancel", {
   skip_on_travis()
 
-  owd <- prepare_didewin("basic", "mysources.R")
+  owd <- prepare_didehpc("basic", "mysources.R")
   on.exit(setwd(owd))
 
   context::context_log_start()
   path <- "context"
   ctx <- context::context_save(path, packages = "stats")
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
   ## Via unsubmit directly
   t1 <- obj$enqueue(Sys.sleep(3600))

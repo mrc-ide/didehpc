@@ -47,20 +47,20 @@ devtools::install_github(c(
   "richfitz/ids",
   "dide-tools/context",
   "richfitz/queuer",
-  "dide-tools/didewin"))
+  "dide-tools/didehpc"))
 ```
 
 Or:
 
 ```r
 drat:::add("richfitz")
-install.packages("didewin")
+install.packages("didehpc")
 ```
 
 Or:
 
 ```r
-install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
+install.packages("didehpc", repos=c(CRAN="https://cran.rstudio.com",
                                     drat="https://richfitz.github.io/drat"))
 ```
 
@@ -71,13 +71,13 @@ to select the cluster you want to use
 
 
 ```r
-didewin::didewin_config_global(cluster="fi--didemrchnb")
+didehpc::didehpc_config_global(cluster="fi--didemrchnb")
 ```
 
 Otherwise, and on any other platform you'll need to provide your username:
 
 ```r
-didewin::didewin_config_global(credentials="yourusername",
+didehpc::didehpc_config_global(credentials="yourusername",
                                cluster="fi--didemrchnb")
 ```
 
@@ -86,7 +86,7 @@ from the file you use to mount your network shares (see the main
 vignette for details)
 
 ```r
-didewin::didewin_config_global(credentials="~/.smbcredentials",
+didehpc::didehpc_config_global(credentials="~/.smbcredentials",
                                cluster="fi--didemrchnb")
 ```
 
@@ -94,7 +94,7 @@ If this is the first time you have run this package, best to try
 out the login proceedure with:
 
 ```r
-didewin::web_login()
+didehpc::web_login()
 ```
 
 ## Describe your project dependencies so we can recreate that on the cluster
@@ -145,7 +145,7 @@ jobs.
 
 
 ```r
-obj <- didewin::queue_didewin(ctx)
+obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
@@ -333,7 +333,7 @@ obj$dide_log(t)
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
 ## generated on date: 2016-05-24 09:03:33
-## didewin version: 0.0.3
+## didehpc version: 0.0.3
 ## context version: 0.0.8
 ## running on: FI--DIDEMRC10
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh

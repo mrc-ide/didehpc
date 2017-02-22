@@ -12,7 +12,7 @@ write_batch <- function(id, root, template, dat, linux = FALSE) {
 }
 
 read_templates <- function(ext) {
-  path <- system.file(package = "didewin")
+  path <- system.file(package = "didehpc")
   re <- sprintf("^template_(.*)\\.%s$", ext)
   files <- dir(path, re)
   ret <- setNames(vcapply(file.path(path, files), read_lines),
@@ -56,7 +56,7 @@ batch_templates <- function(context, config, workdir) {
 
   dat <- list(hostname = hostname(),
               date = as.character(Sys.Date()),
-              didewin_version = as.character(packageVersion("didewin")),
+              didehpc_version = as.character(packageVersion("didehpc")),
               context_version = as.character(packageVersion("context")),
               r_version = r_version,
               context_workdrive = wd$drive_remote,

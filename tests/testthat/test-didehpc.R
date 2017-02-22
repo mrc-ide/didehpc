@@ -1,4 +1,4 @@
-context("didewin")
+context("didehpc")
 
 test_that("home directory", {
   expect_equal(dide_home("foo", "bar"),

@@ -8,7 +8,7 @@ test_that("compile", {
   ## BH.  It would be nice to be able to skip that by pointing things
   ## at a repo that already has it, I think, or to see if we can get
   ## stan to work without BH.
-  owd <- prepare_didewin("rcmdshlib")
+  owd <- prepare_didehpc("rcmdshlib")
   on.exit(setwd(owd))
 
   ## TODO: provisionr is leaving a signature in the context which is
@@ -20,8 +20,8 @@ test_that("compile", {
   src <- provisionr::package_sources(github = "richfitz/rcmdshlib")
   ctx <- context::context_save(path = path, packages = "rcmdshlib",
                                package_sources = src)
-  config <- didewin::didewin_config(r_version = "3.3.2", rtools = TRUE)
-  obj <- didewin::queue_didewin(ctx, config = config)
+  config <- didehpc::didehpc_config(r_version = "3.3.2", rtools = TRUE)
+  obj <- didehpc::queue_didehpc(ctx, config = config)
 
   expect_true(obj$config$rtools)
   expect_true(needs_rtools(obj$config, obj$context))

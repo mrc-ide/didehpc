@@ -10,11 +10,11 @@
 ##   %\VignetteEncoding{UTF-8}
 ## ---
 
-##+ echo=FALSE,results="hide"
-knitr::opts_chunk$set(error=FALSE)
+##+ echo = FALSE,results = "hide"
+knitr::opts_chunk$set(error = FALSE)
 set.seed(1)
-options(didewin.credentials="~/.smbcredentials",
-        didewin.cluster="fi--dideclusthn")
+options(didehpc.credentials = "~/.smbcredentials",
+        didehpc.cluster = "fi--dideclusthn")
 
 ## # Running heaps of jobs without annoying your colleagues
 
@@ -38,10 +38,10 @@ options(didewin.credentials="~/.smbcredentials",
 ## which can be a bit of a pain to install on some platforms (talk to
 ## Rich if you have trouble).
 
-##+ eval=FALSE
+##+ eval = FALSE
 install.packages("rrq",
-                 repos=c(CRAN="https://cran.rstudio.com",
-                         drat="https://richfitz.github.io/drat"))
+                 repos = c(CRAN = "https://cran.rstudio.com",
+                           drat = "https://richfitz.github.io/drat"))
 
 ## The context id is used for communication, so if there is a chance
 ## that someone else may come up with the same context id as you (same
@@ -51,16 +51,17 @@ install.packages("rrq",
 ## username or project name make a good piece of data to use here.
 unique_value <- "rfitzjoh"
 
-##+ echo=FALSE
+##+ echo = FALSE
 unique_value <- ids::random_id()
 
 root <- "context"
-ctx <- context::context_save(root, packages="ape", sources="mysources.R",
-                             unique_value=unique_value)
+ctx <- context::context_save(root, packages = "ape", sources = "mysources.R",
+                             unique_value = unique_value)
 
 ## Then configure and create the queue:
-config <- didewin::didewin_config(use_workers=TRUE, cluster="fi--dideclusthn")
-obj <- didewin::queue_didewin(ctx, config=config)
+config <- didehpc::didehpc_config(use_workers = TRUE,
+                                  cluster = "fi--dideclusthn")
+obj <- didehpc::queue_didehpc(ctx, config = config)
 
 ## All passing `use_workers` here will do is arrange to install `rrq`,
 ## `redux` and their dependencies on the cluster, plus enable a couple
@@ -80,7 +81,7 @@ obj$submit_workers(5)
 ## All workers get names in the form `<adjective>_<animal>_<integer>`
 ## so that you can remember which workers you set off.  They will turn
 ## off after 10 minutes of inactivity by default (you can tweak this
-## with the `worker_timeout` argument to `didewin_config` or by
+## with the `worker_timeout` argument to `didehpc_config` or by
 ## sending a `TIMEOUT_SET` message).
 
 ## Submitting jobs works as before, but should hopefully be a little
@@ -94,7 +95,7 @@ t$wait(100)
 
 ## You can see what your workers have been up to with the
 ## `workers_log_tail` command:
-obj$workers$workers_log_tail(n=Inf)
+obj$workers$workers_log_tail(n = Inf)
 
 ## The `time` column may be tweaked into something a bit more
 ## practical soon.
@@ -104,7 +105,7 @@ t$log()
 
 ## Find out how long your workers will persist for:
 id <- obj$workers$send_message("TIMEOUT_GET")
-obj$workers$get_responses(id, wait=10)
+obj$workers$get_responses(id, wait = 10)
 
 ## Other than that, hopefully everything else continues as normal.  We
 ## can submit a bunch of jobs and run them using `queuer::qlapply`:
@@ -132,4 +133,4 @@ obj$workers$send_message("TIMEOUT_SET", 0)
 ## because that's the polling timeout time (I may be able to improve
 ## this later).
 obj$stop_workers()
-obj$workers$workers_log_tail(n=Inf)
+obj$workers$workers_log_tail(n = Inf)

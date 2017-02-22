@@ -3,14 +3,14 @@ context("versions")
 test_that("supported - defaults", {
   skip_on_travis()
 
-  owd <- prepare_didewin("versions")
+  owd <- prepare_didehpc("versions")
   on.exit(setwd(owd))
 
   valid <- r_versions("fi--didemrchnb")
   for (i in seq_along(valid)) {
     v <- valid[[i]]
     with_mock(`base::getRversion` = function() v,
-              expect_equal(didewin_config()$r_version, v))
+              expect_equal(didehpc_config()$r_version, v))
   }
 
   v_up <- max(valid)
@@ -19,26 +19,26 @@ test_that("supported - defaults", {
   v_msg <- numeric_version("3.2.9")
 
   with_mock(`base::getRversion` = function() v_up,
-            expect_equal(didewin_config()$r_version, max(valid)))
+            expect_equal(didehpc_config()$r_version, max(valid)))
   with_mock(`base::getRversion` = function() v_down,
-            expect_equal(didewin_config()$r_version, min(valid)))
+            expect_equal(didehpc_config()$r_version, min(valid)))
   with_mock(`base::getRversion` = function() v_msg,
-            expect_equal(didewin_config()$r_version, numeric_version("3.3.1")))
+            expect_equal(didehpc_config()$r_version, numeric_version("3.3.1")))
 
 
-  expect_equal(didewin_config(r_version = "3.3.1")$r_version,
+  expect_equal(didehpc_config(r_version = "3.3.1")$r_version,
                numeric_version("3.3.1"))
-  expect_equal(didewin_config(r_version = numeric_version("3.2.4"))$r_version,
+  expect_equal(didehpc_config(r_version = numeric_version("3.2.4"))$r_version,
                numeric_version("3.2.4"))
 
-  expect_error(didewin_config(r_version = "3.2.5")$r_version,
+  expect_error(didehpc_config(r_version = "3.2.5")$r_version,
                "Unsupported R version: 3.2.5", fixed = TRUE)
 })
 
 test_that("versions", {
   skip_on_travis()
 
-  owd <- prepare_didewin("versions", "mysources.R")
+  owd <- prepare_didehpc("versions", "mysources.R")
   on.exit(setwd(owd))
 
   path <- "context"
@@ -50,7 +50,7 @@ test_that("versions", {
   test <- lapply(unique(valid[, 1:2]),
                  function(x) max(valid[valid[, 1:2] == x]))
   for (v in test) {
-    obj <- didewin::queue_didewin(ctx, config = didewin_config(r_version = v))
+    obj <- didehpc::queue_didehpc(ctx, config = didehpc_config(r_version = v))
     expect_true(file.exists(file.path(path, "lib", "windows", v[, 1:2], "ape")))
     t <- obj$enqueue(sessionInfo())
     res <- t$wait(10, progress = FALSE)

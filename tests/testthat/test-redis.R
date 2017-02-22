@@ -8,14 +8,14 @@ test_that("redis: ping", {
   skip_on_travis()
   skip_if_not_installed("redux")
 
-  owd <- prepare_didewin("redis")
+  owd <- prepare_didehpc("redis")
   on.exit(setwd(owd))
 
   src <- provisionr::package_sources(repos = "drat://richfitz")
   ctx <- context::context_save(path = "context",
                                packages = "redux",
                                package_sources = src)
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
   t <- obj$enqueue(redux::hiredis()$PING())
   res <- t$wait(10, progress = FALSE)

@@ -8,12 +8,12 @@ test_that("stan", {
   ## BH.  It would be nice to be able to skip that by pointing things
   ## at a repo that already has it, I think, or to see if we can get
   ## stan to work without BH.
-  owd <- prepare_didewin("stan", "model.stan")
+  owd <- prepare_didehpc("stan", "model.stan")
   on.exit(setwd(owd))
 
   path <- "context"
   ctx <- context::context_save(path = path, packages = "rstan")
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
 
   expect_true(obj$config$rtools)
   expect_true(needs_rtools(obj$config, obj$context))

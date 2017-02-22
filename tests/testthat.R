@@ -1,4 +1,4 @@
 library(testthat)
-library(didewin)
+library(didehpc)
 
-test_check("didewin")
+test_check("didehpc")

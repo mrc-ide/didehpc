@@ -13,13 +13,13 @@
 ##'
 ##' @export
 ##' @importFrom provisionr package_sources
-queue_didewin <- function(context, config = didewin_config(), root = NULL,
+queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE, sync = NULL) {
-  .R6_queue_didewin$new(context, config, root, initialise, sync)
+  .R6_queue_didehpc$new(context, config, root, initialise, sync)
 }
 
-.R6_queue_didewin <- R6::R6Class(
-  "queue_didewin",
+.R6_queue_didehpc <- R6::R6Class(
+  "queue_didehpc",
   ## TODO: this needs exporting properly at some point.
   inherit = queuer:::R6_queue_base,
   public = list(
@@ -32,8 +32,8 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
     rrq = NULL,
 
     initialize = function(context, config, root, initialise, sync) {
-      if (!inherits(config, "didewin_config")) {
-        stop("Expected a didewin_config for 'config'")
+      if (!inherits(config, "didehpc_config")) {
+        stop("Expected a didehpc_config for 'config'")
       }
       super$initialize(context, root, initialise)
 
@@ -49,7 +49,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
         }
         self$sync <- union(self$context$sources, sync)
         if (length(self$sync) > 0L && is.null(config$workdir)) {
-          stop("Specify 'workdir' in didewin config to run out of place")
+          stop("Specify 'workdir' in didehpc config to run out of place")
         }
       } else if (!is.null(sync)) {
         ## There are probably times when this needs relaxing, for
@@ -129,12 +129,12 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
 
     didehpc_load = function() {
       self$login(FALSE)
-      print(didewin_load(self$config))
+      print(didehpc_load(self$config))
     },
 
     cluster_load = function(cluster = NULL, nodes = TRUE, all = FALSE) {
       self$login(FALSE)
-      print(didewin_shownodes(self$config, cluster %||% self$config$cluster),
+      print(didehpc_shownodes(self$config, cluster %||% self$config$cluster),
             nodes = nodes)
     },
 
@@ -180,7 +180,7 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       self$login(FALSE)
       dide_task_id <- self$dide_id(t)
       assert_scalar_character(dide_task_id, "task_id") # bit of trickery
-      didewin_joblog(self$config, dide_task_id)
+      didehpc_joblog(self$config, dide_task_id)
     },
 
     ## TODO: These could check that the connection is still OK, but
@@ -342,7 +342,7 @@ submit_dide <- function(obj, task_ids, names) {
       path <- remote_path(dat)
     }
     pb()
-    dide_id <- didewin_submit(config, path, names[[id]])
+    dide_id <- didehpc_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
@@ -381,7 +381,7 @@ unsubmit_dide <- function(obj, task_ids) {
       ## TODO: should alter the cluster here?  For now assumes that this
       ## is not needed.
       ##   config$cluster <- db$get(id, "dide_cluster")
-      ret[[i]] <- didewin_cancel(config, dide_id)
+      ret[[i]] <- didehpc_cancel(config, dide_id)
       if (ret[[i]] == "OK") {
         db$set(id, "CANCELLED", "task_status")
         db$set(id, simpleError("Task cancelled"), "task_results")
@@ -431,7 +431,7 @@ check_tasks_status_dide <- function(obj, task_ids = NULL) {
 
   ## Realistically we're not interested in Finished here, and that does
   ## bank up after a bit.  Talk with Wes about improvements perhaps?
-  dat <- didewin_jobstatus(obj$config)
+  dat <- didehpc_jobstatus(obj$config)
   i <- match(task_ids, dat$name)
   if (any(is.na(i))) {
     stop("Did not find information on tasks: ",
@@ -507,7 +507,7 @@ check_tasks_status_dide <- function(obj, task_ids = NULL) {
 
 check_rsync <- function(config) {
   requireNamespace("syncr", quietly = TRUE) ||
-    stop("Please install syncr; see https://dide-tools.github.io/didewin")
+    stop("Please install syncr; see https://dide-tools.github.io/didehpc")
   if (!syncr::has_rsync()) {
     if (is_windows()) {
       path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")

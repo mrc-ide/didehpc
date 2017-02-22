@@ -4,19 +4,19 @@ test_that("rrq", {
   skip_on_travis()
 
   sources <- c("mysources.R", "rrq-controller.R")
-  owd <- prepare_didewin("rrq", sources)
+  owd <- prepare_didehpc("rrq", sources)
   on.exit(setwd(owd))
 
-  config <- didewin::didewin_config(use_rrq = TRUE, worker_timeout = 3600)
+  config <- didehpc::didehpc_config(use_rrq = TRUE, worker_timeout = 3600)
 
   path <- "context"
   ctx <- context::context_save(path = path, sources = sources)
-  expect_error(didewin::queue_didewin(ctx, config = config),
+  expect_error(didehpc::queue_didehpc(ctx, config = config),
                "context must contain a unique_value")
 
   ctx <- context::context_save(path = path, sources = sources,
                                unique_value = ids::random_id())
-  obj <- didewin::queue_didewin(ctx, config = config)
+  obj <- didehpc::queue_didehpc(ctx, config = config)
 
   r <- obj$rrq_controller()
   expect_equal(r$workers_info(), setNames(list(), character(0)))

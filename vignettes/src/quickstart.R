@@ -59,16 +59,16 @@ devtools::install_github(c(
   "richfitz/ids",
   "dide-tools/context",
   "richfitz/queuer",
-  "dide-tools/didewin"))
+  "dide-tools/didehpc"))
 
 ## Or:
 ##+ eval=FALSE
 drat:::add("richfitz")
-install.packages("didewin")
+install.packages("didehpc")
 
 ## Or:
 ##+ eval=FALSE
-install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
+install.packages("didehpc", repos=c(CRAN="https://cran.rstudio.com",
                                     drat="https://richfitz.github.io/drat"))
 
 ## ## Describe your computer so we can find things
@@ -77,22 +77,22 @@ install.packages("didewin", repos=c(CRAN="https://cran.rstudio.com",
 ## to select the cluster you want to use
 
 ##+ eval=FALSE
-didewin::didewin_config_global(cluster="fi--didemrchnb")
+didehpc::didehpc_config_global(cluster="fi--didemrchnb")
 
 ## Otherwise, and on any other platform you'll need to provide your username:
 ##+ eval=FALSE
-didewin::didewin_config_global(credentials="yourusername",
+didehpc::didehpc_config_global(credentials="yourusername",
                                cluster="fi--didemrchnb")
 
 ## If you are running Linux we can get both your username and password
 ## from the file you use to mount your network shares (see the main
 ## vignette for details)
-didewin::didewin_config_global(credentials="~/.smbcredentials",
+didehpc::didehpc_config_global(credentials="~/.smbcredentials",
                                cluster="fi--didemrchnb")
 
 ## If this is the first time you have run this package, best to try
 ## out the login proceedure with:
-didewin::web_login()
+didehpc::web_login()
 
 ## ## Describe your project dependencies so we can recreate that on the cluster
 
@@ -127,7 +127,7 @@ ctx <- context::context_save("contexts", packages=packages, sources=sources)
 ## system working and then the packages required for your particular
 ## jobs.
 
-obj <- didewin::queue_didewin(ctx)
+obj <- didehpc::queue_didehpc(ctx)
 
 ## Once you get to this point we're ready to start running things on
 ## the cluster.  Let's fire off a test to make sure that everything works OK:

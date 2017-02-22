@@ -9,10 +9,10 @@ test_that("linux2", {
   skip_on_travis()
   skip_if_not_installed("buildr")
 
-  owd <- prepare_didewin("linux2", "mysources.R")
+  owd <- prepare_didehpc("linux2", "mysources.R")
   on.exit(setwd(owd))
 
-  config <- didewin_config(cluster = "fi--didelxhn")
+  config <- didehpc_config(cluster = "fi--didelxhn")
   github <- c("jeffeaton/anclik/anclik",
               "jeffeaton/epp",
               "jeffeaton/eppspectrum@allcausemx",
@@ -22,7 +22,7 @@ test_that("linux2", {
   ctx <- context::context_save(root,
                                packages = c("fastmatch", "eppspectrum"),
                                package_sources = src)
-  obj <- didewin::queue_didewin(ctx, config = config)
+  obj <- didehpc::queue_didehpc(ctx, config = config)
 
   t <- obj$enqueue(sessionInfo())
   res <- t$wait(10, progress = FALSE)

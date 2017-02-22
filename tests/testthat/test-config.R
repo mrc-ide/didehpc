@@ -2,10 +2,10 @@ context("config")
 
 ## Always a hassle.  I should write a package for package configurations...
 test_that("globals are not usually defined", {
-  expect_null(getOption("didewin.credentials"))
-  expect_null(getOption("didewin.home"))
-  expect_null(getOption("didewin.temp"))
-  expect_null(getOption("didewin.cluster"))
+  expect_null(getOption("didehpc.credentials"))
+  expect_null(getOption("didehpc.home"))
+  expect_null(getOption("didehpc.temp"))
+  expect_null(getOption("didehpc.cluster"))
 })
 
 test_that("credentials", {
@@ -44,10 +44,10 @@ test_that("credentials", {
 
 test_that("interactive", {
   if (!interactive()) {
-    expect_error(didewin_config(), "Credentials file needed")
+    expect_error(didehpc_config(), "Credentials file needed")
   }
 
-  dat <- didewin_config("me")
+  dat <- didehpc_config("me")
   expect_equal(dat$credentials, "me")
   expect_equal(dat$username, "me")
   expect_null(dat$password)
@@ -56,7 +56,7 @@ test_that("interactive", {
   ## map against.
   expect_is(dat$shares, "list")
 
-  dat <- didewin_config("me", home=tempdir())
+  dat <- didehpc_config("me", home=tempdir())
 
   expect_equal(dat$shares$home,
                structure(list(name="home",
@@ -67,51 +67,51 @@ test_that("interactive", {
 })
 
 test_that("globals", {
-  oo <- didewin_config_global(credentials="foo")
+  oo <- didehpc_config_global(credentials="foo")
   on.exit(options(oo))
-  expect_equal(oo, list(didewin.credentials=NULL))
+  expect_equal(oo, list(didehpc.credentials=NULL))
 })
 
 test_that("unset globals", {
   oo <- options()
   on.exit(options(oo))
 
-  didewin_config_global(credentials="foo")
-  expect_equal(getOption("didewin.credentials"), "foo")
+  didehpc_config_global(credentials="foo")
+  expect_equal(getOption("didehpc.credentials"), "foo")
 
-  didewin_config_global(credentials=NULL)
-  expect_equal(getOption("didewin.credentials"), NULL)
-  expect_equal(getOption("didewin.credentials", NA), NA) # really not set
+  didehpc_config_global(credentials=NULL)
+  expect_equal(getOption("didehpc.credentials"), NULL)
+  expect_equal(getOption("didehpc.credentials", NA), NA) # really not set
 })
 
 test_that("template logic", {
-  oo <- didewin_config_global(credentials="foo")
+  oo <- didehpc_config_global(credentials="foo")
   on.exit(options(oo))
 
-  expect_equal(didewin_config()$resource,
+  expect_equal(didehpc_config()$resource,
                list(parallel=FALSE, count=1, type="Cores"))
-  expect_equal(didewin_config(wholenode=TRUE)$resource,
+  expect_equal(didehpc_config(wholenode=TRUE)$resource,
                list(parallel=TRUE, count=1, type="Nodes"))
-  expect_equal(didewin_config(wholenode=TRUE, parallel=TRUE)$resource,
+  expect_equal(didehpc_config(wholenode=TRUE, parallel=TRUE)$resource,
                list(parallel=TRUE, count=1, type="Nodes"))
-  expect_equal(didewin_config(wholenode=TRUE, parallel=FALSE)$resource,
+  expect_equal(didehpc_config(wholenode=TRUE, parallel=FALSE)$resource,
                list(parallel=FALSE, count=1, type="Nodes"))
 
-  expect_error(didewin_config(wholenode=TRUE, cores=2)$resource,
+  expect_error(didehpc_config(wholenode=TRUE, cores=2)$resource,
                "Cannot specify both wholenode and cores")
 
-  expect_equal(didewin_config(template="8Core")$resource,
+  expect_equal(didehpc_config(template="8Core")$resource,
                list(parallel=TRUE, count=1, type="Nodes"))
-  expect_equal(didewin_config(template="8Core", parallel=FALSE)$resource,
+  expect_equal(didehpc_config(template="8Core", parallel=FALSE)$resource,
                list(parallel=FALSE, count=1, type="Nodes"))
-  expect_equal(didewin_config(template="8Core", cores=3)$resource,
+  expect_equal(didehpc_config(template="8Core", cores=3)$resource,
                list(parallel=TRUE, count=3, type="Cores"))
 })
 
 test_that("parallel and cores", {
-  oo <- didewin_config_global(credentials="foo")
+  oo <- didehpc_config_global(credentials="foo")
   on.exit(options(oo))
-  expect_false(didewin_config()$resource$parallel)
-  expect_false(didewin_config(cores=1)$resource$parallel)
-  expect_true(didewin_config(cores=2)$resource$parallel)
+  expect_false(didehpc_config()$resource$parallel)
+  expect_false(didehpc_config(cores=1)$resource$parallel)
+  expect_true(didehpc_config(cores=2)$resource$parallel)
 })

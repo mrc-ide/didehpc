@@ -6,11 +6,11 @@
 ##'
 ##' @title Log on to the cluster
 ##'
-##' @param config A \code{\link{didewin_config}} object.  If settings
+##' @param config A \code{\link{didehpc_config}} object.  If settings
 ##'   have been mde global this can be omitted.
 ##'
 ##' @export
-web_login <- function(config = didewin_config()) {
+web_login <- function(config = didehpc_config()) {
   ## What should be stored (and reused if the connection expires) is
   ## the *call* so that we can rerun back through this.
   ##

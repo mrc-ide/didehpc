@@ -24,7 +24,7 @@ right place on a computer that you can't physically poke at.  The
 next set of problems is dealing with the balloning set of files
 that end up being created - templates, scripts, output files, etc.
 
-This set of packages (`didewin`, `queuer` and `context`, along with
+This set of packages (`didehpc`, `queuer` and `context`, along with
 a couple of support packages) aims to remove the pain of getting
 everything set up, and in keeping cluster tasks running.
 
@@ -91,7 +91,7 @@ simpler.
 
 The configuration is handled in a two stage process.  First, some
 bits that are machine specific are set using
-`didewin::didewin_config_global`, which also looks in a number of
+`didehpc::didehpc_config_global`, which also looks in a number of
 of R's options.  Then when a queue is created, further values can
 be passed along via the `config` argument that will use the
 "global" options as a default.
@@ -105,16 +105,16 @@ Ideally in your ~/.Rprofile file, you will add something like:
 
 ```r
 options(
-  didewin.username="rfitzjoh",
-  didewin.home="~/net/home")
+  didehpc.username="rfitzjoh",
+  didehpc.home="~/net/home")
 ```
 
 and then set only options (such as cluster and cores or template)
 that vary with a project.
 
 At the moment (while things change) it might be simplest to set
-things using the `didewin::didewin_config_global` function.  The
-help file `?didewin::didewin_config` outlines the options here.  At
+things using the `didehpc::didehpc_config_global` function.  The
+help file `?didehpc::didehpc_config` outlines the options here.  At
 the moment a minimal set of options is your credentials (not needed
 on Windows domain machines) and the cluster you wish to use (if you
 don't want to use the small cluster).
@@ -128,13 +128,13 @@ for your password:
 
 
 ```r
-didewin::didewin_config_global(credentials="~/.smbcredentials")
+didehpc::didehpc_config_global(credentials="~/.smbcredentials")
 ```
 
 Mac users will need to provide their username here.
 
 ```r
-didewin::didewin_config_global(credentials="yourusername")
+didehpc::didehpc_config_global(credentials="yourusername")
 ```
 
 Windows users will not need to provide anything unless they are on
@@ -144,9 +144,9 @@ a non-domain machine.
 
 If you refer to network shares in your functions, e.g., to refer to
 data, you'll need to map these too.  To do that, pass them as the
-`shares` argument to `didewin_config_global`.
+`shares` argument to `didehpc_config_global`.
 
-To describe each share, use the `didewin::path_mapping` function
+To describe each share, use the `didehpc::path_mapping` function
 which takes arguments:
 
 * name: a desctiptive name for the share
@@ -159,8 +159,8 @@ So to map your "M drive" to which points at `\\fi--didef2\malaria`
 to `M:` on the cluster you can write
 
 ```r
-share <- didewin::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
-didewin::didewin_config_global(shares=share)
+share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+didehpc::didehpc_config_global(shares=share)
 ```
 
 If you have more than one share to map, pass them through as a
@@ -172,11 +172,11 @@ To see the configuration that will be run if you don't do anything
 (else), run:
 
 ```r
-didewin::didewin_config()
+didehpc::didehpc_config()
 ```
 
 ```
-## <didewin_config>
+## <didehpc_config>
 ##  - cluster: fi--dideclusthn
 ##  - credentials: ~/.smbcredentials
 ##  - username: rfitzjoh
@@ -317,7 +317,7 @@ This is separate from the actual cluster queue, but will be our
 interface to it:
 
 ```r
-obj <- didewin::queue_didewin(ctx)
+obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
@@ -346,7 +346,7 @@ obj <- didewin::queue_didewin(ctx)
 ```
 
 If the above command does not throw an error, then you have
-successfully logged in.  When you run `queue_didewin` it will
+successfully logged in.  When you run `queue_didehpc` it will
 install windows versions of all required packages within the `root`
 directory (here, "contexts").  This is necessary even when you are
 on windows because the cluster cannot see files that are on your
@@ -366,12 +366,12 @@ obj
 ```
 
 ```
-## <queue_didewin>
+## <queue_didehpc>
 ##   Inherits from: <queue_base>
 ##   Public:
 ##     clone: function (deep = FALSE)
 ##     cluster_load: function (cluster = NULL, nodes = TRUE)
-##     config: didewin_config
+##     config: didehpc_config
 ##     context: context
 ##     context_envir: environment
 ##     db: environment
@@ -495,7 +495,7 @@ sessionInfo()
 ##  [5] context_0.0.10  R6_2.1.2        nlme_3.1-128    storr_1.0.1
 ##  [9] formatR_1.4     magrittr_1.5    evaluate_0.9    httr_1.1.0
 ## [13] stringi_1.1.1   curl_0.9.7      rematch_1.0.1   whisker_0.3-2
-## [17] queuer_0.0.4    tools_3.3.1     stringr_1.0.0   didewin_0.0.3
+## [17] queuer_0.0.4    tools_3.3.1     stringr_1.0.0   didehpc_0.0.3
 ## [21] knitr_1.13      methods_3.3.1
 ```
 
@@ -696,7 +696,7 @@ obj$dide_log(t)
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
 ## generated on date: 2016-07-14
-## didewin version: 0.0.3
+## didehpc version: 0.0.3
 ## context version: 0.0.10
 ## running on: FI--DIDECLUST30
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
@@ -1046,7 +1046,7 @@ id as an argument.
 If you are running stan, or Rcpp with `sourceCpp` (in the latter
 case you *should* be using a package) you'll need a working
 compiler.  For rstan this is detected automatically.  But in
-general, pass `rtools=TRUE` to `queue_didewin()`.
+general, pass `rtools=TRUE` to `queue_didehpc()`.
 
 ## Parallel computation on the cluster
 
@@ -1057,7 +1057,7 @@ could run:
 
 
 ```r
-didewin::didewin_config(cores=8)
+didehpc::didehpc_config(cores=8)
 ```
 
 When your task starts, 8 cores will be allocated to it and a
@@ -1085,7 +1085,7 @@ are using software that does this for you) then, pass
 
 
 ```r
-didewin::didewin_config(cores=8, parallel=FALSE)
+didehpc::didehpc_config(cores=8, parallel=FALSE)
 ```
 
 In this case you are responsible for setting up the cluster.
@@ -1094,7 +1094,7 @@ As an alternative to requesting cores, you can use a different job
 template:
 
 ```r
-didewin::didewin_config(template="16Core")
+didehpc::didehpc_config(template="16Core")
 ```
 
 which will reserve you the entire node.  Again, a cluster will be
@@ -1125,15 +1125,15 @@ See the "workers" vignette for details.
 To use parallel chains, do something like:
 
 ```r
-config <- didewin::didewin_config(cores=4, parallel=FALSE)
-obj <- didewin::queue_didewin(ctx, config)
+config <- didehpc::didehpc_config(cores=4, parallel=FALSE)
+obj <- didehpc::queue_didehpc(ctx, config)
 ```
 
 to request four cores or
 
 ```r
-config <- didewin::didewin_config(wholenode=TRUE, parallel=FALSE)
-obj <- didewin::queue_didewin(ctx, config)
+config <- didehpc::didehpc_config(wholenode=TRUE, parallel=FALSE)
+obj <- didehpc::queue_didehpc(ctx, config)
 ```
 
 to request a whole node.  The `parallel=FALSE` tells the system not
@@ -1154,26 +1154,26 @@ you.  See the [cluster
 wiki](https://mrcdata.dide.ic.ac.uk/wiki/index.php/HPC_Web_Portal#Notes_for_Windows_Job_Manager_Users)
 for more information.
 
-If you want this behaviour back, `didewin` can be configured to use
+If you want this behaviour back, `didehpc` can be configured to use
 the HPC tools on your computer.  Just run:
 
 
 ```r
-didewin::didewin_config_global(hpctools=TRUE)
+didehpc::didehpc_config_global(hpctools=TRUE)
 ```
 
 or
 
 
 ```r
-options(didewin.hpctools=TRUE)
+options(didehpc.hpctools=TRUE)
 ```
 
 before creating the queue, or run
 
 
 ```r
-obj <- didewin::queue(ctx, config=didewin::didewin_config(hpctools=TRUE))
+obj <- didehpc::queue(ctx, config=didehpc::didehpc_config(hpctools=TRUE))
 ```
 
 This is experimental but I welcome feedback.
@@ -1300,7 +1300,7 @@ directory for the cluster that is on the shared drive.
 
 ```r
 workdir <- "Q:/cluster/context"
-didewin::didewin_config_global(workdir=workdir)
+didehpc::didehpc_config_global(workdir=workdir)
 ```
 
 When you construct the context, that needs to be on a network
@@ -1314,14 +1314,14 @@ ctx <- context::context_save(root, packages="ape", sources="mysources.R")
 Then construct the queue as normal.
 
 ```r
-obj <- didewin::queue_didewin(ctx)
+obj <- didehpc::queue_didehpc(ctx)
 ```
 
 This will automatically syncronise the sources, copying them if
 they need updating.
 
 If you had other files to synchronise they would be listed with the
-argument `sync` to `queue_didewin`.  You can update the remote
+argument `sync` to `queue_didehpc`.  You can update the remote
 files by running
 
 ```r
@@ -1336,7 +1336,7 @@ There are quite a few packages here that are not on CRAN.  The
 simplest way to install the required packages should be to run:
 
 ```r
-install.packages("didewin",
+install.packages("didehpc",
                  repos=c(CRAN="https://cran.rstudio.com",
                          drat="https://richfitz.github.io/drat"))
 ```
@@ -1349,7 +1349,7 @@ devtools::install_github(c(
   "richfitz/syncr",
   "dide-tools/context",
   "richfitz/queuer",
-  "dide-tools/didewin"))
+  "dide-tools/didehpc"))
 ```
 
 (if devtools is not install, install it with

@@ -1,7 +1,7 @@
 ## TODO: dide_task_id -> dide_id everywhere as it's already used in
 ## the db and inteface
 
-didewin_submit <- function(config, path, name=NULL) {
+didehpc_submit <- function(config, path, name=NULL) {
   assert_scalar_character(path)
   if (!is.null(name)) {
     assert_scalar_character(name)
@@ -15,7 +15,7 @@ didewin_submit <- function(config, path, name=NULL) {
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
-didewin_cancel <- function(config, dide_task_id) {
+didehpc_cancel <- function(config, dide_task_id) {
   if (length(dide_task_id) == 0L) {
     stop("Need at least one task to cancel")
   }
@@ -30,9 +30,9 @@ didewin_cancel <- function(config, dide_task_id) {
   }
 }
 
-didewin_shownodes <- function(config, cluster=NULL) {
+didehpc_shownodes <- function(config, cluster=NULL) {
   if (is.null(cluster)) {
-    cluster <- getOption("didewin.cluster", valid_clusters()[[1]])
+    cluster <- getOption("didehpc.cluster", valid_clusters()[[1]])
   } else {
     cluster <- match_value(cluster, valid_clusters())
   }
@@ -43,7 +43,7 @@ didewin_shownodes <- function(config, cluster=NULL) {
   }
 }
 
-didewin_load <- function(config) {
+didehpc_load <- function(config) {
   if (use_hpctools(config)) {
     hpc_load()
   } else {
@@ -51,7 +51,7 @@ didewin_load <- function(config) {
   }
 }
 
-didewin_jobstatus <- function(config, state="*", n=Inf) {
+didehpc_jobstatus <- function(config, state="*", n=Inf) {
   valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
   state <- match_value(state, valid)
   if (use_hpctools(config)) {
@@ -63,7 +63,7 @@ didewin_jobstatus <- function(config, state="*", n=Inf) {
 
 ## This one is not available via the HPC tools I think.  Check with
 ## Wes though (I don't see it in the GUI either).
-didewin_joblog <- function(config, dide_task_id) {
+didehpc_joblog <- function(config, dide_task_id) {
   if (use_hpctools(config)) {
     hpc_joblog(config, dide_task_id)
   } else {

@@ -27,7 +27,7 @@ check: build
 check_all:
 	TEST_INSTALL_PACKAGES=true make check
 
-README_DIR=~/net/home/didewin_demo
+README_DIR=~/net/home/didehpc_demo
 README.md: README.Rmd
 	mkdir -p ${README_DIR}
 	cp $< ${README_DIR}
@@ -48,7 +48,7 @@ staticdocs:
 website: staticdocs
 	./update_web.sh
 
-vignettes: vignettes/quickstart.Rmd vignettes/didewin.Rmd
+vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd
 	${RSCRIPT} -e "library(methods); devtools::build_vignettes()"
 
 vignettes/%.Rmd: vignettes/src/%.R

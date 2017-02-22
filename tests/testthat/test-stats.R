@@ -5,12 +5,12 @@ context("stats")
 test_that("stats", {
   skip_on_travis()
 
-  owd <- prepare_didewin("stats")
+  owd <- prepare_didehpc("stats")
   on.exit(setwd(owd))
 
   path <- "context"
   ctx <- context::context_save(path = path, packages = "stats")
-  obj <- didewin::queue_didewin(ctx)
+  obj <- didehpc::queue_didehpc(ctx)
   t <- obj$enqueue(sessionInfo())
   res <- t$wait(10, progress = FALSE)
   expect_is(res, "sessionInfo")

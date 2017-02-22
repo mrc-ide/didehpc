@@ -6,7 +6,7 @@
 ^appveyor.yml$
 ^TODO\.md$
 ^ignore$
-^didewin_.*\.tar\.gz$
+^didehpc_.*\.tar\.gz$
 ^notes\.md$
 ^update_web\.sh$
 ^build_vignettes\.sh$
