@@ -30,6 +30,10 @@ ECHO This is a parallel job: will use %CPP_NUMCPUS%
 set CONTEXT_CORES=%CCP_NUMCPUS%
 {{{/parallel}}}
 
+{{{#common_lib}}}
+set R_LIBS={{{common_lib}}}
+{{{/common_lib}}}
+
 set REDIS_HOST={{{redis_host}}}
 set REDIS_URL=redis://{{{redis_host}}}:6379
 

@@ -4,8 +4,8 @@
 \alias{queue_didewin}
 \title{Create a queue object}
 \usage{
-queue_didewin(context, config = didewin_config(), initialise = TRUE,
-  sync = NULL)
+queue_didewin(context, config = didewin_config(), root = NULL,
+  initialise = TRUE, sync = NULL)
 }
 \arguments{
 \item{context}{A context}

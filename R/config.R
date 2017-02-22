@@ -157,6 +157,15 @@
 ##'   cluster version that is newer than yours, or the most recent
 ##'   cluster version.
 ##'
+##' @param use_common_lib Logical, indicating if a common library of
+##'   packages should be used.  This will reduce the overal startup
+##'   time of your queue object (on the first running) and reduce the
+##'   total disk space footprint by a few tens of megabytes.  This is
+##'   particularly useful if using the \code{BH} package as unpacking
+##'   that on the network drive can take a few minutes.  The common
+##'   library can only be used if the temporary drive is mounted on
+##'   your computer.
+##'
 ##' @export
 didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL, build_server = NULL, shares = NULL,
@@ -164,7 +173,7 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
-                           r_version = NULL) {
+                           r_version = NULL, use_common_lib = NULL) {
   defaults <- didewin_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -182,7 +191,8 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 use_rrq = use_rrq,
                 worker_timeout = worker_timeout,
                 rtools = rtools,
-                r_version = r_version)
+                r_version = r_version,
+                use_common_lib = use_common_lib)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -232,6 +242,20 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
 
   dat$r_version <- select_r_version(cluster, dat$r_version)
 
+  if (isTRUE(dat$use_common_lib)) {
+    temp <- shares$temp
+    if (is.null(temp)) {
+      stop("Can't use common_lib if temp is not mounted or detected")
+    }
+    p <- context:::path_library(file.path(temp$path_local, "didehpc"),
+                                cran_platform(cluster),
+                                dat$r_version)
+    if (!file.exists(p)) {
+      stop(sprintf("Failed to find library at '%s' - please email Rich", p))
+    }
+    dat$common_lib <- prepare_path(p, shares)
+  }
+
   ret <- list(cluster = cluster,
               credentials = dat$credentials,
               username = username,
@@ -248,7 +272,8 @@ didewin_config <- function(credentials = NULL, home = NULL, temp = NULL,
               use_rrq = dat$use_rrq,
               worker_timeout = dat$worker_timeout,
               rtools = dat$rtools,
-              r_version = dat$r_version)
+              r_version = dat$r_version,
+              common_lib = dat$common_lib)
 
   class(ret) <- "didewin_config"
   ret
@@ -300,7 +325,9 @@ didewin_config_defaults <- function() {
     worker_timeout = getOption("didewin.worker_timeout", 600),
     rtools         = getOption("didewin.rtools",         FALSE),
     hpctools       = getOption("didewin.hpctools",       FALSE),
-    r_version      = getOption("didewin.r_version",      NULL))
+    r_version      = getOption("didewin.r_version",      NULL),
+    use_common_lib = getOption("didewin.use_common_lib", FALSE))
+
 
   if (is.null(defaults$credentials)) {
     username <- getOption("didewin.username", NULL)
@@ -321,9 +348,10 @@ didewin_config_defaults <- function() {
 ##' @export
 print.didewin_config <- function(x, ...) {
   cat("<didewin_config>\n")
+  expand <- c("numeric_version", "path_mapping")
   for (i in seq_along(x)) {
     el <- x[[i]]
-    if (is.atomic(el) || inherits(el, "numeric_version")) {
+    if (is.atomic(el) || inherits(el, expand)) {
       cat(sprintf(" - %s: %s\n", names(x)[[i]], as.character(el)))
     } else if (is.list(el)) {
       cat(sprintf(" - %s:\n", names(x)[[i]]))

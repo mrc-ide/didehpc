@@ -9,7 +9,8 @@ didewin_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
   cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
   workdir = NULL, use_workers = NULL, use_rrq = NULL,
-  worker_timeout = NULL, rtools = NULL, r_version = NULL)
+  worker_timeout = NULL, rtools = NULL, r_version = NULL,
+  use_common_lib = NULL)
 
 didewin_config_global(...)
 }
@@ -115,6 +116,15 @@ R versions for the cluster you are using (see
 a version on the cluster that will be used, or the oldest
 cluster version that is newer than yours, or the most recent
 cluster version.}
+
+\item{use_common_lib}{Logical, indicating if a common library of
+packages should be used.  This will reduce the overal startup
+time of your queue object (on the first running) and reduce the
+total disk space footprint by a few tens of megabytes.  This is
+particularly useful if using the \code{BH} package as unpacking
+that on the network drive can take a few minutes.  The common
+library can only be used if the temporary drive is mounted on
+your computer.}
 
 \item{...}{arguments to \code{didewin_config}}
 }

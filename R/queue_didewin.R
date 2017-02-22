@@ -230,13 +230,21 @@ initialise_cluster_packages <- function(obj) {
     obj$context$packages$loaded <- c(obj$context$packages$loaded, "rrq")
   }
 
+  if (is.null(obj$config$common_lib)) {
+    additional_libraries <- NULL
+  } else {
+    additional_libraries <- file.path(obj$config$common_lib$path_local,
+                                      obj$config$common_lib$rel)
+  }
+
   ## TODO: need to get additional arguments passed through here;
   ## installed_action is the key one (quiet might be useful too).
   ##
   ## Something to force refreshing the drat on build too, but that
   ## will best be combined with non-versioned updates based on MD5.
-  res <- context::provision_context(obj$context, lib_r_platform, lib_r_version,
-                                    allow_missing = TRUE)
+  res <- context::provision_context(
+    obj$context, lib_r_platform, lib_r_version, allow_missing = TRUE,
+    additional_libraries = additional_libraries)
   if (!is.null(res$missing)) {
     initialise_cluster_packages_build(res, obj$config)
   }

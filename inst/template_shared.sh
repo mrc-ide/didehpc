@@ -18,11 +18,15 @@ export PATH="/opt/local/R/{{{r_version}}}/bin:$PATH"
 
 {{{#parallel}}}
 echo This is a parallel job: will use $CPP_NUMCPUS
-set CONTEXT_CORES=$CCP_NUMCPUS
+export CONTEXT_CORES=$CCP_NUMCPUS
 {{{/parallel}}}
 
-set REDIS_HOST={{{redis_host}}}
-set REDIS_URL=redis://{{{redis_host}}}:6379
+{{{#common_lib}}}
+export R_LIBS={{{common_lib}}}
+{{{/common_lib}}}
+
+export REDIS_HOST={{{redis_host}}}
+export REDIS_URL=redis://{{{redis_host}}}:6379
 
 cd ${CONTEXT_WORKDIR}
 echo "working directory: $PWD"
