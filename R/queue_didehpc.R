@@ -251,7 +251,7 @@ initialise_cluster_packages_build <- function(dat, config) {
   loadNamespace("buildr")
 
   missing <- dat$missing # or dat$db$src[dat$missing, , drop = FALSE]
-  path_lib <- dat$path_lib
+  path_lib <- normalizePath(dat$path_lib, mustWork = TRUE)
 
   tmp <- tempfile()
   dir.create(tmp)

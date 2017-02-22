@@ -13,14 +13,21 @@ provision_cluster <- function(cluster, installed_action = "skip") {
   versions <- r_versions(cluster)
   versions <- lapply(unique(versions[, 1:2]),
                      function(x) max(versions[versions[, 1:2] == x]))
+
   for (v in versions) {
     message(sprintf("*** %s:%s", cluster, v))
     p <- context:::path_library(PATH, platform, v)
-    provisionr::provision_library(PACKAGES, p, platform, v, src,
-                                  installed_action = installed_action)
+    res <- provisionr::provision_library(PACKAGES, p, platform, v, src,
+                                         installed_action = installed_action,
+                                         allow_missing = TRUE)
+    if (!is.null(res$missing)) {
+      config <- suppressMessages(didehpc_config(cluster = cluster))
+      ans <- initialise_cluster_packages_build(res, config)
+    }
   }
 }
 
 if (FALSE) {
   provision_cluster("fi--didemrchnb")
+  provision_cluster("fi--didelxhn")
 }
