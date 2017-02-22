@@ -10,3 +10,4 @@
 ^notes\.md$
 ^update_web\.sh$
 ^build_vignettes\.sh$
+^build_common_lib.R$
