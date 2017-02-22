@@ -33,7 +33,11 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     initialize = function(context, config, root, initialise, sync) {
       if (!inherits(config, "didehpc_config")) {
-        stop("Expected a didehpc_config for 'config'")
+        if (is.list(config)) {
+          config <- do.call("didehpc_config", config)
+        } else {
+          stop("Expected a didehpc_config for 'config'")
+        }
       }
       super$initialize(context, root, initialise)
 

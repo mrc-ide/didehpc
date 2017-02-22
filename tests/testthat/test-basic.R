@@ -9,7 +9,7 @@ test_that("basic", {
   path <- "context"
   ctx <- context::context_save(path = path, packages = "ape",
                                sources = "mysources.R")
-  obj <- didehpc::queue_didehpc(ctx)
+  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
 
   expect_is(obj, "queue_didehpc")
   path_lib <- file.path(path, "lib", "windows", obj$config$r_version[1, 1:2])
