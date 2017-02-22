@@ -70,6 +70,10 @@ hpc_shownodes <- function(cluster) {
   parse_node_listcores(res, cluster)
 }
 
+hpc_load <- function() {
+  stop("Overall load is not supported with hpctools")
+}
+
 hpc_jobstatus <- function(config, state) {
   ## NOTE: State can be comma delimited, should support that...
   cluster <- config$cluster

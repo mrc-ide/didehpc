@@ -43,6 +43,14 @@ didewin_shownodes <- function(config, cluster=NULL) {
   }
 }
 
+didewin_load <- function(config) {
+  if (use_hpctools(config)) {
+    hpc_load()
+  } else {
+    web_load()
+  }
+}
+
 didewin_jobstatus <- function(config, state="*", n=Inf) {
   valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
   state <- match_value(state, valid)

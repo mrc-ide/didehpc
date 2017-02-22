@@ -16,6 +16,12 @@ test_that("basic", {
   expect_true(file.exists(path_lib))
   expect_true(file.exists(file.path(path_lib, "context")))
 
+  ign <- capture.output(dat <- obj$cluster_load())
+  expect_is(dat, "dide_clusterload")
+
+  ign <- capture.output(dat <- obj$didehpc_load())
+  expect_is(dat, "dide_clusterload")
+
   t <- obj$enqueue(sessionInfo())
   res <- t$wait(10, progress = FALSE)
 

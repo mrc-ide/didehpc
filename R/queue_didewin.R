@@ -127,22 +127,12 @@ queue_didewin <- function(context, config = didewin_config(), root = NULL,
       }
     },
 
-    ## I don't think that this is wise.  Better would be a function
-    ## for *generally* updating the configuration.  But in general
-    ## we're better off just making a new object probably.
-    ##
-    ## TODO: delete this as it will break the templates I think; we'll
-    ## need to rebuild everything...
-    set_cluster = function(cluster = NULL) {
-      if (is.null(cluster)) {
-        cluster <- setdiff(valid_clusters(), self$config$cluster)
-      } else {
-        cluster <- match_value(cluster, valid_clusters())
-      }
-      self$config$cluster <- cluster
+    didehpc_load = function() {
+      self$login(FALSE)
+      print(didewin_load(self$config))
     },
 
-    cluster_load = function(cluster = NULL, nodes = TRUE) {
+    cluster_load = function(cluster = NULL, nodes = TRUE, all = FALSE) {
       self$login(FALSE)
       print(didewin_shownodes(self$config, cluster %||% self$config$cluster),
             nodes = nodes)

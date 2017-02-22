@@ -21,16 +21,31 @@ web_login <- function(config = didewin_config()) {
                pw = encode64(dat$password),
                hpcfunc = encode64("login"))
   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
-                  curl_insecure(), body = data, encode = "form")
+                  body = data, encode = "form")
   httr::stop_for_status(r)
-  txt <- httr::content(r, as = "text", encoding = "UTF-8")
-
   ## TODO: grep on HTML is terrible but there's no id or anything to
   ## hook against here.
+  txt <- httr::content(r, as = "text", encoding = "UTF-8")
   if (grepl("You don't seem to have any HPC access.", txt, fixed = TRUE)) {
     stop("Error logging on")
   }
   invisible(TRUE)
+}
+
+##' @export
+##' @rdname web_login
+web_headnodes <- function() {
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/_listheadnodes.php",
+                  httr::accept("text/plain"),
+                  body = list(user = encode64("")),
+                  encode = "form")
+  httr::stop_for_status(r)
+  txt <- httr::content(r, "text", encoding = "UTF-8")
+  dat <- strsplit(txt, "\n")[[1]]
+  if (!all(grepl("^fi--", dat))) {
+    stop("Unexpected output")
+  }
+  dat
 }
 
 ##' @export
@@ -45,23 +60,11 @@ web_logout <- function() {
 ##' @export
 ##' @rdname web_login
 web_logged_in <- function() {
-  ## This *should* work but the website needs tweaking so that it
-  ## checks that we're logged in before running this.
-  ##
-  ##   data <- list(action = "submit.php",
-  ##                hpcfunc = "submit",
-  ##                cluster = encode64("fi--dideclusthn"),
-  ##                cluster_no = "0")
-  ##   r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/submit.php",
-  ##                   curl_insecure(),
-  ##                   httr::accept("text/plain"),
-  ##                   body=data, encode="form")
-  ##   httr::status_code(r) < 300
-  r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
-                 curl_insecure())
-  xml <- httr::content(r, "parsed", encoding = "UTF-8")
-  inherits(xml2::xml_find_first(xml, "//form[@name = 'flogin']"),
-           "xml_missing")
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/_listheadnodes.php",
+                  httr::accept("text/plain"),
+                  body = list(user = encode64("")),
+                  encode = "form")
+  httr::status_code(r) < 300
 }
 
 web_submit <- function(config, path, name) {
@@ -139,6 +142,23 @@ web_cancel <- function(cluster, dide_task_id) {
   ##   - WRONG_STATE
   ##   - ID_ERROR
   sub("[0-9]+\t([A-Z]+)\\s+", "\\1", txt)
+}
+
+web_load <- function() {
+  clusters <- web_headnodes()
+  dat <- lapply(clusters, web_shownodes)
+  summary <- do.call("rbind", lapply(dat, function(x)
+    as.data.frame(x$overall, stringsAsFactors = FALSE)))
+  overall <- list(name = "didehpc",
+                  free = sum(summary$free),
+                  used = sum(summary$used),
+                  total = sum(summary$total))
+  ret <- list(cluster = "didehpc",
+              detail = NULL,
+              summary = summary,
+              overall = overall)
+  class(ret) <- "dide_clusterload"
+  ret
 }
 
 web_shownodes <- function(cluster) {
