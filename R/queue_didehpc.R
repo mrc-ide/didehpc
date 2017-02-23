@@ -132,16 +132,11 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     sync_files = function(verbose = TRUE, delete = TRUE) {
       if (length(self$sync) > 0L) {
         check_rsync(self$config)
-        ## TODO: save self$config$workdir as a prepared path?
         wd <- prepare_path(self$config$workdir, self$config$shares)
         dest <- file_path(wd$path_local, wd$rel)
-        message("Syncronising files")
-        ## TODO: this should check that everything exists below the
-        ## current directory and arrange to sync it *relatively*.
-        ## There's no point synchronising paths that are elsewhere
-        ## because that's not going to automatically remap paths
-        ## correctly.
-        syncr::syncr(self$sync, dest, verbose = verbose, delete = delete)
+        context::context_log("sync", "Syncronising files")
+        syncr::syncr(self$sync, dest, relative = TRUE,
+                     verbose = verbose, delete = delete)
       }
     },
 

@@ -11,10 +11,15 @@ prepare_didehpc_root <- function() {
   file.path(DIDEHPC_PATH, gsub("-", "", as.character(Sys.Date())))
 }
 
-prepare_didehpc <- function(name, ..., files = c(...)) {
+prepare_didehpc_dir <- function(name) {
   root <- prepare_didehpc_root()
   path <- tempfile(paste0(name, "_"), root)
   dir.create(path, FALSE, TRUE)
+  path
+}
+
+prepare_didehpc <- function(name, ..., files = c(...)) {
+  path <- prepare_hpc_dir(name)
   file.copy(files, path, recursive = TRUE)
   context::context_log_start()
   owd <- setwd(path)
