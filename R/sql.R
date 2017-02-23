@@ -1,14 +1,27 @@
 storage_driver_psql_create <- function(path, id, args) {
-  host <- Sys.getenv("CONTEXT_PGHOST", "129.31.26.142")
+  use_pool <- TRUE
+  host <- "fi--didex1-vm"
+  port <- if (use_pool) 6432 else 5432
   ## TODO: use actual usernames here so that I can easily work out who
   ## is using what?
   user <- "didehpc" # TODO: may change
   pass <- "didehpc" # TODO: encrypt this?
-  db <- "didehpc"   # this is OK
+  dbname <- "didehpc"   # this is OK
+  if (use_pool) {
+    loadNamespace("RPostgreSQL")
+    oo <- options(warnPartialMatchArgs = FALSE)
+    if (isTRUE(oo$warnPartialMatchArgs)) {
+      message("Disabling 'warnPartialMatchArgs' in order to use RPostgreSQL")
+    }
+    driver <- RPostgreSQL::PostgreSQL()
+  } else {
+    loadNamespace("RPostgres")
+    driver <- RPostgres::Postgres()
+  }
+  con <- DBI::dbConnect(driver, host = host, port = 5432,
+                        user = user, password = pass, dbname = dbname)
   tbl_data <- sprintf("context_%s_data", id)
   tbl_keys <- sprintf("context_%s_keys", id)
-  con <- DBI::dbConnect(RPostgres::Postgres(),
-                        host = host, user = user, password = pass, dbname = db)
   storr::storr_dbi(con = con, tbl_data = tbl_data, tbl_keys = tbl_keys,
                    binary = FALSE)
 }

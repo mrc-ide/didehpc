@@ -15,7 +15,7 @@ test_that("sql", {
                                sources = "mysources.R",
                                storage_type = storage_driver_psql())
 
-  obj <- didehpc::queue_didehpc(ctx)
+  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
 
   expect_is(obj, "queue_didehpc")
   path_lib <- file.path(path, "lib", "windows", obj$config$r_version[1, 1:2])
