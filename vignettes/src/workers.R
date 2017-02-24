@@ -61,10 +61,19 @@ unique_value <- ids::random_id()
 
 context::context_log_start()
 root <- "context_workers"
+
+## There is currently an issue here where the workers try and process
+## jobs *too* efficiently, before the task has been written to disk.
+## To work around this, there is a _very_ experimental support for
+## storing tasks in a SQL database.  If you're going to try this,
+## please let Rich know because there are gotchas, and we need to
+## think about how to clear out your data (plus some major issues
+## around data security and privacy).
 ctx <- context::context_save(root,
                              packages = "ape",
                              sources = "mysources.R",
-                             unique_value = unique_value)
+                             unique_value = unique_value,
+                             storage_type = didehpc:::storage_driver_psql())
 
 ## There are two ways we can proceed from here; the first - "workers"
 ## - is very similar to the non-worker workflow and is described
@@ -75,6 +84,7 @@ ctx <- context::context_save(root,
 
 ## Then configure and create the queue:
 config <- didehpc::didehpc_config(use_workers = TRUE)
+
 obj <- didehpc::queue_didehpc(ctx, config = config)
 
 ## All passing `use_workers` here will do is arrange to install `rrq`,
@@ -151,7 +161,10 @@ res
 ## because that's the polling timeout time (I may be able to improve
 ## this later).
 obj$stop_workers()
+Sys.sleep(1)
 obj$workers$workers_log_tail(workers, n = Inf)
+obj$workers$destroy()
+obj$db$destroy()
 
 ## ## rrq
 
@@ -166,12 +179,23 @@ obj$workers$workers_log_tail(workers, n = Inf)
 ## some (potentially very large) number of workers, submitting and
 ## collecting tasks from them.
 
+##+ echo = FALSE
+if (!exists("unique_value")) {
+  unique_value <- ids::random_id()
+}
+
 ## The first part here looks very similar
+root <- "context_rrq"
+ctx <- context::context_save(root,
+                             packages = "ape",
+                             sources = "mysources.R",
+                             unique_value = unique_value)
+
 config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
 
 ## We still submit workers
-workers <- obj$submit_workers(5)
+workers <- obj$submit_workers(100)
 workers
 
 ## echo = FALSE
@@ -200,6 +224,9 @@ system.time(res <- rrq$lapply(1:500, sin))
 ## Across the network, the latency here is ~1/1000 s per task.  On
 ## fi--didemrchnb it will hopefully be a bit faster because of the
 ## infiniband network.
+
+rrq$workers_stop()
+rrq$destroy()
 
 ## To use this, we'll submit workers as above, then submit a job that
 ## will use the workers.
@@ -237,8 +264,12 @@ t2 <- obj$enqueue(simulation(15, 100))
 ## This is going to take 20x longer!  But there's space on the cluster:
 obj$cluster_load(nodes = FALSE)
 
-## So let's submit a bunch more workers
-obj$submit_workers(45)
+## So let's submit a bunch more workers; they will immediately start
+## working on the tasks as soon as they are submitted.  In fact;
+## because submitting workers is relatively slow compared with running
+## tasks, they may not all get onto the cluster before the work is
+## complete.
+obj$submit_workers(20)
 
 obj$workers$workers_len()
 obj$workers$workers_list()
@@ -249,3 +280,7 @@ res
 
 ## Turn off all our workers
 obj$workers$workers_stop()
+
+## And delete all the data that we created.  This step gets some
+## tweaking soon.
+obj$workers$destroy()

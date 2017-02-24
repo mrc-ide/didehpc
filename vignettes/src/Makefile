@@ -15,3 +15,5 @@ all: refresh quickstart.md didehpc.md workers.md
 
 refresh:
 	cp -p `cat UPSTREAM`/vignettes/src/*.R .
+
+.PRECIOUS: %.Rmd

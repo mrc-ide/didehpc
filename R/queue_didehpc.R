@@ -319,6 +319,13 @@ initialise_templates <- function(obj) {
 ## directory setting...
 submit <- function(obj, task_ids, names) {
   if (isTRUE(obj$config$use_workers)) {
+    ## This is not generally going to be a reasonable thing to do, but
+    ## until I get things nailed down, some sort of pause here is
+    ## necessary or the jobs get consumed too quickly.
+    if (obj$db$driver$type() == "rds") {
+      message("sleeping in the hope of a disk sync")
+      Sys.sleep(2)
+    }
     obj$workers$queue_submit(task_ids)
   } else {
     submit_dide(obj, task_ids, names)

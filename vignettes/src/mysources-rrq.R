@@ -30,3 +30,13 @@ get_rrq_controller <- function(x, ...) {
   ctx$envir <- .GlobalEnv
   rrq::rrq_controller(ctx, con)
 }
+
+simulation_local <- function(nsteps, nsamples, r) {
+  ret <- matrix(NA_real_, nsteps + 1, nsamples)
+  x <- ret[1L, ] <- rep(0, nsamples)
+  for (i in seq_len(nsteps)) {
+    ret[i + 1L,] <- x <-
+      sort(unlist(r$lapply(x, slow_rnorm)))
+  }
+  ret
+}
