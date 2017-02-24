@@ -1,7 +1,11 @@
 ## Eventually this will support BH, which is the big nasty package
 ## that needs work.
 devtools::load_all()
-PACKAGES <- "context"
+PACKAGES <- c("context", # core package
+              ## Additional didehpc system packages:
+              "rrq", "queuer", "Rpostgres", "redux",
+              ## Large dependencies
+              "BH", "stringi", "Rcpp")
 PATH <- "~/net/temp/didehpc"
 
 provision_cluster <- function(cluster, installed_action = "skip") {
