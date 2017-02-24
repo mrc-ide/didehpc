@@ -1,9 +1,6 @@
 context("sql")
 
 test_that("sql", {
-  id <- ids::random_id()
-  db <- storage_driver_psql_create(NULL, id, NULL)
-
   skip_on_travis()
   skip_if_not_installed("RPostgres")
 

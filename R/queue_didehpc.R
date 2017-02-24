@@ -52,7 +52,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                      date = Sys.time(),
                      workdir = config$workdir,
                      cluster = config$cluster)
-        db$set("info", info, "didehpc")
+        context$db$set("info", info, "didehpc")
       }
 
       self$config <- config
