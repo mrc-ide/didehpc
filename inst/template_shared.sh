@@ -5,7 +5,7 @@ set -e
 # automatically generated
 echo "generated on host: {{{hostname}}}"
 echo "generated on date: {{{date}}}"
-echo "didewin version: {{{didewin_version}}}"
+echo "didehpc version: {{{didehpc_version}}}"
 echo "context version: {{{context_version}}}"
 echo "running on: ${HOSTNAME}"
 export CONTEXT_WORKDIR={{{context_workdir}}}

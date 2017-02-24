@@ -25,9 +25,7 @@ initialise_rrq <- function(obj) {
 ## don't want to have to redo the installation....
 initialise_rrq_controllers <- function(obj) {
   con <- rrq_redis_con(config)
-  if (isTRUE(obj$config$use_workers)) {
-    obj$workers <- rrq::worker_controller(obj$context$id, con)
-  }
+  obj$workers <- rrq::worker_controller(obj$context$id, con)
   if (isTRUE(obj$config$use_rrq)) {
     obj$rrq <- rrq::rrq_controller(obj$context, con)
   }
@@ -54,7 +52,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
 
   message(sprintf("Submitting %d %s with base name '%s'",
                   n, ngettext(n, "worker", "workers"), base))
-  p <- queuer::progress_timeout(n, timeout, label = "submitting",
+  p <- queuer::progress_timeout(n, timeout, label = "submitting ",
                                 show = progress)
 
   ## It would seem that it should be possible to bulk submit here, but

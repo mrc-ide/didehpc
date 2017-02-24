@@ -2,7 +2,7 @@
 REM automatically generated
 ECHO generated on host: {{{hostname}}}
 ECHO generated on date: {{{date}}}
-ECHO didewin version: {{{didewin_version}}}
+ECHO didehpc version: {{{didehpc_version}}}
 ECHO context version: {{{context_version}}}
 ECHO running on: %COMPUTERNAME%
 set CONTEXT_WORKDRIVE={{{context_workdrive}}}

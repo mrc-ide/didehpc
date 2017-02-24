@@ -140,20 +140,19 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       }
     },
 
-    didehpc_load = function() {
+    cluster_load = function(cluster = NULL, nodes = TRUE) {
       self$login(FALSE)
-      print(didehpc_load(self$config))
+      if (isTRUE(cluster)) {
+        print(didehpc_load(self$config))
+      } else {
+        print(didehpc_shownodes(self$config, cluster %||% self$config$cluster),
+              nodes = nodes)
+      }
     },
 
-    cluster_load = function(cluster = NULL, nodes = TRUE, all = FALSE) {
+    task_status_dide = function(task_ids = NULL) {
       self$login(FALSE)
-      print(didehpc_shownodes(self$config, cluster %||% self$config$cluster),
-            nodes = nodes)
-    },
-
-    tasks_status_dide = function(task_ids = NULL) {
-      self$login(FALSE)
-      check_tasks_status_dide(self, task_ids)
+      check_task_status_dide(self, task_ids)
     },
 
     submit = function(task_ids, names = NULL) {
@@ -344,9 +343,7 @@ submit_dide <- function(obj, task_ids, names) {
 
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
-  show <- !isTRUE(getOption("didehpc.suppress_progress", FALSE))
-  p <- queuer:::progress_timeout(length(task_ids), Inf, show = show,
-                                 prefix = "submitting ")
+  p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   for (id in task_ids) {
     batch <- write_batch(id, root, template, list(task_id = id), linux)
     dat <- prepare_path(batch, config$shares)
@@ -381,8 +378,7 @@ unsubmit_dide <- function(obj, task_ids) {
   dide_cluster <- vcapply(task_ids, db$get, "dide_cluster")
   config <- obj$config
 
-  p <- queuer:::progress_timeout(length(task_ids), Inf, show = show,
-                                 prefix = "cancelling ")
+  p <- queuer::progress_timeout(length(task_ids), Inf, label = "cancelling ")
   ret <- character(length(task_ids))
   for (i in seq_along(task_ids)) {
     p()
@@ -415,9 +411,9 @@ unsubmit_dide <- function(obj, task_ids) {
 ##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
 ##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
 ##  RUNNING  CANCELLED -> was running, manually cancelled -> update to CANCELLED
-check_tasks_status_dide <- function(obj, task_ids = NULL) {
+check_task_status_dide <- function(obj, task_ids = NULL) {
   if (is.null(task_ids)) {
-    task_ids <- obj$tasks_list()
+    task_ids <- obj$task_list()
   }
   st_ctx <- obj$tasks_status(task_ids)
   db <- obj$db
@@ -544,8 +540,8 @@ task_get_id <- function(x, obj = NULL) {
     task_ids <- x$ids
   } else if (is.character(x)) {
     task_ids <- x
-  } else if (is.null(x) && is.recursive(obj) && is.function(obj$tasks_list)) {
-    task_ids <- obj$tasks_list()
+  } else if (is.null(x) && is.recursive(obj) && is.function(obj$task_list)) {
+    task_ids <- obj$task_list()
     names(task_ids) <- task_ids
   } else {
     stop("Can't determine task id")

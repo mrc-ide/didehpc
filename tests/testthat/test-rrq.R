@@ -22,14 +22,14 @@ test_that("rrq", {
   expect_equal(r$workers_info(), setNames(list(), character(0)))
   expect_equal(r$workers_len(), 0L)
 
-  wid <- obj$submit_workers(2, progress = PROGRESS)
+  wid <- obj$submit_workers(5)
   expect_is(wid, "character")
 
   res <- simulation_local(10, 14, r)
   expect_is(res, "matrix")
 
   t <- obj$enqueue(simulation(10, 14))
-  res2 <- t$wait(100, progress = PROGRESS)
+  res2 <- t$wait(100)
   expect_is(res2, "matrix")
 
   ## Then scale up:

@@ -7,7 +7,8 @@ test_that("workers", {
   owd <- prepare_didehpc("workers", sources)
   on.exit(setwd(owd))
 
-  config <- didehpc::didehpc_config(use_workers = TRUE, worker_timeout = 3600)
+  config <- didehpc::didehpc_config(use_workers = TRUE,
+                                    worker_timeout = 3600)
 
   path <- "context"
   ctx <- context::context_save(path = path, sources = sources)
