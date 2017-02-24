@@ -1,16 +1,16 @@
 ## Usage:
 ##
-## source("https://dide-tools.github.io/didehpc/install.html")
-## source("https://dide-tools.github.io/didehpc/install.html#extras")
-## source("https://dide-tools.github.io/didehpc/install.html#upgrade")
-## source("https://dide-tools.github.io/didehpc/install.html#upgrade,extras")
+## source("https://dide-tools.github.io/didehpc/install")
+## source("https://dide-tools.github.io/didehpc/install#extras")
+## source("https://dide-tools.github.io/didehpc/install#upgrade")
+## source("https://dide-tools.github.io/didehpc/install#upgrade,extras")
 ##
 ## Alternatively, we could put this on mrcdata:
 ##
-## source("https://mrcdata.ic.ac.uk/hpc/install.html")
-## source("https://mrcdata.ic.ac.uk/hpc/install.html#extras")
-## source("https://mrcdata.ic.ac.uk/hpc/install.html#upgrade")
-## source("https://mrcdata.ic.ac.uk/hpc/install.html#upgrade,extras")
+## source("https://mrcdata.ic.ac.uk/hpc/install")
+## source("https://mrcdata.ic.ac.uk/hpc/install#extras")
+## source("https://mrcdata.ic.ac.uk/hpc/install#upgrade")
+## source("https://mrcdata.ic.ac.uk/hpc/install#upgrade,extras")
 ##
 ## Or, finally, put this into the shared drive somewhere and source
 ## the file directly.  That would require that people know where the
@@ -59,7 +59,7 @@ local({
     log("install", "provisionr")
     install.packages("provisionr")
   }
-  packages <- c("didewin", "buildr", "syncr")
+  packages <- c("didehpc", "buildr", "syncr")
   if (extras) {
     packages <- c("rrq", "RPostgres")
   }

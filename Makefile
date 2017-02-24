@@ -45,7 +45,9 @@ staticdocs:
 	Rscript -e "library(methods); staticdocs::build_site()"
 	rm -f vignettes/*.html
 	@rmdir inst/staticdocs
-website: staticdocs
+web/install: inst/scripts/install.R
+	cp $< $@
+website: staticdocs web/install
 	./update_web.sh
 
 vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd
@@ -54,4 +56,4 @@ vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd
 vignettes/%.Rmd: vignettes/src/%.R
 	sh build_vignettes.sh
 
-.PHONY: all test document install vignettes
+.PHONY: all test document install vignettes website
