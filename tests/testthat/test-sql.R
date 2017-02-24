@@ -3,6 +3,7 @@ context("sql")
 test_that("sql", {
   skip_on_travis()
   skip_if_not_installed("RPostgres")
+  skip_if_not_installed("RPostgreSQL")
 
   owd <- prepare_didehpc("sql", "mysources.R")
   on.exit(setwd(owd))
@@ -24,4 +25,7 @@ test_that("sql", {
 
   ## This *should* have produced a progress bar
   grp <- obj$lapply(1:100, quote(sin))
+
+  ## Cleanup
+  obj$db$destroy()
 })
