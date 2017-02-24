@@ -33,7 +33,7 @@ initialise_rrq_controllers <- function(obj) {
   }
 }
 
-submit_workers <- function(obj, n, timeout = 600, progress = TRUE) {
+submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   if (!(isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers))) {
     stop("workers not enabled")
   }
@@ -44,13 +44,18 @@ submit_workers <- function(obj, n, timeout = 600, progress = TRUE) {
   template <- obj$templates$rrq_worker
 
   path_log <- path_worker_logs(NULL)
-  linux <- linux_cluster(config$cluster)
+  is_linux <- linux_cluster(config$cluster)
 
-  names <- sprintf("%s_%d", ids::adjective_animal(), seq_len(n))
-  rrq_key_alive <- rrq::rrq_expect_workers(obj, names)
+  base <- ids::adjective_animal()
+  names <- sprintf("%s_%d", base, seq_len(n))
 
-  message(sprintf("Submitting %d %s", n, ngettext(n, "worker", "workers")))
-  pb <- queuer:::progress(n, show = progress)
+  rrq <- obj$worker_controller()
+  rrq_key_alive <- rrq::rrq_expect_workers(rrq, names)
+
+  message(sprintf("Submitting %d %s with base name '%s'",
+                  n, ngettext(n, "worker", "workers"), base))
+  p <- queuer::progress_timeout(n, timeout, label = "submitting",
+                                show = progress)
 
   ## It would seem that it should be possible to bulk submit here, but
   ## that's not straightforward because the php script can then take
@@ -63,17 +68,16 @@ submit_workers <- function(obj, n, timeout = 600, progress = TRUE) {
               rrq_key_alive = rrq_key_alive)
   for (nm in names) {
     dat$rrq_worker_id <- nm
-    batch <- write_batch(nm, root, template, dat, linux)
+    batch <- write_batch(nm, root, template, dat, is_linux)
     path <- remote_path(prepare_path(batch, config$shares))
-    pb()
+    p()
     dide_id <- didehpc_submit(config, path, nm)
     db$mset(nm,
             c(dide_id,   path_log,   config$cluster),
             c("dide_id", "log_path", "dide_cluster"))
   }
 
-  rrq::workers_wait(rrq_redis_con(obj$config), n, rrq_key_alive,
-                    timeout = timeout, time_poll = 1, progress = progress)
+  rrq::workers_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
 rrq_redis_con <- function(config) {

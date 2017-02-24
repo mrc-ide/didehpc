@@ -5,7 +5,7 @@ options("didehpc.cluster" = "fi--didemrchnb",
         ## scope the exints within the test blocks?  It's necessary,
         ## otherwise "delete to end of line" bit in the progress bar
         ## will delete all the test output.
-        "didehpc.suppress_progress" = TRUE)
+        "queuer.progress_suppress" = TRUE)
 
 prepare_didehpc_root <- function() {
   file.path(DIDEHPC_PATH, gsub("-", "", as.character(Sys.Date())))
@@ -19,7 +19,7 @@ prepare_didehpc_dir <- function(name) {
 }
 
 prepare_didehpc <- function(name, ..., files = c(...)) {
-  path <- prepare_hpc_dir(name)
+  path <- prepare_didehpc_dir(name)
   file.copy(files, path, recursive = TRUE)
   context::context_log_start()
   owd <- setwd(path)

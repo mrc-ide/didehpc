@@ -173,7 +173,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       unsubmit(self, task_get_id(t))
     },
 
-    submit_workers = function(n, timeout = 600, progress = TRUE) {
+    submit_workers = function(n, timeout = 600, progress = NULL) {
       self$preflight()
       submit_workers(self, n, timeout, progress)
     },
