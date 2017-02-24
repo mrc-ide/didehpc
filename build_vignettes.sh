@@ -1,9 +1,14 @@
 #!/bin/sh
-set -ex
+# Stop on error:
+set -e
+# Be really verbose
+set -x
 
 RSCRIPT="Rscript --no-init-file"
 SRC=$PWD
-TARGET=~/net/home/cluster_test/vignette
+TARGET_BASE=~/net/home/cluster_testing
+DATE=$(date +%Y%m%d)
+TARGET=$TARGET_BASE/$DATE/vignette
 
 # Building the vignettes is a bit tricky because I need to be in
 # different location where the vignettes will be built
@@ -12,7 +17,12 @@ if [ ! -f ~/.smbcredentials ]; then
     exit 1
 fi
 
-if [ ! -d $(dirname $TARGET) ]; then
+if [ -d $TARGET ]; then
+    echo "Target directory already exists -- please delete first"
+    exit 1
+fi
+
+if [ ! -d $(dirname $TARGET_BASE) ]; then
     echo "Can't automatically run vignettes for you -- missing directory"
     exit 1
 fi
@@ -20,6 +30,7 @@ fi
 mkdir -p $TARGET
 cp -p $SRC/vignettes/src/*.R $SRC/vignettes/src/Makefile $TARGET
 echo $SRC > $TARGET/upstream
+
 make -C $TARGET
 
 cp $TARGET/*.md vignettes

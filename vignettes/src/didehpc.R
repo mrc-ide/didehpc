@@ -23,11 +23,9 @@
 ###
 ### With no information as to where the chunk that fails is.  Running
 ### in interactive mode can help.  Have fun debugging!
-##+ echo=FALSE,results="hide"
-knitr::opts_chunk$set(error=FALSE)
-set.seed(1)
-options(didehpc.credentials="~/.smbcredentials",
-        didehpc.cluster="fi--dideclusthn")
+##+ echo = FALSE,results = "hide"
+source("common.R")
+
 ## Parallel computing on a cluster can be more challenging than
 ## running things locally because it's often the first time that you
 ## need to package up code to run elsewhere, and when things go wrong
@@ -39,9 +37,18 @@ options(didehpc.credentials="~/.smbcredentials",
 ## next set of problems is dealing with the balloning set of files
 ## that end up being created - templates, scripts, output files, etc.
 
-## This set of packages (`didehpc`, `queuer` and `context`, along with
-## a couple of support packages) aims to remove the pain of getting
-## everything set up, and in keeping cluster tasks running.
+## This set of packages
+## ([`didehpc`](https://github.com/dide-tools/didehpc),
+## [`queuer`](https://github.com/richfitz/queuer) and
+## [`context`](https://github.com/dide-tools/context), along with a
+## couple of support packages
+## ([`provisionr`](https://github.com/richfitz/provisionr),
+## [`buildr`](https://github.com/richfitz/buildr),
+## [`syncr`](https://github.com/richfitz/syncr),
+## [`rrq`](https://github.com/richfitz/rrq) and
+## [`storr`](https://github.com/richfitz/storr)) aims to remove the
+## pain of getting everything set up, and getting cluster tasks
+## running, and retrieving your results.
 
 ## Once everything is set up, running a job on the cluster should be
 ## as straightforward as running things locally.
@@ -102,6 +109,24 @@ options(didehpc.credentials="~/.smbcredentials",
 ## the payback is that is the job submission part will become a lot
 ## simpler.
 
+## ## Installation
+
+## Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
+##
+## ```r
+## # install.package("drat") # if you don't have it already
+## drat:::add("dide-tools")
+## install.packages("didehpc")
+## ```
+
+## Or, somewhat equivalently
+##
+## ```r
+## source("https://dide-tools.github.io/didehpc/install")
+## ```
+
+## Be sure to run this in a fresh session.
+
 ## ## Configuration
 
 ## The configuration is handled in a two stage process.  First, some
@@ -120,8 +145,8 @@ options(didehpc.credentials="~/.smbcredentials",
 ##
 ## ```r
 ## options(
-##   didehpc.username="rfitzjoh",
-##   didehpc.home="~/net/home")
+##   didehpc.username = "rfitzjoh",
+##   didehpc.home = "~/net/home")
 ## ```
 ##
 ## and then set only options (such as cluster and cores or template)
@@ -138,18 +163,23 @@ options(didehpc.credentials="~/.smbcredentials",
 
 ## If you have a Linux system and have configured your smb mounts as
 ## described below, you might as well take advantage of this and set
-## `credentials="~/.smbcredentials"` and you will never be prompted
+## `credentials = "~/.smbcredentials"` and you will never be prompted
 ## for your password:
-
-##+ eval=FALSE
-didehpc::didehpc_config_global(credentials="~/.smbcredentials")
+##
+## ```r
+## didehpc::didehpc_config_global(credentials = "~/.smbcredentials")
+## ```
 
 ## Mac users will need to provide their username here.
-##+ eval=FALSE
-didehpc::didehpc_config_global(credentials="yourusername")
+##
+## ```r
+## didehpc::didehpc_config_global(credentials = "yourusername")
+## ```
 
 ## Windows users will not need to provide anything unless they are on
-## a non-domain machine.
+## a non-domain machine or they are in the unfortunate situation of
+## juggling multiple usernames across systems.  Non-domain machines
+## will need the credentials set as above.
 
 ## ### Additional shares
 
@@ -168,9 +198,11 @@ didehpc::didehpc_config_global(credentials="yourusername")
 
 ## So to map your "M drive" to which points at `\\fi--didef2\malaria`
 ## to `M:` on the cluster you can write
-##+ eval=FALSE
-share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
-didehpc::didehpc_config_global(shares=share)
+##
+## ```r
+## share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+## didehpc::didehpc_config_global(shares = share)
+## ```
 
 ## If you have more than one share to map, pass them through as a
 ## list.
@@ -185,7 +217,8 @@ didehpc::didehpc_config()
 ## credentials and username, the job template (`GeneralNodes`),
 ## information about the resources that will be requested (1 core) and
 ## information on filesystem mappings.  There are a few other bits of
-## information that may be explained further down.
+## information that may be explained further down.  The possible
+## options are explained further in `?didehpc::didehpc_config`
 
 ## ## Contexts
 
@@ -193,6 +226,11 @@ didehpc::didehpc_config()
 ## called `context`.  This package uses the assumption that most
 ## working environments can be recreated by a combination of R
 ## packages and sourcing a set of function definitions.
+
+## In order to have the system tell you more about what it is doing,
+## you can (optionally) run this command.  This can be a bit more
+## reassuring during long-running setup stages
+context::context_log_start()
 
 ## ### Root
 
@@ -202,6 +240,11 @@ didehpc::didehpc_config()
 ## Generally it will be in the current directory.
 root <- "contexts"
 
+## This directory is going to get large over time and will eventually
+## need to be deleted.  Eventually I will come up with some tools to
+## simplify working with these.  In the meantime, treat these as
+## somewhat disposable.
+
 ## ### Packages
 
 ## If you list packages as a character vector then all packages will
@@ -209,19 +252,22 @@ root <- "contexts"
 ## what happens when you use the function `library()` So for example
 ## if you need to depend on the `rstan` and `ape` packages you could
 ## write:
-
-##+ eval=FALSE
-ctx <- context::context_save(root, packages=c("rstan", "ape"))
+##
+## ```r
+## ctx <- context::context_save(root, packages = c("rstan", "ape"))
+## ```
 
 ## Attaching packages is not always what is wanted, especially if you
 ## have packages that clobber functions in base packages (e.g.,
 ## `dplyr`!).  An alternative is to list a set of packages that you
 ## want installed and split them into packages you would like attached
 ## and packages you would only like loaded:
-##+ eval=FALSE
-ctx <- context::context_save(root,
-                             packages=list(loaded="geiger", attached="ape"))
-
+##
+## ```r
+## packages <- list(loaded = "geiger", attached = "ape")
+## ctx <- context::context_save(root, packages = packages)
+## ```
+##
 ## In this case, the packages in the `loaded` section will be
 ## installed (along with their dependencies) and before anything runs,
 ## we will run `loadNamespace` on them to confirm that they are
@@ -245,11 +291,11 @@ ctx <- context::context_save(root,
 ## integer `nspp` after a bunch of calculation yields a tree with
 ## `nspp` tips:
 
-##+ echo=FALSE,results="asis"
+##+ echo = FALSE, results = "asis"
 writeLines(c("```r", readLines("mysources.R"), "```"))
 
 ## To set this up, we'd write:
-ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 
 ## `sources` can be a character vector, `NULL` or `character(0)` if
 ## you have no sources, or just omit it as above.
@@ -263,9 +309,10 @@ ctx <- context::context_save(root, packages="ape", sources="mysources.R")
 ## If the packages are on GitHub and public you can pass the github
 ## username/repo pair, in `devtools` style:
 
-## +eval=FALSE
+## ```r
 ## context::context_save(...,
-##   package_sources=context::package_sources(github="richfitz/ids"))
+##   package_sources = context::package_sources(github = "richfitz/kitten"))
+## ```
 
 ## Like with `devtools` you can use subdirectories, specific commits
 ## or tags in the specification.
@@ -276,13 +323,11 @@ ctx <- context::context_save(root, packages="ape", sources="mysources.R")
 
 ## ## Creating the queue
 
-## The next step can take a little while so it's useful to enable
-## logging to see where things are up to:
-context::context_log_start()
-
 ## Once a context has been created, we can create a queue with it.
 ## This is separate from the actual cluster queue, but will be our
-## interface to it:
+## interface to it.  Running this step takes a while because it
+## installs all the packages that the cluster will need into the
+## context directory.
 obj <- didehpc::queue_didehpc(ctx)
 
 ## If the above command does not throw an error, then you have
@@ -303,7 +348,7 @@ obj <- didehpc::queue_didehpc(ctx)
 obj
 
 ## For example, to list the tasks that we know about:
-obj$tasks_list()
+obj$task_list()
 
 ## (of course there are no tasks yet because we haven't added any).
 ## As a slightly more interesting example we can see how busy the
@@ -360,7 +405,7 @@ t$status()
 t$times()
 
 ## and you can try and get the result of running the task:
-##+ error=TRUE
+##+ error = TRUE
 t$result()
 
 ## The `wait` function, used above, is like `result` but it will
@@ -385,7 +430,7 @@ t$log()
 obj$dide_log(t)
 
 ## The queue knows which tasks it has created and you can list them:
-obj$tasks_list()
+obj$task_list()
 
 ## The long identifiers are random and are long enough that collisions
 ## are unlikely.
@@ -409,19 +454,27 @@ t2$result()
 ## There are two broad options here;
 
 ## 1. Apply a function to each element of a list, similar to `lapply`
-## with `queuer::qlapply`
+## with `$lapply`
 ## 2. Apply a function to each row of a data.frame perhaps using each
-## column as a different argument with `queuer::enqueue_bulk`
+## column as a different argument with `$enqueue_bulk`
+
+## The second approach is more general and `$lapply` is implemented
+## using it.
 
 ## Suppose we want to make a bunch of trees of different sizes.  This
 ## would involve mapping our `make_tree` function over a vector of
 ## sizes:
 sizes <- 3:8
-grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+grp <- obj$lapply(sizes, make_tree)
 
-## By default, `queuer::qlapply` returns a "task_bundle" with an
+## By default, `$qlapply` returns a "task_bundle" with an
 ## automatically generated name.  You can customise the name with the
 ## `name` argument.
+
+## In contrast to `lapply` this is not blocking (i.e., submitting
+## tasks and collecting the results is done asynchronously) but if you
+## pass a `timeout` argument to `$lapply` then it will poll until the
+## jobs are done, in the same way as `wait()`, below.
 
 ## Get the startus of all the jobs
 grp$status()
@@ -431,20 +484,27 @@ res <- grp$wait(120)
 
 ## The other bulk interface is where you want to run a function over a
 ## combination of parameters.  Use `queuer::enqueue_bulk` here.
-pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+pars <- expand.grid(a = letters[1:3], b = runif(2), c = pi,
+                    stringsAsFactors = FALSE)
 pars
 
-grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+## Suppose that we have a function that we want to run over this set
+## of parameters.
+combine(pars$a[[1]], pars$b[[1]], pars$c[[1]])
+
+grp <- obj$enqueue_bulk(pars, combine, do_call = TRUE)
 
 ## By default this runs
 ##
-## * `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
-## * `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+## * `combine(a = pars$a[[1]], b = pars$b[[1]], c = pars$c[[1]])`
+## * `combine(a = pars$a[[2]], b = pars$b[[2]], c = pars$c[[2]])`
 ## * ...
-## * `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+## * `combine(a = pars$a[[6]], b = pars$b[[6]], c = pars$c[[6]])`
 
 res <- grp$wait(120)
 res
+
+## Running `do_call = FALSE` would run functions as a row-wise `lapply`.
 
 ## ## Cancelling and stopping jobs
 
@@ -466,12 +526,15 @@ obj$unsubmit(t$id)
 ## unsubmitting multiple times is safe, and will have no effect.
 obj$unsubmit(t$id)
 
+## Alternatively you can use `obj$task_delete(t$id)` which unsubmits
+## the task and then deletes it.
+
 ## Note that the task is not actually deleted (see below); you can
 ## still get at the expression:
 t$expr()
 
 ## but you cannot retrieve results:
-##+ error=TRUE
+##+ error = TRUE
 t$result()
 
 ## The argument to `unsubmit` can be a vector.  For example, to
@@ -486,9 +549,9 @@ obj$unsubmit(grp$ids)
 ## delete things and still have old task handles floating around you
 ## might get confusing results.
 
-## There is a delete method (`obj$delete`) that will delete a job,
-## first unsubmitting it if it has been submitted.  It takes a single
-## id as an argument.
+## There is a delete method (`obj$delete`) that will delete jobs,
+## first unsubmitting it if it has been submitted.  It takes a vector
+## of task ids as an argument.
 
 ## # Misc
 
@@ -497,7 +560,7 @@ obj$unsubmit(grp$ids)
 ## If you are running stan, or Rcpp with `sourceCpp` (in the latter
 ## case you *should* be using a package) you'll need a working
 ## compiler.  For rstan this is detected automatically.  But in
-## general, pass `rtools=TRUE` to `queue_didehpc()`.
+## general, pass `rtools = TRUE` to `queue_didehpc()`.
 
 ## ## Parallel computation on the cluster
 
@@ -506,8 +569,9 @@ obj$unsubmit(grp$ids)
 ## parallism with the `parallel` package.  To request 8 cores, you
 ## could run:
 
-##+ eval=FALSE
-didehpc::didehpc_config(cores=8)
+## ```r
+## didehpc::didehpc_config(cores = 8)
+## ```
 
 ## When your task starts, 8 cores will be allocated to it and a
 ## `parallel` cluster will be created.  You can use it with things
@@ -515,11 +579,12 @@ didehpc::didehpc_config(cores=8)
 ## within your cluster job you needed to apply function `f` to a each
 ## element of a list `x`, you could write:
 
-##+ eval=FALSE
-run_f <- function(x) {
-  parallel::parLapply(NULL, x, f)
-}
-obj$enqueue(run_f(x))
+## ```r
+## run_f <- function(x) {
+##   parallel::parLapply(NULL, x, f)
+## }
+## obj$enqueue(run_f(x))
+## ```
 
 ## The parallel bits can be embedded within larger blocks of code.
 ## All functions in `parallel` that take `cl` as a first argument can
@@ -528,21 +593,24 @@ obj$enqueue(run_f(x))
 
 ## Alternatively, if you want to control cluster creation (e.g., you
 ## are using software that does this for you) then, pass
-## `parallel=FALSE` to the config call:
+## `parallel = FALSE` to the config call:
 
-##+ eval=FALSE
-didehpc::didehpc_config(cores=8, parallel=FALSE)
+## ```r
+## didehpc::didehpc_config(cores = 8, parallel = FALSE)
+## ```
 
 ## In this case you are responsible for setting up the cluster.
 
 ## As an alternative to requesting cores, you can use a different job
 ## template:
-##+ eval=FALSE
-didehpc::didehpc_config(template="16Core")
+##
+## ```r
+## didehpc::didehpc_config(template = "16Core")
+## ```
 
 ## which will reserve you the entire node.  Again, a cluster will be
 ## started with all availabe cores unless you also specify
-## `parallel=FALSE`.
+## `parallel = FALSE`.
 
 ## ## Running heaps of jobs without annoying your colleagues
 
@@ -568,18 +636,18 @@ didehpc::didehpc_config(template="16Core")
 ## To use parallel chains, do something like:
 
 ## ```r
-## config <- didehpc::didehpc_config(cores=4, parallel=FALSE)
+## config <- didehpc::didehpc_config(cores = 4, parallel = FALSE)
 ## obj <- didehpc::queue_didehpc(ctx, config)
 ## ```
 
 ## to request four cores or
 
 ## ```r
-## config <- didehpc::didehpc_config(wholenode=TRUE, parallel=FALSE)
+## config <- didehpc::didehpc_config(wholenode = TRUE, parallel = FALSE)
 ## obj <- didehpc::queue_didehpc(ctx, config)
 ## ```
 
-## to request a whole node.  The `parallel=FALSE` tells the system not
+## to request a whole node.  The `parallel = FALSE` tells the system not
 ## to set up a cluster for use with the `parallel` pacakge.  However,
 ## you'll still need to specify options(mc.cores) appropriately and I
 ## don't expose that yet...
@@ -600,18 +668,21 @@ didehpc::didehpc_config(template="16Core")
 ## If you want this behaviour back, `didehpc` can be configured to use
 ## the HPC tools on your computer.  Just run:
 
-##+ eval=FALSE
-didehpc::didehpc_config_global(hpctools=TRUE)
+## ```r
+## didehpc::didehpc_config_global(hpctools = TRUE)
+## ```
 
 ## or
 
-##+ eval=FALSE
-options(didehpc.hpctools=TRUE)
+## ```r
+## options(didehpc.hpctools = TRUE)
+## ```
 
 ## before creating the queue, or run
 
-##+ eval=FALSE
-obj <- didehpc::queue(ctx, config=didehpc::didehpc_config(hpctools=TRUE))
+## ```r
+## obj <- didehpc::queue(ctx, config = didehpc::didehpc_config(hpctools = TRUE))
+## ```
 
 ## This is experimental but I welcome feedback.
 
@@ -723,59 +794,48 @@ obj <- didehpc::queue(ctx, config=didehpc::didehpc_config(hpctools=TRUE))
 ## synchronised.
 
 ## To do the syncronisation we use `rsync` via the
-## [`syncr`](https://github.com/richfitz/syncr) package.  Install it
+## [`syncr`](https://github.com/richfitz/syncr) package  Install it
 ## with:
-##+ eval=FALSE
-install.packages("syncr",
-                 repos=c(CRAN="https://cran.rstudio.com",
-                         drat="https://richfitz.github.io/drat"))
+##
+## ```r
+## drat:::add("dide-tools")
+## install.packages("syncr")
+## ```
 
 ## Then, when constructing the queue, you need to specify a working
 ## directory for the cluster that is on the shared drive.
-##+ eval=FALSE
-workdir <- "Q:/cluster/context"
-didehpc::didehpc_config_global(workdir=workdir)
+##
+## ```r
+## workdir <- "Q:/cluster/context"
+## didehpc::didehpc_config_global(workdir = workdir)
+## ```
 
 ## When you construct the context, that needs to be on a network
 ## share, so you might write:
-##+ eval=FALSE
-root <- file.path(workdir, "contexts")
-ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+##
+## ```r
+## root <- file.path(workdir, "contexts")
+## ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
+## ```
 
 ## Then construct the queue as normal.
-##+ eval=FALSE
-obj <- didehpc::queue_didehpc(ctx)
+##
+## ```r
+## obj <- didehpc::queue_didehpc(ctx)
+## ```
 
 ## This will automatically syncronise the sources, copying them if
 ## they need updating.
 
+## You can also specify additional files to synchronise with the
+## `sync` argument to `queue_didehpc`.
+
 ## If you had other files to synchronise they would be listed with the
 ## argument `sync` to `queue_didehpc`.  You can update the remote
 ## files by running
-##+ eval=FALSE
-obj$sync_files()
+##
+## ```r
+## obj$sync_files()
+## ```
 
 ## at any time.
-
-## # Installation
-
-## There are quite a few packages here that are not on CRAN.  The
-## simplest way to install the required packages should be to run:
-##+ eval=FALSE
-install.packages("didehpc",
-                 repos=c(CRAN="https://cran.rstudio.com",
-                         drat="https://richfitz.github.io/drat"))
-
-## Alternatively, with devtools you can run:
-##+ eval=FALSE
-devtools::install_github(c(
-  "richfitz/ids",
-  "richfitz/syncr",
-  "dide-tools/context",
-  "richfitz/queuer",
-  "dide-tools/didehpc"))
-
-## (if devtools is not install, install it with
-## `install.packages("devtools")`)
-
-## When upgrading, be sure to run everything in a fresh R session.

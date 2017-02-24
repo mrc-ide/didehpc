@@ -14,6 +14,11 @@ A few functions changed name
 * `$tasks_list()` -> `$task_list()`
 * `$tasks_status_dide()` -> `$task_status_dide()`
 
+Some arguments changed name for consistency across the set of packages
+
+* `wait` -> `timeout`
+* `every` -> `time_poll`
+
 It will be best if you upgrade the packages by first removing the old packages:
 
 ```

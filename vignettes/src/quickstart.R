@@ -20,9 +20,8 @@
 ###
 ### With no information as to where the chunk that fails is.  Running
 ### in interactive mode can help.  Have fun debugging!
-##+ echo=FALSE,results="hide"
-knitr::opts_chunk$set(error=FALSE)
-set.seed(1)
+##+ echo = FALSE,results = "hide"
+source("common.R")
 
 ## > Get yourself running R jobs on the cluster in 10 minutes or so.
 
@@ -47,48 +46,43 @@ set.seed(1)
 
 ## ## Install a lot of packages
 
-## On windows in particular, this step can be infuriating if something
-## triggers an upgrade in a package that is being depended on.  If you
-## end up in a situation where packages simply can't be loaded you may
-## need to restart R and try installing things from scratch.
-## Hopefully I can come up with a way of reducing the pain here.
+## Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
+##
+## ```r
+## # install.package("drat") # if you don't have it already
+## drat:::add("dide-tools")
+## install.packages("didehpc")
+## ```
 
-##+ eval=FALSE
-install.packages("devtools")
-devtools::install_github(c(
-  "richfitz/ids",
-  "dide-tools/context",
-  "richfitz/queuer",
-  "dide-tools/didehpc"))
-
-## Or:
-##+ eval=FALSE
-drat:::add("richfitz")
-install.packages("didehpc")
-
-## Or:
-##+ eval=FALSE
-install.packages("didehpc", repos=c(CRAN="https://cran.rstudio.com",
-                                    drat="https://richfitz.github.io/drat"))
+## Or, somewhat equivalently
+##
+## ```r
+## source("https://dide-tools.github.io/didehpc/install")
+## ```
 
 ## ## Describe your computer so we can find things
 
 ## On windows if you are using a domain machine, you should need only
 ## to select the cluster you want to use
 
-##+ eval=FALSE
-didehpc::didehpc_config_global(cluster="fi--didemrchnb")
+## ```r
+## didehpc::didehpc_config_global(cluster = "fi--didemrchnb")
+## ```
 
 ## Otherwise, and on any other platform you'll need to provide your username:
-##+ eval=FALSE
-didehpc::didehpc_config_global(credentials="yourusername",
-                               cluster="fi--didemrchnb")
+##
+## ```r
+## didehpc::didehpc_config_global(credentials = "yourusername",
+##                                cluster = "fi--didemrchnb")
+## ```
 
 ## If you are running Linux we can get both your username and password
 ## from the file you use to mount your network shares (see the main
 ## vignette for details)
-didehpc::didehpc_config_global(credentials="~/.smbcredentials",
-                               cluster="fi--didemrchnb")
+## ```r
+## didehpc::didehpc_config_global(credentials = "~/.smbcredentials",
+##                                cluster = "fi--didemrchnb")
+## ```
 
 ## If this is the first time you have run this package, best to try
 ## out the login proceedure with:
@@ -105,11 +99,11 @@ sources <- "mysources.R"
 ## If you had a vector here that would be OK too.  The source file
 ## here is very simple:
 
-##+ echo=FALSE,results="asis"
+##+ echo = FALSE,results = "asis"
 writeLines(c("```r", readLines(sources), "```"))
 
 ## Then save this together to form a "context".
-ctx <- context::context_save("contexts", packages=packages, sources=sources)
+ctx <- context::context_save("contexts", packages = packages, sources = sources)
 
 ## If you have no packages or no sources, use `NULL` or omit them in
 ## the call below (which is the default anyway).
@@ -183,17 +177,17 @@ obj$dide_log(t)
 ## There are two broad options here;
 
 ## 1. Apply a function to each element of a list, similar to `lapply`
-## with `queuer::qlapply`
+## with `$lapply`
 ## 2. Apply a function to each row of a data.frame perhaps using each
-## column as a different argument with `queuer::enqueue_bulk`
+## column as a different argument with `$enqueue_bulk`
 
 ## Suppose we want to make a bunch of trees of different sizes.  This
 ## would involve mapping our `make_tree` function over a vector of
 ## sizes:
 sizes <- 3:8
-grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+grp <- obj$lapply(sizes, make_tree)
 
-## By default, `queuer::qlapply` returns a "task_bundle" with an
+## By default, `$lapply` returns a "task_bundle" with an
 ## automatically generated name.  You can customise the name with the
 ## `name` argument.
 
@@ -204,18 +198,19 @@ grp$status()
 res <- grp$wait(120)
 
 ## The other bulk interface is where you want to run a function over a
-## combination of parameters.  Use `queuer::enqueue_bulk` here.
-pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+## combination of parameters.  Use `$enqueue_bulk` here.
+pars <- expand.grid(a = letters[1:3], b = runif(2), c = pi,
+                    stringsAsFactors = FALSE)
 pars
 
-grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+grp <- obj$enqueue_bulk(pars, combine, do_call = TRUE)
 
 ## By default this runs
 ##
-## * `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
-## * `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+## * `combine(a = pars$a[[1]], b = pars$b[[1]], c = pars$c[[1]])`
+## * `combine(a = pars$a[[2]], b = pars$b[[2]], c = pars$c[[2]])`
 ## * ...
-## * `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+## * `combine(a = pars$a[[6]], b = pars$b[[6]], c = pars$c[[6]])`
 
 res <- grp$wait(120)
 res

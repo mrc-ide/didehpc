@@ -1,7 +1,7 @@
 RSCRIPT = Rscript --no-init-file
 UPSTREAM = $(cat upstream)
 
-all: refresh quickstart.md didehpc.md
+all: refresh quickstart.md didehpc.md workers.md
 
 %.Rmd: %.R
 	${RSCRIPT} -e 'sowsear::sowsear("$<", output="$@")'
