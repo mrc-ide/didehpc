@@ -45,13 +45,13 @@ staticdocs:
 	Rscript -e "library(methods); staticdocs::build_site()"
 	rm -f vignettes/*.html
 	@rmdir inst/staticdocs
-web/install: inst/scripts/install.R
+inst/web/install: inst/scripts/install.R
 	cp $< $@
-website: staticdocs web/install
+website: staticdocs inst/web/install
 	./update_web.sh
 
-vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd
-	${RSCRIPT} -e "library(methods); devtools::build_vignettes()"
+vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd vignettes/workers.Rmd
+	${RSCRIPT} -e "library(methods); devtools::build_vignettes(dependencies=FALSE)"
 
 vignettes/%.Rmd: vignettes/src/%.R
 	sh build_vignettes.sh
