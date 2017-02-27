@@ -1,7 +1,7 @@
 ---
 title: "Quickstart for R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-05-24"
+date: "2017-02-24"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quickstart for R and the DIDE cluster}
@@ -34,34 +34,18 @@ more information anyway.
 
 ## Install a lot of packages
 
-On windows in particular, this step can be infuriating if something
-triggers an upgrade in a package that is being depended on.  If you
-end up in a situation where packages simply can't be loaded you may
-need to restart R and try installing things from scratch.
-Hopefully I can come up with a way of reducing the pain here.
-
+Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
 
 ```r
-install.packages("devtools")
-devtools::install_github(c(
-  "richfitz/ids",
-  "dide-tools/context",
-  "richfitz/queuer",
-  "dide-tools/didehpc"))
-```
-
-Or:
-
-```r
-drat:::add("richfitz")
+# install.package("drat") # if you don't have it already
+drat:::add("dide-tools")
 install.packages("didehpc")
 ```
 
-Or:
+Or, somewhat equivalently
 
 ```r
-install.packages("didehpc", repos=c(CRAN="https://cran.rstudio.com",
-                                    drat="https://richfitz.github.io/drat"))
+source("https://dide-tools.github.io/didehpc/install")
 ```
 
 ## Describe your computer so we can find things
@@ -69,25 +53,23 @@ install.packages("didehpc", repos=c(CRAN="https://cran.rstudio.com",
 On windows if you are using a domain machine, you should need only
 to select the cluster you want to use
 
-
 ```r
-didehpc::didehpc_config_global(cluster="fi--didemrchnb")
+didehpc::didehpc_config_global(cluster = "fi--didemrchnb")
 ```
 
 Otherwise, and on any other platform you'll need to provide your username:
 
 ```r
-didehpc::didehpc_config_global(credentials="yourusername",
-                               cluster="fi--didemrchnb")
+didehpc::didehpc_config_global(credentials = "yourusername",
+                               cluster = "fi--didemrchnb")
 ```
 
 If you are running Linux we can get both your username and password
 from the file you use to mount your network shares (see the main
 vignette for details)
-
 ```r
-didehpc::didehpc_config_global(credentials="~/.smbcredentials",
-                               cluster="fi--didemrchnb")
+didehpc::didehpc_config_global(credentials = "~/.smbcredentials",
+                               cluster = "fi--didemrchnb")
 ```
 
 If this is the first time you have run this package, best to try
@@ -119,12 +101,16 @@ make_tree <- function(nspp) {
   message("I am building a tree!")
   ape::rtree(nspp)
 }
+
+combine <- function(a, b, c) {
+  sprintf("%s: %2.5f", a, b + c)
+}
 ```
 
 Then save this together to form a "context".
 
 ```r
-ctx <- context::context_save("contexts", packages=packages, sources=sources)
+ctx <- context::context_save("contexts", packages = packages, sources = sources)
 ```
 
 If you have no packages or no sources, use `NULL` or omit them in
@@ -149,7 +135,55 @@ obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## Loading context 8a89c62653fe70e1a63b735e7833be2c
+## Loading context d7c0110acaa18c9e68a0353fae50bbd5
+```
+
+```
+## Already logged in
+```
+
+```
+## [ download  ]  package database
+```
+
+```
+## [ deps      ]  7 extra: crayon, digest, ids, openssl, R6, storr, uuid
+```
+
+```
+## [ cross     ]  ape
+```
+
+```
+## [ cross     ]  context
+```
+
+```
+## [ cross     ]  crayon
+```
+
+```
+## [ cross     ]  digest
+```
+
+```
+## [ cross     ]  ids
+```
+
+```
+## [ cross     ]  openssl
+```
+
+```
+## [ cross     ]  R6
+```
+
+```
+## [ cross     ]  storr
+```
+
+```
+## [ cross     ]  uuid
 ```
 
 Once you get to this point we're ready to start running things on
@@ -168,7 +202,7 @@ t$wait(120)
 ```
 
 ```
-## R version 3.2.4 Revised (2016-03-16 r70336)
+## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows Server 2012 R2 x64 (build 9600)
 ##
@@ -183,11 +217,11 @@ t$wait(120)
 ## [1] methods   stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_3.4     MASS_7.3-45
+## [1] ape_4.1     MASS_7.3-45
 ##
 ## loaded via a namespace (and not attached):
-## [1] R6_2.1.2        context_0.0.8   nlme_3.1-125    grid_3.2.4
-## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
+## [1] R6_2.2.0        parallel_3.3.2  context_0.1.0   nlme_3.1-128
+## [5] grid_3.3.2      digest_0.6.12   storr_1.0.3     lattice_0.20-34
 ```
 
 You can use `t$result()` to get the result straight away (throwing
@@ -210,7 +244,7 @@ tree
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t4, t9, t1, t8, t10, t7, ...
+## 	t4, t1, t2, t9, t7, t8, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -222,20 +256,19 @@ t
 ```
 
 ```
-## <task>
+## <queuer_task>
 ##   Public:
 ##     clone: function (deep = FALSE)
 ##     context_id: function ()
-##     db: environment
 ##     expr: function (locals = FALSE)
-##     handle: task_handle
-##     id: 15b22b069b6441f89833f032eb7e740a
-##     initialize: function (obj, id, check_exists = TRUE)
-##     log: function ()
-##     result: function (sanitise = FALSE)
+##     id: 59d79552dd01261df7e4db3de932813e
+##     initialize: function (id, root, check_exists = TRUE)
+##     log: function (parse = TRUE)
+##     result: function (allow_incomplete = FALSE)
+##     root: context_root
 ##     status: function ()
 ##     times: function (unit_elapsed = "secs")
-##     wait: function (timeout, every = 0.5, progress = TRUE)
+##     wait: function (timeout, time_poll = 0.5, progress = NULL)
 ```
 
 Get the result from running a task
@@ -249,7 +282,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t4, t9, t1, t8, t10, t7, ...
+## 	t4, t1, t2, t9, t7, t8, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -284,9 +317,9 @@ t$times()
 
 ```
 ##                            task_id           submitted             started
-## 1 15b22b069b6441f89833f032eb7e740a 2016-05-24 09:03:33 2016-05-24 09:03:57
-##              finished  waiting    running      idle
-## 1 2016-05-24 09:03:57 23.72405 0.03125095 -21.97055
+## 1 59d79552dd01261df7e4db3de932813e 2017-02-24 17:26:29 2017-02-24 17:26:29
+##              finished   waiting    running      idle
+## 1 2017-02-24 17:26:29 0.8056591 0.01562691 0.4974065
 ```
 
 You may see negative numbers for "waiting" as the submitted time is
@@ -300,27 +333,28 @@ t$log()
 ```
 
 ```
-## [ bootstrap ]  Q:\cluster_test\vignette\contexts
-## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
-## [ ok        ]
-## [ init      ]  2016-05-24 09:03:56.568
-## [ hostname  ]  FI--DIDEMRC10
-## [ version   ]  0.0.8
-## [ parallel  ]  running as single core job
-## [ root      ]  Q:\cluster_test\vignette\contexts
-## [ task      ]  15b22b069b6441f89833f032eb7e740a
-## [ context   ]  8a89c62653fe70e1a63b735e7833be2c
-## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ hello     ]  2017-02-24 17:26:29.578
+## [ wd        ]  Q:/cluster_testing/20170224/vignette
+## [ bootstrap ]
+## [ lib       ]  Q:\cluster_testing\20170224\vignette\contexts/lib/windows/3.3
+## [ init      ]  2017-02-24 17:26:29.593
+## [ hostname  ]  FI--DIDEMRC76
+## [ process   ]  3208
+## [ version   ]  0.1.0
+## [ open:db   ]  rds
+## [ context   ]  d7c0110acaa18c9e68a0353fae50bbd5
 ## [ library   ]  ape, MASS
 ## [ namespace ]
 ## [ source    ]  mysources.R
+## [ parallel  ]  running as single core job
+## [ root      ]  Q:\cluster_testing\20170224\vignette\contexts
+## [ context   ]  d7c0110acaa18c9e68a0353fae50bbd5
+## [ task      ]  59d79552dd01261df7e4db3de932813e
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2016-05-24 09:03:56.927
+## [ start     ]  2017-02-24 17:26:29.812
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2016-05-24 09:03:57.036
-##     Warning message:
-##     package 'ape' was built under R version 3.2.5
+## [ end       ]  2017-02-24 17:26:29.843
 ```
 
 There is also a bit of DIDE specific logging that happens before
@@ -332,17 +366,18 @@ obj$dide_log(t)
 
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
-## generated on date: 2016-05-24 09:03:33
-## didehpc version: 0.0.3
-## context version: 0.0.8
-## running on: FI--DIDEMRC10
+## generated on date: 2017-02-24
+## didehpc version: 0.1.0
+## context version: 0.1.0
+## running on: FI--DIDEMRC76
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
 ## The command completed successfully.
 ## mapping T: -> \\fi--didef2\tmp
 ## The command completed successfully.
-## working directory: Q:\cluster_test\vignette
-## logfile: Q:\cluster_test\vignette\contexts\logs\15b22b069b6441f89833f032eb7e740a
-## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" 15b22b069b6441f89833f032eb7e740a  1>"Q:\cluster_test\vignette\contexts\logs\15b22b069b6441f89833f032eb7e740a" 2>&1
+## working directory: Q:\cluster_testing\20170224\vignette
+## this is a single task
+## logfile: Q:\cluster_testing\20170224\vignette\contexts\logs\59d79552dd01261df7e4db3de932813e
+## Q:\cluster_testing\20170224\vignette>Rscript "Q:\cluster_testing\20170224\vignette\contexts\bin\task_run" "Q:\cluster_testing\20170224\vignette\contexts" 59d79552dd01261df7e4db3de932813e  1>"Q:\cluster_testing\20170224\vignette\contexts\logs\59d79552dd01261df7e4db3de932813e" 2>&1
 ## Quitting
 ```
 
@@ -351,9 +386,9 @@ obj$dide_log(t)
 There are two broad options here;
 
 1. Apply a function to each element of a list, similar to `lapply`
-with `queuer::qlapply`
+with `$lapply`
 2. Apply a function to each row of a data.frame perhaps using each
-column as a different argument with `queuer::enqueue_bulk`
+column as a different argument with `$enqueue_bulk`
 
 Suppose we want to make a bunch of trees of different sizes.  This
 would involve mapping our `make_tree` function over a vector of
@@ -361,22 +396,18 @@ sizes:
 
 ```r
 sizes <- 3:8
-grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+grp <- obj$lapply(sizes, make_tree)
 ```
 
 ```
-## Creating bundle: 'displeasing_frog'
+## Creating bundle: 'undivined_bufeo'
 ```
 
 ```
-## saving 6 tasks...
+## submitting 6 tasks
 ```
 
-```
-## submitting 6 tasks...
-```
-
-By default, `queuer::qlapply` returns a "task_bundle" with an
+By default, `$lapply` returns a "task_bundle" with an
 automatically generated name.  You can customise the name with the
 `name` argument.
 
@@ -387,12 +418,12 @@ grp$status()
 ```
 
 ```
-## 7e0c186576974d25949118edd6266fbe c02880bbebf841e6b0903a54b9ca67fb
+## dd5cf9e48bf59d6382bb494bb053fcaf cdd375d8c6681447e66df4ddc20a61cc
 ##                       "COMPLETE"                       "COMPLETE"
-## b6593d8626e047c98a504aa95769a6ae b9fabb9a3b7b422c904fb103e8d83264
+## cdad3d3d66b6e26f12daf603505a6bbd 777d5ed8dc67222f84918ffa8774fa88
+##                       "COMPLETE"                       "COMPLETE"
+## 7b2e0f6b830745bdfe18d4389a0ccbaa 5b7d638ef83ffb9b03a570a53a99dd06
 ##                       "COMPLETE"                        "PENDING"
-## a0bed680b486424cb362254a4ced1817 297a85126e104ec88a7485887a8dbe3d
-##                        "PENDING"                        "PENDING"
 ```
 
 Wait until they are all complete and get the results
@@ -402,45 +433,42 @@ res <- grp$wait(120)
 ```
 
 The other bulk interface is where you want to run a function over a
-combination of parameters.  Use `queuer::enqueue_bulk` here.
+combination of parameters.  Use `$enqueue_bulk` here.
 
 ```r
-pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+pars <- expand.grid(a = letters[1:3], b = runif(2), c = pi,
+                    stringsAsFactors = FALSE)
 pars
 ```
 
 ```
 ##   a         b        c
-## 1 a 0.5728534 3.141593
-## 2 b 0.5728534 3.141593
-## 3 c 0.5728534 3.141593
-## 4 a 0.9082078 3.141593
-## 5 b 0.9082078 3.141593
-## 6 c 0.9082078 3.141593
+## 1 a 0.8983897 3.141593
+## 2 b 0.8983897 3.141593
+## 3 c 0.8983897 3.141593
+## 4 a 0.9446753 3.141593
+## 5 b 0.9446753 3.141593
+## 6 c 0.9446753 3.141593
 ```
 
 ```r
-grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+grp <- obj$enqueue_bulk(pars, combine, do_call = TRUE)
 ```
 
 ```
-## Creating bundle: 'crazy_tsetsefly'
+## Creating bundle: 'potential_mockingbird'
 ```
 
 ```
-## saving 6 tasks...
-```
-
-```
-## submitting 6 tasks...
+## submitting 6 tasks
 ```
 
 By default this runs
 
-* `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
-* `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+* `combine(a = pars$a[[1]], b = pars$b[[1]], c = pars$c[[1]])`
+* `combine(a = pars$a[[2]], b = pars$b[[2]], c = pars$c[[2]])`
 * ...
-* `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+* `combine(a = pars$a[[6]], b = pars$b[[6]], c = pars$c[[6]])`
 
 
 ```r
@@ -450,78 +478,20 @@ res
 
 ```
 ## [[1]]
-## [[1]][[1]]
-## [[1]][[1]]$a
-## [1] "a"
-##
-## [[1]][[1]]$b
-## [1] 0.5728534
-##
-## [[1]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "a: 4.03998"
 ##
 ## [[2]]
-## [[2]][[1]]
-## [[2]][[1]]$a
-## [1] "b"
-##
-## [[2]][[1]]$b
-## [1] 0.5728534
-##
-## [[2]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "b: 4.03998"
 ##
 ## [[3]]
-## [[3]][[1]]
-## [[3]][[1]]$a
-## [1] "c"
-##
-## [[3]][[1]]$b
-## [1] 0.5728534
-##
-## [[3]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "c: 4.03998"
 ##
 ## [[4]]
-## [[4]][[1]]
-## [[4]][[1]]$a
-## [1] "a"
-##
-## [[4]][[1]]$b
-## [1] 0.9082078
-##
-## [[4]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "a: 4.08627"
 ##
 ## [[5]]
-## [[5]][[1]]
-## [[5]][[1]]$a
-## [1] "b"
-##
-## [[5]][[1]]$b
-## [1] 0.9082078
-##
-## [[5]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "b: 4.08627"
 ##
 ## [[6]]
-## [[6]][[1]]
-## [[6]][[1]]$a
-## [1] "c"
-##
-## [[6]][[1]]$b
-## [1] 0.9082078
-##
-## [[6]][[1]]$c
-## [1] 3.141593
+## [1] "c: 4.08627"
 ```

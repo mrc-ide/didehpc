@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2016-07-14"
+date: "2017-02-24"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -11,6 +11,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 
 
 Parallel computing on a cluster can be more challenging than
@@ -24,9 +25,18 @@ right place on a computer that you can't physically poke at.  The
 next set of problems is dealing with the balloning set of files
 that end up being created - templates, scripts, output files, etc.
 
-This set of packages (`didehpc`, `queuer` and `context`, along with
-a couple of support packages) aims to remove the pain of getting
-everything set up, and in keeping cluster tasks running.
+This set of packages
+([`didehpc`](https://github.com/dide-tools/didehpc),
+[`queuer`](https://github.com/richfitz/queuer) and
+[`context`](https://github.com/dide-tools/context), along with a
+couple of support packages
+([`provisionr`](https://github.com/richfitz/provisionr),
+[`buildr`](https://github.com/richfitz/buildr),
+[`syncr`](https://github.com/richfitz/syncr),
+[`rrq`](https://github.com/richfitz/rrq) and
+[`storr`](https://github.com/richfitz/storr)) aims to remove the
+pain of getting everything set up, and getting cluster tasks
+running, and retrieving your results.
 
 Once everything is set up, running a job on the cluster should be
 as straightforward as running things locally.
@@ -65,7 +75,7 @@ and the packages will arrange for them to be saved and reloaded.
 
 The DIDE cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
-`//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
+//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
 You probably have access to network shares that are specific to a
 project, too.  For Windows users these are probably mapped to
 drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -87,6 +97,24 @@ ultimately take only a few lines.  Once everything is set up, then
 the payback is that is the job submission part will become a lot
 simpler.
 
+## Installation
+
+Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
+
+```r
+# install.package("drat") # if you don't have it already
+drat:::add("dide-tools")
+install.packages("didehpc")
+```
+
+Or, somewhat equivalently
+
+```r
+source("https://dide-tools.github.io/didehpc/install")
+```
+
+Be sure to run this in a fresh session.
+
 ## Configuration
 
 The configuration is handled in a two stage process.  First, some
@@ -105,8 +133,8 @@ Ideally in your ~/.Rprofile file, you will add something like:
 
 ```r
 options(
-  didehpc.username="rfitzjoh",
-  didehpc.home="~/net/home")
+  didehpc.username = "rfitzjoh",
+  didehpc.home = "~/net/home")
 ```
 
 and then set only options (such as cluster and cores or template)
@@ -123,22 +151,23 @@ don't want to use the small cluster).
 
 If you have a Linux system and have configured your smb mounts as
 described below, you might as well take advantage of this and set
-`credentials="~/.smbcredentials"` and you will never be prompted
+`credentials = "~/.smbcredentials"` and you will never be prompted
 for your password:
 
-
 ```r
-didehpc::didehpc_config_global(credentials="~/.smbcredentials")
+didehpc::didehpc_config_global(credentials = "~/.smbcredentials")
 ```
 
 Mac users will need to provide their username here.
 
 ```r
-didehpc::didehpc_config_global(credentials="yourusername")
+didehpc::didehpc_config_global(credentials = "yourusername")
 ```
 
 Windows users will not need to provide anything unless they are on
-a non-domain machine.
+a non-domain machine or they are in the unfortunate situation of
+juggling multiple usernames across systems.  Non-domain machines
+will need the credentials set as above.
 
 ### Additional shares
 
@@ -160,7 +189,7 @@ to `M:` on the cluster you can write
 
 ```r
 share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
-didehpc::didehpc_config_global(shares=share)
+didehpc::didehpc_config_global(shares = share)
 ```
 
 If you have more than one share to map, pass them through as a
@@ -177,10 +206,10 @@ didehpc::didehpc_config()
 
 ```
 ## <didehpc_config>
-##  - cluster: fi--dideclusthn
+##  - cluster: fi--didemrchnb
 ##  - credentials: ~/.smbcredentials
 ##  - username: rfitzjoh
-##  - build_server: 129.31.25.12
+##  - build_server: builderhv.dide.ic.ac.uk
 ##  - template: GeneralNodes
 ##  - hpctools: FALSE
 ##  - resource:
@@ -194,13 +223,15 @@ didehpc::didehpc_config()
 ##  - use_rrq: FALSE
 ##  - worker_timeout: 600
 ##  - rtools: FALSE
+##  - r_version: 3.3.2
 ```
 
 In here you can see the cluster (here, `fi--didemrchnb`),
 credentials and username, the job template (`GeneralNodes`),
 information about the resources that will be requested (1 core) and
 information on filesystem mappings.  There are a few other bits of
-information that may be explained further down.
+information that may be explained further down.  The possible
+options are explained further in `?didehpc::didehpc_config`
 
 ## Contexts
 
@@ -208,6 +239,14 @@ To recreate your work environment on the cluster, we use a package
 called `context`.  This package uses the assumption that most
 working environments can be recreated by a combination of R
 packages and sourcing a set of function definitions.
+
+In order to have the system tell you more about what it is doing,
+you can (optionally) run this command.  This can be a bit more
+reassuring during long-running setup stages
+
+```r
+context::context_log_start()
+```
 
 ### Root
 
@@ -220,6 +259,11 @@ Generally it will be in the current directory.
 root <- "contexts"
 ```
 
+This directory is going to get large over time and will eventually
+need to be deleted.  Eventually I will come up with some tools to
+simplify working with these.  In the meantime, treat these as
+somewhat disposable.
+
 ### Packages
 
 If you list packages as a character vector then all packages will
@@ -228,9 +272,8 @@ what happens when you use the function `library()` So for example
 if you need to depend on the `rstan` and `ape` packages you could
 write:
 
-
 ```r
-ctx <- context::context_save(root, packages=c("rstan", "ape"))
+ctx <- context::context_save(root, packages = c("rstan", "ape"))
 ```
 
 Attaching packages is not always what is wanted, especially if you
@@ -240,8 +283,8 @@ want installed and split them into packages you would like attached
 and packages you would only like loaded:
 
 ```r
-ctx <- context::context_save(root,
-                             packages=list(loaded="geiger", attached="ape"))
+packages <- list(loaded = "geiger", attached = "ape")
+ctx <- context::context_save(root, packages = packages)
 ```
 
 In this case, the packages in the `loaded` section will be
@@ -272,12 +315,36 @@ make_tree <- function(nspp) {
   message("I am building a tree!")
   ape::rtree(nspp)
 }
+
+combine <- function(a, b, c) {
+  sprintf("%s: %2.5f", a, b + c)
+}
 ```
 
 To set this up, we'd write:
 
 ```r
-ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
+```
+
+```
+## [ init:id   ]  4c127d21f39085397565d73dfdac3721
+```
+
+```
+## [ init:db   ]  rds
+```
+
+```
+## [ init:path ]  contexts
+```
+
+```
+## [ save:id   ]  5a10f1879ddebd3f0b3265ab9f24c584
+```
+
+```
+## [ save:name ]  displeasing_frog
 ```
 
 `sources` can be a character vector, `NULL` or `character(0)` if
@@ -292,9 +359,10 @@ with its `package_sources` argument.
 If the packages are on GitHub and public you can pass the github
 username/repo pair, in `devtools` style:
 
-+eval=FALSE
+```r
 context::context_save(...,
-  package_sources=context::package_sources(github="richfitz/ids"))
+  package_sources = context::package_sources(github = "richfitz/kitten"))
+```
 
 Like with `devtools` you can use subdirectories, specific commits
 or tags in the specification.
@@ -305,27 +373,22 @@ argument to `package_sources`.
 
 ## Creating the queue
 
-The next step can take a little while so it's useful to enable
-logging to see where things are up to:
-
-```r
-context::context_log_start()
-```
-
 Once a context has been created, we can create a queue with it.
 This is separate from the actual cluster queue, but will be our
-interface to it:
+interface to it.  Running this step takes a while because it
+installs all the packages that the cluster will need into the
+context directory.
 
 ```r
 obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## Loading context b7b2d57d4b3f6346d4d4f82fddb6040a
+## Loading context 5a10f1879ddebd3f0b3265ab9f24c584
 ```
 
 ```
-## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
+## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
 ```
 
 ```
@@ -341,8 +404,51 @@ obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## [ cross     ]  Packages already installed
-## [ cross     ]  Packages already installed
+## [ provision ]  library at contexts/lib/windows/3.3
+```
+
+```
+## [ download  ]  package database
+```
+
+```
+## [ deps      ]  7 extra: crayon, digest, ids, openssl, R6, storr, uuid
+```
+
+```
+## [ cross     ]  ape
+```
+
+```
+## [ cross     ]  context
+```
+
+```
+## [ cross     ]  crayon
+```
+
+```
+## [ cross     ]  digest
+```
+
+```
+## [ cross     ]  ids
+```
+
+```
+## [ cross     ]  openssl
+```
+
+```
+## [ cross     ]  R6
+```
+
+```
+## [ cross     ]  storr
+```
+
+```
+## [ cross     ]  uuid
 ```
 
 If the above command does not throw an error, then you have
@@ -373,39 +479,41 @@ obj
 ##     cluster_load: function (cluster = NULL, nodes = TRUE)
 ##     config: didehpc_config
 ##     context: context
-##     context_envir: environment
-##     db: environment
+##     db: storr, R6
 ##     dide_id: function (t)
 ##     dide_log: function (t)
 ##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
-##     initialise_context: function ()
-##     initialize: function (context, config, initialise, sync)
+##     enqueue_bulk: function (X, FUN, ..., do_call = FALSE, envir = parent.frame(),
+##     initialize: function (context, config, root, initialise, sync)
+##     initialize_context: function ()
+##     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1,
 ##     logged_in: TRUE
 ##     login: function (always = TRUE)
-##     root: contexts
+##     preflight: function ()
+##     provisioned: TRUE
+##     root: context_root
 ##     rrq: NULL
 ##     rrq_controller: function ()
-##     set_cluster: function (cluster = NULL)
 ##     stop_workers: function (worker_ids = NULL)
 ##     submit: function (task_ids, names = NULL)
-##     submit_or_delete: function (task, name = NULL)
-##     submit_workers: function (n, wait = TRUE)
+##     submit_or_delete: function (task_ids, name = NULL)
+##     submit_workers: function (n, timeout = 600, progress = NULL)
 ##     sync: NULL
 ##     sync_files: function (verbose = TRUE, delete = TRUE)
-##     task_bundle_get: function (id)
-##     task_bundles_info: function ()
-##     task_bundles_list: function ()
-##     task_get: function (task_id)
+##     task_bundle_get: function (name)
+##     task_bundle_info: function ()
+##     task_bundle_list: function ()
+##     task_delete: function (task_ids)
+##     task_get: function (task_id, check_exists = TRUE)
+##     task_list: function ()
 ##     task_result: function (task_id)
-##     tasks_delete: function (task_ids)
-##     tasks_list: function ()
-##     tasks_status: function (task_ids = NULL, named = TRUE)
-##     tasks_status_dide: function (task_ids = NULL)
-##     tasks_times: function (task_ids = NULL, unit_elapsed = "secs")
+##     task_status: function (task_ids = NULL, named = TRUE)
+##     task_status_dide: function (task_ids = NULL)
+##     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE)
 ##     templates: list
 ##     unsubmit: function (t)
-##     workdir: /home/rich/net/home/cluster_test/vignette
+##     workdir: /home/rich/net/home/cluster_testing/20170224/vignette
 ##     worker_controller: function ()
 ##     workers: NULL
 ```
@@ -413,14 +521,11 @@ obj
 For example, to list the tasks that we know about:
 
 ```r
-obj$tasks_list()
+obj$task_list()
 ```
 
 ```
-## [1] "30efdc450d4144abaec78a6a9eb078e4" "57039de4f0fe45d68eeb090ccd186502"
-## [3] "6f8a7dc65908401792f4244764af35ab" "7b0b3df18aa5436c838de9a047dd5d27"
-## [5] "865c1ac8d8854e778a99a44896132306" "9e794c7960f649f4a822406ac3ad4f6c"
-## [7] "ab767169651c45f69d27ed9b80b75651"
+## character(0)
 ```
 
 (of course there are no tasks yet because we haven't added any).
@@ -432,29 +537,75 @@ obj$cluster_load()
 ```
 
 ```
-##            name free used total
-## --------------- ---- ---- -----
-## fi--dideclust01    0    8     8
-## fi--dideclust02    2    6     8
-## fi--dideclust03    8    0     8
-## fi--dideclust04    8    0     8
-## fi--dideclust05    8    0     8
-## fi--dideclust06    8    0     8
-## fi--dideclust07    8    0     8
-## fi--dideclust08    8    0     8
-## fi--dideclust09    1    7     8
-## fi--dideclust10    5    3     8
-## fi--dideclust23   12    0    12
-## fi--dideclust24    0    8     8
-## fi--dideclust25   12    0    12
-## fi--dideclust26    0    8     8
-## fi--dideclust27    0    8     8
-## fi--dideclust28    3    5     8
-## fi--dideclust29    0    8     8
-## fi--dideclust30    1    7     8
-## fi--dideclust31    8    0     8
-## --------------- ---- ---- -----
-## fi--dideclusthn   92   68   160
+##           name free used total
+## -------------- ---- ---- -----
+##                   0    1     1
+##  fi--didemrc06    0   12    12
+##  fi--didemrc07    0   12    12
+##  fi--didemrc08    0   12    12
+##  fi--didemrc09    0   12    12
+##  fi--didemrc10    0   12    12
+##  fi--didemrc11    0   12    12
+##  fi--didemrc12    0   12    12
+##  fi--didemrc13   20    4    24
+##  fi--didemrc14   16    8    24
+##  fi--didemrc15    0   24    24
+##  fi--didemrc16   21    3    24
+##  fi--didemrc17    0   12    12
+##  fi--didemrc18    0   12    12
+##  fi--didemrc19    0   12    12
+##  fi--didemrc20    0   12    12
+##  fi--didemrc21    0   12    12
+##  fi--didemrc22   12    0    12
+##  fi--didemrc23   12    0    12
+##  fi--didemrc24   12    0    12
+##  fi--didemrc25   12    0    12
+##  fi--didemrc26    0   12    12
+##  fi--didemrc27   12    0    12
+##  fi--didemrc28   12    0    12
+##  fi--didemrc38    0   16    16
+##  fi--didemrc39    0   16    16
+##  fi--didemrc40    0   16    16
+##  fi--didemrc41    0   16    16
+##  fi--didemrc42    0   16    16
+##  fi--didemrc43    0   16    16
+##  fi--didemrc44   16    0    16
+##  fi--didemrc45   16    0    16
+##  fi--didemrc46   16    0    16
+##  fi--didemrc47   16    0    16
+##  fi--didemrc48   16    0    16
+##  fi--didemrc49    0   16    16
+##  fi--didemrc50   16    0    16
+##  fi--didemrc51   20    0    20
+##  fi--didemrc52   20    0    20
+##  fi--didemrc53   20    0    20
+##  fi--didemrc54   20    0    20
+##  fi--didemrc55   20    0    20
+##  fi--didemrc56   20    0    20
+##  fi--didemrc57   20    0    20
+##  fi--didemrc58   20    0    20
+##  fi--didemrc59   20    0    20
+##  fi--didemrc60   20    0    20
+##  fi--didemrc61   20    0    20
+##  fi--didemrc62   20    0    20
+##  fi--didemrc63   20    0    20
+##  fi--didemrc64   20    0    20
+##  fi--didemrc65   22   10    32
+##  fi--didemrc66   24    8    32
+##  fi--didemrc67   24    0    24
+##  fi--didemrc68   24    0    24
+##  fi--didemrc69   24    0    24
+##  fi--didemrc70   24    0    24
+##  fi--didemrc71   24    0    24
+##  fi--didemrc72   24    0    24
+##  fi--didemrc73   24    0    24
+##  fi--didemrc74   24    0    24
+##  fi--didemrc75    4   12    16
+##  fi--didemrc76    1   15    16
+##  fi--didemrc77    4   12    16
+##  fi--didemrc78    3   25    28
+## -------------- ---- ---- -----
+## fi--didemrchnb  755  390  1145
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -472,7 +623,7 @@ sessionInfo()
 ```
 
 ```
-## R version 3.3.1 (2016-06-21)
+## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
 ## Running under: Ubuntu 14.04.4 LTS
 ##
@@ -488,15 +639,16 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_3.5
+## [1] ape_4.1
 ##
 ## loaded via a namespace (and not attached):
-##  [1] lattice_0.20-33 crayon_1.3.2    digest_0.6.9    grid_3.3.1
-##  [5] context_0.0.10  R6_2.1.2        nlme_3.1-128    storr_1.0.1
-##  [9] formatR_1.4     magrittr_1.5    evaluate_0.9    httr_1.1.0
-## [13] stringi_1.1.1   curl_0.9.7      rematch_1.0.1   whisker_0.3-2
-## [17] queuer_0.0.4    tools_3.3.1     stringr_1.0.0   didehpc_0.0.3
-## [21] knitr_1.13      methods_3.3.1
+##  [1] lattice_0.20-34  ids_0.0.2        crayon_1.3.2     withr_1.0.2
+##  [5] digest_0.6.10    grid_3.3.2       context_0.1.0    R6_2.2.0
+##  [9] nlme_3.1-128     storr_1.0.3      formatR_1.4      magrittr_1.5
+## [13] evaluate_0.9     httr_1.2.1       stringi_1.1.1    curl_2.2
+## [17] rematch_1.0.1    uuid_0.1-2       whisker_0.3-2    queuer_0.1.0
+## [21] tools_3.3.2      stringr_1.1.0    parallel_3.3.2   didehpc_0.1.0
+## [25] provisionr_0.1.0 openssl_0.9.5    knitr_1.14       methods_3.3.2
 ```
 
 To run this on the cluster, we wrap it in `obj$enqueue`.  This
@@ -514,7 +666,7 @@ t$wait(100)
 ```
 
 ```
-## R version 3.2.4 Revised (2016-03-16 r70336)
+## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows Server 2012 R2 x64 (build 9600)
 ##
@@ -529,11 +681,11 @@ t$wait(100)
 ## [1] methods   stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_3.5
+## [1] ape_4.1
 ##
 ## loaded via a namespace (and not attached):
-## [1] R6_2.1.2        context_0.0.10  nlme_3.1-125    grid_3.2.4
-## [5] digest_0.6.9    storr_1.0.1     lattice_0.20-33
+## [1] R6_2.2.0        parallel_3.3.2  context_0.1.0   nlme_3.1-128
+## [5] grid_3.3.2      digest_0.6.12   storr_1.0.3     lattice_0.20-34
 ```
 
 (see the next section for more information about this).
@@ -566,20 +718,19 @@ t
 ```
 
 ```
-## <task>
+## <queuer_task>
 ##   Public:
 ##     clone: function (deep = FALSE)
 ##     context_id: function ()
-##     db: environment
 ##     expr: function (locals = FALSE)
-##     handle: task_handle
-##     id: db8d60a9a7004864af5a0e4234db00d8
-##     initialize: function (obj, id, check_exists = TRUE)
-##     log: function ()
-##     result: function (sanitise = FALSE)
+##     id: 5103a30ccd94020f1d271a0eba7f15a9
+##     initialize: function (id, root, check_exists = TRUE)
+##     log: function (parse = TRUE)
+##     result: function (allow_incomplete = FALSE)
+##     root: context_root
 ##     status: function ()
 ##     times: function (unit_elapsed = "secs")
-##     wait: function (timeout, every = 0.5, progress = TRUE)
+##     wait: function (timeout, time_poll = 0.5, progress = NULL)
 ```
 
 the task's status
@@ -601,9 +752,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 db8d60a9a7004864af5a0e4234db00d8 2016-07-14 16:19:12    <NA>     <NA>
-##    waiting running idle
-## 1 1.280609      NA   NA
+## 1 5103a30ccd94020f1d271a0eba7f15a9 2017-02-24 17:26:52    <NA>     <NA>
+##     waiting running idle
+## 1 0.5443828      NA   NA
 ```
 
 and you can try and get the result of running the task:
@@ -613,7 +764,7 @@ t$result()
 ```
 
 ```
-## Error: task db8d60a9a7004864af5a0e4234db00d8 is unfetchable: PENDING
+## Error: task 5103a30ccd94020f1d271a0eba7f15a9 is unfetchable: PENDING
 ```
 
 The `wait` function, used above, is like `result` but it will
@@ -629,7 +780,7 @@ t$wait(100)
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t2, t1, t10, t7, t5, t3, ...
+## 	t10, t2, t1, t9, t3, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -645,7 +796,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t2, t1, t10, t7, t5, t3, ...
+## 	t10, t2, t1, t9, t3, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -657,27 +808,28 @@ t$log()
 ```
 
 ```
-## [ bootstrap ]  Q:\cluster_test\vignette\contexts
-## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
-## [ ok        ]
-## [ init      ]  2016-07-14 16:19:48.540
-## [ hostname  ]  FI--DIDECLUST30
-## [ version   ]  0.0.10
-## [ parallel  ]  running as single core job
-## [ root      ]  Q:\cluster_test\vignette\contexts
-## [ task      ]  db8d60a9a7004864af5a0e4234db00d8
-## [ context   ]  b7b2d57d4b3f6346d4d4f82fddb6040a
-## [ lib       ]  Q:\cluster_test\vignette\contexts/R/x86_64-w64-mingw32/3.2.4
+## [ hello     ]  2017-02-24 17:26:53.267
+## [ wd        ]  Q:/cluster_testing/20170224/vignette
+## [ bootstrap ]
+## [ lib       ]  Q:\cluster_testing\20170224\vignette\contexts/lib/windows/3.3
+## [ init      ]  2017-02-24 17:26:53.282
+## [ hostname  ]  FI--DIDEMRC76
+## [ process   ]  2180
+## [ version   ]  0.1.0
+## [ open:db   ]  rds
+## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
 ## [ library   ]  ape
 ## [ namespace ]
 ## [ source    ]  mysources.R
+## [ parallel  ]  running as single core job
+## [ root      ]  Q:\cluster_testing\20170224\vignette\contexts
+## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
+## [ task      ]  5103a30ccd94020f1d271a0eba7f15a9
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2016-07-14 16:19:48.790
+## [ start     ]  2017-02-24 17:26:53.470
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2016-07-14 16:19:48.868
-##     Warning message:
-##     package 'ape' was built under R version 3.2.5
+## [ end       ]  2017-02-24 17:26:53.485
 ```
 
 Warning messages and other output will be printed here.  So if you
@@ -695,33 +847,29 @@ obj$dide_log(t)
 
 ```
 ## generated on host: wpia-dide136.dide.ic.ac.uk
-## generated on date: 2016-07-14
-## didehpc version: 0.0.3
-## context version: 0.0.10
-## running on: FI--DIDECLUST30
+## generated on date: 2017-02-24
+## didehpc version: 0.1.0
+## context version: 0.1.0
+## running on: FI--DIDEMRC76
 ## mapping Q: -> \\fi--san02\homes\rfitzjoh
 ## The command completed successfully.
 ## mapping T: -> \\fi--didef2\tmp
 ## The command completed successfully.
-## working directory: Q:\cluster_test\vignette
+## working directory: Q:\cluster_testing\20170224\vignette
 ## this is a single task
-## logfile: Q:\cluster_test\vignette\contexts\logs\db8d60a9a7004864af5a0e4234db00d8
-## Q:\cluster_test\vignette>Rscript "Q:\cluster_test\vignette\contexts\bin\context_runner" "Q:\cluster_test\vignette\contexts" db8d60a9a7004864af5a0e4234db00d8  1>"Q:\cluster_test\vignette\contexts\logs\db8d60a9a7004864af5a0e4234db00d8" 2>&1
+## logfile: Q:\cluster_testing\20170224\vignette\contexts\logs\5103a30ccd94020f1d271a0eba7f15a9
+## Q:\cluster_testing\20170224\vignette>Rscript "Q:\cluster_testing\20170224\vignette\contexts\bin\task_run" "Q:\cluster_testing\20170224\vignette\contexts" 5103a30ccd94020f1d271a0eba7f15a9  1>"Q:\cluster_testing\20170224\vignette\contexts\logs\5103a30ccd94020f1d271a0eba7f15a9" 2>&1
 ## Quitting
 ```
 
 The queue knows which tasks it has created and you can list them:
 
 ```r
-obj$tasks_list()
+obj$task_list()
 ```
 
 ```
-## [1] "30efdc450d4144abaec78a6a9eb078e4" "376314da8aab43d89c2a351c51210207"
-## [3] "57039de4f0fe45d68eeb090ccd186502" "6f8a7dc65908401792f4244764af35ab"
-## [5] "7b0b3df18aa5436c838de9a047dd5d27" "865c1ac8d8854e778a99a44896132306"
-## [7] "9e794c7960f649f4a822406ac3ad4f6c" "ab767169651c45f69d27ed9b80b75651"
-## [9] "db8d60a9a7004864af5a0e4234db00d8"
+## [1] "4b905ffac63881c09e365047ffcdce6e" "5103a30ccd94020f1d271a0eba7f15a9"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -742,7 +890,7 @@ id
 ```
 
 ```
-## [1] "db8d60a9a7004864af5a0e4234db00d8"
+## [1] "5103a30ccd94020f1d271a0eba7f15a9"
 ```
 
 ```r
@@ -755,7 +903,7 @@ t2$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t2, t1, t10, t7, t5, t3, ...
+## 	t10, t2, t1, t9, t3, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -765,9 +913,12 @@ t2$result()
 There are two broad options here;
 
 1. Apply a function to each element of a list, similar to `lapply`
-with `queuer::qlapply`
+with `$lapply`
 2. Apply a function to each row of a data.frame perhaps using each
-column as a different argument with `queuer::enqueue_bulk`
+column as a different argument with `$enqueue_bulk`
+
+The second approach is more general and `$lapply` is implemented
+using it.
 
 Suppose we want to make a bunch of trees of different sizes.  This
 would involve mapping our `make_tree` function over a vector of
@@ -775,24 +926,29 @@ sizes:
 
 ```r
 sizes <- 3:8
-grp <- queuer::qlapply(sizes, make_tree, obj, timeout=0)
+grp <- obj$lapply(sizes, make_tree)
 ```
 
 ```
-## Creating bundle: 'displeasing_frog'
+## Creating bundle: 'undivined_bufeo'
 ```
 
 ```
-## saving 6 tasks...
+## [ bulk      ]  Creating 6 tasks
 ```
 
 ```
-## submitting 6 tasks...
+## submitting 6 tasks
 ```
 
-By default, `queuer::qlapply` returns a "task_bundle" with an
+By default, `$qlapply` returns a "task_bundle" with an
 automatically generated name.  You can customise the name with the
 `name` argument.
+
+In contrast to `lapply` this is not blocking (i.e., submitting
+tasks and collecting the results is done asynchronously) but if you
+pass a `timeout` argument to `$lapply` then it will poll until the
+jobs are done, in the same way as `wait()`, below.
 
 Get the startus of all the jobs
 
@@ -801,12 +957,12 @@ grp$status()
 ```
 
 ```
-## 17a51a9d7a674786b89a5e3225f7bdae 4a9a7a25d8394f2faf19742c6a9e7bee
+## 7e37e3b5abf296aa1c442cae63511cf9 954f322b6a4d1712cf3a6b5f60f3e75a
 ##                       "COMPLETE"                       "COMPLETE"
-## 16f13073b8d64a2f9afd0f0dffaf8457 5f13ab8407a24d11a8e94bbb983a33f8
+## 780bf9312c5abe8307266b3a3fe4f7b9 beaf032032a598651474f0ca452fd7c5
+##                       "COMPLETE"                       "COMPLETE"
+## b683167b40b84e9256f820b00f6c8193 e66609d7a51e5f2bca8e487c6a9bc04e
 ##                       "COMPLETE"                        "PENDING"
-## 196fc3e17ac84521b28868e50de2ed0d 2e580e3fdb8e4b7ea37b218733b53d4b
-##                        "PENDING"                        "PENDING"
 ```
 
 Wait until they are all complete and get the results
@@ -819,42 +975,54 @@ The other bulk interface is where you want to run a function over a
 combination of parameters.  Use `queuer::enqueue_bulk` here.
 
 ```r
-pars <- expand.grid(a=letters[1:3], b=runif(2), c=pi, stringsAsFactors=FALSE)
+pars <- expand.grid(a = letters[1:3], b = runif(2), c = pi,
+                    stringsAsFactors = FALSE)
 pars
 ```
 
 ```
 ##   a         b        c
-## 1 a 0.5728534 3.141593
-## 2 b 0.5728534 3.141593
-## 3 c 0.5728534 3.141593
-## 4 a 0.9082078 3.141593
-## 5 b 0.9082078 3.141593
-## 6 c 0.9082078 3.141593
+## 1 a 0.8983897 3.141593
+## 2 b 0.8983897 3.141593
+## 3 c 0.8983897 3.141593
+## 4 a 0.9446753 3.141593
+## 5 b 0.9446753 3.141593
+## 6 c 0.9446753 3.141593
+```
+
+Suppose that we have a function that we want to run over this set
+of parameters.
+
+```r
+combine(pars$a[[1]], pars$b[[1]], pars$c[[1]])
+```
+
+```
+## [1] "a: 4.03998"
 ```
 
 ```r
-grp <- queuer::enqueue_bulk(obj, pars, list, do.call=FALSE, timeout=0)
+grp <- obj$enqueue_bulk(pars, combine, do_call = TRUE)
 ```
 
 ```
-## Creating bundle: 'crazy_tsetsefly'
+## Creating bundle: 'potential_mockingbird'
 ```
 
 ```
-## saving 6 tasks...
+## [ bulk      ]  Creating 6 tasks
 ```
 
 ```
-## submitting 6 tasks...
+## submitting 6 tasks
 ```
 
 By default this runs
 
-* `list(a=pars$a[[1]], b=pars$b[[1]], c=pars$c[[1]])`
-* `list(a=pars$a[[2]], b=pars$b[[2]], c=pars$c[[2]])`
+* `combine(a = pars$a[[1]], b = pars$b[[1]], c = pars$c[[1]])`
+* `combine(a = pars$a[[2]], b = pars$b[[2]], c = pars$c[[2]])`
 * ...
-* `list(a=pars$a[[6]], b=pars$b[[6]], c=pars$c[[6]])`
+* `combine(a = pars$a[[6]], b = pars$b[[6]], c = pars$c[[6]])`
 
 
 ```r
@@ -864,81 +1032,25 @@ res
 
 ```
 ## [[1]]
-## [[1]][[1]]
-## [[1]][[1]]$a
-## [1] "a"
-##
-## [[1]][[1]]$b
-## [1] 0.5728534
-##
-## [[1]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "a: 4.03998"
 ##
 ## [[2]]
-## [[2]][[1]]
-## [[2]][[1]]$a
-## [1] "b"
-##
-## [[2]][[1]]$b
-## [1] 0.5728534
-##
-## [[2]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "b: 4.03998"
 ##
 ## [[3]]
-## [[3]][[1]]
-## [[3]][[1]]$a
-## [1] "c"
-##
-## [[3]][[1]]$b
-## [1] 0.5728534
-##
-## [[3]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "c: 4.03998"
 ##
 ## [[4]]
-## [[4]][[1]]
-## [[4]][[1]]$a
-## [1] "a"
-##
-## [[4]][[1]]$b
-## [1] 0.9082078
-##
-## [[4]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "a: 4.08627"
 ##
 ## [[5]]
-## [[5]][[1]]
-## [[5]][[1]]$a
-## [1] "b"
-##
-## [[5]][[1]]$b
-## [1] 0.9082078
-##
-## [[5]][[1]]$c
-## [1] 3.141593
-##
-##
+## [1] "b: 4.08627"
 ##
 ## [[6]]
-## [[6]][[1]]
-## [[6]][[1]]$a
-## [1] "c"
-##
-## [[6]][[1]]$b
-## [1] 0.9082078
-##
-## [[6]][[1]]$c
-## [1] 3.141593
+## [1] "c: 4.08627"
 ```
+
+Running `do_call = FALSE` would run functions as a row-wise `lapply`.
 
 ## Cancelling and stopping jobs
 
@@ -980,6 +1092,9 @@ obj$unsubmit(t$id)
 ## [1] "NOT_RUNNING"
 ```
 
+Alternatively you can use `obj$task_delete(t$id)` which unsubmits
+the task and then deletes it.
+
 Note that the task is not actually deleted (see below); you can
 still get at the expression:
 
@@ -998,7 +1113,7 @@ t$result()
 ```
 
 ```
-## Error: task fd26b1fbbc674a5f91a8896b5769bf65 is unfetchable: CANCELLED
+## Error: task 8b4152dd2d61bd246f86181f826769f3 is unfetchable: CANCELLED
 ```
 
 The argument to `unsubmit` can be a vector.  For example, to
@@ -1009,15 +1124,15 @@ grp <- queuer::qlapply(rep(3600, 4), Sys.sleep, obj)
 ```
 
 ```
-## Creating bundle: 'unsuspecting_nematode'
+## Creating bundle: 'auspicial_bunny'
 ```
 
 ```
-## saving 4 tasks...
+## [ bulk      ]  Creating 4 tasks
 ```
 
 ```
-## submitting 4 tasks...
+## submitting 4 tasks
 ```
 
 ```r
@@ -1035,9 +1150,9 @@ all of the functions behave well with missing tasks, so if you
 delete things and still have old task handles floating around you
 might get confusing results.
 
-There is a delete method (`obj$delete`) that will delete a job,
-first unsubmitting it if it has been submitted.  It takes a single
-id as an argument.
+There is a delete method (`obj$delete`) that will delete jobs,
+first unsubmitting it if it has been submitted.  It takes a vector
+of task ids as an argument.
 
 # Misc
 
@@ -1046,7 +1161,7 @@ id as an argument.
 If you are running stan, or Rcpp with `sourceCpp` (in the latter
 case you *should* be using a package) you'll need a working
 compiler.  For rstan this is detected automatically.  But in
-general, pass `rtools=TRUE` to `queue_didehpc()`.
+general, pass `rtools = TRUE` to `queue_didehpc()`.
 
 ## Parallel computation on the cluster
 
@@ -1055,9 +1170,8 @@ request more resources for your task and use process level
 parallism with the `parallel` package.  To request 8 cores, you
 could run:
 
-
 ```r
-didehpc::didehpc_config(cores=8)
+didehpc::didehpc_config(cores = 8)
 ```
 
 When your task starts, 8 cores will be allocated to it and a
@@ -1065,7 +1179,6 @@ When your task starts, 8 cores will be allocated to it and a
 like `parallel::parLapply`, specifying `cl` as `NULL`.  So if
 within your cluster job you needed to apply function `f` to a each
 element of a list `x`, you could write:
-
 
 ```r
 run_f <- function(x) {
@@ -1081,11 +1194,10 @@ this will happen automatically as the job starts.
 
 Alternatively, if you want to control cluster creation (e.g., you
 are using software that does this for you) then, pass
-`parallel=FALSE` to the config call:
-
+`parallel = FALSE` to the config call:
 
 ```r
-didehpc::didehpc_config(cores=8, parallel=FALSE)
+didehpc::didehpc_config(cores = 8, parallel = FALSE)
 ```
 
 In this case you are responsible for setting up the cluster.
@@ -1094,12 +1206,12 @@ As an alternative to requesting cores, you can use a different job
 template:
 
 ```r
-didehpc::didehpc_config(template="16Core")
+didehpc::didehpc_config(template = "16Core")
 ```
 
 which will reserve you the entire node.  Again, a cluster will be
 started with all availabe cores unless you also specify
-`parallel=FALSE`.
+`parallel = FALSE`.
 
 ## Running heaps of jobs without annoying your colleagues
 
@@ -1125,18 +1237,18 @@ See the "workers" vignette for details.
 To use parallel chains, do something like:
 
 ```r
-config <- didehpc::didehpc_config(cores=4, parallel=FALSE)
+config <- didehpc::didehpc_config(cores = 4, parallel = FALSE)
 obj <- didehpc::queue_didehpc(ctx, config)
 ```
 
 to request four cores or
 
 ```r
-config <- didehpc::didehpc_config(wholenode=TRUE, parallel=FALSE)
+config <- didehpc::didehpc_config(wholenode = TRUE, parallel = FALSE)
 obj <- didehpc::queue_didehpc(ctx, config)
 ```
 
-to request a whole node.  The `parallel=FALSE` tells the system not
+to request a whole node.  The `parallel = FALSE` tells the system not
 to set up a cluster for use with the `parallel` pacakge.  However,
 you'll still need to specify options(mc.cores) appropriately and I
 don't expose that yet...
@@ -1157,23 +1269,20 @@ for more information.
 If you want this behaviour back, `didehpc` can be configured to use
 the HPC tools on your computer.  Just run:
 
-
 ```r
-didehpc::didehpc_config_global(hpctools=TRUE)
+didehpc::didehpc_config_global(hpctools = TRUE)
 ```
 
 or
 
-
 ```r
-options(didehpc.hpctools=TRUE)
+options(didehpc.hpctools = TRUE)
 ```
 
 before creating the queue, or run
 
-
 ```r
-obj <- didehpc::queue(ctx, config=didehpc::didehpc_config(hpctools=TRUE))
+obj <- didehpc::queue(ctx, config = didehpc::didehpc_config(hpctools = TRUE))
 ```
 
 This is experimental but I welcome feedback.
@@ -1286,13 +1395,12 @@ your files reside.  The wrinkle is getting the files you need
 synchronised.
 
 To do the syncronisation we use `rsync` via the
-[`syncr`](https://github.com/richfitz/syncr) package.  Install it
+[`syncr`](https://github.com/richfitz/syncr) package  Install it
 with:
 
 ```r
-install.packages("syncr",
-                 repos=c(CRAN="https://cran.rstudio.com",
-                         drat="https://richfitz.github.io/drat"))
+drat:::add("dide-tools")
+install.packages("syncr")
 ```
 
 Then, when constructing the queue, you need to specify a working
@@ -1300,7 +1408,7 @@ directory for the cluster that is on the shared drive.
 
 ```r
 workdir <- "Q:/cluster/context"
-didehpc::didehpc_config_global(workdir=workdir)
+didehpc::didehpc_config_global(workdir = workdir)
 ```
 
 When you construct the context, that needs to be on a network
@@ -1308,7 +1416,7 @@ share, so you might write:
 
 ```r
 root <- file.path(workdir, "contexts")
-ctx <- context::context_save(root, packages="ape", sources="mysources.R")
+ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 ```
 
 Then construct the queue as normal.
@@ -1320,6 +1428,9 @@ obj <- didehpc::queue_didehpc(ctx)
 This will automatically syncronise the sources, copying them if
 they need updating.
 
+You can also specify additional files to synchronise with the
+`sync` argument to `queue_didehpc`.
+
 If you had other files to synchronise they would be listed with the
 argument `sync` to `queue_didehpc`.  You can update the remote
 files by running
@@ -1329,30 +1440,3 @@ obj$sync_files()
 ```
 
 at any time.
-
-# Installation
-
-There are quite a few packages here that are not on CRAN.  The
-simplest way to install the required packages should be to run:
-
-```r
-install.packages("didehpc",
-                 repos=c(CRAN="https://cran.rstudio.com",
-                         drat="https://richfitz.github.io/drat"))
-```
-
-Alternatively, with devtools you can run:
-
-```r
-devtools::install_github(c(
-  "richfitz/ids",
-  "richfitz/syncr",
-  "dide-tools/context",
-  "richfitz/queuer",
-  "dide-tools/didehpc"))
-```
-
-(if devtools is not install, install it with
-`install.packages("devtools")`)
-
-When upgrading, be sure to run everything in a fresh R session.

@@ -1,6 +1,6 @@
 # didehpc
 
-> DIDE Windows Cluster Support
+> DIDE Cluster Support
 
 **NOTICE**: This will only be of use to people at DIDE, as it uses our [cluster web portal](https://mrcdata.dide.ic.ac.uk/hpc), local cluster, and local network file systems.
 
@@ -31,19 +31,11 @@ Documentation is a work in progress, but largely contained in two vignettes:
 The simplest approach is to run:
 
 ```r
-install.packages("didehpc",
-                 repos = c(CRAN = "https://cran.rstudio.com",
-                           drat = "https://richfitz.github.io/drat"))
+source("https://dide-tools.github.io/didehpc/install")
 ```
 
-Alternatively, with devtools you can run:
-
-```r
-devtools::install_github(c(
-  "richfitz/ids",
-  "richfitz/syncr",
-  "dide-tools/context",
-  "richfitz/queuer",
-  "dide-tools/didehpc"),
-  upgrade = FALSE)
+```
+# install.packages("drat") # if needed
+drat:::add("dide-tools")
+install.packages("didehpc")
 ```
