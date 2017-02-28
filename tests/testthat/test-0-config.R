@@ -103,3 +103,18 @@ test_that("parallel and cores", {
   expect_false(didehpc_config(cores = 1)$resource$parallel)
   expect_true(didehpc_config(cores = 2)$resource$parallel)
 })
+
+test_that("parallel and cores with parallel given", {
+  oo <- didehpc_config_global(credentials = "foo")
+  on.exit(options(oo))
+  expect_true(didehpc_config(parallel = TRUE, cores = 8)$resource$parallel)
+  expect_true(didehpc_config(parallel = NULL, cores = 8)$resource$parallel)
+  expect_false(didehpc_config(parallel = FALSE, cores = 8)$resource$parallel)
+
+  expect_true(
+    didehpc_config(parallel = TRUE, template = "16Core")$resource$parallel)
+  expect_true(
+    didehpc_config(parallel = NULL, template = "16Core")$resource$parallel)
+  expect_false(
+    didehpc_config(parallel = FALSE, template = "16Core")$resource$parallel)
+})

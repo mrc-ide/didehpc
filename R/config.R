@@ -389,11 +389,12 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
-    ret <- list(parallel=parallel %||% cores > 1, count=cores, type="Cores")
+    parallel <- parallel %||% (cores > 1) # be careful of precendence
+    ret <- list(parallel = parallel, count = cores, type = "Cores")
   } else if (!general || isTRUE(wholenode)) {
-    ret <- list(parallel=parallel %||% TRUE, count=1L, type="Nodes")
+    ret <- list(parallel = parallel %||% TRUE, count=1L, type="Nodes")
   } else {
-    ret <- list(parallel=parallel %||% FALSE, count=1L, type="Cores")
+    ret <- list(parallel = parallel %||% FALSE, count=1L, type="Cores")
   }
   ret
 }
