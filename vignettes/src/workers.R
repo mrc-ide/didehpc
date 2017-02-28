@@ -46,19 +46,6 @@ source("common.R")
 ## source("https://dide-tools.github.io/didehpc/install#extras")
 ## ```
 
-## The context id is used for communication, so if there is a chance
-## that someone else may come up with the same context id as you (same
-## packages and names of source files) you need to create a small bit
-## of unique information and pack that into the context.  This will
-## change the id and ensure that the tasks will not collide.  Your
-## username or project name make a good piece of data to use here.  Be
-## sure not to use a value that will be randomly generated each time
-## though.
-unique_value <- "rfitzjoh"
-
-##+ echo = FALSE
-unique_value <- ids::random_id()
-
 context::context_log_start()
 root <- "context_workers"
 
@@ -72,7 +59,6 @@ root <- "context_workers"
 ctx <- context::context_save(root,
                              packages = "ape",
                              sources = "mysources.R",
-                             unique_value = unique_value,
                              storage_type = didehpc:::storage_driver_psql())
 
 ## There are two ways we can proceed from here; the first - "workers"
@@ -179,17 +165,11 @@ obj$db$destroy()
 ## some (potentially very large) number of workers, submitting and
 ## collecting tasks from them.
 
-##+ echo = FALSE
-if (!exists("unique_value")) {
-  unique_value <- ids::random_id()
-}
-
 ## The first part here looks very similar
 root <- "context_rrq"
 ctx <- context::context_save(root,
                              packages = "ape",
-                             sources = "mysources.R",
-                             unique_value = unique_value)
+                             sources = "mysources.R")
 
 config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
@@ -244,8 +224,7 @@ writeLines(c("```r", readLines("mysources-rrq.R"), "```"))
 ## happens (sorting the numbers).  This is a contrived example but
 ## this pattern is fairly common in practice.
 ctx <- context::context_save(root,
-                             sources = "mysources-rrq.R",
-                             unique_value = unique_value)
+                             sources = "mysources-rrq.R")
 config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
 obj$submit_workers(5)

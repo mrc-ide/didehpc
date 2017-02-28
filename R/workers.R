@@ -3,10 +3,6 @@ initialise_rrq <- function(obj) {
     loadNamespace("rrq")
     dir.create(path_worker_logs(obj$root$path), FALSE, TRUE)
 
-    if (is.null(obj$context$unique_value)) {
-      stop("context must contain a unique_value; please rerun context_save()")
-    }
-
     config <- obj$config
     rrq:::write_rrq_worker(obj$context)
     rrq:::worker_config_save(obj$context,

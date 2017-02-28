@@ -12,11 +12,6 @@ test_that("workers", {
 
   path <- "context"
   ctx <- context::context_save(path = path, sources = sources)
-  expect_error(didehpc::queue_didehpc(ctx, config = config),
-               "context must contain a unique_value")
-
-  ctx <- context::context_save(path = path, sources = sources,
-                               unique_value = ids::random_id())
   obj <- didehpc::queue_didehpc(ctx, config = config)
 
   expect_equal(obj$task_list(), character(0))
