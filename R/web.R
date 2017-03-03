@@ -153,6 +153,7 @@ web_load <- function() {
                   free = sum(summary$free),
                   used = sum(summary$used),
                   total = sum(summary$total))
+  overall$percent_used <- round(100 * overall$used / overall$total)
   ret <- list(cluster = "didehpc",
               detail = NULL,
               summary = summary,

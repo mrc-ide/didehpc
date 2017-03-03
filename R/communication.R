@@ -127,12 +127,17 @@ parse_node_listcores <- function(txt, cluster) {
   res <- res[order(res$node), ]
   free <- tapply(res$status == "Idle", res$node, sum)
   total <- tapply(res$node, res$node, length)
+  used <- total - free
+  percent_used <- round(used / total * 100)
   summary <- data.frame(name = names(free), free = unname(free),
-                        used = unname(total - free),
-                        total = unname(total), stringsAsFactors = FALSE)
+                        used = unname(used),
+                        total = unname(total),
+                        percent_used = unname(percent_used),
+                        stringsAsFactors = FALSE)
 
   overall <- list(name = cluster, free = sum(free),
-                  used = sum(total) - sum(free), total = sum(total))
+                  used = sum(total) - sum(free), total = sum(total),
+                  percent_used = round((1 - sum(free) / sum(total)) * 100))
 
   ret <- list(cluster = cluster, detail = res,
               summary = summary, overall = overall)
@@ -166,9 +171,14 @@ parse_job_submit <- function(txt, n) {
 print.dide_clusterload <- function(x, ..., nodes = TRUE) {
   ## There's a bit of faff here to get alignments to work nicely.
   f <- function(name) {
-    format(c(name, x$overall[[name]], x$summary[[name]]), justify = "right")
+    vals <- c(x$overall[[name]], x$summary[[name]])
+    if (name == "percent_used") {
+      name <- "% used"
+      vals <- paste0(vals, "%")
+    }
+    format(c(name, vals), justify = "right")
   }
-  m <- cbind(f("name"), f("free"), f("used"), f("total"))
+  m <- cbind(f("name"), f("free"), f("used"), f("total"), f("percent_used"))
 
   ## Header:
   mh <- vcapply(m[1, ], crayon::bold)
