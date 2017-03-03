@@ -1,3 +1,22 @@
+##' Overall cluster load for all clusters that you have access to.
+##'
+##' @title Overall cluster load
+##'
+##' @param ... Parameters to pass through to
+##'   \code{\link{didehpc_config}}, or a \code{didehpc_config} object
+##'   as the first (and only) argument.
+##'
+##' @export
+cluster_load <- function(...) {
+  if (length(list(...)) > 0 && inherits(..1, didehpc_config)) {
+    config <- ..1
+  } else {
+    config <- suppressMessages(didehpc_config(...))
+  }
+  web_login(config)
+  print(didehpc_load(config))
+}
+
 ## TODO: dide_task_id -> dide_id everywhere as it's already used in
 ## the db and inteface
 
