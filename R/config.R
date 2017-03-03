@@ -64,8 +64,9 @@
 ##'
 ##' @param temp Path to network temp directory, on local system
 ##'
-##' @param cluster Name of the cluster to use (one of
-##' \code{\link{valid_clusters}()})
+##' @param cluster Name of the cluster to use; one of
+##'   \code{\link{valid_clusters}()} or one of the aliases
+##'   (small/little/dide/ide; big/mrc; linux).
 ##'
 ##' @param build_server Currently ignored, but will soon be a windows
 ##'   build server for bespoke binary packages.
@@ -216,7 +217,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     stop("You can't specify both use_workers and use_rrq")
   }
 
-  cluster <- match_value(dat$cluster, valid_clusters())
+  cluster <- cluster_name(dat$cluster)
   if (is.null(dat$template)) {
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
@@ -307,7 +308,7 @@ didehpc_config_global <- function(...) {
 
 didehpc_config_defaults <- function() {
   defaults <- list(
-    cluster        = getOption("didehpc.cluster",        valid_clusters()[[1]]),
+    cluster        = getOption("didehpc.cluster",        cluster_name(NULL)),
     credentials    = getOption("didehpc.credentials",    NULL),
     home           = getOption("didehpc.home",           NULL),
     temp           = getOption("didehpc.temp",           NULL),
@@ -365,6 +366,24 @@ print.didehpc_config <- function(x, ...) {
 ##' @export
 valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb", "fi--didelxhn")
+}
+
+cluster_name <- function(name) {
+  if (is.null(name)) {
+    name <- valid_clusters()[[1L]]
+  } else {
+    assert_scalar_character(name)
+    if (!(name %in% valid_clusters())) {
+      alias <- list(
+        "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
+        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
+        "fi--didelxhn" = c("linux", "didelxhn"))
+      alias <-
+        setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
+      name <- alias[[match_value(tolower(name), names(alias), "name")]]
+    }
+  }
+  name
 }
 
 valid_templates <- function() {

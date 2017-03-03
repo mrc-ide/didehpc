@@ -51,9 +51,9 @@ didehpc_cancel <- function(config, dide_task_id) {
 
 didehpc_shownodes <- function(config, cluster = NULL) {
   if (is.null(cluster)) {
-    cluster <- getOption("didehpc.cluster", valid_clusters()[[1]])
+    cluster <- getOption("didehpc.cluster", cluster_name(NULL))
   } else {
-    cluster <- match_value(cluster, valid_clusters())
+    cluster <- cluster_name(cluster)
   }
   if (use_hpctools(config)) {
     hpc_shownodes(cluster)

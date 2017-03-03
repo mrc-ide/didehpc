@@ -24,8 +24,9 @@ you will be prompted graphically for your password).}
 
 \item{temp}{Path to network temp directory, on local system}
 
-\item{cluster}{Name of the cluster to use (one of
-\code{\link{valid_clusters}()})}
+\item{cluster}{Name of the cluster to use; one of
+\code{\link{valid_clusters}()} or one of the aliases
+(small/little/dide/ide; big/mrc; linux).}
 
 \item{build_server}{Currently ignored, but will soon be a windows
 build server for bespoke binary packages.}
