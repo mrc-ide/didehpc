@@ -113,6 +113,7 @@ parse_node_listcores <- function(txt, cluster) {
   cluster <- tolower(cluster)
   re <- "^([^ ]+) +- +([0-9]+) +([^ ]+) *(.*)$"
   d <- txt[-(1:2)]
+  d <- d[nzchar(d)]
   node <- sub(re, "\\1", d)
   core <- as.integer(sub(re, "\\2", d)) + 1L
   status <- sub(re, "\\3", d)
