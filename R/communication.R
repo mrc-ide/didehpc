@@ -1,7 +1,7 @@
 ## TODO: dide_task_id -> dide_id everywhere as it's already used in
 ## the db and inteface
 
-didehpc_submit <- function(config, path, name=NULL) {
+didehpc_submit <- function(config, path, name = NULL) {
   assert_scalar_character(path)
   if (!is.null(name)) {
     assert_scalar_character(name)
@@ -30,7 +30,7 @@ didehpc_cancel <- function(config, dide_task_id) {
   }
 }
 
-didehpc_shownodes <- function(config, cluster=NULL) {
+didehpc_shownodes <- function(config, cluster = NULL) {
   if (is.null(cluster)) {
     cluster <- getOption("didehpc.cluster", valid_clusters()[[1]])
   } else {
@@ -51,7 +51,7 @@ didehpc_load <- function(config) {
   }
 }
 
-didehpc_jobstatus <- function(config, state="*", n=Inf) {
+didehpc_jobstatus <- function(config, state = "*", n = Inf) {
   valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
   state <- match_value(state, valid)
   if (use_hpctools(config)) {
@@ -101,21 +101,21 @@ parse_node_listcores <- function(txt, cluster) {
   task_id <- rep(NA_character_, length(d))
   i <- nchar(rest) > 0L
   task_id[i] <- sub("^([0-9]+).*", "\\1", rest[i])
-  res <- data.frame(node=tolower(node), core=core, status=status,
-                    dide_task_id=task_id, stringsAsFactors=FALSE)
+  res <- data.frame(node = tolower(node), core = core, status = status,
+                    dide_task_id = task_id, stringsAsFactors = FALSE)
   res <- res[res$node != cluster, ]
   res <- res[order(res$node), ]
   free <- tapply(res$status == "Idle", res$node, sum)
   total <- tapply(res$node, res$node, length)
-  summary <- data.frame(name=names(free), free=unname(free),
-                        used=unname(total - free),
-                        total=unname(total), stringsAsFactors=FALSE)
+  summary <- data.frame(name = names(free), free = unname(free),
+                        used = unname(total - free),
+                        total = unname(total), stringsAsFactors = FALSE)
 
-  overall <- list(name=cluster, free=sum(free),
-                  used=sum(total) - sum(free), total=sum(total))
+  overall <- list(name = cluster, free = sum(free),
+                  used = sum(total) - sum(free), total = sum(total))
 
-  ret <- list(cluster=cluster, detail=res,
-              summary=summary, overall=overall)
+  ret <- list(cluster = cluster, detail = res,
+              summary = summary, overall = overall)
   class(ret) <- "dide_clusterload"
   ret
 }
@@ -126,7 +126,7 @@ parse_job_submit <- function(txt, n) {
 
   extra <- txt[!i]
   if (length(extra) > 0L) {
-    warning(paste(extra, collapse="\n"), immediate.=TRUE)
+    warning(paste(extra, collapse = "\n"), immediate. = TRUE)
   }
 
   nok <- sum(i)
@@ -143,10 +143,10 @@ parse_job_submit <- function(txt, n) {
 }
 
 ##' @export
-print.dide_clusterload <- function(x, ..., nodes=TRUE) {
+print.dide_clusterload <- function(x, ..., nodes = TRUE) {
   ## There's a bit of faff here to get alignments to work nicely.
   f <- function(name) {
-    format(c(name, x$overall[[name]], x$summary[[name]]), justify="right")
+    format(c(name, x$overall[[name]], x$summary[[name]]), justify = "right")
   }
   m <- cbind(f("name"), f("free"), f("used"), f("total"))
 
@@ -154,11 +154,11 @@ print.dide_clusterload <- function(x, ..., nodes=TRUE) {
   mh <- vcapply(m[1, ], crayon::bold)
 
   ## Divider:
-  md <- vcapply(nchar(m[1,]), strrep, x="-")
+  md <- vcapply(nchar(m[1,]), strrep, x = "-")
 
   ## Summary
   if (nodes) {
-    ms <- m[-(1:2), , drop=FALSE]
+    ms <- m[-(1:2), , drop = FALSE]
     col <- cluster_load_cols(x$summary$used / x$summary$total)
     ms[, 1] <- crayon::blue(ms[, 1])
     ms[, -1] <- t(vapply(seq_along(col),
@@ -177,26 +177,26 @@ print.dide_clusterload <- function(x, ..., nodes=TRUE) {
 
   mm <- rbind(mh, md, ms, mo)
 
-  cat(paste0(apply(mm, 1, paste, collapse=" "), "\n", collapse=""))
+  cat(paste0(apply(mm, 1, paste, collapse = " "), "\n", collapse = ""))
   invisible(x)
 }
 
-cluster_load_cols <- function(p, max=1) {
+cluster_load_cols <- function(p, max = 1) {
   ## cols <- c("#A50026", "#D73027", "#F46D43", "#FDAE61",
   ##           "#FEE090", "#FFFFBF", "#E0F3F8", "#ABD9E9",
   ##           "#74ADD1", "#4575B4", "#313695")
   cols <- c("#FED976", "#FEB24C", "#FD8D3C", "#FC4E2A", "#E31A1C", "#B10026")
   ret <- colorRamp(cols)(p / max)
-  rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue=255)
+  rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue = 255)
 }
 
-status_map <- function(x, reverse=FALSE) {
-  map <- c(Running="RUNNING",
-           Finished="COMPLETE",
-           Queued="PENDING",
-           Failed="ERROR",
-           Canceled="CANCELLED",
-           Cancelled="CANCELLED") # I don't think the cluster gives this.
+status_map <- function(x, reverse = FALSE) {
+  map <- c(Running = "RUNNING",
+           Finished = "COMPLETE",
+           Queued = "PENDING",
+           Failed = "ERROR",
+           Canceled = "CANCELLED",
+           Cancelled = "CANCELLED") # I don't think the cluster gives this.
   ## for reverse,
   ##   MISSING -> NA
   ##   REDIRECT -> ?

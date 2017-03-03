@@ -11,10 +11,8 @@ test_that("redis: ping", {
   owd <- prepare_didehpc("redis")
   on.exit(setwd(owd))
 
-  src <- provisionr::package_sources(repos = "drat://richfitz")
   ctx <- context::context_save(path = "context",
-                               packages = "redux",
-                               package_sources = src)
+                               packages = "redux")
   obj <- didehpc::queue_didehpc(ctx)
 
   t <- obj$enqueue(redux::hiredis()$PING())

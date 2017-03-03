@@ -1,9 +1,9 @@
-get_credentials <- function(credentials, need_password=TRUE) {
+get_credentials <- function(credentials, need_password = TRUE) {
   if (is.null(credentials)) {
     if (!interactive()) {
       stop("Credentials file needed for non-interactive use")
     }
-    credentials <- trimws(readline(prompt="DIDE username: "))
+    credentials <- trimws(readline(prompt = "DIDE username: "))
     if (credentials == "") {
       stop("Invalid empty username")
     }
@@ -18,7 +18,7 @@ get_credentials <- function(credentials, need_password=TRUE) {
       ret <- read_credentials(credentials)
     } else {
       ## Assume we have a username.
-      ret <- list(username=credentials)
+      ret <- list(username = credentials)
       if (need_password) {
         if (!interactive()) {
           stop("Credentials file needed for non-interactive use")
@@ -51,12 +51,12 @@ check_credentials <- function(credentials, need_password) {
   }
   extra <- setdiff(names(credentials), c("username", "password"))
   if (length(extra) > 0L) {
-    stop("Unknown fields in credentials: ", paste(extra, collapse=", "))
+    stop("Unknown fields in credentials: ", paste(extra, collapse = ", "))
   }
   req <- c("username", if (need_password) "password")
   msg <- setdiff(req, names(credentials))
   if (length(msg) > 0L) {
-    stop("Missing fields in credentials: ", paste(msg, collapse=", "))
+    stop("Missing fields in credentials: ", paste(msg, collapse = ", "))
   }
   credentials # consider credentials[req]
 }

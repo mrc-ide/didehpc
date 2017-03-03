@@ -289,7 +289,7 @@ didehpc_config_global <- function(...) {
     }
     extra <- setdiff(nms, names(formals(didehpc_config)))
     if (length(extra)) {
-      stop("Unknown options: ", paste(extra, collapse=", "))
+      stop("Unknown options: ", paste(extra, collapse = ", "))
     }
     names(opts) <- paste0("didehpc.", nms)
     oo <- options(opts)
@@ -354,7 +354,7 @@ print.didehpc_config <- function(x, ...) {
     } else if (is.list(el)) {
       cat(sprintf(" - %s:\n", names(x)[[i]]))
       cat(paste(sprintf("    - %s: %s\n", names(el),
-                        vcapply(el, as.character)), collapse=""))
+                        vcapply(el, as.character)), collapse = ""))
     }
   }
   invisible(x)
@@ -390,9 +390,9 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     parallel <- parallel %||% (cores > 1) # be careful of precendence
     ret <- list(parallel = parallel, count = cores, type = "Cores")
   } else if (!general || isTRUE(wholenode)) {
-    ret <- list(parallel = parallel %||% TRUE, count=1L, type="Nodes")
+    ret <- list(parallel = parallel %||% TRUE, count = 1L, type = "Nodes")
   } else {
-    ret <- list(parallel = parallel %||% FALSE, count=1L, type="Cores")
+    ret <- list(parallel = parallel %||% FALSE, count = 1L, type = "Cores")
   }
   ret
 }
@@ -452,10 +452,10 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
 
   mapped <- vcapply(ret, "[[", "path_local")
 
-  remote <- vcapply(ret, "[[", "drive_remote", USE.NAMES=FALSE)
+  remote <- vcapply(ret, "[[", "drive_remote", USE.NAMES = FALSE)
   dups <- unique(remote[duplicated(remote)])
   if (length(dups) > 0L) {
-    stop("Duplicate remote drive names: ", paste(dups, collapse=", "))
+    stop("Duplicate remote drive names: ", paste(dups, collapse = ", "))
   }
 
   ## TODO: The tolower needs to be done in a platform dependent way I
@@ -467,16 +467,16 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
   ## TODO: this tolower should be windows only
   workdir <- tolower(workdir)
 
-  ok <- vlapply(tolower(mapped), string_starts_with, x=workdir)
+  ok <- vlapply(tolower(mapped), string_starts_with, x = workdir)
   if (!any(ok)) {
     i <- (nzchar(dat[, "local"]) &
-          vlapply(tolower(dat[, "local"]), string_starts_with, x=workdir))
+          vlapply(tolower(dat[, "local"]), string_starts_with, x = workdir))
     if (sum(i) == 1L) {
       ## On windows this should go elsewhere.
       drive <- if (is_windows()) dat[i, "local"] else available_drive(ret)
       workdir_map <- path_mapping("workdir", dat[i, "local"],
                                   dat[i, "remote"], drive)
-      ret <- c(ret, list(workdir=workdir_map))
+      ret <- c(ret, list(workdir = workdir_map))
     } else if (sum(i) > 1L) {
       ## Could take the *longest* here?
       warning("Having trouble determining the working directory mount point")
@@ -678,10 +678,10 @@ check_linux_shares <- function(username, shares) {
 
     ## Then, format:
     opts <- vcapply(dat, function(x)
-      paste(names(x), dquote(unname(x)), sep="=", collapse=" "))
+      paste(names(x), dquote(unname(x)), sep = "=", collapse = " "))
     volumes <- sprintf("<volume %s />", opts)
     opts <- paste(colnames(dat), sprintf('"%s"', unname(dat)),
-                  sep="=", collapse=" ")
+                  sep = "=", collapse = " ")
     xml <- c('<?xml version="1.0" encoding="utf-8" ?>',
              '<pam_mount>',
              paste0("  ", volumes),

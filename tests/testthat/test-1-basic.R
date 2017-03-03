@@ -9,7 +9,7 @@ test_that("basic", {
   path <- "context"
   ctx <- context::context_save(path = path, packages = "ape",
                                sources = "mysources.R")
-  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
+  obj <- didehpc::queue_didehpc(ctx)
 
   expect_is(obj, "queue_didehpc")
   path_lib <- file.path(path, "lib", "windows", obj$config$r_version[1, 1:2])
@@ -19,7 +19,7 @@ test_that("basic", {
   ign <- capture.output(dat <- obj$cluster_load())
   expect_is(dat, "dide_clusterload")
 
-  ign <- capture.output(dat <- obj$didehpc_load())
+  ign <- capture.output(dat <- obj$cluster_load(TRUE))
   expect_is(dat, "dide_clusterload")
 
   t <- obj$enqueue(sessionInfo())

@@ -11,7 +11,7 @@ has_hpctools <- function() {
   is_windows() && unname(Sys.which("job")) != ""
 }
 
-hpc_args <- function(subcommand, ..., args=list(...)) {
+hpc_args <- function(subcommand, ..., args = list(...)) {
   str <- vcapply(args, identity)
   nms <- names(args)
   if (!is.null(nms)) {
@@ -23,7 +23,7 @@ hpc_args <- function(subcommand, ..., args=list(...)) {
 
 hpc_run <- function(cmd, ...) {
   res <- suppressWarnings(
-    system2(Sys.which(cmd), hpc_args(...), stdout=TRUE, stderr=TRUE))
+    system2(Sys.which(cmd), hpc_args(...), stdout = TRUE, stderr = TRUE))
   status <- attr(res, "status") %||% 0L
   if (status != 0L) {
     stop("Error running command:\n", res)
@@ -35,8 +35,8 @@ hpc_submit <- function(config, path, name) {
   if (any(!file.exists(path))) {
     stop("All paths must exist")
   }
-  args <- list(scheduler=config$cluster,
-               jobtemplate=config$template)
+  args <- list(scheduler = config$cluster,
+               jobtemplate = config$template)
   if (!is.null(name)) {
     args$jobname <- name
   }
@@ -47,13 +47,13 @@ hpc_submit <- function(config, path, name) {
     args$singlenode <- "true"
   }
 
-  ret <- hpc_run("job", "submit", args=c(args, path))
+  ret <- hpc_run("job", "submit", args = c(args, path))
   parse_job_submit(ret, length(path))
 }
 
 hpc_cancel <- function(cluster, dide_task_id) {
-  res <- tryCatch(hpc_run("job", "cancel", dide_task_id, scheduler=cluster),
-                  error=function(e) e)
+  res <- tryCatch(hpc_run("job", "cancel", dide_task_id, scheduler = cluster),
+                  error = function(e) e)
   ## TODO: This seems unlikely to be correct...
   if (identical(res, character(0))) {
     ret <- "OK"
@@ -66,7 +66,7 @@ hpc_cancel <- function(cluster, dide_task_id) {
 hpc_shownodes <- function(cluster) {
   ## Unfortunately this does not return with an invalid exit code on
   ## incorrect input :(
-  res <- hpc_run("node", "listcores", scheduler=cluster)
+  res <- hpc_run("node", "listcores", scheduler = cluster)
   parse_node_listcores(res, cluster)
 }
 
@@ -77,7 +77,8 @@ hpc_load <- function() {
 hpc_jobstatus <- function(config, state) {
   ## NOTE: State can be comma delimited, should support that...
   cluster <- config$cluster
-  res <- hpc_run("job", "list", scheduler=cluster, state=state, format="list")
+  res <- hpc_run("job", "list", scheduler = cluster, state = state,
+                 format = "list")
 
   last <- res[[length(res)]]
   re <- "^([0-9]*)\\s*.*$"
@@ -88,19 +89,19 @@ hpc_jobstatus <- function(config, state) {
   }
 
   ## This is a total hack but seems the simplest approach at the moment:
-  txt <- strsplit(paste(res, collapse="\n"), "\n\n+")[[1]]
+  txt <- strsplit(paste(res, collapse = "\n"), "\n\n+")[[1]]
   if (length(txt) != n + 1L) {
     stop("Unexpected response length")
   }
 
-  tr <- c(dide_task_id="Id",
-          name="Name",
-          user="Owner",
-          status="State")
+  tr <- c(dide_task_id = "Id",
+          name = "Name",
+          user = "Owner",
+          status = "State")
 
   if (n == 1L) {
     ret <- as.data.frame(matrix(character(0), 0, length(tr)),
-                         stringsAsFactors=FALSE)
+                         stringsAsFactors = FALSE)
     names(ret) <- names(tr)
   } else {
     f <- function(x) {
@@ -109,21 +110,22 @@ hpc_jobstatus <- function(config, state) {
       setNames(x[tr], names(tr))
     }
     dat <- lapply(strsplit(txt[-length(txt)], "\n"), f)
-    ret <- matrix(unlist(dat), length(dat), length(tr), byrow=TRUE)
+    ret <- matrix(unlist(dat), length(dat), length(tr), byrow = TRUE)
     colnames(ret) <- names(tr)
-    as.data.frame(ret, stringsAsFactors=FALSE)
+    as.data.frame(ret, stringsAsFactors = FALSE)
   }
   ret
 }
 
 hpc_joblog <- function(config, dide_task_id) {
   cluster <- config$cluster
-  res <- hpc_run("task", "view", paste0(dide_task_id, ".1"), scheduler=cluster)
+  res <- hpc_run("task", "view", paste0(dide_task_id, ".1"),
+                 scheduler = cluster)
   i <- grep("^Output\\s*:\\s*$", res)
   if (length(i) < 1) {
     stop("Error parsing log")
   }
-  ret <- paste(res[-seq_len(i[[1]])], collapse="\n")
+  ret <- paste(res[-seq_len(i[[1]])], collapse = "\n")
   class(ret) <- "dide_log"
   ret
 }

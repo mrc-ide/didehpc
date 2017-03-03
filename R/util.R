@@ -15,7 +15,7 @@ Sys_which <- function(name) {
 }
 
 curl_insecure <- function() {
-  httr::config(ssl_verifypeer=0)
+  httr::config(ssl_verifypeer = 0)
 }
 
 ## Consider adopting the version in caTools
@@ -30,11 +30,11 @@ decode64 <- function(x) {
   storr::decode64(x, "+", "/")
 }
 
-modify_list <- function(x, val, name=deparse(substitute(val))) {
+modify_list <- function(x, val, name = deparse(substitute(val))) {
   extra <- setdiff(names(val), names(x))
   if (length(extra) > 0L) {
     warning(sprintf("Unknown elements in %s: %s",
-                    name, paste(extra, collapse=", ")))
+                    name, paste(extra, collapse = ", ")))
     val <- val[setdiff(names(val), extra)]
   }
   modifyList(x, val)
@@ -57,7 +57,7 @@ drop_blank <- function(x) {
 
 time_checker <- function(timeout) {
   t0 <- Sys.time()
-  timeout <- as.difftime(timeout, units="secs")
+  timeout <- as.difftime(timeout, units = "secs")
   function() {
     Sys.time() - t0 > timeout
   }
@@ -75,11 +75,11 @@ vlapply <- function(X, FUN, ...) {
 }
 
 strrep <- function(x, times) {
-  paste(rep(x, times), collapse="")
+  paste(rep(x, times), collapse = "")
 }
 
 is_directory <- function(path) {
-  file.exists(path) && file.info(path, extra_cols=FALSE)[["isdir"]]
+  file.exists(path) && file.info(path, extra_cols = FALSE)[["isdir"]]
 }
 
 hostname <- function() {
@@ -87,17 +87,17 @@ hostname <- function() {
 }
 
 read_lines <- function(...) {
-  paste(readLines(...), collapse="\n")
+  paste(readLines(...), collapse = "\n")
 }
 
 dquote <- function(x) {
   sprintf('"%s"', x)
 }
 
-backup <- function(filename, verbose=TRUE, move=FALSE) {
+backup <- function(filename, verbose = TRUE, move = FALSE) {
   if (file.exists(filename)) {
     pat <- sprintf("%s\\.([0-9]+)", basename(filename))
-    found <- dir(dirname(filename), pattern=pat)
+    found <- dir(dirname(filename), pattern = pat)
     if (length(found) > 0) {
       n <- max(as.integer(sub(pat, "\\1", found))) + 1
     } else {

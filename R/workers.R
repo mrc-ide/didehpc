@@ -75,5 +75,5 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
 }
 
 rrq_redis_con <- function(config) {
-  redux::hiredis(host=paste0(config$cluster, ".dide.ic.ac.uk"))
+  redux::hiredis(host = paste0(config$cluster, ".dide.ic.ac.uk"))
 }

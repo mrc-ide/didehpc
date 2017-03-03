@@ -72,7 +72,7 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   ret <-
     list(name = name,
          path_remote = clean_path(path_remote),
-         path_local  = clean_path(normalizePath(path_local, mustWork=TRUE)),
+         path_local  = clean_path(normalizePath(path_local, mustWork = TRUE)),
          drive_remote = drive_remote)
   class(ret) <- "path_mapping"
   ret
