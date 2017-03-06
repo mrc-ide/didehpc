@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2017-02-24"
+date: "2017-03-06"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -75,7 +75,7 @@ and the packages will arrange for them to be saved and reloaded.
 
 The DIDE cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
-//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
+`//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
 You probably have access to network shares that are specific to a
 project, too.  For Windows users these are probably mapped to
 drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -139,6 +139,9 @@ options(
 
 and then set only options (such as cluster and cores or template)
 that vary with a project.
+
+If you use the "big" cluster, you can add `didehpc.cluster =
+"fi--didemrchnb"` here.
 
 At the moment (while things change) it might be simplest to set
 things using the `didehpc::didehpc_config_global` function.  The
@@ -328,7 +331,7 @@ ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 ```
 
 ```
-## [ init:id   ]  4c127d21f39085397565d73dfdac3721
+## [ init:id   ]  8e8a73f0697ba7e3bb299da27a8ff5ba
 ```
 
 ```
@@ -340,7 +343,7 @@ ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 ```
 
 ```
-## [ save:id   ]  5a10f1879ddebd3f0b3265ab9f24c584
+## [ save:id   ]  5e6121c412492f70cf81bf66a6061182
 ```
 
 ```
@@ -384,11 +387,11 @@ obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## Loading context 5a10f1879ddebd3f0b3265ab9f24c584
+## Loading context 5e6121c412492f70cf81bf66a6061182
 ```
 
 ```
-## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
+## [ context   ]  5e6121c412492f70cf81bf66a6061182
 ```
 
 ```
@@ -484,7 +487,7 @@ obj
 ##     dide_log: function (t)
 ##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
 ##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
-##     enqueue_bulk: function (X, FUN, ..., do_call = FALSE, envir = parent.frame(),
+##     enqueue_bulk: function (X, FUN, ..., do_call = TRUE, envir = parent.frame(),
 ##     initialize: function (context, config, root, initialise, sync)
 ##     initialize_context: function ()
 ##     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1,
@@ -513,7 +516,7 @@ obj
 ##     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE)
 ##     templates: list
 ##     unsubmit: function (t)
-##     workdir: /home/rich/net/home/cluster_testing/20170224/vignette
+##     workdir: /home/rich/net/home/cluster_testing/20170306/vignette
 ##     worker_controller: function ()
 ##     workers: NULL
 ```
@@ -537,75 +540,74 @@ obj$cluster_load()
 ```
 
 ```
-##           name free used total
-## -------------- ---- ---- -----
-##                   0    1     1
-##  fi--didemrc06    0   12    12
-##  fi--didemrc07    0   12    12
-##  fi--didemrc08    0   12    12
-##  fi--didemrc09    0   12    12
-##  fi--didemrc10    0   12    12
-##  fi--didemrc11    0   12    12
-##  fi--didemrc12    0   12    12
-##  fi--didemrc13   20    4    24
-##  fi--didemrc14   16    8    24
-##  fi--didemrc15    0   24    24
-##  fi--didemrc16   21    3    24
-##  fi--didemrc17    0   12    12
-##  fi--didemrc18    0   12    12
-##  fi--didemrc19    0   12    12
-##  fi--didemrc20    0   12    12
-##  fi--didemrc21    0   12    12
-##  fi--didemrc22   12    0    12
-##  fi--didemrc23   12    0    12
-##  fi--didemrc24   12    0    12
-##  fi--didemrc25   12    0    12
-##  fi--didemrc26    0   12    12
-##  fi--didemrc27   12    0    12
-##  fi--didemrc28   12    0    12
-##  fi--didemrc38    0   16    16
-##  fi--didemrc39    0   16    16
-##  fi--didemrc40    0   16    16
-##  fi--didemrc41    0   16    16
-##  fi--didemrc42    0   16    16
-##  fi--didemrc43    0   16    16
-##  fi--didemrc44   16    0    16
-##  fi--didemrc45   16    0    16
-##  fi--didemrc46   16    0    16
-##  fi--didemrc47   16    0    16
-##  fi--didemrc48   16    0    16
-##  fi--didemrc49    0   16    16
-##  fi--didemrc50   16    0    16
-##  fi--didemrc51   20    0    20
-##  fi--didemrc52   20    0    20
-##  fi--didemrc53   20    0    20
-##  fi--didemrc54   20    0    20
-##  fi--didemrc55   20    0    20
-##  fi--didemrc56   20    0    20
-##  fi--didemrc57   20    0    20
-##  fi--didemrc58   20    0    20
-##  fi--didemrc59   20    0    20
-##  fi--didemrc60   20    0    20
-##  fi--didemrc61   20    0    20
-##  fi--didemrc62   20    0    20
-##  fi--didemrc63   20    0    20
-##  fi--didemrc64   20    0    20
-##  fi--didemrc65   22   10    32
-##  fi--didemrc66   24    8    32
-##  fi--didemrc67   24    0    24
-##  fi--didemrc68   24    0    24
-##  fi--didemrc69   24    0    24
-##  fi--didemrc70   24    0    24
-##  fi--didemrc71   24    0    24
-##  fi--didemrc72   24    0    24
-##  fi--didemrc73   24    0    24
-##  fi--didemrc74   24    0    24
-##  fi--didemrc75    4   12    16
-##  fi--didemrc76    1   15    16
-##  fi--didemrc77    4   12    16
-##  fi--didemrc78    3   25    28
-## -------------- ---- ---- -----
-## fi--didemrchnb  755  390  1145
+##           name free used total % used
+## -------------- ---- ---- ----- ------
+##  fi--didemrc06    0   12    12   100%
+##  fi--didemrc07    0   12    12   100%
+##  fi--didemrc08    0   12    12   100%
+##  fi--didemrc09    0   12    12   100%
+##  fi--didemrc10    0   12    12   100%
+##  fi--didemrc11    0   12    12   100%
+##  fi--didemrc12    0   12    12   100%
+##  fi--didemrc13    1   23    24    96%
+##  fi--didemrc14   23    1    24     4%
+##  fi--didemrc15    0   24    24   100%
+##  fi--didemrc16    0   24    24   100%
+##  fi--didemrc17    0   12    12   100%
+##  fi--didemrc18    0   12    12   100%
+##  fi--didemrc19    0   12    12   100%
+##  fi--didemrc20    0   12    12   100%
+##  fi--didemrc21    0   12    12   100%
+##  fi--didemrc22    0   12    12   100%
+##  fi--didemrc23    0   12    12   100%
+##  fi--didemrc24    4    8    12    67%
+##  fi--didemrc25    0   12    12   100%
+##  fi--didemrc26    0   12    12   100%
+##  fi--didemrc27    0   12    12   100%
+##  fi--didemrc28    0   12    12   100%
+##  fi--didemrc38    0   16    16   100%
+##  fi--didemrc39   15    1    16     6%
+##  fi--didemrc40    0   16    16   100%
+##  fi--didemrc41    0   16    16   100%
+##  fi--didemrc42    0   16    16   100%
+##  fi--didemrc43    0   16    16   100%
+##  fi--didemrc44   16    0    16     0%
+##  fi--didemrc45   14    2    16    12%
+##  fi--didemrc46   16    0    16     0%
+##  fi--didemrc47    0   16    16   100%
+##  fi--didemrc48   14    2    16    12%
+##  fi--didemrc49   16    0    16     0%
+##  fi--didemrc50   16    0    16     0%
+##  fi--didemrc51    0   20    20   100%
+##  fi--didemrc52   20    0    20     0%
+##  fi--didemrc53    0   20    20   100%
+##  fi--didemrc54   12    8    20    40%
+##  fi--didemrc55   20    0    20     0%
+##  fi--didemrc56    0   20    20   100%
+##  fi--didemrc57   20    0    20     0%
+##  fi--didemrc58   12    8    20    40%
+##  fi--didemrc59   20    0    20     0%
+##  fi--didemrc60   20    0    20     0%
+##  fi--didemrc61   20    0    20     0%
+##  fi--didemrc62   20    0    20     0%
+##  fi--didemrc63    0   20    20   100%
+##  fi--didemrc64    0   20    20   100%
+##  fi--didemrc65    0   32    32   100%
+##  fi--didemrc66   16   16    32    50%
+##  fi--didemrc67   24    0    24     0%
+##  fi--didemrc68    0   24    24   100%
+##  fi--didemrc69   24    0    24     0%
+##  fi--didemrc70    0   24    24   100%
+##  fi--didemrc71   16    8    24    33%
+##  fi--didemrc72    0   24    24   100%
+##  fi--didemrc73   24    0    24     0%
+##  fi--didemrc74    0   24    24   100%
+##  fi--didemrc75    0   16    16   100%
+##  fi--didemrc76   14    2    16    12%
+##  fi--didemrc77    0   16    16   100%
+##  fi--didemrc78   28    0    28     0%
+## -------------- ---- ---- ----- ------
+## fi--didemrchnb  445  699  1144    61%
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -643,7 +645,7 @@ sessionInfo()
 ##
 ## loaded via a namespace (and not attached):
 ##  [1] lattice_0.20-34  ids_0.0.2        crayon_1.3.2     withr_1.0.2
-##  [5] digest_0.6.10    grid_3.3.2       context_0.1.0    R6_2.2.0
+##  [5] digest_0.6.12    grid_3.3.2       context_0.1.0    R6_2.2.0
 ##  [9] nlme_3.1-128     storr_1.0.3      formatR_1.4      magrittr_1.5
 ## [13] evaluate_0.9     httr_1.2.1       stringi_1.1.1    curl_2.2
 ## [17] rematch_1.0.1    uuid_0.1-2       whisker_0.3-2    queuer_0.1.0
@@ -723,7 +725,7 @@ t
 ##     clone: function (deep = FALSE)
 ##     context_id: function ()
 ##     expr: function (locals = FALSE)
-##     id: 5103a30ccd94020f1d271a0eba7f15a9
+##     id: 28f6d34ae79f6915b092adc8c1ea5413
 ##     initialize: function (id, root, check_exists = TRUE)
 ##     log: function (parse = TRUE)
 ##     result: function (allow_incomplete = FALSE)
@@ -752,9 +754,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 5103a30ccd94020f1d271a0eba7f15a9 2017-02-24 17:26:52    <NA>     <NA>
+## 1 28f6d34ae79f6915b092adc8c1ea5413 2017-03-06 17:28:58    <NA>     <NA>
 ##     waiting running idle
-## 1 0.5443828      NA   NA
+## 1 0.8520002      NA   NA
 ```
 
 and you can try and get the result of running the task:
@@ -764,7 +766,7 @@ t$result()
 ```
 
 ```
-## Error: task 5103a30ccd94020f1d271a0eba7f15a9 is unfetchable: PENDING
+## Error: task 28f6d34ae79f6915b092adc8c1ea5413 is unfetchable: PENDING
 ```
 
 The `wait` function, used above, is like `result` but it will
@@ -780,7 +782,7 @@ t$wait(100)
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t10, t2, t1, t9, t3, t7, ...
+## 	t7, t9, t2, t10, t4, t8, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -796,7 +798,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t10, t2, t1, t9, t3, t7, ...
+## 	t7, t9, t2, t10, t4, t8, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -808,28 +810,28 @@ t$log()
 ```
 
 ```
-## [ hello     ]  2017-02-24 17:26:53.267
-## [ wd        ]  Q:/cluster_testing/20170224/vignette
+## [ hello     ]  2017-03-06 17:28:59.198
+## [ wd        ]  Q:/cluster_testing/20170306/vignette
 ## [ bootstrap ]
-## [ lib       ]  Q:\cluster_testing\20170224\vignette\contexts/lib/windows/3.3
-## [ init      ]  2017-02-24 17:26:53.282
-## [ hostname  ]  FI--DIDEMRC76
-## [ process   ]  2180
+## [ lib       ]  Q:\cluster_testing\20170306\vignette\contexts/lib/windows/3.3
+## [ init      ]  2017-03-06 17:28:59.245
+## [ hostname  ]  FI--DIDEMRC13
+## [ process   ]  9860
 ## [ version   ]  0.1.0
 ## [ open:db   ]  rds
-## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
+## [ context   ]  5e6121c412492f70cf81bf66a6061182
 ## [ library   ]  ape
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ parallel  ]  running as single core job
-## [ root      ]  Q:\cluster_testing\20170224\vignette\contexts
-## [ context   ]  5a10f1879ddebd3f0b3265ab9f24c584
-## [ task      ]  5103a30ccd94020f1d271a0eba7f15a9
+## [ root      ]  Q:\cluster_testing\20170306\vignette\contexts
+## [ context   ]  5e6121c412492f70cf81bf66a6061182
+## [ task      ]  28f6d34ae79f6915b092adc8c1ea5413
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2017-02-24 17:26:53.470
+## [ start     ]  2017-03-06 17:28:59.589
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2017-02-24 17:26:53.485
+## [ end       ]  2017-03-06 17:28:59.682
 ```
 
 Warning messages and other output will be printed here.  So if you
@@ -845,23 +847,6 @@ need to look at this when a job seems to get stuck with status
 obj$dide_log(t)
 ```
 
-```
-## generated on host: wpia-dide136.dide.ic.ac.uk
-## generated on date: 2017-02-24
-## didehpc version: 0.1.0
-## context version: 0.1.0
-## running on: FI--DIDEMRC76
-## mapping Q: -> \\fi--san02\homes\rfitzjoh
-## The command completed successfully.
-## mapping T: -> \\fi--didef2\tmp
-## The command completed successfully.
-## working directory: Q:\cluster_testing\20170224\vignette
-## this is a single task
-## logfile: Q:\cluster_testing\20170224\vignette\contexts\logs\5103a30ccd94020f1d271a0eba7f15a9
-## Q:\cluster_testing\20170224\vignette>Rscript "Q:\cluster_testing\20170224\vignette\contexts\bin\task_run" "Q:\cluster_testing\20170224\vignette\contexts" 5103a30ccd94020f1d271a0eba7f15a9  1>"Q:\cluster_testing\20170224\vignette\contexts\logs\5103a30ccd94020f1d271a0eba7f15a9" 2>&1
-## Quitting
-```
-
 The queue knows which tasks it has created and you can list them:
 
 ```r
@@ -869,7 +854,7 @@ obj$task_list()
 ```
 
 ```
-## [1] "4b905ffac63881c09e365047ffcdce6e" "5103a30ccd94020f1d271a0eba7f15a9"
+## [1] "28f6d34ae79f6915b092adc8c1ea5413" "703372da1650125198623f941be88ae9"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -890,7 +875,7 @@ id
 ```
 
 ```
-## [1] "5103a30ccd94020f1d271a0eba7f15a9"
+## [1] "28f6d34ae79f6915b092adc8c1ea5413"
 ```
 
 ```r
@@ -903,7 +888,7 @@ t2$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t10, t2, t1, t9, t3, t7, ...
+## 	t7, t9, t2, t10, t4, t8, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -957,11 +942,11 @@ grp$status()
 ```
 
 ```
-## 7e37e3b5abf296aa1c442cae63511cf9 954f322b6a4d1712cf3a6b5f60f3e75a
+## a3fd7be6e08f9793fe1abd04a027027e e6bb1eb5f4494b772fe7d44ebc77556f
 ##                       "COMPLETE"                       "COMPLETE"
-## 780bf9312c5abe8307266b3a3fe4f7b9 beaf032032a598651474f0ca452fd7c5
+## 733fe69bf1a40ba81ccf1b8dc87f7834 f7967e130e23a110292c7869fc852c7b
 ##                       "COMPLETE"                       "COMPLETE"
-## b683167b40b84e9256f820b00f6c8193 e66609d7a51e5f2bca8e487c6a9bc04e
+## a570d404eaa4ccfd00f65f6264be5baf 33ec811df041d1baee768f1468d038e1
 ##                       "COMPLETE"                        "PENDING"
 ```
 
@@ -1079,7 +1064,7 @@ obj$unsubmit(t$id)
 ```
 
 ```
-## [1] "OK"
+## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
 ```
 
 unsubmitting multiple times is safe, and will have no effect.
@@ -1089,7 +1074,7 @@ obj$unsubmit(t$id)
 ```
 
 ```
-## [1] "NOT_RUNNING"
+## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
 ```
 
 Alternatively you can use `obj$task_delete(t$id)` which unsubmits
@@ -1113,7 +1098,7 @@ t$result()
 ```
 
 ```
-## Error: task 8b4152dd2d61bd246f86181f826769f3 is unfetchable: CANCELLED
+## Error: task 5fe327414f69156fd93f904b14326892 is unfetchable: RUNNING
 ```
 
 The argument to `unsubmit` can be a vector.  For example, to
@@ -1140,7 +1125,10 @@ obj$unsubmit(grp$ids)
 ```
 
 ```
-## [1] "OK" "OK" "OK" "OK"
+## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
+## [2] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
+## [3] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
+## [4] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
 ```
 
 ### Deleting jobs

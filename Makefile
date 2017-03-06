@@ -53,8 +53,8 @@ website: staticdocs inst/web/install
 vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd vignettes/workers.Rmd
 	${RSCRIPT} -e "library(methods); devtools::build_vignettes(dependencies=FALSE)"
 
-vignettes/%.Rmd: vignettes/src/%.R
-	sh build_vignettes.sh
+# vignettes/%.Rmd: vignettes/src/%.R
+# 	sh build_vignettes.sh
 
 common_lib:
 	./inst/scripts/build_common_lib.R

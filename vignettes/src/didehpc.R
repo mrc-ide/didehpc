@@ -87,7 +87,7 @@ source("common.R")
 
 ## The DIDE cluster needs everything to be available on a filesystem
 ## that the cluster can read.  Practically this means the filesystems
-## //fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
+## `//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
 ## You probably have access to network shares that are specific to a
 ## project, too.  For Windows users these are probably mapped to
 ## drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -151,6 +151,9 @@ source("common.R")
 ##
 ## and then set only options (such as cluster and cores or template)
 ## that vary with a project.
+
+## If you use the "big" cluster, you can add `didehpc.cluster =
+## "fi--didemrchnb"` here.
 
 ## At the moment (while things change) it might be simplest to set
 ## things using the `didehpc::didehpc_config_global` function.  The

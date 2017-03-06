@@ -11,7 +11,6 @@ all: refresh quickstart.md didehpc.md workers.md
 	${RSCRIPT} -e 'knitr::knit("$<")'
 	sed -i.bak 's/[[:space:]]*$$//' $@
 	rm -f $@.bak
-	rm -rf contexts
 
 refresh:
 	cp -p `cat UPSTREAM`/vignettes/src/*.R .
