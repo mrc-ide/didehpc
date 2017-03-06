@@ -25,7 +25,8 @@ provision_cluster <- function(cluster, installed_action = "upgrade") {
                                          installed_action = installed_action,
                                          allow_missing = TRUE)
     if (!is.null(res$missing)) {
-      config <- suppressMessages(didehpc_config(cluster = cluster))
+      config <- suppressMessages(
+        didehpc_config(cluster = cluster, r_version = v))
       ans <- initialise_cluster_packages_build(res, config)
     }
   }

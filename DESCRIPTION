@@ -22,7 +22,7 @@ Imports:
     whisker,
     xml2 (>= 1.0.0)
 Suggests:
-    buildr (>= 0.0.2),
+    buildr (>= 0.0.3),
     drat,
     knitr,
     redux,
