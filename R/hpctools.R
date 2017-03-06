@@ -32,8 +32,9 @@ hpc_run <- function(cmd, ...) {
 }
 
 hpc_submit <- function(config, path, name) {
-  if (any(!file.exists(path))) {
-    stop("All paths must exist")
+  assert_scalar_character(path)
+  if (any(file.exists(path))) {
+    stop("path must exist")
   }
   args <- list(scheduler = config$cluster,
                jobtemplate = config$template)
@@ -48,7 +49,7 @@ hpc_submit <- function(config, path, name) {
   }
 
   ret <- hpc_run("job", "submit", args = c(args, path))
-  parse_job_submit(ret, length(path))
+  parse_job_submit(ret, 1L)
 }
 
 hpc_cancel <- function(cluster, dide_task_id) {

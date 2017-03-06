@@ -68,32 +68,24 @@ web_logged_in <- function() {
 }
 
 web_submit <- function(config, path, name) {
+  assert_scalar_character(path)
   is_windows <- windows_cluster(config$cluster)
   if (is_windows && any(!grepl("^\\\\\\\\", path))) {
     stop("All paths must be Windows network paths")
   }
 
   ## This is required for working with spaces in filenames; tested in
-  ## test-path-with-spaces.R; it's likely that a similar set of tests
-  ## using the HPC tools might be required.
-  i <- grepl(" ", path, fixed = TRUE)
-  if (any(i)) {
-    path[i] <- shQuote(path[i], if (is_windows) "cmd" else "sh")
+  ## test-3-path-with-spaces.R; it's likely that a similar set of
+  ## tweaks using the HPC tools will be required.
+  if (grepl(" ", path, fixed = TRUE)) {
+    path <- shQuote(path, if (is_windows) "cmd" else "sh")
   }
-
-  if (!is_windows) {
-    path <- paste("bash", path)
-  }
+  path_call <- paste(if (is_windows) "call" else "bash", path)
 
   if (is.null(name)) {
     name <- ""
-  } else if (length(name) != length(path)) {
+  } else if (length(name) != 1L) {
     stop("Incorrect number of names")
-  } else if (length(name) > 1L) {
-    ## TODO: Hack for now, later we'll newline collapse the names, but
-    ## that requires a tweak at the cluster level.
-    path <- sprintf('/jobname:"%s" "%s"', name, path)
-    name <- ""
   }
 
   workdir <- ""
@@ -108,7 +100,7 @@ web_submit <- function(config, path, name) {
     wd = encode64(workdir),
     se = encode64(stderr),
     so = encode64(stdout),
-    jobs = encode64(paste(path, collapse = "\n")),
+    jobs = encode64(path_call),
     dep = encode64(""),
     hpcfunc = "submit")
 
@@ -120,7 +112,8 @@ web_submit <- function(config, path, name) {
 
   txt <- httr::content(r, as = "text", encoding = "UTF-8")
   res <- strsplit(txt, "\n")[[1]]
-  parse_job_submit(res, length(path))
+  id <- parse_job_submit(res, 1L)
+  didehpc_joblog(config, id)
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
