@@ -1,12 +1,31 @@
+ guess_credentials <- function() {
+  credentials <- getOption("didehpc.credentials", NULL)
+  credentials_file <- "~/.smbcredentials"
+  if (file.exists(credentials)) {
+    read_credentials(credentials)
+  } else if (file.exists(credentials_file)) {
+    read_credentials(credentials_file)
+  } else {
+    user <- Sys_getenv(c("LOGNAME", "USER", "LNAME", "USERNAME"),
+                       NA_character_)
+    list(username = user)
+  }
+}
+
+prompt_credentials <- function() {
+  if (!interactive()) {
+    stop("Credentials file needed for non-interactive use")
+  }
+  credentials <- trimws(readline(prompt = "DIDE username: "))
+  if (credentials == "") {
+    stop("Invalid empty username")
+  }
+  credentials
+}
+
 get_credentials <- function(credentials, need_password = TRUE) {
   if (is.null(credentials)) {
-    if (!interactive()) {
-      stop("Credentials file needed for non-interactive use")
-    }
-    credentials <- trimws(readline(prompt = "DIDE username: "))
-    if (credentials == "") {
-      stop("Invalid empty username")
-    }
+    prompt_credentials()
   }
   ## Jesus.  Some cleaning here to do.
   ## Check that username/password is OK

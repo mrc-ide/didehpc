@@ -14,6 +14,16 @@ Sys_which <- function(name) {
   ret
 }
 
+Sys_getenv <- function(x, default = "") {
+  for (i in x) {
+    res <- Sys.getenv(i, NA_character_)
+    if (!is.na(res)) {
+      return(res)
+    }
+  }
+  default
+}
+
 curl_insecure <- function() {
   httr::config(ssl_verifypeer = 0)
 }
