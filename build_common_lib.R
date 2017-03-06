@@ -3,12 +3,12 @@
 devtools::load_all()
 PACKAGES <- c("context", # core package
               ## Additional didehpc system packages:
-              "rrq", "queuer", "Rpostgres", "redux",
+              "rrq", "queuer", "RPostgres", "redux",
               ## Large dependencies
               "BH", "stringi", "Rcpp")
 PATH <- "~/net/temp/didehpc"
 
-provision_cluster <- function(cluster, installed_action = "skip") {
+provision_cluster <- function(cluster, installed_action = "upgrade") {
   url_context <-
     paste0("file://", normalizePath("~/Documents/Projects/epi/cluster/drat"))
   src <- provisionr::package_sources(repos = url_context)
