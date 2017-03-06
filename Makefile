@@ -56,4 +56,7 @@ vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd vignettes/workers.Rmd
 vignettes/%.Rmd: vignettes/src/%.R
 	sh build_vignettes.sh
 
-.PHONY: all test document install vignettes website
+common_lib:
+	./inst/scripts/build_common_lib.R
+
+.PHONY: all test document install vignettes website common_lib
