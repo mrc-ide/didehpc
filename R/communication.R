@@ -83,6 +83,8 @@ didehpc_jobstatus <- function(config, state = "*", n = Inf) {
 ## This one is not available via the HPC tools I think.  Check with
 ## Wes though (I don't see it in the GUI either).
 didehpc_joblog <- function(config, dide_task_id) {
+  assert_scalar_character(dide_task_id)
+  stopifnot(grepl("^[0-9]+$", dide_task_id))
   if (use_hpctools(config)) {
     hpc_joblog(config, dide_task_id)
   } else {

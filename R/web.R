@@ -112,8 +112,7 @@ web_submit <- function(config, path, name) {
 
   txt <- httr::content(r, as = "text", encoding = "UTF-8")
   res <- strsplit(txt, "\n")[[1]]
-  id <- parse_job_submit(res, 1L)
-  didehpc_joblog(config, id)
+  parse_job_submit(res, 1L)
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.

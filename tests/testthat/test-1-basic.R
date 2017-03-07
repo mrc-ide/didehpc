@@ -26,6 +26,7 @@ test_that("basic", {
   res <- t$wait(10, progress = FALSE)
 
   expect_equal(t$status(), "COMPLETE")
+  expect_match(obj$dide_id(t), "^[0-9]+$")
 
   expect_is(res, "sessionInfo")
   expect_true(grepl("Windows Server", res$running, fixed = TRUE))
