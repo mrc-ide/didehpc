@@ -432,6 +432,13 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
     if (sum(is_home) == 1L) {
       ret$home <- path_mapping("home", dat[is_home, "local"],
                                dat[is_home, "remote"], "Q:")
+    } else {
+      ## For now, require that home is given otherwise there are a few
+      ## things that might not work (linux cluster in particular).
+      ## This would actually be OK for the windows cluster but needs
+      ## testing I think.  Test this with passing FALSE through and
+      ## see what I can make break
+      stop("I can't find your home directory!  Please mount it")
     }
   } else {
     if (inherits(home, "path_mapping")) {
@@ -673,6 +680,7 @@ check_linux_shares <- function(username, shares) {
     dat <- rematch::re_match(re_remote, remote)
     dat <- dat[, c("server", "path"), drop = FALSE]
     dat[, "server"] <- paste0(dat[, "server"], ".dide.ic.ac.uk")
+    base <- base[rep(1, nrow(dat)), , drop = FALSE]
     dat <- cbind(base, dat,
                  mountpoint = file.path(mount_root, basename(remote)))
 
