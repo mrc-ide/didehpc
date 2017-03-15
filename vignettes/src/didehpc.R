@@ -314,7 +314,7 @@ ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 
 ## ```r
 ## context::context_save(...,
-##   package_sources = context::package_sources(github = "richfitz/kitten"))
+##   package_sources = provisionr::package_sources(github = "richfitz/kitten"))
 ## ```
 
 ## Like with `devtools` you can use subdirectories, specific commits
