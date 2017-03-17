@@ -273,7 +273,15 @@ initialise_cluster_packages_build <- function(dat, config) {
   url <- sprintf("%s/%s_%s.%s", missing[, "Repository"],
                  missing[, "Package"], missing[, "Version"], "tar.gz")
   for (u in url) {
-    download.file(u, file.path(tmp, basename(u)))
+    ## The switch here and the file.copy should not be necessary, but
+    ## on windows I see download.file a truncated (~100 byte file)
+    ## rather than the full download.
+    dest <- file.path(tmp, basename(u))
+    if (grepl("^file://", u)) {
+      file.copy(provisionr:::file_unurl(u), dest, overwrite = TRUE)
+    } else {
+      download.file(u, dest, mode = "wb")
+    }
   }
   ## TODO: this is a 1 hour timeout which seems more than enough.  I
   ## think that we could make this configurable pretty happily but
