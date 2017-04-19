@@ -429,9 +429,8 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
   if (is.null(home)) {
     ## Try to detect where home is currently mounted because Oliver
     ## keeps his on O.
-    is_home <- string_starts_with(
-      tolower(dat[, "remote"]),
-      "\\\\fi--san03(\\.dide\\.ic\\.ac\\.uk)\\homes")
+    re <- "^\\\\\\\\fi--san03(\\.dide\\.ic\\.ac\\.uk)?\\\\homes"
+    is_home <- grepl(re, tolower(dat[, "remote"]))
     if (sum(is_home) == 1L) {
       ret$home <- path_mapping("home", dat[is_home, "local"],
                                dat[is_home, "remote"], "Q:")
