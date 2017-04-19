@@ -87,7 +87,7 @@ source("common.R")
 
 ## The DIDE cluster needs everything to be available on a filesystem
 ## that the cluster can read.  Practically this means the filesystems
-## `//fi--didef2/tmp` or `//fi--san02/homes/username` and the like.
+## `//fi--didef2/tmp` or `//fi--san03/homes/username` and the like.
 ## You probably have access to network shares that are specific to a
 ## project, too.  For Windows users these are probably mapped to
 ## drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -710,7 +710,7 @@ obj$unsubmit(grp$ids)
 ## In the address field write the name of the share you want to
 ## connect to.  Useful ones are
 
-## * `smb://fi--san02.dide.ic.ac.uk/homes/<username>` -- your home share
+## * `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
 ## * `smb://fi--didef2.dide.ic.ac.uk/tmp` -- the temporary share
 
 ## At some point in the process you should get prompted for your
@@ -736,7 +736,7 @@ obj$unsubmit(grp$ids)
 ## In your `/etc/fstab` file, add
 
 ## ```
-## //fi--san02/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+## //fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ## //fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ## ```
 
@@ -754,7 +754,7 @@ obj$unsubmit(grp$ids)
 ## So for example, I have:
 
 ## ```
-## //fi--san02/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+## //fi--san03/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ## //fi--didef2/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ## ```
 

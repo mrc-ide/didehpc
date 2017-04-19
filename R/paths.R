@@ -132,7 +132,7 @@ path_worker_logs <- function(root, id = NULL) {
 dide_home <- function(path, username) {
   assert_scalar_character(username)
   assert_character(path)
-  paste0("\\\\fi--san02\\homes\\", username, "\\", gsub("/", "\\\\", path))
+  paste0("\\\\fi--san03\\homes\\", username, "\\", gsub("/", "\\\\", path))
 }
 dide_temp <- function(path) {
   assert_character(path)
