@@ -71,7 +71,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
             c("dide_id", "log_path", "dide_cluster"))
   }
 
-  rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
+  rrq::workers_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
 rrq_redis_con <- function(config) {
