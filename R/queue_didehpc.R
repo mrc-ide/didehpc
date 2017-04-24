@@ -87,7 +87,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
       if (initialise) {
         self$sync_files()
-        initialise_cluster_packages(self)
+        self$provision()
       }
 
       ## This is needed for both use_workers and use_rrq, will do
@@ -114,7 +114,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         ## but the idea is right.  It probably just needs its own
         ## conditional.
         self$sync_files()
-        initialise_cluster_packages(self)
+        self$provision()
       }
     },
 
@@ -205,6 +205,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     worker_controller = function() {
       self$workers %||% stop("workers are not enabled")
+    },
+
+    provision = function(installed_action = "upgrade", refresh_drat = FALSE) {
+      initialise_cluster_packages(self, installed_action, refresh_drat)
     }
   ))
 
@@ -223,7 +227,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 ## installation.  It's really only worth doing that if the packages do
 ## not appear to be installed though so we will have to do a check
 ## here.
-initialise_cluster_packages <- function(obj) {
+initialise_cluster_packages <- function(obj, installed_action = "skip",
+                                        refresh_drat = FALSE) {
   lib_r_platform <- cran_platform(obj$config$cluster)
   lib_r_version <- obj$config$r_version
 
@@ -244,11 +249,20 @@ initialise_cluster_packages <- function(obj) {
   ##
   ## Something to force refreshing the drat on build too, but that
   ## will best be combined with non-versioned updates based on MD5.
+  ##
+  ## TODO: What happens with a package with compiled code that must
+  ## route through buildr?  It's all going to be bad basically!
   res <- context::provision_context(
-    obj$context, lib_r_platform, lib_r_version, allow_missing = TRUE,
-    additional_libraries = additional_libraries)
+    obj$context, lib_r_platform, lib_r_version,
+    allow_missing = TRUE,
+    installed_action = installed_action,
+    additional_libraries = additional_libraries,
+    refresh_drat = refresh_drat)
   if (!is.null(res$missing)) {
     initialise_cluster_packages_build(res, obj$config)
+  }
+  if (!is.null(res$package_sources)) {
+    obj$context$package_sources <- res$package_sources
   }
 
   obj$provisioned <- TRUE

@@ -36,3 +36,38 @@ wait_pending <- function(t, timeout = 20) {
   }
   stop("Did not start in time")
 }
+
+## This comes from provisionr's helper functions;
+alter_package_version <- function(path, increase) {
+  desc <- file.path(path, "DESCRIPTION")
+  d <- read.dcf(desc)
+  v <- alter_version(d[, "Version"], increase)
+  d[, "Version"] <- v
+  write.dcf(d, desc)
+  invisible(numeric_version(v))
+}
+
+alter_version <- function(v, increase) {
+  if (inherits(v, "numeric_version")) {
+    as_version <- TRUE
+  } else {
+    v <- numeric_version(v)
+    as_version <- FALSE
+  }
+  if (increase) {
+    i <- length(unclass(v)[[1L]])
+    v[[1L, i]] <- v[[1L, i]] + 1L
+  } else {
+    for (i in rev(seq_along(unclass(v)[[1L]]))) {
+      if (v[[1L, i]] > 0L) {
+        v[[1L, i]] <- v[[1L, i]] - 1L
+        break
+      }
+    }
+  }
+  if (as_version) v else as.character(v)
+}
+
+read_version <- function(path) {
+  numeric_version(read.dcf(file.path(path, "DESCRIPTION"), "Version")[[1]])
+}
