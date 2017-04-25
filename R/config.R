@@ -222,7 +222,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
   shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
-                              workdir, username, cluster)
+                              workdir, username, cluster, FALSE)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
@@ -422,18 +422,26 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 ##
 ## TODO: I don't know if this will work for all possible issues with
 ## path normalisation (e.g. if a mount occurs against a symlink?)
-dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
+dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
+                              silent = FALSE) {
   dat <- detect_mount()
   ret <- list()
 
   if (is.null(home)) {
     ## Try to detect where home is currently mounted because Oliver
     ## keeps his on O.
-    re <- "^\\\\\\\\fi--san03(\\.dide\\.ic\\.ac\\.uk)?\\\\homes"
+    re <- "^\\\\\\\\fi--san0[23](\\.dide\\.ic\\.ac\\.uk)?\\\\homes\\\\"
     is_home <- grepl(re, tolower(dat[, "remote"]))
     if (sum(is_home) == 1L) {
       ret$home <- path_mapping("home", dat[is_home, "local"],
                                dat[is_home, "remote"], "Q:")
+    } else if (sum(is_home) > 1L) {
+      stop(sprintf(
+        "I am confused about your home directory; there are %d choices:\n%s",
+        sum(is_home),
+        paste(sprintf("   - %s => %s",
+                      dat[is_home, "local"],
+                      dat[is_home, "remote"]), collapse = "\n")))
     } else {
       ## For now, require that home is given otherwise there are a few
       ## things that might not work (linux cluster in particular).
@@ -448,6 +456,21 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
     } else if (!identical(home, FALSE)) {
       ret$home <- path_mapping("home", home, dide_home("", username), "Q:")
     }
+  }
+
+  if (grepl("^//fi--san02(/.dide/.ic/.ac/.uk)?/homes",
+            ret$home$path_remote)) {
+    home_path_new <- sub("//fi--san02", "//fi--san03",
+                         ret$home$path_remote, fixed = TRUE)
+    msg <-
+      c("Your home drive uses the old 'fi--san02' mapping:",
+        paste0("    ", ret$home$path_remote),
+        sprintf("You'll need to remap this share (locally mounted at '%s')",
+                ret$home$path_local),
+        "to point at the new network location on 'fi--san03'",
+        paste0("    ", home_path_new))
+    warning(paste(msg, collapse = "\n"), immediate. = TRUE, call. = FALSE)
+    ret$home$path_remote <- home_path_new
   }
 
   if (is.null(temp)) {
@@ -511,8 +534,10 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster) {
     } else { # sum(i) == 0
       ## NOTE: This needs to be checked later when firing up the
       ## queue, but I believe that it is.
-      message(sprintf("Running out of place: %s is not on a network share",
-                      workdir))
+      if (!silent) {
+        message(sprintf("Running out of place: %s is not on a network share",
+                        workdir))
+      }
     }
   }
 

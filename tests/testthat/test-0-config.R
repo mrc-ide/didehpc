@@ -124,3 +124,35 @@ test_that("cluster alias", {
   expect_equal(didehpc_config(cluster = "linux")$cluster, "fi--didelxhn")
   expect_equal(didehpc_config(cluster = "SMALL")$cluster, "fi--dideclusthn")
 })
+
+test_that("old home directory", {
+  dat <- cbind(remote = c("\\\\fi--san03\\homes\\me",
+                          "\\\\fi--didef2\\tmp"),
+               local = c(tempfile(), tempfile()))
+  for (p in dat[, "local"]) {
+    dir.create(p)
+  }
+
+  ## First version is OK
+  expect_warning(
+    testthat::with_mock(
+      `didehpc:::detect_mount` = function() dat,
+      dide_detect_mount(NULL, NULL, NULL, NULL, "me", "fi--didemrchnb", TRUE)),
+    NA)
+
+  ## old location
+  dat[1, "remote"] <- "\\\\fi--san02\\homes\\me"
+  expect_warning(
+    testthat::with_mock(
+      `didehpc:::detect_mount` = function() dat,
+      dide_detect_mount(NULL, NULL, NULL, NULL, "me", "fi--didemrchnb", TRUE)),
+    "to point at the new network location")
+
+  ## two copies of home (this is close to what Marga had)
+  dat[2, "remote"] <- "\\\\fi--san03\\HOMES\\other"
+  expect_error(
+    testthat::with_mock(
+      `didehpc:::detect_mount` = function() dat,
+      dide_detect_mount(NULL, NULL, NULL, NULL, "me", "fi--didemrchnb", TRUE)),
+    "I am confused about your home directory; there are 2 choices")
+})
