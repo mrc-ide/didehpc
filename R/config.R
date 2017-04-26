@@ -544,7 +544,8 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
   if (cluster == "fi--didemrchnb") {
     for (i in seq_along(ret)) {
       ret[[i]]$path_remote <-
-               sub("^//(fi--didenas[0-9])/", "//\\1-app/", ret[[i]]$path_remote)
+               sub("^//(fi--didenas[1345])/", "//\\1-app/",
+                   ret[[i]]$path_remote)
     }
   }
   ret
