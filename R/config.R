@@ -593,7 +593,7 @@ rtools_info <- function(config) {
 }
 
 needs_rtools <- function(config, context) {
-  rtools_pkgs <- c("rstan", "odin")
+  rtools_pkgs <- c("rstan", "odin", "pomp")
   isTRUE(unname(config$rtools)) ||
     any(rtools_pkgs %in% unlist(context$packages))
 }
