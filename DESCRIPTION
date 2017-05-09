@@ -16,9 +16,9 @@ Imports:
     getPass,
     httr (>= 1.0.0),
     provisionr (>= 0.1.1),
-    queuer (>= 0.1.1),
+    queuer (>= 0.1.0),
     rematch,
-    storr (>= 1.0.3),
+    storr (>= 1.1.0),
     whisker,
     xml2 (>= 1.0.0)
 Suggests:
@@ -27,7 +27,7 @@ Suggests:
     knitr,
     redux,
     rmarkdown,
-    rrq,
+    rrq (>= 0.1.0),
     syncr,
     testthat
 RoxygenNote: 5.0.1
