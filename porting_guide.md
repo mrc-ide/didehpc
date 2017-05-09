@@ -8,6 +8,7 @@ There are a lot of changes behind the scenes in this update, and it has been unf
 * `context::package_sources` becomes `provisionr::package_sources` but little changes in how it works
 * `lapply` and `enqueue_bulk` move inside the queue object
 * `enqueue_bulk` have an argument name change from `do.call` to `do_call`
+* The first argument of `context::context_save` has changed from `root` to `path` (this is only an issue if you used a named argument here)
 
 A few functions changed name
 

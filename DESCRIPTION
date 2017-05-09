@@ -12,11 +12,11 @@ Depends:
     R (>= 3.2.2)
 Imports:
     crayon,
-    context (>= 0.0.10),
+    context (>= 0.1.1),
     getPass,
     httr (>= 1.0.0),
-    provisionr,
-    queuer (>= 0.0.4),
+    provisionr (>= 0.1.1),
+    queuer (>= 0.1.1),
     rematch,
     storr (>= 1.0.3),
     whisker,
@@ -32,3 +32,8 @@ Suggests:
     testthat
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
+Remotes:
+    dide-tools/context,
+    richfitz/provisionr,
+    richfitz/queuer,
+    richfitz/rrq
