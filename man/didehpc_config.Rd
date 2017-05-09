@@ -42,7 +42,9 @@ this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
 is "LinuxNodes".  See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
-for the job will fail).}
+for the job will fail).  For training purposes there is also a
+"Training" template, but you will only need to use this when
+instructed to.}
 
 \item{cores}{The number of cores to request.  This is mostly
 useful when using the \code{GeneralNodes} or \code{LinuxNodes}
