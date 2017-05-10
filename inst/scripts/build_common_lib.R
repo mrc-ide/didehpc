@@ -3,6 +3,8 @@ provision_cluster <- function(cluster, installed_action = "upgrade") {
   PACKAGES <- c("context", # core package
                 ## Additional didehpc system packages:
                 "rrq", "queuer", "RPostgres", "redux", "RPostgreSQL",
+                ## Support
+                "storr",
                 ## Large dependencies
                 "BH", "stringi", "Rcpp")
   PATH_LIB <- "~/net/temp/didehpc"
