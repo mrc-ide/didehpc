@@ -13,6 +13,9 @@ test_that("compiled dependency", {
                                package_sources = src)
   obj <- didehpc::queue_didehpc(ctx)
 
+  lib <- context:::path_library(path, "windows", obj$config$r_version)
+  expect_true("seagull" %in% dir(lib))
+
   t <- obj$enqueue(sessionInfo())
   res <- t$wait(10, progress = FALSE)
   expect_equal(names(res$otherPkgs), "seagull")
@@ -39,7 +42,7 @@ test_that("manual compilation", {
 
   pkg <-
     file.path(contrib, sprintf("%s_%s.tar.gz", p[["Package"]], p[["Version"]]))
-  bin <- buildr::build_binaries(pkg, BUILD_SERVER_WINDOWS, 8732)
+  bin <- buildr::build_binaries(pkg, BUILD_SERVER_WINDOWS, BUILD_SERVER_PORT)
 
   src2 <- provisionr::package_sources(local = bin)
   src2$build()
@@ -82,7 +85,7 @@ test_that("update binary", {
   ctx <- context::context_save(path,
                                packages = "seagull",
                                package_sources = src)
-  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
+  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = COMMON))
 
   path_lib_win <- context:::path_library(path, "windows", obj$config$r_version)
   path_drat <- file.path(path, "drat")

@@ -7,9 +7,10 @@ test_that("parallel", {
   on.exit(setwd(owd))
 
   path <- "context"
-  ctx <- context::context_save(path = path, packages = "ape",
+  ctx <- context::context_save(path = path,
+                               packages = "ape",
                                sources = "mysources-parallel.R")
-  config <- didehpc::didehpc_config(cores = 4L)
+  config <- didehpc::didehpc_config(cores = 4L, use_common_lib = COMMON)
   obj <- didehpc::queue_didehpc(ctx, config = config)
 
   ## All good so far:

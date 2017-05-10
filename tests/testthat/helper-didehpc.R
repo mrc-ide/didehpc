@@ -1,5 +1,8 @@
 DIDEHPC_PATH <- "~/net/home/cluster_testing"
-PROGRESS <- TRUE
+PROGRESS <- FALSE
+COMMON <- FALSE
+BUILD_SERVER_PORT <- 8733
+
 options("didehpc.cluster" = "fi--didemrchnb",
         ## this suppresses all submission progress; better would be to
         ## scope the exints within the test blocks?  It's necessary,

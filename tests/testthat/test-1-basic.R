@@ -42,7 +42,7 @@ test_that("basic", {
   expect_is(phy, "phylo")
 
   ## And a group:
-  grp <- obj$lapply(3:8, quote(make_tree), progress = FALSE)
-  trees <- grp$wait(20, progress = FALSE)
+  grp <- obj$lapply(3:8, quote(make_tree), progress = PROGRESS)
+  trees <- grp$wait(20, progress = PROGRESS)
   expect_true(all(vapply(trees, inherits, logical(1), "phylo")))
 })

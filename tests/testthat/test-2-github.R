@@ -53,7 +53,7 @@ test_that("upgrade", {
   ctx <- context::context_save(path = path,
                                packages = "hello",
                                package_sources = src)
-  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
+  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = COMMON))
 
   ## OK, now we get to this point I need to be able to provide an
   ## interface for clearing out packages, etc.  It might be nice to

@@ -27,6 +27,8 @@ test_that("rrq", {
   res2 <- t$wait(100)
   expect_is(res2, "matrix")
 
+  obj$stop_workers()
+
   ## Then scale up:
   ## t <- obj$enqueue(simulation(50, 20))
   ## ans <- obj$submit_workers(6, TRUE)

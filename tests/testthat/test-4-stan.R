@@ -13,7 +13,7 @@ test_that("stan", {
 
   path <- "context"
   ctx <- context::context_save(path = path, packages = "rstan")
-  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = TRUE))
+  obj <- didehpc::queue_didehpc(ctx, config = list(use_common_lib = COMMON))
 
   expect_true(obj$config$rtools)
   expect_true(needs_rtools(obj$config, obj$context))
