@@ -130,15 +130,14 @@ source("common.R")
 ## ## Configuration
 
 ## The configuration is handled in a two stage process.  First, some
-## bits that are machine specific are set using
-## `didehpc::didehpc_config_global`, which also looks in a number of
-## of R's options.  Then when a queue is created, further values can
-## be passed along via the `config` argument that will use the
-## "global" options as a default.
+## bits that are machine specific are set using `options` with option
+## names that are prefixed with `didehpc`.  Then when a queue is
+## created, further values can be passed along via the `config`
+## argument that will use the "global" options as a default.
 
 ## The reason for this separation is that ideally the machine-specific
 ## options will not end up in scripts, because that makes things less
-## portable (for example,we need to get your username, but your
+## portable (for example, we need to get your username, but your
 ## username is unlikely to work for your collaborators).
 
 ## Ideally in your ~/.Rprofile file, you will add something like:
@@ -162,7 +161,18 @@ source("common.R")
 ## on Windows domain machines) and the cluster you wish to use (if you
 ## don't want to use the small cluster).
 
+## There are lots of configuration options that can be tweaked, but I
+## suggest setting things this way *only* for things that will hold
+## for all projects.
+
 ## ### Credentials
+
+## Windows users will not need to provide anything unless they are on
+## a non-domain machine or they are in the unfortunate situation of
+## juggling multiple usernames across systems.  Non-domain machines
+## will need the credentials set as above.
+
+## Mac users will need to provide their username here as above.
 
 ## If you have a Linux system and have configured your smb mounts as
 ## described below, you might as well take advantage of this and set
@@ -170,19 +180,21 @@ source("common.R")
 ## for your password:
 ##
 ## ```r
-## didehpc::didehpc_config_global(credentials = "~/.smbcredentials")
+## options(didehpc.credentials = "~/.smbcredentials")
 ## ```
 
-## Mac users will need to provide their username here.
-##
-## ```r
-## didehpc::didehpc_config_global(credentials = "yourusername")
-## ```
+## ### Seeing the default configuration
 
-## Windows users will not need to provide anything unless they are on
-## a non-domain machine or they are in the unfortunate situation of
-## juggling multiple usernames across systems.  Non-domain machines
-## will need the credentials set as above.
+## To see the configuration that will be run if you don't do anything
+## (else), run:
+didehpc::didehpc_config()
+
+## In here you can see the cluster (here, `fi--didemrchnb`),
+## credentials and username, the job template (`GeneralNodes`),
+## information about the resources that will be requested (1 core) and
+## information on filesystem mappings.  There are a few other bits of
+## information that may be explained further down.  The possible
+## options are explained further in `?didehpc::didehpc_config`
 
 ## ### Additional shares
 
@@ -204,24 +216,17 @@ source("common.R")
 ##
 ## ```r
 ## share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
-## didehpc::didehpc_config_global(shares = share)
+## config <- didehpc::didehpc_config(shares = share)
 ## ```
 
-## If you have more than one share to map, pass them through as a
-## list.
+## If you have more than one share to map, pass them through as a list
+## (e.g., `didehpc::didehpc_config(shares = list(share1, share2, ...))`).
 
-## ### Seeing the default configuration
-
-## To see the configuration that will be run if you don't do anything
-## (else), run:
-didehpc::didehpc_config()
-
-## In here you can see the cluster (here, `fi--didemrchnb`),
-## credentials and username, the job template (`GeneralNodes`),
-## information about the resources that will be requested (1 core) and
-## information on filesystem mappings.  There are a few other bits of
-## information that may be explained further down.  The possible
-## options are explained further in `?didehpc::didehpc_config`
+## For most systems we `didehpc` will do a reasonable job of detecting
+## the shares that you are running on, so this should (hopefully) only
+## be necessary for detecting additional shares.  The issue there is
+## that you'll need to use absolute paths to refer to the resources
+## and that's going to complicate things...
 
 ## ## Contexts
 

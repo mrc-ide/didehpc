@@ -1,7 +1,7 @@
 ---
 title: "R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2017-03-06"
+date: "2017-05-10"
 output:
   rmarkdown::html_vignette:
     toc: true
@@ -118,15 +118,14 @@ Be sure to run this in a fresh session.
 ## Configuration
 
 The configuration is handled in a two stage process.  First, some
-bits that are machine specific are set using
-`didehpc::didehpc_config_global`, which also looks in a number of
-of R's options.  Then when a queue is created, further values can
-be passed along via the `config` argument that will use the
-"global" options as a default.
+bits that are machine specific are set using `options` with option
+names that are prefixed with `didehpc`.  Then when a queue is
+created, further values can be passed along via the `config`
+argument that will use the "global" options as a default.
 
 The reason for this separation is that ideally the machine-specific
 options will not end up in scripts, because that makes things less
-portable (for example,we need to get your username, but your
+portable (for example, we need to get your username, but your
 username is unlikely to work for your collaborators).
 
 Ideally in your ~/.Rprofile file, you will add something like:
@@ -150,7 +149,18 @@ the moment a minimal set of options is your credentials (not needed
 on Windows domain machines) and the cluster you wish to use (if you
 don't want to use the small cluster).
 
+There are lots of configuration options that can be tweaked, but I
+suggest setting things this way *only* for things that will hold
+for all projects.
+
 ### Credentials
+
+Windows users will not need to provide anything unless they are on
+a non-domain machine or they are in the unfortunate situation of
+juggling multiple usernames across systems.  Non-domain machines
+will need the credentials set as above.
+
+Mac users will need to provide their username here as above.
 
 If you have a Linux system and have configured your smb mounts as
 described below, you might as well take advantage of this and set
@@ -158,45 +168,8 @@ described below, you might as well take advantage of this and set
 for your password:
 
 ```r
-didehpc::didehpc_config_global(credentials = "~/.smbcredentials")
+options(didehpc.credentials = "~/.smbcredentials")
 ```
-
-Mac users will need to provide their username here.
-
-```r
-didehpc::didehpc_config_global(credentials = "yourusername")
-```
-
-Windows users will not need to provide anything unless they are on
-a non-domain machine or they are in the unfortunate situation of
-juggling multiple usernames across systems.  Non-domain machines
-will need the credentials set as above.
-
-### Additional shares
-
-If you refer to network shares in your functions, e.g., to refer to
-data, you'll need to map these too.  To do that, pass them as the
-`shares` argument to `didehpc_config_global`.
-
-To describe each share, use the `didehpc::path_mapping` function
-which takes arguments:
-
-* name: a desctiptive name for the share
-* `path_local`: the point where the share is mounted on your computer
-* `path_remote`: the network path that the share refers to (forward
-  slashes are much easier to enter here than backward slashes)
-* `drive_remote`: the drive this should be mapped to on the cluster.
-
-So to map your "M drive" to which points at `\\fi--didef2\malaria`
-to `M:` on the cluster you can write
-
-```r
-share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
-didehpc::didehpc_config_global(shares = share)
-```
-
-If you have more than one share to map, pass them through as a
-list.
 
 ### Seeing the default configuration
 
@@ -235,6 +208,38 @@ information about the resources that will be requested (1 core) and
 information on filesystem mappings.  There are a few other bits of
 information that may be explained further down.  The possible
 options are explained further in `?didehpc::didehpc_config`
+
+### Additional shares
+
+If you refer to network shares in your functions, e.g., to refer to
+data, you'll need to map these too.  To do that, pass them as the
+`shares` argument to `didehpc_config_global`.
+
+To describe each share, use the `didehpc::path_mapping` function
+which takes arguments:
+
+* name: a desctiptive name for the share
+* `path_local`: the point where the share is mounted on your computer
+* `path_remote`: the network path that the share refers to (forward
+  slashes are much easier to enter here than backward slashes)
+* `drive_remote`: the drive this should be mapped to on the cluster.
+
+So to map your "M drive" to which points at `\\fi--didef2\malaria`
+to `M:` on the cluster you can write
+
+```r
+share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+config <- didehpc::didehpc_config(shares = share)
+```
+
+If you have more than one share to map, pass them through as a list
+(e.g., `didehpc::didehpc_config(shares = list(share1, share2, ...))`).
+
+For most systems we `didehpc` will do a reasonable job of detecting
+the shares that you are running on, so this should (hopefully) only
+be necessary for detecting additional shares.  The issue there is
+that you'll need to use absolute paths to refer to the resources
+and that's going to complicate things...
 
 ## Contexts
 
@@ -331,19 +336,11 @@ ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
 ```
 
 ```
-## [ init:id   ]  8e8a73f0697ba7e3bb299da27a8ff5ba
+## [ open:db   ]  rds
 ```
 
 ```
-## [ init:db   ]  rds
-```
-
-```
-## [ init:path ]  contexts
-```
-
-```
-## [ save:id   ]  5e6121c412492f70cf81bf66a6061182
+## [ save:id   ]  1beec5e72c2b0c60d45e655b3b9b5e91
 ```
 
 ```
@@ -387,11 +384,11 @@ obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## Loading context 5e6121c412492f70cf81bf66a6061182
+## Loading context 1beec5e72c2b0c60d45e655b3b9b5e91
 ```
 
 ```
-## [ context   ]  5e6121c412492f70cf81bf66a6061182
+## [ context   ]  1beec5e72c2b0c60d45e655b3b9b5e91
 ```
 
 ```
@@ -412,46 +409,6 @@ obj <- didehpc::queue_didehpc(ctx)
 
 ```
 ## [ download  ]  package database
-```
-
-```
-## [ deps      ]  7 extra: crayon, digest, ids, openssl, R6, storr, uuid
-```
-
-```
-## [ cross     ]  ape
-```
-
-```
-## [ cross     ]  context
-```
-
-```
-## [ cross     ]  crayon
-```
-
-```
-## [ cross     ]  digest
-```
-
-```
-## [ cross     ]  ids
-```
-
-```
-## [ cross     ]  openssl
-```
-
-```
-## [ cross     ]  R6
-```
-
-```
-## [ cross     ]  storr
-```
-
-```
-## [ cross     ]  uuid
 ```
 
 If the above command does not throw an error, then you have
@@ -478,46 +435,47 @@ obj
 ## <queue_didehpc>
 ##   Inherits from: <queue_base>
 ##   Public:
-##     clone: function (deep = FALSE)
-##     cluster_load: function (cluster = NULL, nodes = TRUE)
+##     clone: function (deep = FALSE) 
+##     cluster_load: function (cluster = NULL, nodes = TRUE) 
 ##     config: didehpc_config
 ##     context: context
 ##     db: storr, R6
-##     dide_id: function (t)
-##     dide_log: function (t)
-##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
-##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)
-##     enqueue_bulk: function (X, FUN, ..., do_call = TRUE, envir = parent.frame(),
-##     initialize: function (context, config, root, initialise, sync)
-##     initialize_context: function ()
-##     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1,
+##     dide_id: function (t) 
+##     dide_log: function (t) 
+##     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL) 
+##     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL) 
+##     enqueue_bulk: function (X, FUN, ..., do_call = TRUE, envir = parent.frame(), 
+##     initialize: function (context, config, root, initialise, sync) 
+##     initialize_context: function () 
+##     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1, 
 ##     logged_in: TRUE
-##     login: function (always = TRUE)
-##     preflight: function ()
+##     login: function (always = TRUE) 
+##     preflight: function () 
+##     provision: function (installed_action = "upgrade", refresh_drat = FALSE) 
 ##     provisioned: TRUE
 ##     root: context_root
 ##     rrq: NULL
-##     rrq_controller: function ()
-##     stop_workers: function (worker_ids = NULL)
-##     submit: function (task_ids, names = NULL)
-##     submit_or_delete: function (task_ids, name = NULL)
-##     submit_workers: function (n, timeout = 600, progress = NULL)
+##     rrq_controller: function () 
+##     stop_workers: function (worker_ids = NULL) 
+##     submit: function (task_ids, names = NULL) 
+##     submit_or_delete: function (task_ids, name = NULL) 
+##     submit_workers: function (n, timeout = 600, progress = NULL) 
 ##     sync: NULL
-##     sync_files: function (verbose = TRUE, delete = TRUE)
-##     task_bundle_get: function (name)
-##     task_bundle_info: function ()
-##     task_bundle_list: function ()
-##     task_delete: function (task_ids)
-##     task_get: function (task_id, check_exists = TRUE)
-##     task_list: function ()
-##     task_result: function (task_id)
-##     task_status: function (task_ids = NULL, named = TRUE)
-##     task_status_dide: function (task_ids = NULL)
-##     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE)
+##     sync_files: function (verbose = TRUE, delete = TRUE) 
+##     task_bundle_get: function (name) 
+##     task_bundle_info: function () 
+##     task_bundle_list: function () 
+##     task_delete: function (task_ids) 
+##     task_get: function (task_id, check_exists = TRUE) 
+##     task_list: function () 
+##     task_result: function (task_id) 
+##     task_status: function (task_ids = NULL, named = TRUE) 
+##     task_status_dide: function (task_ids = NULL) 
+##     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE) 
 ##     templates: list
-##     unsubmit: function (t)
-##     workdir: /home/rich/net/home/cluster_testing/20170306/vignette
-##     worker_controller: function ()
+##     unsubmit: function (t) 
+##     workdir: /home/rich/net/home/cluster_testing/20170510/vignette
+##     worker_controller: function () 
 ##     workers: NULL
 ```
 
@@ -528,7 +486,13 @@ obj$task_list()
 ```
 
 ```
-## character(0)
+##  [1] "0d94ebd914dba0b3a086a2457add526b" "154bfc41d01fe93afba7cbc65f5e282f"
+##  [3] "2900f64fb2fbe24a35d2f031f22b4aa1" "81a8d0f38b06fedf278fd9de6f10e010"
+##  [5] "8979bae6a543b3415b549669ee16ed1f" "91c43f9dce04ae792aa80e51d2544462"
+##  [7] "9fab9d07557fefd8fc97084b1ba5fc14" "a0c2e91e7d3fc013b4d9ce4290e24f9a"
+##  [9] "ac0159aa2b473b7b4cb7ce4b23d8f8cc" "ba3beeadf57de040e27918beaea0f43f"
+## [11] "bf9866c05a89f0e98bab6fa0e9c4edba" "c804b84057ce80fb9f9e915d7a54405c"
+## [13] "cb686913f3009eef31e709aac3ddbdd6" "e1a8e7ecbd3a1322cd4ba039589e10bc"
 ```
 
 (of course there are no tasks yet because we haven't added any).
@@ -542,72 +506,72 @@ obj$cluster_load()
 ```
 ##           name free used total % used
 ## -------------- ---- ---- ----- ------
-##  fi--didemrc06    0   12    12   100%
-##  fi--didemrc07    0   12    12   100%
-##  fi--didemrc08    0   12    12   100%
-##  fi--didemrc09    0   12    12   100%
-##  fi--didemrc10    0   12    12   100%
-##  fi--didemrc11    0   12    12   100%
-##  fi--didemrc12    0   12    12   100%
-##  fi--didemrc13    1   23    24    96%
-##  fi--didemrc14   23    1    24     4%
-##  fi--didemrc15    0   24    24   100%
-##  fi--didemrc16    0   24    24   100%
-##  fi--didemrc17    0   12    12   100%
-##  fi--didemrc18    0   12    12   100%
-##  fi--didemrc19    0   12    12   100%
-##  fi--didemrc20    0   12    12   100%
-##  fi--didemrc21    0   12    12   100%
-##  fi--didemrc22    0   12    12   100%
-##  fi--didemrc23    0   12    12   100%
-##  fi--didemrc24    4    8    12    67%
-##  fi--didemrc25    0   12    12   100%
-##  fi--didemrc26    0   12    12   100%
-##  fi--didemrc27    0   12    12   100%
-##  fi--didemrc28    0   12    12   100%
-##  fi--didemrc38    0   16    16   100%
-##  fi--didemrc39   15    1    16     6%
-##  fi--didemrc40    0   16    16   100%
-##  fi--didemrc41    0   16    16   100%
-##  fi--didemrc42    0   16    16   100%
-##  fi--didemrc43    0   16    16   100%
+##  fi--didemrc06    8    4    12    33%
+##  fi--didemrc07   12    0    12     0%
+##  fi--didemrc08   12    0    12     0%
+##  fi--didemrc09   12    0    12     0%
+##  fi--didemrc10   12    0    12     0%
+##  fi--didemrc11   12    0    12     0%
+##  fi--didemrc12   12    0    12     0%
+##  fi--didemrc13   24    0    24     0%
+##  fi--didemrc14   24    0    24     0%
+##  fi--didemrc15   24    0    24     0%
+##  fi--didemrc16   24    0    24     0%
+##  fi--didemrc17   12    0    12     0%
+##  fi--didemrc18   12    0    12     0%
+##  fi--didemrc19   12    0    12     0%
+##  fi--didemrc20   12    0    12     0%
+##  fi--didemrc21   12    0    12     0%
+##  fi--didemrc22   12    0    12     0%
+##  fi--didemrc23   12    0    12     0%
+##  fi--didemrc24   12    0    12     0%
+##  fi--didemrc25   12    0    12     0%
+##  fi--didemrc26   12    0    12     0%
+##  fi--didemrc27   12    0    12     0%
+##  fi--didemrc28   12    0    12     0%
+##  fi--didemrc38   16    0    16     0%
+##  fi--didemrc39   16    0    16     0%
+##  fi--didemrc40   16    0    16     0%
+##  fi--didemrc41   16    0    16     0%
+##  fi--didemrc42   16    0    16     0%
+##  fi--didemrc43   16    0    16     0%
 ##  fi--didemrc44   16    0    16     0%
-##  fi--didemrc45   14    2    16    12%
+##  fi--didemrc45   16    0    16     0%
 ##  fi--didemrc46   16    0    16     0%
-##  fi--didemrc47    0   16    16   100%
-##  fi--didemrc48   14    2    16    12%
+##  fi--didemrc47   16    0    16     0%
+##  fi--didemrc48   16    0    16     0%
 ##  fi--didemrc49   16    0    16     0%
-##  fi--didemrc50   16    0    16     0%
-##  fi--didemrc51    0   20    20   100%
+##  fi--didemrc50    8    8    16    50%
+##  fi--didemrc51   20    0    20     0%
 ##  fi--didemrc52   20    0    20     0%
-##  fi--didemrc53    0   20    20   100%
-##  fi--didemrc54   12    8    20    40%
+##  fi--didemrc53   20    0    20     0%
+##  fi--didemrc54   20    0    20     0%
 ##  fi--didemrc55   20    0    20     0%
-##  fi--didemrc56    0   20    20   100%
+##  fi--didemrc56   20    0    20     0%
 ##  fi--didemrc57   20    0    20     0%
-##  fi--didemrc58   12    8    20    40%
+##  fi--didemrc58   20    0    20     0%
 ##  fi--didemrc59   20    0    20     0%
 ##  fi--didemrc60   20    0    20     0%
 ##  fi--didemrc61   20    0    20     0%
 ##  fi--didemrc62   20    0    20     0%
-##  fi--didemrc63    0   20    20   100%
-##  fi--didemrc64    0   20    20   100%
+##  fi--didemrc63   20    0    20     0%
+##  fi--didemrc64   20    0    20     0%
 ##  fi--didemrc65    0   32    32   100%
-##  fi--didemrc66   16   16    32    50%
-##  fi--didemrc67   24    0    24     0%
+##  fi--didemrc66   32    0    32     0%
+##  fi--didemrc67    0   24    24   100%
 ##  fi--didemrc68    0   24    24   100%
-##  fi--didemrc69   24    0    24     0%
+##  fi--didemrc69    0   24    24   100%
 ##  fi--didemrc70    0   24    24   100%
-##  fi--didemrc71   16    8    24    33%
+##  fi--didemrc71    0   24    24   100%
 ##  fi--didemrc72    0   24    24   100%
-##  fi--didemrc73   24    0    24     0%
+##  fi--didemrc73    0   24    24   100%
 ##  fi--didemrc74    0   24    24   100%
-##  fi--didemrc75    0   16    16   100%
-##  fi--didemrc76   14    2    16    12%
-##  fi--didemrc77    0   16    16   100%
-##  fi--didemrc78   28    0    28     0%
+##  fi--didemrc75   16    0    16     0%
+##  fi--didemrc76   16    0    16     0%
+##  fi--didemrc77   16    0    16     0%
+##  fi--didemrc78    0   28    28   100%
 ## -------------- ---- ---- ----- ------
-## fi--didemrchnb  445  699  1144    61%
+## fi--didemrchnb  880  264  1144    23%
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -625,32 +589,32 @@ sessionInfo()
 ```
 
 ```
-## R version 3.3.2 (2016-10-31)
+## R version 3.3.3 (2017-03-06)
 ## Platform: x86_64-pc-linux-gnu (64-bit)
-## Running under: Ubuntu 14.04.4 LTS
-##
+## Running under: Linux Mint 18
+## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C
-##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8
-##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C
-## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C
-##
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+##  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+## [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## 
 ## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  base
-##
+## [1] stats     graphics  grDevices utils     datasets  base     
+## 
 ## other attached packages:
 ## [1] ape_4.1
-##
+## 
 ## loaded via a namespace (and not attached):
-##  [1] lattice_0.20-34  ids_0.0.2        crayon_1.3.2     withr_1.0.2
-##  [5] digest_0.6.12    grid_3.3.2       context_0.1.0    R6_2.2.0
-##  [9] nlme_3.1-128     storr_1.0.3      formatR_1.4      magrittr_1.5
-## [13] evaluate_0.9     httr_1.2.1       stringi_1.1.1    curl_2.2
-## [17] rematch_1.0.1    uuid_0.1-2       whisker_0.3-2    queuer_0.1.0
-## [21] tools_3.3.2      stringr_1.1.0    parallel_3.3.2   didehpc_0.1.0
-## [25] provisionr_0.1.0 openssl_0.9.5    knitr_1.14       methods_3.3.2
+##  [1] Rcpp_0.12.10     lattice_0.20-34  ids_0.0.2        crayon_1.3.2    
+##  [5] digest_0.6.12    grid_3.3.3       context_0.1.1    R6_2.2.0        
+##  [9] nlme_3.1-131     storr_1.1.0      magrittr_1.5     evaluate_0.10   
+## [13] httr_1.2.1       stringi_1.1.3    curl_2.2         rematch_1.0.1   
+## [17] uuid_0.1-2       whisker_0.3-2    xml2_1.0.0       queuer_0.1.0    
+## [21] tools_3.3.3      stringr_1.2.0    parallel_3.3.3   rversions_1.0.3 
+## [25] didehpc_0.1.1    provisionr_0.1.1 knitr_1.15.1     methods_3.3.3
 ```
 
 To run this on the cluster, we wrap it in `obj$enqueue`.  This
@@ -671,23 +635,23 @@ t$wait(100)
 ## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
 ## Running under: Windows Server 2012 R2 x64 (build 9600)
-##
+## 
 ## locale:
-## [1] LC_COLLATE=English_United Kingdom.1252
-## [2] LC_CTYPE=English_United Kingdom.1252
+## [1] LC_COLLATE=English_United Kingdom.1252 
+## [2] LC_CTYPE=English_United Kingdom.1252   
 ## [3] LC_MONETARY=English_United Kingdom.1252
-## [4] LC_NUMERIC=C
-## [5] LC_TIME=English_United Kingdom.1252
-##
+## [4] LC_NUMERIC=C                           
+## [5] LC_TIME=English_United Kingdom.1252    
+## 
 ## attached base packages:
-## [1] methods   stats     graphics  grDevices utils     datasets  base
-##
+## [1] methods   stats     graphics  grDevices utils     datasets  base     
+## 
 ## other attached packages:
 ## [1] ape_4.1
-##
+## 
 ## loaded via a namespace (and not attached):
-## [1] R6_2.2.0        parallel_3.3.2  context_0.1.0   nlme_3.1-128
-## [5] grid_3.3.2      digest_0.6.12   storr_1.0.3     lattice_0.20-34
+## [1] R6_2.2.0        parallel_3.3.2  context_0.1.1   nlme_3.1-128   
+## [5] grid_3.3.2      digest_0.6.12   storr_1.1.0     lattice_0.20-34
 ```
 
 (see the next section for more information about this).
@@ -722,16 +686,16 @@ t
 ```
 ## <queuer_task>
 ##   Public:
-##     clone: function (deep = FALSE)
-##     context_id: function ()
-##     expr: function (locals = FALSE)
-##     id: 28f6d34ae79f6915b092adc8c1ea5413
-##     initialize: function (id, root, check_exists = TRUE)
-##     log: function (parse = TRUE)
-##     result: function (allow_incomplete = FALSE)
+##     clone: function (deep = FALSE) 
+##     context_id: function () 
+##     expr: function (locals = FALSE) 
+##     id: 40934f0a0d28ca7385b8eb201b1146b7
+##     initialize: function (id, root, check_exists = TRUE) 
+##     log: function (parse = TRUE) 
+##     result: function (allow_incomplete = FALSE) 
 ##     root: context_root
-##     status: function ()
-##     times: function (unit_elapsed = "secs")
+##     status: function () 
+##     times: function (unit_elapsed = "secs") 
 ##     wait: function (timeout, time_poll = 0.5, progress = NULL)
 ```
 
@@ -754,9 +718,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 28f6d34ae79f6915b092adc8c1ea5413 2017-03-06 17:28:58    <NA>     <NA>
+## 1 40934f0a0d28ca7385b8eb201b1146b7 2017-05-10 14:13:22    <NA>     <NA>
 ##     waiting running idle
-## 1 0.8520002      NA   NA
+## 1 0.5632026      NA   NA
 ```
 
 and you can try and get the result of running the task:
@@ -766,7 +730,7 @@ t$result()
 ```
 
 ```
-## Error: task 28f6d34ae79f6915b092adc8c1ea5413 is unfetchable: PENDING
+## Error: task 40934f0a0d28ca7385b8eb201b1146b7 is unfetchable: PENDING
 ```
 
 The `wait` function, used above, is like `result` but it will
@@ -778,12 +742,12 @@ t$wait(100)
 ```
 
 ```
-##
+## 
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
-##
+## 
 ## Tip labels:
-## 	t7, t9, t2, t10, t4, t8, ...
-##
+## 	t8, t7, t4, t9, t6, t10, ...
+## 
 ## Rooted; includes branch lengths.
 ```
 
@@ -794,12 +758,12 @@ t$result()
 ```
 
 ```
-##
+## 
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
-##
+## 
 ## Tip labels:
-## 	t7, t9, t2, t10, t4, t8, ...
-##
+## 	t8, t7, t4, t9, t6, t10, ...
+## 
 ## Rooted; includes branch lengths.
 ```
 
@@ -810,28 +774,30 @@ t$log()
 ```
 
 ```
-## [ hello     ]  2017-03-06 17:28:59.198
-## [ wd        ]  Q:/cluster_testing/20170306/vignette
+## [ hello     ]  2017-05-10 14:13:23.306
+## [ wd        ]  Q:/cluster_testing/20170510/vignette
 ## [ bootstrap ]
-## [ lib       ]  Q:\cluster_testing\20170306\vignette\contexts/lib/windows/3.3
-## [ init      ]  2017-03-06 17:28:59.245
-## [ hostname  ]  FI--DIDEMRC13
-## [ process   ]  9860
-## [ version   ]  0.1.0
+## [ lib       ]  Q:\cluster_testing\20170510\vignette\contexts/lib/windows/3.3
+## [ init      ]  2017-05-10 14:13:23.337
+## [ hostname  ]  FI--DIDEMRC06
+## [ process   ]  7664
+## [ version   ]  0.1.1
 ## [ open:db   ]  rds
-## [ context   ]  5e6121c412492f70cf81bf66a6061182
+## [ context   ]  1beec5e72c2b0c60d45e655b3b9b5e91
 ## [ library   ]  ape
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ parallel  ]  running as single core job
-## [ root      ]  Q:\cluster_testing\20170306\vignette\contexts
-## [ context   ]  5e6121c412492f70cf81bf66a6061182
-## [ task      ]  28f6d34ae79f6915b092adc8c1ea5413
+## [ root      ]  Q:\cluster_testing\20170510\vignette\contexts
+## [ context   ]  1beec5e72c2b0c60d45e655b3b9b5e91
+## [ task      ]  40934f0a0d28ca7385b8eb201b1146b7
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2017-03-06 17:28:59.589
+## [ start     ]  2017-05-10 14:13:23.618
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2017-03-06 17:28:59.682
+## [ end       ]  2017-05-10 14:13:23.681
+##     Warning message:
+##     package 'ape' was built under R version 3.3.3
 ```
 
 Warning messages and other output will be printed here.  So if you
@@ -847,6 +813,23 @@ need to look at this when a job seems to get stuck with status
 obj$dide_log(t)
 ```
 
+```
+## generated on host: wpia-dide136.dide.ic.ac.uk
+## generated on date: 2017-05-10
+## didehpc version: 0.1.1
+## context version: 0.1.1
+## running on: FI--DIDEMRC06
+## mapping Q: -> \\fi--san03\homes\rfitzjoh
+## The command completed successfully.
+## mapping T: -> \\fi--didef2\tmp
+## The command completed successfully.
+## working directory: Q:\cluster_testing\20170510\vignette
+## this is a single task
+## logfile: Q:\cluster_testing\20170510\vignette\contexts\logs\40934f0a0d28ca7385b8eb201b1146b7
+## Q:\cluster_testing\20170510\vignette>Rscript "Q:\cluster_testing\20170510\vignette\contexts\bin\task_run" "Q:\cluster_testing\20170510\vignette\contexts" 40934f0a0d28ca7385b8eb201b1146b7  1>"Q:\cluster_testing\20170510\vignette\contexts\logs\40934f0a0d28ca7385b8eb201b1146b7" 2>&1
+## Quitting
+```
+
 The queue knows which tasks it has created and you can list them:
 
 ```r
@@ -854,7 +837,14 @@ obj$task_list()
 ```
 
 ```
-## [1] "28f6d34ae79f6915b092adc8c1ea5413" "703372da1650125198623f941be88ae9"
+##  [1] "0d94ebd914dba0b3a086a2457add526b" "154bfc41d01fe93afba7cbc65f5e282f"
+##  [3] "2900f64fb2fbe24a35d2f031f22b4aa1" "40934f0a0d28ca7385b8eb201b1146b7"
+##  [5] "81a8d0f38b06fedf278fd9de6f10e010" "8979bae6a543b3415b549669ee16ed1f"
+##  [7] "91c43f9dce04ae792aa80e51d2544462" "9fab9d07557fefd8fc97084b1ba5fc14"
+##  [9] "a0c2e91e7d3fc013b4d9ce4290e24f9a" "a22fbfd8164deaeb92be20b35e6d46c9"
+## [11] "ac0159aa2b473b7b4cb7ce4b23d8f8cc" "ba3beeadf57de040e27918beaea0f43f"
+## [13] "bf9866c05a89f0e98bab6fa0e9c4edba" "c804b84057ce80fb9f9e915d7a54405c"
+## [15] "cb686913f3009eef31e709aac3ddbdd6" "e1a8e7ecbd3a1322cd4ba039589e10bc"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -875,7 +865,7 @@ id
 ```
 
 ```
-## [1] "28f6d34ae79f6915b092adc8c1ea5413"
+## [1] "40934f0a0d28ca7385b8eb201b1146b7"
 ```
 
 ```r
@@ -884,12 +874,12 @@ t2$result()
 ```
 
 ```
-##
+## 
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
-##
+## 
 ## Tip labels:
-## 	t7, t9, t2, t10, t4, t8, ...
-##
+## 	t8, t7, t4, t9, t6, t10, ...
+## 
 ## Rooted; includes branch lengths.
 ```
 
@@ -915,7 +905,7 @@ grp <- obj$lapply(sizes, make_tree)
 ```
 
 ```
-## Creating bundle: 'undivined_bufeo'
+## Creating bundle: 'uncongested_whiteeye'
 ```
 
 ```
@@ -942,12 +932,12 @@ grp$status()
 ```
 
 ```
-## a3fd7be6e08f9793fe1abd04a027027e e6bb1eb5f4494b772fe7d44ebc77556f
-##                       "COMPLETE"                       "COMPLETE"
-## 733fe69bf1a40ba81ccf1b8dc87f7834 f7967e130e23a110292c7869fc852c7b
-##                       "COMPLETE"                       "COMPLETE"
-## a570d404eaa4ccfd00f65f6264be5baf 33ec811df041d1baee768f1468d038e1
-##                       "COMPLETE"                        "PENDING"
+## 3ee2c8d30c31fa85c79cd44af033baab b55f28bcca450290225b527f78603c6d 
+##                       "COMPLETE"                       "COMPLETE" 
+## d259f16e58f2bd4db4631a97474767ab e9b5dbf29ee12fe43892b6367bf44050 
+##                       "COMPLETE"                       "COMPLETE" 
+## 2a114a3a22692539b6f0a22128edb5a3 b5f37eb02f8c2949ebc394c3cf110274 
+##                        "RUNNING"                        "PENDING"
 ```
 
 Wait until they are all complete and get the results
@@ -967,12 +957,12 @@ pars
 
 ```
 ##   a         b        c
-## 1 a 0.8983897 3.141593
-## 2 b 0.8983897 3.141593
-## 3 c 0.8983897 3.141593
-## 4 a 0.9446753 3.141593
-## 5 b 0.9446753 3.141593
-## 6 c 0.9446753 3.141593
+## 1 a 0.6607978 3.141593
+## 2 b 0.6607978 3.141593
+## 3 c 0.6607978 3.141593
+## 4 a 0.6291140 3.141593
+## 5 b 0.6291140 3.141593
+## 6 c 0.6291140 3.141593
 ```
 
 Suppose that we have a function that we want to run over this set
@@ -983,7 +973,7 @@ combine(pars$a[[1]], pars$b[[1]], pars$c[[1]])
 ```
 
 ```
-## [1] "a: 4.03998"
+## [1] "a: 3.80239"
 ```
 
 ```r
@@ -991,7 +981,7 @@ grp <- obj$enqueue_bulk(pars, combine, do_call = TRUE)
 ```
 
 ```
-## Creating bundle: 'potential_mockingbird'
+## Creating bundle: 'auspicial_bunny'
 ```
 
 ```
@@ -1010,421 +1000,18 @@ By default this runs
 * `combine(a = pars$a[[6]], b = pars$b[[6]], c = pars$c[[6]])`
 
 
-```r
-res <- grp$wait(120)
-res
-```
 
-```
-## [[1]]
-## [1] "a: 4.03998"
-##
-## [[2]]
-## [1] "b: 4.03998"
-##
-## [[3]]
-## [1] "c: 4.03998"
-##
-## [[4]]
-## [1] "a: 4.08627"
-##
-## [[5]]
-## [1] "b: 4.08627"
-##
-## [[6]]
-## [1] "c: 4.08627"
-```
 
-Running `do_call = FALSE` would run functions as a row-wise `lapply`.
 
-## Cancelling and stopping jobs
 
-Suppose you fire off a bunch of jobs and realise that you have the
-wrong data or they're all going to fail - you can stop them fairly
-easily.
 
-Here's a job that will run for an hour and return nothing:
 
-```r
-t <- obj$enqueue(Sys.sleep(3600))
-```
 
-Wait for the job to start up:
 
-```r
-while (t$status() == "PENDING") {
-  Sys.sleep(.5)
-}
-```
 
-Now that it's started it can be cancelled with the `$unsubmit` method:
 
-```r
-obj$unsubmit(t$id)
-```
 
-```
-## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-```
 
-unsubmitting multiple times is safe, and will have no effect.
 
-```r
-obj$unsubmit(t$id)
-```
 
-```
-## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-```
 
-Alternatively you can use `obj$task_delete(t$id)` which unsubmits
-the task and then deletes it.
-
-Note that the task is not actually deleted (see below); you can
-still get at the expression:
-
-```r
-t$expr()
-```
-
-```
-## Sys.sleep(3600)
-```
-
-but you cannot retrieve results:
-
-```r
-t$result()
-```
-
-```
-## Error: task 5fe327414f69156fd93f904b14326892 is unfetchable: RUNNING
-```
-
-The argument to `unsubmit` can be a vector.  For example, to
-unsubmit a whole task bundle:
-
-```r
-grp <- queuer::qlapply(rep(3600, 4), Sys.sleep, obj)
-```
-
-```
-## Creating bundle: 'auspicial_bunny'
-```
-
-```
-## [ bulk      ]  Creating 4 tasks
-```
-
-```
-## submitting 4 tasks
-```
-
-```r
-obj$unsubmit(grp$ids)
-```
-
-```
-## [1] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-## [2] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-## [3] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-## [4] "Syntax: HPCJobCancel scheduler user id1,id2,id3,id4...\nOutput: (TSV) ID Status\n                (Status = {OK,NOT_FOUND,WRONG_USER,WRONG_STATE,ID_ERROR})\n"
-```
-
-### Deleting jobs
-
-Deleting tasks is supported but it isn't entirely encouraged.  Not
-all of the functions behave well with missing tasks, so if you
-delete things and still have old task handles floating around you
-might get confusing results.
-
-There is a delete method (`obj$delete`) that will delete jobs,
-first unsubmitting it if it has been submitted.  It takes a vector
-of task ids as an argument.
-
-# Misc
-
-## Jobs that require compiled code
-
-If you are running stan, or Rcpp with `sourceCpp` (in the latter
-case you *should* be using a package) you'll need a working
-compiler.  For rstan this is detected automatically.  But in
-general, pass `rtools = TRUE` to `queue_didehpc()`.
-
-## Parallel computation on the cluster
-
-If you are running tasks that can use more than one core, you can
-request more resources for your task and use process level
-parallism with the `parallel` package.  To request 8 cores, you
-could run:
-
-```r
-didehpc::didehpc_config(cores = 8)
-```
-
-When your task starts, 8 cores will be allocated to it and a
-`parallel` cluster will be created.  You can use it with things
-like `parallel::parLapply`, specifying `cl` as `NULL`.  So if
-within your cluster job you needed to apply function `f` to a each
-element of a list `x`, you could write:
-
-```r
-run_f <- function(x) {
-  parallel::parLapply(NULL, x, f)
-}
-obj$enqueue(run_f(x))
-```
-
-The parallel bits can be embedded within larger blocks of code.
-All functions in `parallel` that take `cl` as a first argument can
-be used.  You do not need to (and should not) set up the cluster as
-this will happen automatically as the job starts.
-
-Alternatively, if you want to control cluster creation (e.g., you
-are using software that does this for you) then, pass
-`parallel = FALSE` to the config call:
-
-```r
-didehpc::didehpc_config(cores = 8, parallel = FALSE)
-```
-
-In this case you are responsible for setting up the cluster.
-
-As an alternative to requesting cores, you can use a different job
-template:
-
-```r
-didehpc::didehpc_config(template = "16Core")
-```
-
-which will reserve you the entire node.  Again, a cluster will be
-started with all availabe cores unless you also specify
-`parallel = FALSE`.
-
-## Running heaps of jobs without annoying your colleagues
-
-If you have thousands and thousands of jobs to submit at once you
-may not want to flood the cluster with them all at once.  Each job
-submission is relatively slow (the HPC tools that the web interface
-has to use are relatively slow).  The actual queue that the cluster
-uses doesn't seem to like processing tens of thousands of job, and
-can slow down.  And if you take up the whole cluster someone may
-come and knock on your office and complain at you.  At the same
-time, batching your jobs up into little bits and manually sending
-them off is a pain and work better done by a computer.
-
-An alternative is to submit a set of "workers" to the cluster, and
-then submit jobs to them.  This is done with the
-[`rrq`](https://github.com/richfitz/rrq) package, along with a
-[`redis`](http://redis.io) server running on the cluster.
-
-See the "workers" vignette for details.
-
-## `rstan`
-
-To use parallel chains, do something like:
-
-```r
-config <- didehpc::didehpc_config(cores = 4, parallel = FALSE)
-obj <- didehpc::queue_didehpc(ctx, config)
-```
-
-to request four cores or
-
-```r
-config <- didehpc::didehpc_config(wholenode = TRUE, parallel = FALSE)
-obj <- didehpc::queue_didehpc(ctx, config)
-```
-
-to request a whole node.  The `parallel = FALSE` tells the system not
-to set up a cluster for use with the `parallel` pacakge.  However,
-you'll still need to specify options(mc.cores) appropriately and I
-don't expose that yet...
-
-## Using Microsoft HPC tools
-
-This section is only relevant for Windows users who are used to
-using the Windows Job Manager software in Microsoft HPC Pack.
-
-If you have used the cluster tools from windows before, then you
-may be used to seeing your name show up in the HPC job manager.  By
-default if you submit jobs with this tool, you will not see that as
-they're actually submitted by a process on the cluster but run *as*
-you.  See the [cluster
-wiki](https://mrcdata.dide.ic.ac.uk/wiki/index.php/HPC_Web_Portal#Notes_for_Windows_Job_Manager_Users)
-for more information.
-
-If you want this behaviour back, `didehpc` can be configured to use
-the HPC tools on your computer.  Just run:
-
-```r
-didehpc::didehpc_config_global(hpctools = TRUE)
-```
-
-or
-
-```r
-options(didehpc.hpctools = TRUE)
-```
-
-before creating the queue, or run
-
-```r
-obj <- didehpc::queue(ctx, config = didehpc::didehpc_config(hpctools = TRUE))
-```
-
-This is experimental but I welcome feedback.
-
-# Mapping network drives
-
-For all operating systems, if you are on the wireless network you
-will need to connect to the VPN.  If you can get on a wired network
-you'll likely have a better time because the VPN and wireless
-network seems less stable in general.  Instructions for setting up
-a VPN are
-[here](https://www1.imperial.ac.uk/publichealth/departments/ide/it/remote)
-
-## Windows
-
-Your network drives are likely already mapped for you.  In fact you
-should not even need to map drives as fully qualified network names
-(e.g. `//fi--didef2/tmp`) should work for you.
-
-## Mac OS/X
-
-In Finder, go to `Go -> Connect to Server...` or press `Command-K`.
-In the address field write the name of the share you want to
-connect to.  Useful ones are
-
-* `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
-* `smb://fi--didef2.dide.ic.ac.uk/tmp` -- the temporary share
-
-At some point in the process you should get prompted for your
-username and password, but I can't remember what that looks like.
-
-These directories will be mounted at `/Volumes/<username>` and
-`/Volumes/tmp` (so the last bit of the filename will be used as the
-mountpoint within `Volumes`).  There may be a better way of doing
-this, and the connection will not be restablished automatically so
-if anyone has a better way let me know.
-
-## Linux
-
-This is what I have done for my computer and it seems to work,
-though it's not incredibly fast.  Full instructions are [on the Ubuntu community wiki](https://help.ubuntu.com/community/MountWindowsSharesPermanently).
-
-First, install cifs-utils
-
-```
-sudo apt-get install cifs-utils
-```
-
-In your `/etc/fstab` file, add
-
-```
-//fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-//fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-```
-
-where:
-
-- `<dide-username>` is your dide username without the `DIDE\` bit.
-- `<local-username>` is your local username (i.e., `echo $USER`).
-- `<local-userid>` is your local numeric user id (i.e. `id -u $USER`)
-- `<local-groupid>` is your local numeric group id (i.e. `id -g $USER`)
-- `<home-mount-point>` is where you want your DIDE home directory mounted
-- `<tmp-mount-point>` is where you want the DIDE temporary directory mounted
-
-**please back this file up before editing**.
-
-So for example, I have:
-
-```
-//fi--san03/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-//fi--didef2/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-```
-
-The file `.smbcredentials` contains
-
-```
-username=<dide-username>
-password=<dide-password>
-```
-
-and set this to be chmod 600 for a modicum of security, but be
-aware your password is stored in plaintext.
-
-This set up is clearly insecure.  I believe if you omit the
-credentials line you can have the system prompt you for a password
-interactively, but I'm not sure how that works with automatic
-mounting.
-
-Finally, run
-
-```
-mount -a
-```
-
-to mount all drives and with any luck it will all work and you
-don't have to do this until you get a new computer.
-
-# Running out of place
-
-The instructions above require that you are running on a network
-drive.  This might be inconvenient for people who run off the
-private network (e.g., mac users) or where you want to run things
-on the cluster part way through a project and don't want to copy
-everything over to a network drive.
-
-In this case there is (experimental) support for running "out of
-place" where the interaction with the cluster happens in a
-different directory to where your R session is running and where
-your files reside.  The wrinkle is getting the files you need
-synchronised.
-
-To do the syncronisation we use `rsync` via the
-[`syncr`](https://github.com/richfitz/syncr) package  Install it
-with:
-
-```r
-drat:::add("dide-tools")
-install.packages("syncr")
-```
-
-Then, when constructing the queue, you need to specify a working
-directory for the cluster that is on the shared drive.
-
-```r
-workdir <- "Q:/cluster/context"
-didehpc::didehpc_config_global(workdir = workdir)
-```
-
-When you construct the context, that needs to be on a network
-share, so you might write:
-
-```r
-root <- file.path(workdir, "contexts")
-ctx <- context::context_save(root, packages = "ape", sources = "mysources.R")
-```
-
-Then construct the queue as normal.
-
-```r
-obj <- didehpc::queue_didehpc(ctx)
-```
-
-This will automatically syncronise the sources, copying them if
-they need updating.
-
-You can also specify additional files to synchronise with the
-`sync` argument to `queue_didehpc`.
-
-If you had other files to synchronise they would be listed with the
-argument `sync` to `queue_didehpc`.  You can update the remote
-files by running
-
-```r
-obj$sync_files()
-```
-
-at any time.

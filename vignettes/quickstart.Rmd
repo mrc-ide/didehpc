@@ -1,7 +1,7 @@
 ---
 title: "Quickstart for R and the DIDE cluster"
 author: "Rich FitzJohn"
-date: "2017-03-06"
+date: "2017-05-10"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Quickstart for R and the DIDE cluster}
@@ -54,22 +54,50 @@ On windows if you are using a domain machine, you should need only
 to select the cluster you want to use
 
 ```r
-didehpc::didehpc_config_global(cluster = "fi--didemrchnb")
+options(didehpc.cluster = "fi--didemrchnb")
 ```
 
 Otherwise, and on any other platform you'll need to provide your username:
 
 ```r
-didehpc::didehpc_config_global(credentials = "yourusername",
-                               cluster = "fi--didemrchnb")
+options(didehpc.cluster = "fi--didemrchnb",
+        didehpc.username = "yourusername")
 ```
 
 If you are running Linux we can get both your username and password
 from the file you use to mount your network shares (see the main
 vignette for details)
 ```r
-didehpc::didehpc_config_global(credentials = "~/.smbcredentials",
-                               cluster = "fi--didemrchnb")
+options(didehpc.cluster = "fi--didemrchnb",
+        didehpc.credentials = "~/.smbcredentials")
+```
+
+You can see the default configuration with
+
+```r
+didehpc::didehpc_config()
+```
+
+```
+## <didehpc_config>
+##  - cluster: fi--didemrchnb
+##  - credentials: ~/.smbcredentials
+##  - username: rfitzjoh
+##  - build_server: builderhv.dide.ic.ac.uk
+##  - template: GeneralNodes
+##  - hpctools: FALSE
+##  - resource:
+##     - parallel: FALSE
+##     - count: 1
+##     - type: Cores
+##  - shares:
+##     - home: (local) /home/rich/net/home => //fi--san03/homes/rfitzjoh => Q: (remote)
+##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+##  - use_workers: FALSE
+##  - use_rrq: FALSE
+##  - worker_timeout: 600
+##  - rtools: FALSE
+##  - r_version: 3.3.2
 ```
 
 If this is the first time you have run this package, best to try
@@ -78,6 +106,8 @@ out the login proceedure with:
 ```r
 didehpc::web_login()
 ```
+
+because this unroots a number of problems early on.
 
 ## Describe your project dependencies so we can recreate that on the cluster
 
@@ -135,7 +165,7 @@ obj <- didehpc::queue_didehpc(ctx)
 ```
 
 ```
-## Loading context 6ec23cefaa6bbe4d6116ad352d514d5d
+## Loading context 2dac8c240b25e6eed974d5c4bed2b10b
 ```
 
 ```
@@ -186,6 +216,10 @@ obj <- didehpc::queue_didehpc(ctx)
 ## [ cross     ]  uuid
 ```
 
+```
+## [ cross     ]  MASS
+```
+
 Once you get to this point we're ready to start running things on
 the cluster.  Let's fire off a test to make sure that everything works OK:
 
@@ -217,11 +251,11 @@ t$wait(120)
 ## [1] methods   stats     graphics  grDevices utils     datasets  base
 ##
 ## other attached packages:
-## [1] ape_4.1     MASS_7.3-45
+## [1] ape_4.1     MASS_7.3-47
 ##
 ## loaded via a namespace (and not attached):
-## [1] R6_2.2.0        parallel_3.3.2  context_0.1.0   nlme_3.1-128
-## [5] grid_3.3.2      digest_0.6.12   storr_1.0.3     lattice_0.20-34
+## [1] R6_2.2.0        parallel_3.3.2  context_0.1.1   nlme_3.1-128
+## [5] grid_3.3.2      digest_0.6.12   storr_1.1.0     lattice_0.20-34
 ```
 
 You can use `t$result()` to get the result straight away (throwing
@@ -244,7 +278,7 @@ tree
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t7, t9, t1, t3, t10, ...
+## 	t1, t8, t5, t6, t9, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -261,7 +295,7 @@ t
 ##     clone: function (deep = FALSE)
 ##     context_id: function ()
 ##     expr: function (locals = FALSE)
-##     id: 9d639a2aae81df969f5a37b3b88a1542
+##     id: 154bfc41d01fe93afba7cbc65f5e282f
 ##     initialize: function (id, root, check_exists = TRUE)
 ##     log: function (parse = TRUE)
 ##     result: function (allow_incomplete = FALSE)
@@ -282,7 +316,7 @@ t$result()
 ## Phylogenetic tree with 10 tips and 9 internal nodes.
 ##
 ## Tip labels:
-## 	t8, t7, t9, t1, t3, t10, ...
+## 	t1, t8, t5, t6, t9, t7, ...
 ##
 ## Rooted; includes branch lengths.
 ```
@@ -317,9 +351,9 @@ t$times()
 
 ```
 ##                            task_id           submitted             started
-## 1 9d639a2aae81df969f5a37b3b88a1542 2017-03-06 17:28:29 2017-03-06 17:28:30
-##              finished  waiting    running      idle
-## 1 2017-03-06 17:28:31 1.592328 0.06250596 0.8534522
+## 1 154bfc41d01fe93afba7cbc65f5e282f 2017-05-10 14:13:06 2017-05-10 14:13:07
+##              finished waiting running      idle
+## 1 2017-05-10 14:13:07 1.11066 0.03125 0.5310295
 ```
 
 You may see negative numbers for "waiting" as the submitted time is
@@ -333,28 +367,31 @@ t$log()
 ```
 
 ```
-## [ hello     ]  2017-03-06 17:28:30.556
-## [ wd        ]  Q:/cluster_testing/20170306/vignette
+## [ hello     ]  2017-05-10 14:13:07.102
+## [ wd        ]  Q:/cluster_testing/20170510/vignette
 ## [ bootstrap ]
-## [ lib       ]  Q:\cluster_testing\20170306\vignette\contexts/lib/windows/3.3
-## [ init      ]  2017-03-06 17:28:30.603
-## [ hostname  ]  FI--DIDEMRC13
-## [ process   ]  5448
-## [ version   ]  0.1.0
+## [ lib       ]  Q:\cluster_testing\20170510\vignette\contexts/lib/windows/3.3
+## [ init      ]  2017-05-10 14:13:07.118
+## [ hostname  ]  FI--DIDEMRC06
+## [ process   ]  6544
+## [ version   ]  0.1.1
 ## [ open:db   ]  rds
-## [ context   ]  6ec23cefaa6bbe4d6116ad352d514d5d
+## [ context   ]  2dac8c240b25e6eed974d5c4bed2b10b
 ## [ library   ]  ape, MASS
 ## [ namespace ]
 ## [ source    ]  mysources.R
 ## [ parallel  ]  running as single core job
-## [ root      ]  Q:\cluster_testing\20170306\vignette\contexts
-## [ context   ]  6ec23cefaa6bbe4d6116ad352d514d5d
-## [ task      ]  9d639a2aae81df969f5a37b3b88a1542
+## [ root      ]  Q:\cluster_testing\20170510\vignette\contexts
+## [ context   ]  2dac8c240b25e6eed974d5c4bed2b10b
+## [ task      ]  154bfc41d01fe93afba7cbc65f5e282f
 ## [ expr      ]  make_tree(10)
-## [ start     ]  2017-03-06 17:28:30.978
+## [ start     ]  2017-05-10 14:13:07.430
 ##     I am building a tree!
 ## [ ok        ]
-## [ end       ]  2017-03-06 17:28:31.072
+## [ end       ]  2017-05-10 14:13:07.493
+##     Warning messages:
+##     1: package 'MASS' was built under R version 3.3.3
+##     2: package 'ape' was built under R version 3.3.3
 ```
 
 There is also a bit of DIDE specific logging that happens before
@@ -362,6 +399,23 @@ this point; if the job fails inexplicably the answer may be in:
 
 ```r
 obj$dide_log(t)
+```
+
+```
+## generated on host: wpia-dide136.dide.ic.ac.uk
+## generated on date: 2017-05-10
+## didehpc version: 0.1.1
+## context version: 0.1.1
+## running on: FI--DIDEMRC06
+## mapping Q: -> \\fi--san03\homes\rfitzjoh
+## The command completed successfully.
+## mapping T: -> \\fi--didef2\tmp
+## The command completed successfully.
+## working directory: Q:\cluster_testing\20170510\vignette
+## this is a single task
+## logfile: Q:\cluster_testing\20170510\vignette\contexts\logs\154bfc41d01fe93afba7cbc65f5e282f
+## Q:\cluster_testing\20170510\vignette>Rscript "Q:\cluster_testing\20170510\vignette\contexts\bin\task_run" "Q:\cluster_testing\20170510\vignette\contexts" 154bfc41d01fe93afba7cbc65f5e282f  1>"Q:\cluster_testing\20170510\vignette\contexts\logs\154bfc41d01fe93afba7cbc65f5e282f" 2>&1
+## Quitting
 ```
 
 ## Running a bunch of tasks
@@ -401,12 +455,12 @@ grp$status()
 ```
 
 ```
-## 7f470f20a55b9aedfa2478f4a772ec60 4bfba8db6a79a0d7679ce9de21367c8b
+## cb686913f3009eef31e709aac3ddbdd6 e1a8e7ecbd3a1322cd4ba039589e10bc
 ##                       "COMPLETE"                       "COMPLETE"
-## 0c8a5385ec92ed00dc240a58d984ffe8 0c3a7e06e56a14421444c4a9bd684e59
+## a0c2e91e7d3fc013b4d9ce4290e24f9a 91c43f9dce04ae792aa80e51d2544462
 ##                       "COMPLETE"                       "COMPLETE"
-## 36cf80260ac6d72dbcd03d1771e7ee4d 0cc0f4ec8ddd59e623e51c6ae741f8b9
-##                       "COMPLETE"                        "PENDING"
+## 9fab9d07557fefd8fc97084b1ba5fc14 0d94ebd914dba0b3a086a2457add526b
+##                        "RUNNING"                        "PENDING"
 ```
 
 Wait until they are all complete and get the results

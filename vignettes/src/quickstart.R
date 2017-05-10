@@ -66,27 +66,32 @@ source("common.R")
 ## to select the cluster you want to use
 
 ## ```r
-## didehpc::didehpc_config_global(cluster = "fi--didemrchnb")
+## options(didehpc.cluster = "fi--didemrchnb")
 ## ```
 
 ## Otherwise, and on any other platform you'll need to provide your username:
 ##
 ## ```r
-## didehpc::didehpc_config_global(credentials = "yourusername",
-##                                cluster = "fi--didemrchnb")
+## options(didehpc.cluster = "fi--didemrchnb",
+##         didehpc.username = "yourusername")
 ## ```
 
 ## If you are running Linux we can get both your username and password
 ## from the file you use to mount your network shares (see the main
 ## vignette for details)
 ## ```r
-## didehpc::didehpc_config_global(credentials = "~/.smbcredentials",
-##                                cluster = "fi--didemrchnb")
+## options(didehpc.cluster = "fi--didemrchnb",
+##         didehpc.credentials = "~/.smbcredentials")
 ## ```
+
+## You can see the default configuration with
+didehpc::didehpc_config()
 
 ## If this is the first time you have run this package, best to try
 ## out the login proceedure with:
 didehpc::web_login()
+
+## because this unroots a number of problems early on.
 
 ## ## Describe your project dependencies so we can recreate that on the cluster
 
