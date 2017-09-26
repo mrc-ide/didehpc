@@ -14,4 +14,3 @@ as the first (and only) argument.}
 \description{
 Overall cluster load for all clusters that you have access to.
 }
-

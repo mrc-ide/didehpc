@@ -6,19 +6,19 @@ Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
 Description: DIDE HPC support.
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/dide-tools/didehpc
-BugReports: https://github.com/dide-tools/didehpc/issues
+URL: https://github.com/mrc-ide/didehpc
+BugReports: https://github.com/mrc-ide/didehpc/issues
 Depends:
     R (>= 3.2.2)
 Imports:
     crayon,
-    context (>= 0.1.1),
+    context (>= 0.1.3),
     getPass,
     httr (>= 1.0.0),
-    provisionr (>= 0.1.1),
-    queuer (>= 0.1.0),
+    provisionr (>= 0.1.4),
+    queuer (>= 0.1.1),
     rematch,
-    storr (>= 1.1.0),
+    storr (>= 1.1.1),
     whisker,
     xml2 (>= 1.0.0)
 Suggests:
@@ -28,12 +28,12 @@ Suggests:
     redux,
     rmarkdown,
     rrq (>= 0.1.0),
-    syncr,
+    syncr (>= 0.0.3),
     testthat
 RoxygenNote: 5.0.1
 VignetteBuilder: knitr
 Remotes:
-    dide-tools/context,
-    richfitz/provisionr,
-    richfitz/queuer,
-    richfitz/rrq
+    mrc-ide/context,
+    mrc-ide/provisionr,
+    mrc-ide/queuer,
+    mrc-ide/rrq

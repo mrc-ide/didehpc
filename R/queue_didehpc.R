@@ -434,7 +434,7 @@ unsubmit_dide <- function(obj, task_ids) {
 
 check_rsync <- function(config) {
   requireNamespace("syncr", quietly = TRUE) ||
-    stop("Please install syncr; see https://dide-tools.github.io/didehpc")
+    stop("Please install syncr; see https://mrc-ide.github.io/didehpc")
   if (!syncr::has_rsync()) {
     if (is_windows()) {
       path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")

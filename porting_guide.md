@@ -30,14 +30,14 @@ and then install the new ones with either
 
 
 ```r
-drat:::add("dide-tools")
+drat:::add("mrc-ide")
 install.packages(c("didehpc", "buildr", "syncr"))
 ```
 
 or
 
 ```r
-source("https://dide-tools.github.io/didehpc/install")
+source("https://mrc-ide.github.io/didehpc/install")
 ```
 
 # Other practical changes

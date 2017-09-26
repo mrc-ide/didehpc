@@ -22,4 +22,3 @@ Create a queue object
 \details{
 Queues are R6 objects with many methods.  They need documenting still.
 }
-

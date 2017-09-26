@@ -50,14 +50,14 @@ source("common.R")
 ##
 ## ```r
 ## # install.package("drat") # if you don't have it already
-## drat:::add("dide-tools")
+## drat:::add("mrc-ide")
 ## install.packages("didehpc")
 ## ```
 
 ## Or, somewhat equivalently
 ##
 ## ```r
-## source("https://dide-tools.github.io/didehpc/install")
+## source("https://mrc-ide.github.io/didehpc/install")
 ## ```
 
 ## ## Describe your computer so we can find things

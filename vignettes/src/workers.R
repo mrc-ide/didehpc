@@ -27,23 +27,23 @@ source("common.R")
 
 ## An alternative is to submit a set of "workers" to the cluster, and
 ## then submit jobs to them.  This is done with the
-## [`rrq`](https://github.com/richfitz/rrq) package, along with a
+## [`rrq`](https://github.com/mrc-ide/rrq) package, along with a
 ## [`redis`](http://redis.io) server running on the cluster.
 
 ## To get started you will need to install the rrq package locally.
 ## This will also install [`redux`](https://github.com/richfitz/redux)
 ## which can be a bit of a pain to install on some platforms (talk to
-## Rich if you have trouble).
+## Rich if you have trouble, but it's on CRAN now so that should help).
 
 ## ```r
-## drat::add("dide-tools")
+## drat::add("mrc-ide")
 ## install.packages("rrq")
 ## ```
 ##
 ## or
 ##
 ## ```r
-## source("https://dide-tools.github.io/didehpc/install#extras")
+## source("https://mrc-ide.github.io/didehpc/install#extras")
 ## ```
 
 context::context_log_start()

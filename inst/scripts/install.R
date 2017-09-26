@@ -1,9 +1,9 @@
 ## Usage:
 ##
-## source("https://dide-tools.github.io/didehpc/install")
-## source("https://dide-tools.github.io/didehpc/install#extras")
-## source("https://dide-tools.github.io/didehpc/install#upgrade")
-## source("https://dide-tools.github.io/didehpc/install#upgrade,extras")
+## source("https://mrc-ide.github.io/didehpc/install")
+## source("https://mrc-ide.github.io/didehpc/install#extras")
+## source("https://mrc-ide.github.io/didehpc/install#upgrade")
+## source("https://mrc-ide.github.io/didehpc/install#upgrade,extras")
 ##
 ## Alternatively, we could put this on mrcdata:
 ##
@@ -54,7 +54,7 @@ local({
     install.packages("drat")
   }
 
-  drat:::add("dide-tools")
+  drat:::add("mrc-ide")
   if (!("provisionr" %in% installed)) {
     log("install", "provisionr")
     install.packages("provisionr")

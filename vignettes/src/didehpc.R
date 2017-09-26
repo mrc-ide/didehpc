@@ -38,14 +38,14 @@ source("common.R")
 ## that end up being created - templates, scripts, output files, etc.
 
 ## This set of packages
-## ([`didehpc`](https://github.com/dide-tools/didehpc),
-## [`queuer`](https://github.com/richfitz/queuer) and
-## [`context`](https://github.com/dide-tools/context), along with a
+## ([`didehpc`](https://github.com/mrc-ide/didehpc),
+## [`queuer`](https://github.com/mrc-ide/queuer) and
+## [`context`](https://github.com/mrc-ide/context), along with a
 ## couple of support packages
-## ([`provisionr`](https://github.com/richfitz/provisionr),
-## [`buildr`](https://github.com/richfitz/buildr),
-## [`syncr`](https://github.com/richfitz/syncr),
-## [`rrq`](https://github.com/richfitz/rrq) and
+## ([`provisionr`](https://github.com/mrc-ide/provisionr),
+## [`buildr`](https://github.com/mrc-ide/buildr),
+## [`syncr`](https://github.com/mrc-ide/syncr),
+## [`rrq`](https://github.com/mrc-ide/rrq) and
 ## [`storr`](https://github.com/richfitz/storr)) aims to remove the
 ## pain of getting everything set up, and getting cluster tasks
 ## running, and retrieving your results.
@@ -115,14 +115,14 @@ source("common.R")
 ##
 ## ```r
 ## # install.package("drat") # if you don't have it already
-## drat:::add("dide-tools")
+## drat:::add("mrc-ide")
 ## install.packages("didehpc")
 ## ```
 
 ## Or, somewhat equivalently
 ##
 ## ```r
-## source("https://dide-tools.github.io/didehpc/install")
+## source("https://mrc-ide.github.io/didehpc/install")
 ## ```
 
 ## Be sure to run this in a fresh session.
@@ -634,7 +634,7 @@ obj$unsubmit(grp$ids)
 
 ## An alternative is to submit a set of "workers" to the cluster, and
 ## then submit jobs to them.  This is done with the
-## [`rrq`](https://github.com/richfitz/rrq) package, along with a
+## [`rrq`](https://github.com/mrc-ide/rrq) package, along with a
 ## [`redis`](http://redis.io) server running on the cluster.
 
 ## See the "workers" vignette for details.
@@ -802,11 +802,11 @@ obj$unsubmit(grp$ids)
 ## synchronised.
 
 ## To do the syncronisation we use `rsync` via the
-## [`syncr`](https://github.com/richfitz/syncr) package  Install it
+## [`syncr`](https://github.com/mrc-ide/syncr) package  Install it
 ## with:
 ##
 ## ```r
-## drat:::add("dide-tools")
+## drat:::add("mrc-ide")
 ## install.packages("syncr")
 ## ```
 
