@@ -26,6 +26,10 @@ Documentation is a work in progress, but largely contained in two vignettes:
 * [The main vignette](https://mrc-ide.github.io/didehpc/vignettes/didehpc.html) contains full instructions and explanations about why some bits are needed.
 * There is a [quickstart guide](https://mrc-ide.github.io/didehpc/vignettes/quickstart.html) which is much shorter and will be quicker to glance through.
 
+## Known issues
+
+Issues are spread across a number of repositories so there is a waffle board to keep track of them here: https://waffle.io/mrc-ide/didehpc
+
 ## Installation
 
 The simplest approach is to run:
