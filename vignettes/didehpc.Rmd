@@ -26,9 +26,9 @@ next set of problems is dealing with the balloning set of files
 that end up being created - templates, scripts, output files, etc.
 
 This set of packages
-([`didehpc`](https://github.com/dide-tools/didehpc),
+([`didehpc`](https://github.com/mrc-ide/didehpc),
 [`queuer`](https://github.com/richfitz/queuer) and
-[`context`](https://github.com/dide-tools/context), along with a
+[`context`](https://github.com/mrc-ide/context), along with a
 couple of support packages
 ([`provisionr`](https://github.com/richfitz/provisionr),
 [`buildr`](https://github.com/richfitz/buildr),
@@ -103,14 +103,14 @@ Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
 
 ```r
 # install.package("drat") # if you don't have it already
-drat:::add("dide-tools")
+drat:::add("mrc-ide")
 install.packages("didehpc")
 ```
 
 Or, somewhat equivalently
 
 ```r
-source("https://dide-tools.github.io/didehpc/install")
+source("https://mrc-ide.github.io/didehpc/install")
 ```
 
 Be sure to run this in a fresh session.
