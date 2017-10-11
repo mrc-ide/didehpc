@@ -404,7 +404,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop("Cannot specify both wholenode and cores")
     }
     assert_scalar_integer(cores)
-    max_cores <- if (cluster == "fi--didemrchnb") 16 else 8
+    max_cores <- if (cluster == "fi--didemrchnb") 64 else 12
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
