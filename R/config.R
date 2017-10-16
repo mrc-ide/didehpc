@@ -477,7 +477,7 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
 
   if (is.null(temp)) {
     is_temp <- string_starts_with(tolower(dat[, "remote"]),
-                                  "\\\\fi--didef2\\tmp")
+                                  "\\\\fi--didef3\\tmp")
     if (sum(is_temp) == 1L) {
       ret$temp <- path_mapping("temp", dat[is_temp, "local"],
                                dide_temp(""), "T:")
@@ -552,7 +552,6 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
   }
   ret
 }
-
 available_drive <- function(shares) {
   used <- toupper(substr(vcapply(shares, "[[", "drive_remote"), 1, 1))
   paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
@@ -581,13 +580,13 @@ rtools_info <- function(config) {
   tmpdrive <- NULL
 
   for (s in config$shares) {
-    if (grepl("//fi--didef2/tmp/?", tolower(unname(s$path_remote)))) {
+    if (grepl("//fi--didef3/tmp/?", tolower(unname(s$path_remote)))) {
       tmpdrive <- s$drive_remote
       break
     }
   }
   if (is.null(tmpdrive)) {
-    tmpdrive <- "//fi--didef2/tmp"
+    tmpdrive <- "//fi--didef3/tmp"
   }
   rtools_versions(config$r_version, tmpdrive)
 }

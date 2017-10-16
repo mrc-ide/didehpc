@@ -37,13 +37,13 @@ prepare_path <- function(path, mappings, error = TRUE) {
 ##'   written in \code{/etc/fstab})
 ##'
 ##' @param path_remote The \emph{network path} for this drive.  It
-##'   will look something like \code{\\\\fi--didef2\\tmp\\}.
+##'   will look something like \code{\\\\fi--didef3\\tmp\\}.
 ##'   Unfortunately backslashes are really hard to get right here and
 ##'   you will need to use twice as many as you expect (so \emph{four}
 ##'   backslashes at the beginning and then two for each separator.
 ##'   If this makes you feel bad know that you are not alone:
 ##'   https://xkcd.com/1638 -- alternatively you may use forward
-##'   slashes in place of backslashes (e.g. //fi--didef2/tmp)
+##'   slashes in place of backslashes (e.g. //fi--didef3/tmp)
 ##'
 ##' @param drive_remote The place to mount the drive on the cluster.
 ##'   We're probably going to mount things at Q: and T: already so
@@ -136,7 +136,7 @@ dide_home <- function(path, username) {
 }
 dide_temp <- function(path) {
   assert_character(path)
-  paste0("\\\\fi--didef2\\tmp\\", "\\", gsub("/", "\\\\", path))
+  paste0("\\\\fi--didef3\\tmp\\", "\\", gsub("/", "\\\\", path))
 }
 
 detect_mount_fail <- function() {
