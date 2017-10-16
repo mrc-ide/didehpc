@@ -742,7 +742,7 @@ obj$unsubmit(grp$ids)
 
 ## ```
 ## //fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-## //fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+## //fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,vers=2.0,sec=ntlmssp,iocharset=utf8 0  0
 ## ```
 
 ## where:
