@@ -127,7 +127,7 @@ test_that("cluster alias", {
 
 test_that("old home directory", {
   dat <- cbind(remote = c("\\\\fi--san03\\homes\\me",
-                          "\\\\fi--didef2\\tmp"),
+                          "\\\\fi--didef3\\tmp"),
                local = c(tempfile(), tempfile()))
   for (p in dat[, "local"]) {
     dir.create(p)

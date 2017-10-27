@@ -87,7 +87,7 @@ source("common.R")
 
 ## The DIDE cluster needs everything to be available on a filesystem
 ## that the cluster can read.  Practically this means the filesystems
-## `//fi--didef2/tmp` or `//fi--san03/homes/username` and the like.
+## `//fi--didef3/tmp` or `//fi--san03/homes/username` and the like.
 ## You probably have access to network shares that are specific to a
 ## project, too.  For Windows users these are probably mapped to
 ## drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -211,11 +211,11 @@ didehpc::didehpc_config()
 ##   slashes are much easier to enter here than backward slashes)
 ## * `drive_remote`: the drive this should be mapped to on the cluster.
 
-## So to map your "M drive" to which points at `\\fi--didef2\malaria`
+## So to map your "M drive" to which points at `\\fi--didef3\malaria`
 ## to `M:` on the cluster you can write
 ##
 ## ```r
-## share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+## share <- didehpc::path_mapping("malaria", "M:", "//fi--didef3/malaria", "M:")
 ## config <- didehpc::didehpc_config(shares = share)
 ## ```
 
@@ -707,7 +707,7 @@ obj$unsubmit(grp$ids)
 
 ## Your network drives are likely already mapped for you.  In fact you
 ## should not even need to map drives as fully qualified network names
-## (e.g. `//fi--didef2/tmp`) should work for you.
+## (e.g. `//fi--didef3/tmp`) should work for you.
 
 ## ## Mac OS/X
 
@@ -716,7 +716,7 @@ obj$unsubmit(grp$ids)
 ## connect to.  Useful ones are
 
 ## * `smb://fi--san03.dide.ic.ac.uk/homes/<username>` -- your home share
-## * `smb://fi--didef2.dide.ic.ac.uk/tmp` -- the temporary share
+## * `smb://fi--didef3.dide.ic.ac.uk/tmp` -- the temporary share
 
 ## At some point in the process you should get prompted for your
 ## username and password, but I can't remember what that looks like.
@@ -742,7 +742,7 @@ obj$unsubmit(grp$ids)
 
 ## ```
 ## //fi--san03/homes/<dide-username> <home-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-## //fi--didef2/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,vers=2.0,sec=ntlmssp,iocharset=utf8 0  0
+## //fi--didef3/tmp <tmp-mount-point> cifs uid=<local-userid>,gid=<local-groupid>,credentials=/home/<local-username>/.smbcredentials,domain=DIDE,vers=2.0,sec=ntlmssp,iocharset=utf8 0  0
 ## ```
 
 ## where:
@@ -760,7 +760,7 @@ obj$unsubmit(grp$ids)
 
 ## ```
 ## //fi--san03/homes/rfitzjoh /home/rich/net/home cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
-## //fi--didef2/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
+## //fi--didef3/tmp /home/rich/net/temp cifs uid=1000,gid=1000,credentials=/home/rich/.smbcredentials,domain=DIDE,sec=ntlmssp,iocharset=utf8 0  0
 ## ```
 
 ## The file `.smbcredentials` contains

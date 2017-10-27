@@ -75,7 +75,7 @@ and the packages will arrange for them to be saved and reloaded.
 
 The DIDE cluster needs everything to be available on a filesystem
 that the cluster can read.  Practically this means the filesystems
-`//fi--didef2/tmp` or `//fi--san03/homes/username` and the like.
+`//fi--didef3/tmp` or `//fi--san03/homes/username` and the like.
 You probably have access to network shares that are specific to a
 project, too.  For Windows users these are probably mapped to
 drives (`Q:` or `T:` or similar) already, but for other platforms
@@ -194,7 +194,7 @@ didehpc::didehpc_config()
 ##     - type: Cores
 ##  - shares:
 ##     - home: (local) /home/rich/net/home => //fi--san03/homes/rfitzjoh => Q: (remote)
-##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+##     - temp: (local) /home/rich/net/temp => //fi--didef3/tmp => T: (remote)
 ##  - use_workers: FALSE
 ##  - use_rrq: FALSE
 ##  - worker_timeout: 600
@@ -224,11 +224,11 @@ which takes arguments:
   slashes are much easier to enter here than backward slashes)
 * `drive_remote`: the drive this should be mapped to on the cluster.
 
-So to map your "M drive" to which points at `\\fi--didef2\malaria`
+So to map your "M drive" to which points at `\\fi--didef3\malaria`
 to `M:` on the cluster you can write
 
 ```r
-share <- didehpc::path_mapping("malaria", "M:", "//fi--didef2/malaria", "M:")
+share <- didehpc::path_mapping("malaria", "M:", "//fi--didef3/malaria", "M:")
 config <- didehpc::didehpc_config(shares = share)
 ```
 
@@ -821,7 +821,7 @@ obj$dide_log(t)
 ## running on: FI--DIDEMRC06
 ## mapping Q: -> \\fi--san03\homes\rfitzjoh
 ## The command completed successfully.
-## mapping T: -> \\fi--didef2\tmp
+## mapping T: -> \\fi--didef3\tmp
 ## The command completed successfully.
 ## working directory: Q:\cluster_testing\20170510\vignette
 ## this is a single task
