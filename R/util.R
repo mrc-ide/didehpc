@@ -104,6 +104,10 @@ dquote <- function(x) {
   sprintf('"%s"', x)
 }
 
+squote <- function(x) {
+  sprintf("'%s'", x)
+}
+
 backup <- function(filename, verbose = TRUE, move = FALSE) {
   if (file.exists(filename)) {
     pat <- sprintf("%s\\.([0-9]+)", basename(filename))

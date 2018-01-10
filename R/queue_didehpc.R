@@ -124,6 +124,19 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
           message("Already logged in")
         } else {
           web_login(self$config)
+          valid <- web_headnodes()
+          if (!(self$config$cluster %in% valid)) {
+            web_logout()
+            if (length(valid) == 0L) {
+              fmt <- "You do not have access to any cluster"
+            } else if (length(valid) == 1L) {
+              fmt <- "You do not have access to '%s'; try '%s'"
+            } else {
+              fmt <- "You do not have access to '%s'; try one of %s"
+              valid <- paste(squote(valid), collapse = ", ")
+            }
+            stop(sprintf(fmt, self$config$cluster, valid))
+          }
         }
         self$logged_in <- TRUE
       }
