@@ -203,28 +203,28 @@ detect_mount_windows2 <- function(formatstr) {
 }
 
 detect_mount_windows <- function() {
-
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
-
-  methods <- c(paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"),
-               "csv")
-  meth <- 1
-  res <- detect_mount_windows2(methods[meth])
-  while (! (res$success)) {
-    meth <- meth + 1
-    if (meth <= length(methods)) {
-      res <- detect_mount_windows2(methods[meth])
-    } else {
-      stop(sprintf("Error: Could not determine windows mounts using wmic\n%s", res$result))
-    }
-  }
-
+  res <- wmic()
   path <- tempfile()
-  writeLines(res$result, path)
+  writeLines(res, path)
   on.exit(file.remove(path))
   dat <- read.csv(path, stringsAsFactors = FALSE)
   cbind(remote = dat$RemoteName, local = dat$LocalName)
+}
+
+wmic <- function() {
+  windir <- Sys.getenv("WINDIR", "C:\\windows")
+  
+  methods <- c(paste0(windir, "\\System32\\wbem\\en-US\\csv"),
+               paste0(windir, "\\System32\\wbem\\en-GB\\csv"),
+               "csv")
+  
+  for (meth in methods) {
+    res <- detect_mount_windows2(meth)
+    if (res$success) {
+      return(res$result)
+    }
+  }
+  stop(sprintf("Error: Could not determine windows mounts using wmic\n%s", res$result))
 }
 
 detect_mount <- function() {
