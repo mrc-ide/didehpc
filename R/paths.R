@@ -181,18 +181,49 @@ detect_mount_unix <- function() {
   cbind(remote = remote, local = m[, "local"])
 }
 
-detect_mount_windows <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
-  format_csv <- sprintf('/format:"%s\\System32\\wbem\\en-US\\csv"', windir)
-
-  ## Using stdout = path does not work here, yielding a file that has
-  ## embedded NULs and failing to be read.
+detect_mount_windows2 <- function(formatstr) {
+  format_csv <- sprintf('/format:"%s"', formatstr)
   path <- tempfile()
-  tmp <- system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)
-  writeLines(tmp[-1], path)
+  res <- try(
+
+    ## Using stdout = path does not work here, yielding a file that has
+    ## embedded NULs and failing to be read.
+
+    suppressWarnings(
+      system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)),
+    silent = TRUE)
+
+  status <- attr(res, "status")
+
+  if (inherits(res, "try-error") || (!is.null(status) && status != 0L)) {
+    list(success = FALSE, result = res)
+  } else {
+    list(success = TRUE, result = res)
+  }
+}
+
+detect_mount_windows <- function() {
+
+  windir <- Sys.getenv("WINDIR", "C:\\windows")
+
+  methods <- c(paste0(windir, "\\System32\\wbem\\en-US\\csv"),
+               paste0(windir, "\\System32\\wbem\\en-GB\\csv"),
+               "csv")
+  meth <- 1
+  res <- detect_mount_windows2(methods[meth])
+  while (! (res$success)) {
+    meth <- meth + 1
+    if (meth <= length(methods)) {
+      res <- detect_mount_windows2(methods[meth])
+    } else {
+      stop(sprintf("Error: Could not determine windows mounts using wmic\n%s", res$result))
+    }
+  }
+
+  path <- tempfile()
+  writeLines(res$result, path)
   on.exit(file.remove(path))
   dat <- read.csv(path, stringsAsFactors = FALSE)
-
   cbind(remote = dat$RemoteName, local = dat$LocalName)
 }
 
