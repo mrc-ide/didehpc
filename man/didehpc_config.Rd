@@ -6,11 +6,11 @@
 \title{Configuration}
 \usage{
 didehpc_config(credentials = NULL, home = NULL, temp = NULL,
-  cluster = NULL, build_server = NULL, shares = NULL, template = NULL,
-  cores = NULL, wholenode = NULL, parallel = NULL, hpctools = NULL,
-  workdir = NULL, use_workers = NULL, use_rrq = NULL,
-  worker_timeout = NULL, rtools = NULL, r_version = NULL,
-  use_common_lib = NULL)
+  cluster = NULL, build_server_host = NULL, build_server_port = NULL,
+  shares = NULL, template = NULL, cores = NULL, wholenode = NULL,
+  parallel = NULL, hpctools = NULL, workdir = NULL, use_workers = NULL,
+  use_rrq = NULL, worker_timeout = NULL, rtools = NULL,
+  r_version = NULL, use_common_lib = NULL)
 
 didehpc_config_global(...)
 }
@@ -28,8 +28,9 @@ you will be prompted graphically for your password).}
 \code{\link{valid_clusters}()} or one of the aliases
 (small/little/dide/ide; big/mrc; linux).}
 
-\item{build_server}{Currently ignored, but will soon be a windows
-build server for bespoke binary packages.}
+\item{build_server_host, build_server_port}{Host and port for a
+\code{buildr} server for custom binary packages.  The defaults
+should generally work.}
 
 \item{shares}{Optional additional share mappings.  Can either be a
 single path mapping (as returned by \code{\link{path_mapping}}

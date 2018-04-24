@@ -292,10 +292,8 @@ initialise_cluster_packages_build <- function(dat, config) {
   dir.create(tmp)
   on.exit(unlink(tmp, recursive = TRUE))
 
-  buildr_host <- config$build_server
-  buildr_port <-
-    as.integer(paste(c("87", unclass(config$r_version)[[1]][1:2]),
-                     collapse = ""))
+  build_server_host <- config$build_server_host
+  build_server_port <- config$build_server_port
 
   url <- sprintf("%s/%s_%s.%s", missing[, "Repository"],
                  missing[, "Package"], missing[, "Version"], "tar.gz")
@@ -315,7 +313,7 @@ initialise_cluster_packages_build <- function(dat, config) {
   ## we'd want to do that via either an option, possibly paired with a
   ## config option.  For now, leaving it as it is.
   bin <- buildr::build_binaries(file.path(tmp, basename(url)),
-                                buildr_host, buildr_port,
+                                build_server_host, build_server_port,
                                 timeout = 3600)
 
   ## TODO: this somewhat duplicates a little of the cross

@@ -68,8 +68,9 @@
 ##'   \code{\link{valid_clusters}()} or one of the aliases
 ##'   (small/little/dide/ide; big/mrc; linux).
 ##'
-##' @param build_server Currently ignored, but will soon be a windows
-##'   build server for bespoke binary packages.
+##' @param build_server_host,build_server_port Host and port for a
+##'   \code{buildr} server for custom binary packages.  The defaults
+##'   should generally work.
 ##'
 ##' @param shares Optional additional share mappings.  Can either be a
 ##'   single path mapping (as returned by \code{\link{path_mapping}}
@@ -171,8 +172,9 @@
 ##'
 ##' @export
 didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
-                           cluster = NULL, build_server = NULL, shares = NULL,
-                           template = NULL, cores = NULL,
+                           cluster = NULL,
+                           build_server_host = NULL, build_server_port = NULL,
+                           shares = NULL, template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
@@ -182,7 +184,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 home = home,
                 temp = temp,
                 cluster = cluster,
-                build_server = build_server,
+                build_server_host = build_server_host,
                 shares = shares,
                 template = template,
                 cores = cores,
@@ -239,11 +241,14 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   } else {
     dat$hpctools <- FALSE
   }
-  if (is.null(dat$build_server)) {
-    dat$build_server <- build_server(cluster)
-  }
-
   dat$r_version <- select_r_version(cluster, dat$r_version)
+
+  if (is.null(dat$build_server_host)) {
+    dat$build_server_host <- build_server_host(cluster)
+  }
+  if (is.null(dat$build_server_port)) {
+    dat$build_server_port <- build_server_port(dat$r_version)
+  }
 
   if (isTRUE(dat$use_common_lib)) {
     temp <- shares$temp
@@ -262,7 +267,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   ret <- list(cluster = cluster,
               credentials = dat$credentials,
               username = username,
-              build_server = dat$build_server,
+              build_server_host = dat$build_server_host,
+              build_server_port = dat$build_server_port,
               template = dat$template,
               wholenode = dat$wholenode,
               hpctools = dat$hpctools,
@@ -606,9 +612,16 @@ redis_host <- function(cluster) {
          "") # TODO: get working on the linux cluster too
 }
 
-build_server <- function(cluster) {
+
+build_server_host <- function(cluster) {
   if (linux_cluster(cluster)) BUILD_SERVER_LINUX else BUILD_SERVER_WINDOWS
 }
+
+
+build_server_port <- function(r_version) {
+  as.integer(paste(c("87", unclass(r_version)[[1]][1:2]), collapse = ""))
+}
+
 
 cran_platform <- function(cluster) {
   if (linux_cluster(cluster)) {
