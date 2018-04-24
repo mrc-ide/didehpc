@@ -10,7 +10,7 @@ options("didehpc.cluster" = "fi--didemrchnb",
 
 prepare_didehpc_root <- function() {
   test_path <- Sys.getenv("DIDEHPC_TEST_PATH", NA_character_)
-  if (is.na(path)) {
+  if (is.na(test_path)) {
     testthat::skip("DIDEHPC_TEST_PATH not set")
   }
   file.path(test_path, gsub("-", "", as.character(Sys.Date())))
