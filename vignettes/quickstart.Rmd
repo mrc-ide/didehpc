@@ -92,7 +92,7 @@ didehpc::didehpc_config()
 ##     - type: Cores
 ##  - shares:
 ##     - home: (local) /home/rich/net/home => //fi--san03/homes/rfitzjoh => Q: (remote)
-##     - temp: (local) /home/rich/net/temp => //fi--didef2/tmp => T: (remote)
+##     - temp: (local) /home/rich/net/temp => //fi--didef3/tmp => T: (remote)
 ##  - use_workers: FALSE
 ##  - use_rrq: FALSE
 ##  - worker_timeout: 600
@@ -409,7 +409,7 @@ obj$dide_log(t)
 ## running on: FI--DIDEMRC06
 ## mapping Q: -> \\fi--san03\homes\rfitzjoh
 ## The command completed successfully.
-## mapping T: -> \\fi--didef2\tmp
+## mapping T: -> \\fi--didef3\tmp
 ## The command completed successfully.
 ## working directory: Q:\cluster_testing\20170510\vignette
 ## this is a single task
