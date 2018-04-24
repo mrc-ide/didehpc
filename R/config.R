@@ -570,7 +570,7 @@ rtools_versions <- function(r_version, path = NULL) {
                 "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
                 "3.3" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
                 "3.4" = list(path = "Rtools34", gcc = mingw),
-                "3.5" = list(path = "Rtools34", gcc = mingw)
+                "3.5" = list(path = "Rtools34", gcc = mingw),
                 stop("Get Rich to upgrade Rtools"))
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
