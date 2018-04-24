@@ -12,3 +12,4 @@
 ^build_vignettes\.sh$
 ^build_common_lib.R$
 ^porting_guide\.md$
+^maintenance\.md$
