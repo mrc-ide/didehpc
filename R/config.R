@@ -568,6 +568,8 @@ rtools_versions <- function(r_version, path = NULL) {
   ret <- switch(r_version_2,
                 "3.2" = list(path = "Rtools33", gcc = "4.6.3"),
                 "3.3" = list(path = "Rtools33", gcc = "4.6.3"),
+                "3.4" = list(path = "Rtools34", gcc = "4.9.3"),
+                "3.5" = list(path = "Rtools34", gcc = "4.9.3")
                 stop("Get Rich to upgrade Rtools"))
   mingw <- sprintf("mingw_%d", R_BITS)
   ret$binpref <-
@@ -625,11 +627,16 @@ windows_cluster <- function(cluster) {
 
 ## NOTE: Only some versions of R are supported by context; at present
 ## we require >= 3.2.2.
+##
+## NOTE: Practically supporting old versions (currently 3.3.x and
+## below) requires work in at least provisionr to get all the packages
+## built.  See didehpc issue #54
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
     v <- c("3.2.4", "3.3.0", "3.3.1")
   } else {
-    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2")
+    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
+           "3.5.0")
   }
   numeric_version(v)
 }
