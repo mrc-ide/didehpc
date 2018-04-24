@@ -565,13 +565,13 @@ R_BITS <- 64
 ## downloading and installation of rtools.
 rtools_versions <- function(r_version, path = NULL) {
   r_version_2 <- as.character(r_version[1, 1:2])
-  ret <- switch(r_version_2,
-                "3.2" = list(path = "Rtools33", gcc = "4.6.3"),
-                "3.3" = list(path = "Rtools33", gcc = "4.6.3"),
-                "3.4" = list(path = "Rtools34", gcc = "4.9.3"),
-                "3.5" = list(path = "Rtools34", gcc = "4.9.3")
-                stop("Get Rich to upgrade Rtools"))
   mingw <- sprintf("mingw_%d", R_BITS)
+  ret <- switch(r_version_2,
+                "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
+                "3.3" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
+                "3.4" = list(path = "Rtools34", gcc = mingw),
+                "3.5" = list(path = "Rtools34", gcc = mingw)
+                stop("Get Rich to upgrade Rtools"))
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
   ret$path <- windows_path(file_path(path, "Rtools", ret$path))

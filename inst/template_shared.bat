@@ -21,7 +21,7 @@ net use {{{drive}}} {{{path}}} /y
 
 {{{#rtools}}}
 ECHO Using Rtools at {{{rtools.path}}}
-set PATH={{{rtools.path}}}\bin;{{{rtools.path}}}\gcc-{{{rtools.gcc}}}\bin;%PATH%
+set PATH={{{rtools.path}}}\bin;{{{rtools.path}}}\{{{rtools.gcc}}}\bin;%PATH%
 set BINPREF={{{rtools.binpref}}}/
 {{{/rtools}}}
 
