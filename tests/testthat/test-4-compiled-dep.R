@@ -40,9 +40,11 @@ test_that("manual compilation", {
   contrib <- file.path(src$local_drat, "src", "contrib")
   p <- read.dcf(file.path(contrib, "PACKAGES"))[1L, , drop = TRUE]
 
+  config <- didewin_config()
   pkg <-
     file.path(contrib, sprintf("%s_%s.tar.gz", p[["Package"]], p[["Version"]]))
-  bin <- buildr::build_binaries(pkg, BUILD_SERVER_WINDOWS, BUILD_SERVER_PORT)
+  bin <- buildr::build_binaries(pkg, config$build_server_host,
+                                config$build_server_port)
 
   src2 <- provisionr::package_sources(local = bin)
   src2$build()

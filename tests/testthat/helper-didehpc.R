@@ -1,17 +1,19 @@
-DIDEHPC_PATH <- "~/net/home/cluster_testing"
 PROGRESS <- FALSE
 COMMON <- FALSE
-BUILD_SERVER_PORT <- 8733
 
 options("didehpc.cluster" = "fi--didemrchnb",
         ## this suppresses all submission progress; better would be to
-        ## scope the exints within the test blocks?  It's necessary,
+        ## scope this within the test blocks?  It's necessary,
         ## otherwise "delete to end of line" bit in the progress bar
-        ## will delete all the test output.
+        ## will delete all the test output!
         "queuer.progress_suppress" = TRUE)
 
 prepare_didehpc_root <- function() {
-  file.path(DIDEHPC_PATH, gsub("-", "", as.character(Sys.Date())))
+  test_path <- Sys.getenv("DIDEHPC_TEST_PATH", NA_character_)
+  if (is.na(path)) {
+    testthat::skip("DIDEHPC_TEST_PATH not set")
+  }
+  file.path(test_path, gsub("-", "", as.character(Sys.Date())))
 }
 
 prepare_didehpc_dir <- function(name) {
