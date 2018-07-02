@@ -40,7 +40,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   base <- ids::adjective_animal()
   names <- sprintf("%s_%d", base, seq_len(n))
 
-  rrq <- obj$worker_controller()
+  rrq <- obj$rrq_controller()
   rrq_key_alive <- rrq::rrq_expect_worker(rrq, names)
 
   message(sprintf("Submitting %d %s with base name '%s'",

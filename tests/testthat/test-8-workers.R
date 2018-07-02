@@ -16,8 +16,8 @@ test_that("workers", {
 
   expect_equal(obj$task_list(), character(0))
 
-  r <- obj$worker_controller()
-  expect_is(r, "worker_controller")
+  r <- obj$rrq_controller()
+  expect_is(r, "rrq_controller")
   expect_equal(r$queue_length(), 0L)
 
   t <- obj$enqueue(sessionInfo())
