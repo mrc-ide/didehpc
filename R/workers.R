@@ -41,7 +41,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   names <- sprintf("%s_%d", base, seq_len(n))
 
   rrq <- obj$worker_controller()
-  rrq_key_alive <- rrq::rrq_expect_workers(rrq, names)
+  rrq_key_alive <- rrq::rrq_expect_worker(rrq, names)
 
   message(sprintf("Submitting %d %s with base name '%s'",
                   n, ngettext(n, "worker", "workers"), base))
@@ -68,7 +68,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
             c("dide_id", "log_path", "dide_cluster"))
   }
 
-  rrq::workers_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
+  rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
 rrq_redis_con <- function(config) {
