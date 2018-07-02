@@ -26,7 +26,7 @@ test_that("workers", {
   wid <- obj$submit_workers(5, progress = FALSE)
   dat <- t$wait(10)
   expect_is(dat, "sessionInfo")
-  r$workers_log_tail(n = Inf)
+  r$worker_log_tail(n = Inf)
 
   ## Then we start the fun bit:
   x <- runif(30)

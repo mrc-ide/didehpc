@@ -21,10 +21,7 @@ initialise_rrq <- function(obj) {
 ## don't want to have to redo the installation....
 initialise_rrq_controllers <- function(obj) {
   con <- rrq_redis_con(obj$config)
-  obj$workers <- rrq::worker_controller(obj$context$id, con)
-  if (isTRUE(obj$config$use_rrq)) {
-    obj$rrq <- rrq::rrq_controller(obj$context, con)
-  }
+  obj$rrq <- rrq::rrq_controller(obj$context, con)
 }
 
 submit_workers <- function(obj, n, timeout = 600, progress = NULL) {

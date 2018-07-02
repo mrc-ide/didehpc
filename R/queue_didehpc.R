@@ -191,7 +191,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     stop_workers = function(worker_ids = NULL) {
-      self$workers$workers_stop(worker_ids)
+      self$rrq$worker_stop(worker_ids)
     },
 
     dide_id = function(t) {
@@ -217,7 +217,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     worker_controller = function() {
-      self$workers %||% stop("workers are not enabled")
+      .Deprecated("$rrq_controller", old = "$worker_controller")
+      self$rrq %||% stop("workers are not enabled")
     },
 
     provision = function(installed_action = "upgrade", refresh_drat = FALSE) {
@@ -359,7 +360,7 @@ submit <- function(obj, task_ids, names) {
       message("sleeping in the hope of a disk sync")
       Sys.sleep(2)
     }
-    obj$workers$queue_submit(task_ids)
+    obj$rrq$queue_submit(task_ids)
   } else {
     submit_dide(obj, task_ids, names)
   }
@@ -406,7 +407,7 @@ unsubmit <- function(obj, task_ids) {
     ##
     ## NOTE: This does not unsubmit the *worker* but pulls task ids
     ## out of the local queue.
-    obj$workers$queue_unsubmit(task_ids)
+    obj$rrq$queue_unsubmit(task_ids)
   } else {
     unsubmit_dide(obj, task_ids)
   }
