@@ -40,7 +40,7 @@ drat:::add("mrc-ide")
 install.packages("didehpc")
 ```
 
-or try the slightly experimental:
+For installation on R v3.5.0, use the slightly experimental:
 
 ```r
 source("https://mrc-ide.github.io/didehpc/install")
