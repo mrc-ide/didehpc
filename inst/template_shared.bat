@@ -14,6 +14,13 @@ set CONTEXT_BOOTSTRAP=TRUE
 
 call setr{{{r_version}}}.bat
 
+REM If Java is wanted, then call setJava64.
+REM If called with blank, it adds default JRE.
+
+IF '{{{use_java}}}'=='TRUE' (
+  call setJava64.bat {{{java_home}}}
+)
+
 {{{#network_shares}}}
 ECHO mapping {{{drive}}} -^> {{{path}}}
 net use {{{drive}}} {{{path}}} /y

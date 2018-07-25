@@ -170,6 +170,15 @@
 ##'   library can only be used if the temporary drive is mounted on
 ##'   your computer.
 ##'
+##' @param use_java Logical, indicating if the script is going to 
+##'   require Java, for example via the rJava package. 
+##'
+##' @param java_home A string, optionally giving the path of a
+##'   custom Java Runtime Environment, which will be used if
+##'   the use_java logical is true. If left blank, then the 
+##'   default cluster Java Runtime Environment will be used.
+##'
+##'
 ##' @export
 didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL,
@@ -178,7 +187,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
-                           r_version = NULL, use_common_lib = NULL) {
+                           r_version = NULL, use_common_lib = NULL,
+                           use_java = NULL, java_home = NULL) {
   defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -197,7 +207,9 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 worker_timeout = worker_timeout,
                 rtools = rtools,
                 r_version = r_version,
-                use_common_lib = use_common_lib)
+                use_common_lib = use_common_lib,
+                use_java = use_java,
+                java_home = java_home)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
   ## NOTE: does *not* store (or request password)
@@ -263,6 +275,13 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     }
     dat$common_lib <- prepare_path(p, shares)
   }
+  
+
+  if (isTRUE(dat$use_java)) {
+    if (is.null(dat$java_home)) {
+      dat$java_home <- ""
+    }
+  }
 
   ret <- list(cluster = cluster,
               credentials = dat$credentials,
@@ -280,7 +299,9 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               worker_timeout = dat$worker_timeout,
               rtools = dat$rtools,
               r_version = dat$r_version,
-              common_lib = dat$common_lib)
+              common_lib = dat$common_lib,
+              use_java = dat$use_java,
+              java_home = dat$java_home)
 
   class(ret) <- "didehpc_config"
   ret
@@ -333,7 +354,9 @@ didehpc_config_defaults <- function() {
     rtools         = getOption("didehpc.rtools",         FALSE),
     hpctools       = getOption("didehpc.hpctools",       FALSE),
     r_version      = getOption("didehpc.r_version",      NULL),
-    use_common_lib = getOption("didehpc.use_common_lib", FALSE))
+    use_common_lib = getOption("didehpc.use_common_lib", FALSE),
+    use_java       = getOption("didehpc.use_java",       FALSE),
+    java_home      = getOption("didehpc.java_home",      NULL))
 
 
   if (is.null(defaults$credentials)) {
