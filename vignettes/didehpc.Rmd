@@ -200,6 +200,7 @@ didehpc::didehpc_config()
 ##  - worker_timeout: 600
 ##  - rtools: FALSE
 ##  - r_version: 3.3.2
+##  - use_java: FALSE
 ```
 
 In here you can see the cluster (here, `fi--didemrchnb`),
