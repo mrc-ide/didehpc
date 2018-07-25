@@ -1,6 +1,6 @@
 # didehpc 0.2.1
 
-* Support adding a Java Runtime to the path. ([#58](https://github.com/mrc-ide/didehpc/pull/xx)) by `@weshinsley`
+* Support adding a Java Runtime to the path. ([#58](https://github.com/mrc-ide/didehpc/pull/59)) by `@weshinsley`
 
 # didehpc 0.2.0
 
