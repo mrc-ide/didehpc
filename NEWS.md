@@ -2,6 +2,10 @@
 
 * Support adding a Java Runtime to the path. ([#58](https://github.com/mrc-ide/didehpc/pull/59)) by `@weshinsley`
 
+# didehpc 0.2.1
+
+* Fixed rrq support, which had broken with changes I made to rrq
+
 # didehpc 0.2.0
 
 * Support for R 3.4.x and 3.5.x ([#54](https://github.com/mrc-ide/didehpc/issues/54))

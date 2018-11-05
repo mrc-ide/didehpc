@@ -21,10 +21,7 @@ initialise_rrq <- function(obj) {
 ## don't want to have to redo the installation....
 initialise_rrq_controllers <- function(obj) {
   con <- rrq_redis_con(obj$config)
-  obj$workers <- rrq::worker_controller(obj$context$id, con)
-  if (isTRUE(obj$config$use_rrq)) {
-    obj$rrq <- rrq::rrq_controller(obj$context, con)
-  }
+  obj$rrq <- rrq::rrq_controller(obj$context, con)
 }
 
 submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
@@ -43,8 +40,8 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   base <- ids::adjective_animal()
   names <- sprintf("%s_%d", base, seq_len(n))
 
-  rrq <- obj$worker_controller()
-  rrq_key_alive <- rrq::rrq_expect_workers(rrq, names)
+  rrq <- obj$rrq_controller()
+  rrq_key_alive <- rrq::rrq_expect_worker(rrq, names)
 
   message(sprintf("Submitting %d %s with base name '%s'",
                   n, ngettext(n, "worker", "workers"), base))
@@ -71,7 +68,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
             c("dide_id", "log_path", "dide_cluster"))
   }
 
-  rrq::workers_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
+  rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
 rrq_redis_con <- function(config) {

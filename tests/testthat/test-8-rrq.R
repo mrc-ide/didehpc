@@ -14,8 +14,8 @@ test_that("rrq", {
   obj <- didehpc::queue_didehpc(ctx, config = config)
 
   r <- obj$rrq_controller()
-  expect_equal(r$workers_info(), setNames(list(), character(0)))
-  expect_equal(r$workers_len(), 0L)
+  expect_equal(r$worker_info(), setNames(list(), character(0)))
+  expect_equal(r$worker_len(), 0L)
 
   wid <- obj$submit_workers(5)
   expect_is(wid, "character")

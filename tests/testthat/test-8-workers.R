@@ -16,8 +16,8 @@ test_that("workers", {
 
   expect_equal(obj$task_list(), character(0))
 
-  r <- obj$worker_controller()
-  expect_is(r, "worker_controller")
+  r <- obj$rrq_controller()
+  expect_is(r, "rrq_controller")
   expect_equal(r$queue_length(), 0L)
 
   t <- obj$enqueue(sessionInfo())
@@ -26,7 +26,7 @@ test_that("workers", {
   wid <- obj$submit_workers(5, progress = FALSE)
   dat <- t$wait(10)
   expect_is(dat, "sessionInfo")
-  r$workers_log_tail(n = Inf)
+  r$worker_log_tail(n = Inf)
 
   ## Then we start the fun bit:
   x <- runif(30)

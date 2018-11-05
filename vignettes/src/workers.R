@@ -109,7 +109,7 @@ t$wait(5)
 
 ## You can see what your workers have been up to with the
 ## `workers_log_tail` command:
-obj$workers$workers_log_tail(n = Inf)
+objrrq$worker_log_tail(n = Inf)
 
 ## The `time` column may be tweaked into something a bit more
 ## practical soon.
@@ -118,8 +118,8 @@ obj$workers$workers_log_tail(n = Inf)
 t$log()
 
 ## Find out how long your workers will persist for:
-id <- obj$workers$send_message("TIMEOUT_GET")
-obj$workers$get_responses(id, timeout = 10)
+id <- obj$rrq$send_message("TIMEOUT_GET")
+obj$rrq$get_responses(id, timeout = 10)
 
 ## Other than that, hopefully everything else continues as normal.  We
 ## can submit a bunch of jobs and run them using `queuer::qlapply`:
@@ -138,7 +138,7 @@ res
 
 ## Alternatively, after submitting a bunch of jobs you can run
 ## ```r
-## obj$workers$send_message("TIMEOUT_SET", 0)
+## obj$rrq$send_message("TIMEOUT_SET", 0)
 ## ```
 
 ## which will mean that the workers will stop immediately after not
@@ -148,8 +148,8 @@ res
 ## this later).
 obj$stop_workers()
 Sys.sleep(1)
-obj$workers$workers_log_tail(workers, n = Inf)
-obj$workers$destroy()
+objrrq$worker_log_tail(workers, n = Inf)
+obj$rrq$destroy()
 obj$db$destroy()
 
 ## ## rrq
@@ -250,16 +250,16 @@ obj$cluster_load(nodes = FALSE)
 ## complete.
 obj$submit_workers(20)
 
-obj$workers$workers_len()
-obj$workers$workers_list()
-obj$workers$workers_status()
+objrrq$worker_len()
+objrrq$worker_list()
+objrrq$worker_status()
 
 res <- t2$wait(120)
 res
 
 ## Turn off all our workers
-obj$workers$workers_stop()
+objrrq$worker_stop()
 
 ## And delete all the data that we created.  This step gets some
 ## tweaking soon.
-obj$workers$destroy()
+obj$rrq$destroy()
