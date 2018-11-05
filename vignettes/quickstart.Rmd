@@ -98,6 +98,7 @@ didehpc::didehpc_config()
 ##  - worker_timeout: 600
 ##  - rtools: FALSE
 ##  - r_version: 3.3.2
+##  - use_java: FALSE
 ```
 
 If this is the first time you have run this package, best to try

@@ -69,7 +69,9 @@ batch_templates <- function(context, config, workdir) {
               worker_timeout = config$worker_timeout,
               rrq_worker_log_path = path_worker_logs(NULL),
               log_path = path_logs(NULL),
-              cluster_name = config$cluster)
+              cluster_name = config$cluster,
+              use_java = config$use_java,
+              java_home = config$java_home)
 
   if (!linux) {
     ## NOTE: don't forget the unname()

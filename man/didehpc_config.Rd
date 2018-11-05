@@ -10,7 +10,8 @@ didehpc_config(credentials = NULL, home = NULL, temp = NULL,
   shares = NULL, template = NULL, cores = NULL, wholenode = NULL,
   parallel = NULL, hpctools = NULL, workdir = NULL, use_workers = NULL,
   use_rrq = NULL, worker_timeout = NULL, rtools = NULL,
-  r_version = NULL, use_common_lib = NULL)
+  r_version = NULL, use_common_lib = NULL, use_java = NULL,
+  java_home = NULL)
 
 didehpc_config_global(...)
 }
@@ -129,6 +130,14 @@ particularly useful if using the \code{BH} package as unpacking
 that on the network drive can take a few minutes.  The common
 library can only be used if the temporary drive is mounted on
 your computer.}
+
+\item{use_java}{Logical, indicating if the script is going to 
+require Java, for example via the rJava package.}
+
+\item{java_home}{A string, optionally giving the path of a
+custom Java Runtime Environment, which will be used if
+the use_java logical is true. If left blank, then the 
+default cluster Java Runtime Environment will be used.}
 
 \item{...}{arguments to \code{didehpc_config}}
 }
