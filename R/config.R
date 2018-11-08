@@ -241,7 +241,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
                               workdir, username, cluster, FALSE)
 
-
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
