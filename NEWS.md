@@ -1,3 +1,7 @@
+#didehpc 0.2.3
+
+* Workaround a server share issue by using fully-qualified domain address (.dide.ic.ac.uk) for the home and temp shares. ([#60](https://github.com/mrc-ide/didehpc/pull/60)) by `@weshinsley`
+
 # didehpc 0.2.2
 
 * Support adding a Java Runtime to the path. ([#58](https://github.com/mrc-ide/didehpc/pull/59)) by `@weshinsley`
