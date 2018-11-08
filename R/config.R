@@ -189,7 +189,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            worker_timeout = NULL, rtools = NULL,
                            r_version = NULL, use_common_lib = NULL,
                            use_java = NULL, java_home = NULL) {
-
   defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -240,7 +239,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   }
   shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
                               workdir, username, cluster, FALSE)
-
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
