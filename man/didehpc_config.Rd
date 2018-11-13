@@ -8,10 +8,10 @@
 didehpc_config(credentials = NULL, home = NULL, temp = NULL,
   cluster = NULL, build_server_host = NULL, build_server_port = NULL,
   shares = NULL, template = NULL, cores = NULL, wholenode = NULL,
-  parallel = NULL, hpctools = NULL, workdir = NULL, use_workers = NULL,
-  use_rrq = NULL, worker_timeout = NULL, rtools = NULL,
-  r_version = NULL, use_common_lib = NULL, use_java = NULL,
-  java_home = NULL)
+  parallel = NULL, hpctools = NULL, workdir = NULL,
+  use_workers = NULL, use_rrq = NULL, worker_timeout = NULL,
+  rtools = NULL, r_version = NULL, use_common_lib = NULL,
+  use_java = NULL, java_home = NULL)
 
 didehpc_config_global(...)
 }

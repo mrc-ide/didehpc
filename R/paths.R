@@ -37,13 +37,13 @@ prepare_path <- function(path, mappings, error = TRUE) {
 ##'   written in \code{/etc/fstab})
 ##'
 ##' @param path_remote The \emph{network path} for this drive.  It
-##'   will look something like \code{\\\\fi--didef3\\tmp\\}.
+##'   will look something like \code{\\\\fi--didef3.dide.ic.ac.uk\\tmp\\}.
 ##'   Unfortunately backslashes are really hard to get right here and
 ##'   you will need to use twice as many as you expect (so \emph{four}
 ##'   backslashes at the beginning and then two for each separator.
 ##'   If this makes you feel bad know that you are not alone:
 ##'   https://xkcd.com/1638 -- alternatively you may use forward
-##'   slashes in place of backslashes (e.g. //fi--didef3/tmp)
+##'   slashes in place of backslashes (e.g. //fi--didef3.dide.ic.ac.uk/tmp)
 ##'
 ##' @param drive_remote The place to mount the drive on the cluster.
 ##'   We're probably going to mount things at Q: and T: already so
@@ -69,6 +69,28 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   clean_path <- function(x) {
     sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
   }
+  
+  # Make FQDN
+  
+  bits <- strsplit(path_remote,"\\\\")[[1]]
+  
+  # This contains... empty, empty, server-name, share, dir ...  
+  # So server_name should always be index 3.
+  # Remove .dide.local if we find it.
+  
+  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
+    bits[3] <- sub(".dide.local","", bits[3], ignore.case = TRUE)
+  }
+  
+  # Add .dide.ic.ac.uk if it's not there.
+  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
+    bits[3] <- paste0(bits[3],".dide.ic.ac.uk")
+  }
+  
+  # re_assemble
+  
+  path_remote <- paste0(bits, collapse = "\\")
+  
   ret <-
     list(name = name,
          path_remote = clean_path(path_remote),
@@ -132,11 +154,11 @@ path_worker_logs <- function(root, id = NULL) {
 dide_home <- function(path, username) {
   assert_scalar_character(username)
   assert_character(path)
-  paste0("\\\\fi--san03\\homes\\", username, "\\", gsub("/", "\\\\", path))
+  paste0("\\\\fi--san03.dide.ic.ac.uk\\homes\\", username, "\\", gsub("/", "\\\\", path))
 }
 dide_temp <- function(path) {
   assert_character(path)
-  paste0("\\\\fi--didef3\\tmp\\", "\\", gsub("/", "\\\\", path))
+  paste0("\\\\fi--didef3.dide.ic.ac.uk\\tmp\\", "\\", gsub("/", "\\\\", path))
 }
 
 detect_mount_fail <- function() {
