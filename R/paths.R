@@ -72,7 +72,7 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   
   # Make FQDN
   
-  bits <- strsplit(path_remote,"\\\\")[[1]]
+  bits <- strsplit(clean_path(path_remote), "/")[[1]]
   
   # This contains... empty, empty, server-name, share, dir ...  
   # So server_name should always be index 3.
