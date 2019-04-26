@@ -14,10 +14,12 @@ Rscript "{{{context_root}}}\bin\task_run" "%CONTEXT_ROOT%" %CONTEXT_TASK_ID% > "
 @ECHO off
 %SystemDrive%
 set ErrorCode=%ERRORLEVEL%
+
 {{{#network_shares}}}
 ECHO Removing mapping {{{drive}}} -^> {{{path}}}
 net use {{{drive}}} /delete /y
 {{{/network_shares}}}
+
 set ERRORLEVEL=%ErrorCode%
 
 if %ERRORLEVEL% neq 0 (
@@ -26,4 +28,3 @@ if %ERRORLEVEL% neq 0 (
 )
 
 @ECHO Quitting
-
