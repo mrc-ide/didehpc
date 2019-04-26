@@ -1,3 +1,7 @@
+# didehpc 0.2.5
+
+* Unmap network drives at end of job- see (See [Issue #65](https://github.com/mrc-ide/didehpc/issues/65) and [PR #63](https://github.com/mrc-ide/didehpc/pull/63)) by `@weshinsley`
+
 # didehpc 0.2.4
 
 * Fixes for different slashes for FQDN fix([#62](https://github.com/mrc-ide/didehpc/pull/62)) by `@weshinsley`
