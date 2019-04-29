@@ -5,7 +5,7 @@ install was `R 3.5.0`.
 
 ## Install the new version of R on all cluster nodes
 
-* Look in \\fi--didef3\Software\HPC\R.
+* Look in `\\fi--didef3\Software\HPC\R`.
 * Download the new R installer, and save it in the folder.
 * Install it locally. Verify the executable folders created are of this form:
   * `C:\Program Files\R\R-3.6.0\bin\i386\Rscript.exe`
@@ -26,7 +26,7 @@ set R_VERSION=3.6.0
 
 ## Update the package
 
-* On a new branch, update R/config.R
+* On a new branch, update `R/config.R`
 * Update this block of code in the function `rtools_versions`, which associates the right version of Rtools with the 
 right version of R. Verify this is the correct version of Rtools 
 ```
@@ -60,5 +60,5 @@ r_versions <- function(cluster) {
 ## Finalising
 
 * Make a pull Request for the new version of didehpc, request a review, and await merging.
-* After merging, drat will need updating. 
-* Inform #cluster channel on slack.
+* After merging, `drat` will need updating. 
+* Inform `#cluster` channel on slack.
