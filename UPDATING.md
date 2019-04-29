@@ -28,7 +28,7 @@ set R_VERSION=3.6.0
 
 * On a new branch, update `R/config.R`
 * Update this block of code in the function `rtools_versions`, which associates the right version of Rtools with the 
-right version of R. Verify this is the correct version of Rtools 
+right version of R. Verify this is the correct version of Rtools [here](https://cran.r-project.org/bin/windows/Rtools/).
 ```
   ret <- switch(r_version_2,
                 "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
