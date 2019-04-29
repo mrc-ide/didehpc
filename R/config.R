@@ -600,6 +600,7 @@ rtools_versions <- function(r_version, path = NULL) {
                 "3.3" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
                 "3.4" = list(path = "Rtools34", gcc = mingw),
                 "3.5" = list(path = "Rtools34", gcc = mingw),
+                "3.6" = list(path = "Rtools34", gcc = mingw),
                 stop("Get Rich to upgrade Rtools"))
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
@@ -672,7 +673,7 @@ r_versions <- function(cluster) {
     v <- c("3.2.4", "3.3.0", "3.3.1")
   } else {
     v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
-           "3.5.0")
+           "3.5.0", "3.6.0")
   }
   numeric_version(v)
 }
