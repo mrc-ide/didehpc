@@ -1,6 +1,10 @@
+#didehpc 0.2.6
+
+* Support for R 3.6.0. See [Issue #67](https://github.com/mrc-ide/didehpc/issues/67) and [PR #68](https://github.com/mrc-ide/didehpc/pull/68)) by `@weshinsley`
+
 # didehpc 0.2.5
 
-* Unmap network drives at end of job- see (See [Issue #65](https://github.com/mrc-ide/didehpc/issues/65) and [PR #63](https://github.com/mrc-ide/didehpc/pull/63)) by `@weshinsley`
+* Unmap network drives at end of job- see (See [Issue #65](https://github.com/mrc-ide/didehpc/issues/65) and [PR #66](https://github.com/mrc-ide/didehpc/pull/66)) by `@weshinsley`
 
 # didehpc 0.2.4
 
