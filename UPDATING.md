@@ -55,7 +55,7 @@ r_versions <- function(cluster) {
 
 ## Update the Build Server
 
-* TO-DO
+Follow [the instructions on `buildr` itself](https://github.com/mrc-ide/buildr/blob/master/setup.md) to install and configure the new version on the build server.
 
 ## Finalising
 
