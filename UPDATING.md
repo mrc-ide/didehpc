@@ -15,7 +15,7 @@ install was `R 3.5.0`.
 ```
 set path=%path%;C:\Program Files\R\R-3.6.0\bin\x64
 ```
-* Copy the most recent install file (eg, `install_r_3_5.0.bat`) to the new version name (`install_r_3_6_0.bat').
+* Copy the most recent install file (eg, `install_r_3_5.0.bat`) to the new version name (`install_r_3_6_0.bat`).
 * Edit it, and change the version variable to match the new version:
 ```
 set R_VERSION=3.6.0
@@ -29,7 +29,7 @@ set R_VERSION=3.6.0
 * On a new branch, update `R/config.R`
 * Update this block of code in the function `rtools_versions`, which associates the right version of Rtools with the 
 right version of R. Verify this is the correct version of Rtools [here](https://cran.r-project.org/bin/windows/Rtools/).
-```
+```r
   ret <- switch(r_version_2,
                 "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
                 "3.3" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
@@ -41,7 +41,7 @@ right version of R. Verify this is the correct version of Rtools [here](https://
 * Locate the `r_versions` function and update the list of valid versions with the new one. This should match the 
 filenames of the new `setr32` and `setr64` batch files created earlier. (The instructions here relate to the 
 windows (non-linux) case)
-```
+```r
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
     v <- c("3.2.4", "3.3.0", "3.3.1")
