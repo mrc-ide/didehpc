@@ -1,6 +1,6 @@
 #didehpc 0.2.7
 
-* Support for R 3.5.3. See [Issue #mrc-269](https://vimc.myjetbrains.com/youtrack/issue/mrc-269) and [PR #]()) by `@weshinsley`
+* Support for R 3.5.3. See [Issue #mrc-269](https://vimc.myjetbrains.com/youtrack/issue/mrc-269) and [PR #70](https://github.com/mrc-ide/didehpc/pull/70)) by `@weshinsley`
 
 #didehpc 0.2.6
 
