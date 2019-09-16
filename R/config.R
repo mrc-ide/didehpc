@@ -668,19 +668,26 @@ windows_cluster <- function(cluster) {
 ## NOTE: Practically supporting old versions (currently 3.3.x and
 ## below) requires work in at least provisionr to get all the packages
 ## built.  See didehpc issue #54
+
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
-    v <- c("3.2.4", "3.3.0", "3.3.1")
+    numeric_version(c("3.2.4", "3.3.0", "3.3.1"))
+
   } else {
-    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
-           "3.5.0", "3.5.3", "3.6.0")
+    
+    if (is.null(cache$r_versions)) {
+      r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
+      v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
+      browser()
+      cache$r_versions <- vcapply(v$software,
+        function(x) ifelse(x$name == 'R', x$version, NULL))
+    }
+    numeric_version(cache$r_versions)
   }
-  numeric_version(v)
 }
 
 select_r_version <- function(cluster, r_version) {
   if (is.null(r_version)) {
-    ## Here, try and get the
     valid <- r_versions(cluster)
     ours <- getRversion()
     if (ours %in% valid) {
@@ -718,6 +725,15 @@ check_linux_shares <- function(username, shares) {
   if (has_conf) {
     pam_xml <- xml2::read_xml(pam_conf)
     volumes <- xml2::xml_attrs(xml2::xml_find_all(pam_xml, "/pam_mount/volume"))
+
+    # Remove temp drive if it's found in pam.xml, as we always add it anyway.
+
+    tmp_mount <- paste0("/homes/", username, "/dide/tmp")
+    vol_seq <- seq(from = length(volumes), to = 1, by = -1)
+    for (vol_no in vol_seq) {
+      if (volumes[[vol_no]][['mountpoint']] == tmp_mount)
+        volumes[[vol_no]] <- NULL
+    }
 
     v_mountpoint <- vcapply(volumes, "[[", "mountpoint")
     v_server <- paste0("//", sub(re_fqn, "", vcapply(volumes, "[[", "server")))

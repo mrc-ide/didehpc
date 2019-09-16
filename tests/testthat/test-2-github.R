@@ -1,5 +1,9 @@
 context("github")
 
+skip_on_windows <- function() {
+  testthat::skip_on_os("windows")
+}
+
 test_that("github", {
   skip_on_travis()
   skip_if_not_installed("kitten")
@@ -37,6 +41,7 @@ test_that("github", {
 
 test_that("upgrade", {
   skip_on_travis()
+  skip_on_windows()
 
   lib <- tempfile()
   install.packages("hello", repos = NULL, lib.loc = lib)

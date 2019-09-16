@@ -1,5 +1,9 @@
 context("config")
 
+skip_on_windows <- function() {
+  testthat::skip_on_os("windows")
+}
+
 test_that("credentials", {
   if (!interactive()) {
     expect_error(get_credentials(NULL), "Credentials file needed")
@@ -38,6 +42,7 @@ test_that("credentials", {
 })
 
 test_that("interactive", {
+  skip_on_windows()
   if (!interactive()) {
     expect_error(didehpc_config(), "Credentials file needed")
   }
@@ -51,11 +56,13 @@ test_that("interactive", {
   expect_is(dat$shares, "list")
 
   dat <- didehpc_config("me", home = tempdir())
+  
+  tempdir_slashes <- normalizePath(tempdir(), winslash = "/")
 
   expect_equal(dat$shares$home,
                structure(list(name = "home",
                               path_remote = clean_path(dide_home("", "me")),
-                              path_local = tempdir(),
+                              path_local = tempdir_slashes,
                               drive_remote = "Q:"),
                          class = "path_mapping"))
 })
@@ -126,6 +133,7 @@ test_that("cluster alias", {
 })
 
 test_that("old home directory", {
+  skip_on_windows()
   dat <- cbind(remote = c("\\\\fi--san03\\homes\\me",
                           "\\\\fi--didef3\\tmp"),
                local = c(tempfile(), tempfile()))
