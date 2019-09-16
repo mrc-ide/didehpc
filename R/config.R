@@ -684,9 +684,9 @@ r_versions <- function(cluster) {
     if (is.null(cluster_r_versions) || refresh) {
       r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
       v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-      v <- vcapply(v$software, function(x) ifelse(x$name == 'R', x$version, NULL))
+      cluster_r_versions <<- vcapply(v$software, 
+        function(x) ifelse(x$name == 'R', x$version, NULL))
       
-      cluster_r_versions <<- v
       cluster_r_versions_time <<- Sys.time()
     }
   }
@@ -695,7 +695,6 @@ r_versions <- function(cluster) {
 
 select_r_version <- function(cluster, r_version) {
   if (is.null(r_version)) {
-    ## Here, try and get the
     valid <- r_versions(cluster)
     ours <- getRversion()
     if (ours %in% valid) {
