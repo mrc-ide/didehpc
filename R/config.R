@@ -710,7 +710,6 @@ select_r_version <- function(cluster, r_version) {
 ## of misbehaviour.  Probably a much better way would be to get people
 ## to use a different format and generate the XML from it.
 check_linux_shares <- function(username, shares) {
-
   ## This bit _always_ holds, we hope:
   mount_root <- sprintf("/homes/%s/dide", username)
   shares$home$drive_remote <- file.path(mount_root, "home", fsep = "/")
