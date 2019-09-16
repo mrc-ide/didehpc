@@ -671,7 +671,7 @@ windows_cluster <- function(cluster) {
 
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
-    c("3.2.4", "3.3.0", "3.3.1")
+    numeric_version(c("3.2.4", "3.3.0", "3.3.1"))
 
   } else {
     if (is.null(cache$r_versions)) {
@@ -680,7 +680,7 @@ r_versions <- function(cluster) {
       cache$r_versions <- vcapply(v$software,
         function(x) ifelse(x$name == 'R', x$version, NULL))
     }
-    cache$r_versions
+    numeric_version(cache$r_versions)
   }
 }
 
