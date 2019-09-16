@@ -719,6 +719,7 @@ select_r_version <- function(cluster, r_version) {
 ## of misbehaviour.  Probably a much better way would be to get people
 ## to use a different format and generate the XML from it.
 check_linux_shares <- function(username, shares) {
+
   ## This bit _always_ holds, we hope:
   mount_root <- sprintf("/homes/%s/dide", username)
   shares$home$drive_remote <- file.path(mount_root, "home", fsep = "/")
@@ -732,6 +733,15 @@ check_linux_shares <- function(username, shares) {
   if (has_conf) {
     pam_xml <- xml2::read_xml(pam_conf)
     volumes <- xml2::xml_attrs(xml2::xml_find_all(pam_xml, "/pam_mount/volume"))
+
+    # Remove temp drive if it's found in pam.xml, as we always add it anyway.
+
+    tmp_mount <- paste0("/homes/", username, "/dide/tmp")
+    vol_seq <- seq(from = length(volumes), to = 1, by = -1)
+    for (vol_no in vol_seq) {
+      if (volumes[[vol_no]][['mountpoint']] == tmp_mount)
+        volumes[[vol_no]] <- NULL
+    }
 
     v_mountpoint <- vcapply(volumes, "[[", "mountpoint")
     v_server <- paste0("//", sub(re_fqn, "", vcapply(volumes, "[[", "server")))

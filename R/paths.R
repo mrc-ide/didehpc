@@ -235,11 +235,11 @@ detect_mount_windows <- function() {
 
 wmic <- function() {
   windir <- Sys.getenv("WINDIR", "C:\\windows")
-  
-  methods <- c(paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"),
-               "csv")
-  
+
+  methods <- c("csv",
+               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
+               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
+
   for (meth in methods) {
     res <- detect_mount_windows2(meth)
     if (res$success) {
