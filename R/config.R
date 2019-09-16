@@ -668,29 +668,20 @@ windows_cluster <- function(cluster) {
 ## NOTE: Practically supporting old versions (currently 3.3.x and
 ## below) requires work in at least provisionr to get all the packages
 ## built.  See didehpc issue #54
-##
-## Caching for versions, so we don't hit the API excessively
-
-cluster_r_versions <- NULL
-cluster_r_versions_time <- 0
-cluster_r_versions_poll <- 3600
 
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
-    v <- c("3.2.4", "3.3.0", "3.3.1")
+    c("3.2.4", "3.3.0", "3.3.1")
 
   } else {
-    refresh <- (as.numeric(Sys.time() - cluster_r_versions_time) > cluster_r_versions_poll)
-    if (is.null(cluster_r_versions) || refresh) {
+    if (is.null(cache$r_versions)) {
       r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
       v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-      cluster_r_versions <<- vcapply(v$software,
+      cache$r_versions <<- vcapply(v$software,
         function(x) ifelse(x$name == 'R', x$version, NULL))
-
-      cluster_r_versions_time <<- Sys.time()
     }
+    cache$r_versions
   }
-  numeric_version(cluster_r_versions)
 }
 
 select_r_version <- function(cluster, r_version) {
