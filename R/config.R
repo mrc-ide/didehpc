@@ -678,15 +678,15 @@ cluster_r_versions_poll <- 3600
 r_versions <- function(cluster) {
   if (linux_cluster(cluster)) {
     v <- c("3.2.4", "3.3.0", "3.3.1")
-  
+
   } else {
     refresh <- (as.numeric(Sys.time() - cluster_r_versions_time) > cluster_r_versions_poll)
     if (is.null(cluster_r_versions) || refresh) {
       r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
       v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-      cluster_r_versions <<- vcapply(v$software, 
+      cluster_r_versions <<- vcapply(v$software,
         function(x) ifelse(x$name == 'R', x$version, NULL))
-      
+
       cluster_r_versions_time <<- Sys.time()
     }
   }
