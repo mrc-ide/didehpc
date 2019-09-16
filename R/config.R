@@ -674,9 +674,11 @@ r_versions <- function(cluster) {
     numeric_version(c("3.2.4", "3.3.0", "3.3.1"))
 
   } else {
+    
     if (is.null(cache$r_versions)) {
       r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
       v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
+      browser()
       cache$r_versions <- vcapply(v$software,
         function(x) ifelse(x$name == 'R', x$version, NULL))
     }
