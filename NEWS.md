@@ -1,6 +1,6 @@
-#didehpc 0.2.8
+#didehpc 0.2.9
 
-* Support for R 3.6.1 and future versions reported by HPC portal. See [Issue #67](https://github.com/mrc-ide/didehpc/issues/71), [mrc-481](https://vimc.myjetbrains.com/youtrack/issue/mrc-481) and [PR #72](https://github.com/mrc-ide/didehpc/pull/72).
+* Support for R 3.6.1 and future versions reported by HPC portal. See [Issue #67](https://github.com/mrc-ide/didehpc/issues/71), [mrc-481](https://vimc.myjetbrains.com/youtrack/issue/mrc-481), [PR #72](https://github.com/mrc-ide/didehpc/pull/72), [PR #73](https://github.com/mrc-ide/didehpc/pull/73)
 
 #didehpc 0.2.7
 
