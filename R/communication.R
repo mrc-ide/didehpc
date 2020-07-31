@@ -217,6 +217,8 @@ cluster_load_cols <- function(p, max = 1) {
   ## cols <- c("#A50026", "#D73027", "#F46D43", "#FDAE61",
   ##           "#FEE090", "#FFFFBF", "#E0F3F8", "#ABD9E9",
   ##           "#74ADD1", "#4575B4", "#313695")
+  p[is.nan(p)] <- 0
+
   cols <- c("#FED976", "#FEB24C", "#FD8D3C", "#FC4E2A", "#E31A1C", "#B10026")
   ret <- colorRamp(cols)(p / max)
   rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue = 255)
