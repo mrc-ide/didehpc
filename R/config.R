@@ -594,18 +594,28 @@ R_BITS <- 64
 ## downloading and installation of rtools.
 rtools_versions <- function(r_version, path = NULL) {
   r_version_2 <- as.character(r_version[1, 1:2])
-  mingw <- sprintf("mingw_%d", R_BITS)
+  if (r_version < "4.0.0") {
+    mingw <- sprintf("mingw_%d", R_BITS)
+  } else {
+    mingw <- sprintf("mingw%d", R_BITS)
+  }
+  
   ret <- switch(r_version_2,
-    "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3", bin = "bin"),
-    "3.3" = list(path = "Rtools35", gcc = "gcc-4.6.3", bin = "bin"),
-    "3.4" = list(path = "Rtools35", gcc = mingw, bin = "bin"),
-    "3.5" = list(path = "Rtools35", gcc = mingw, bin = "bin"),
-    "3.6" = list(path = "Rtools35", gcc = mingw, bin = "bin"),
-    "4.0" = list(path = "Rtools40", gcc = mingw, bin = file.path("usr", "bin")),
-    stop("Get Rich to upgrade Rtools"))
+    "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
+    stop(sprintf("No RTools version found for R %s", r_version)))
+      
   ret$binpref <-
-    unix_path(file.path(path, "Rtools", ret$path, mingw, ret$bin))
-  ret$path <- windows_path(file_path(path, "Rtools", ret$path))
+    unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
+  
+  ret$rtools_root <- windows_path(file_path(path, "Rtools", ret$path))
+  ret$gcc_path <- windows_path(file_path(ret$rtools_root, ret$gcc, "bin"))
+  ret$make_path <- windows_path(file_path(ret$rtools_root, ret$make, "bin"))
+  
+  ret$path <- NULL
   ret
 }
 

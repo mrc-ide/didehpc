@@ -27,8 +27,8 @@ net use {{{drive}}} {{{path}}} /y
 {{{/network_shares}}}
 
 {{{#rtools}}}
-ECHO Using Rtools at {{{rtools.path}}}
-set PATH={{{rtools.path}}}\bin;{{{rtools.path}}}\{{{rtools.gcc}}}\bin;%PATH%
+ECHO Using Rtools at {{{rtools.rtools_root}}}
+set PATH={{{rtools.gcc_path}}};{{{rtools.make_path}}};%PATH%
 set BINPREF={{{rtools.binpref}}}/
 {{{/rtools}}}
 
