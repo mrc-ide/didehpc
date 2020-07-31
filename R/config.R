@@ -170,12 +170,12 @@
 ##'   library can only be used if the temporary drive is mounted on
 ##'   your computer.
 ##'
-##' @param use_java Logical, indicating if the script is going to 
-##'   require Java, for example via the rJava package. 
+##' @param use_java Logical, indicating if the script is going to
+##'   require Java, for example via the rJava package.
 ##'
 ##' @param java_home A string, optionally giving the path of a
 ##'   custom Java Runtime Environment, which will be used if
-##'   the use_java logical is true. If left blank, then the 
+##'   the use_java logical is true. If left blank, then the
 ##'   default cluster Java Runtime Environment will be used.
 ##'
 ##'
@@ -275,7 +275,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     }
     dat$common_lib <- prepare_path(p, shares)
   }
-  
+
 
   if (isTRUE(dat$use_java)) {
     if (is.null(dat$java_home)) {
@@ -594,17 +594,28 @@ R_BITS <- 64
 ## downloading and installation of rtools.
 rtools_versions <- function(r_version, path = NULL) {
   r_version_2 <- as.character(r_version[1, 1:2])
-  mingw <- sprintf("mingw_%d", R_BITS)
+  if (r_version < "4.0.0") {
+    mingw <- sprintf("mingw_%d", R_BITS)
+  } else {
+    mingw <- sprintf("mingw%d", R_BITS)
+  }
+  
   ret <- switch(r_version_2,
-                "3.2" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
-                "3.3" = list(path = "Rtools33", gcc = "gcc-4.6.3"),
-                "3.4" = list(path = "Rtools34", gcc = mingw),
-                "3.5" = list(path = "Rtools34", gcc = mingw),
-                "3.6" = list(path = "Rtools34", gcc = mingw),
-                stop("Get Rich to upgrade Rtools"))
+    "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
+    "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
+    stop(sprintf("No RTools version found for R %s", r_version)))
+      
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
-  ret$path <- windows_path(file_path(path, "Rtools", ret$path))
+  
+  ret$rtools_root <- windows_path(file_path(path, "Rtools", ret$path))
+  ret$gcc_path <- windows_path(file_path(ret$rtools_root, ret$gcc, "bin"))
+  ret$make_path <- windows_path(file_path(ret$rtools_root, ret$make, "bin"))
+  
+  ret$path <- NULL
   ret
 }
 
@@ -674,11 +685,11 @@ r_versions <- function(cluster) {
     numeric_version(c("3.2.4", "3.3.0", "3.3.1"))
 
   } else {
-    
+
     if (is.null(cache$r_versions)) {
       r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
       v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-      
+
       cache$r_versions <- vcapply(
         v$software[vlapply(v$software, function(x) x$name == 'R')], "[[", "version")
 

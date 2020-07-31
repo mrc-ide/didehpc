@@ -1,12 +1,16 @@
-#didehpc 0.2.9
+# didehpc 0.2.10
+
+* Support for R 4.0.x with RTools 4.0
+
+# didehpc 0.2.9
 
 * Support for R 3.6.1 and future versions reported by HPC portal. See [Issue #67](https://github.com/mrc-ide/didehpc/issues/71), [mrc-481](https://vimc.myjetbrains.com/youtrack/issue/mrc-481), [PR #72](https://github.com/mrc-ide/didehpc/pull/72), [PR #73](https://github.com/mrc-ide/didehpc/pull/73)
 
-#didehpc 0.2.7
+# didehpc 0.2.7
 
 * Support for R 3.5.3. See [Issue #mrc-269](https://vimc.myjetbrains.com/youtrack/issue/mrc-269) and [PR #70](https://github.com/mrc-ide/didehpc/pull/70)) by `@weshinsley`
 
-#didehpc 0.2.6
+# didehpc 0.2.6
 
 * Support for R 3.6.0. See [Issue #67](https://github.com/mrc-ide/didehpc/issues/67) and [PR #68](https://github.com/mrc-ide/didehpc/pull/68)) by `@weshinsley`
 
