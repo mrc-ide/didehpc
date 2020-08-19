@@ -1,3 +1,7 @@
+# didehpc 0.2.11
+
+* Refresh available job templates, and core limits, particularly adding 32Core.
+
 # didehpc 0.2.10
 
 * Support for R 4.0.x with RTools 4.0

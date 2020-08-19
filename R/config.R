@@ -77,9 +77,9 @@
 ##'   or a list of such calls.
 ##'
 ##' @param template A job template.  On fi--dideclusthn this can be
-##'   "GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-##'   this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
-##'   "20Core", or "24Core".  For fi--didelxhn the only valid template
+##'   "GeneralNodes" or "8Core", while on "fi--didemrchnb"
+##'   this can be "GeneralNodes", "12Core", "16Core", "12and16Core",
+##'   "20Core", "24Core" or "32Core". For fi--didelxhn the only valid template
 ##'   is "LinuxNodes".  See the main cluster documentation if you
 ##'   tweak these parameters, as you may not have permission to use
 ##'   all templates (and if you use one that you don't have permission
@@ -91,9 +91,9 @@
 ##'   useful when using the \code{GeneralNodes} or \code{LinuxNodes}
 ##'   template.  If specified, then we will request this many cores
 ##'   from the windows queuer.  If you request too many cores then
-##'   your task will queue forever!  8 is the largest this should be
-##'   on fi--didehusthn and 16 on fi--didemrchnb (while there are 20
-##'   core nodes you may not have access to them).  If omitted then a
+##'   your task will queue forever!  24 is the largest this should be
+##'   on fi--dideclusthn and 64 on fi--didemrchnb (assuming you have access
+##'   to those nodes).  If omitted then a
 ##'   single core is selected for the GeneralNodes template or the
 ##'   \emph{entire machine} for the other templates (unless modified
 ##'   by \code{wholenode}).
@@ -418,9 +418,9 @@ cluster_name <- function(name) {
 }
 
 valid_templates <- function() {
-  list("fi--dideclusthn" = c("GeneralNodes", "4Core", "8Core", "Training"),
+  list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
-                            "20Core", "24Core"),
+                            "20Core", "24Core", "32Core"),
        "fi--didelxhn" = "LinuxNodes")
 }
 
@@ -433,7 +433,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop("Cannot specify both wholenode and cores")
     }
     assert_scalar_integer(cores)
-    max_cores <- if (cluster == "fi--didemrchnb") 64 else 12
+    max_cores <- if (cluster == "fi--didemrchnb") 64 else 24
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }

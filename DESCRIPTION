@@ -1,6 +1,6 @@
 Package: didehpc
 Title: DIDE HPC Support
-Version: 0.2.10
+Version: 0.2.11
 Author: Rich FitzJohn
 Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
 Description: DIDE HPC support.
@@ -31,7 +31,7 @@ Suggests:
     rrq (>= 0.1.0),
     syncr (>= 0.0.3),
     testthat
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Remotes:
     mrc-ide/context,
