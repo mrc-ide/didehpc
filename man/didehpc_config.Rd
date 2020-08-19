@@ -5,13 +5,29 @@
 \alias{didehpc_config_global}
 \title{Configuration}
 \usage{
-didehpc_config(credentials = NULL, home = NULL, temp = NULL,
-  cluster = NULL, build_server_host = NULL, build_server_port = NULL,
-  shares = NULL, template = NULL, cores = NULL, wholenode = NULL,
-  parallel = NULL, hpctools = NULL, workdir = NULL,
-  use_workers = NULL, use_rrq = NULL, worker_timeout = NULL,
-  rtools = NULL, r_version = NULL, use_common_lib = NULL,
-  use_java = NULL, java_home = NULL)
+didehpc_config(
+  credentials = NULL,
+  home = NULL,
+  temp = NULL,
+  cluster = NULL,
+  build_server_host = NULL,
+  build_server_port = NULL,
+  shares = NULL,
+  template = NULL,
+  cores = NULL,
+  wholenode = NULL,
+  parallel = NULL,
+  hpctools = NULL,
+  workdir = NULL,
+  use_workers = NULL,
+  use_rrq = NULL,
+  worker_timeout = NULL,
+  rtools = NULL,
+  r_version = NULL,
+  use_common_lib = NULL,
+  use_java = NULL,
+  java_home = NULL
+)
 
 didehpc_config_global(...)
 }
@@ -38,9 +54,9 @@ single path mapping (as returned by \code{\link{path_mapping}}
 or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
-"GeneralNodes", "4Core" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "12Core" or "16Core", "12and16Core",
-"20Core", or "24Core".  For fi--didelxhn the only valid template
+"GeneralNodes" or "8Core", while on "fi--didemrchnb"
+this can be "GeneralNodes", "12Core", "16Core", "12and16Core",
+"20Core", "24Core" or "32Core". For fi--didelxhn the only valid template
 is "LinuxNodes".  See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
@@ -52,9 +68,9 @@ instructed to.}
 useful when using the \code{GeneralNodes} or \code{LinuxNodes}
 template.  If specified, then we will request this many cores
 from the windows queuer.  If you request too many cores then
-your task will queue forever!  8 is the largest this should be
-on fi--didehusthn and 16 on fi--didemrchnb (while there are 20
-core nodes you may not have access to them).  If omitted then a
+your task will queue forever!  24 is the largest this should be
+on fi--dideclusthn and 64 on fi--didemrchnb (assuming you have access
+to those nodes).  If omitted then a
 single core is selected for the GeneralNodes template or the
 \emph{entire machine} for the other templates (unless modified
 by \code{wholenode}).}
@@ -131,12 +147,12 @@ that on the network drive can take a few minutes.  The common
 library can only be used if the temporary drive is mounted on
 your computer.}
 
-\item{use_java}{Logical, indicating if the script is going to 
+\item{use_java}{Logical, indicating if the script is going to
 require Java, for example via the rJava package.}
 
 \item{java_home}{A string, optionally giving the path of a
 custom Java Runtime Environment, which will be used if
-the use_java logical is true. If left blank, then the 
+the use_java logical is true. If left blank, then the
 default cluster Java Runtime Environment will be used.}
 
 \item{...}{arguments to \code{didehpc_config}}

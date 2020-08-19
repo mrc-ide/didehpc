@@ -4,8 +4,13 @@
 \alias{queue_didehpc}
 \title{Create a queue object}
 \usage{
-queue_didehpc(context, config = didehpc_config(), root = NULL,
-  initialise = TRUE, sync = NULL)
+queue_didehpc(
+  context,
+  config = didehpc_config(),
+  root = NULL,
+  initialise = TRUE,
+  sync = NULL
+)
 }
 \arguments{
 \item{context}{A context}

@@ -94,6 +94,9 @@ test_that("template logic", {
 
   expect_error(didehpc_config(wholenode = TRUE, cores = 2)$resource,
                "Cannot specify both wholenode and cores")
+  
+  expect_error(didehpc_config(cores = 999)$resource,
+               "Maximum number of cores for")
 
   expect_equal(didehpc_config(template = "8Core")$resource,
                list(parallel = TRUE, count = 1, type = "Nodes"))
