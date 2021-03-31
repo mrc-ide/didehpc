@@ -3,16 +3,6 @@
 ##' @importFrom utils modifyList packageVersion read.csv
 NULL
 
-Sys_getenv <- function(x, default = NA_character_) {
-  for (i in x) {
-    res <- Sys.getenv(i, NA_character_)
-    if (!is.na(res)) {
-      return(res)
-    }
-  }
-  default
-}
-
 curl_insecure <- function() {
   httr::config(ssl_verifypeer = 0)
 }

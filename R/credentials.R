@@ -1,17 +1,3 @@
- guess_credentials <- function() {
-  credentials <- getOption("didehpc.credentials", NULL)
-  credentials_file <- "~/.smbcredentials"
-  if (file.exists(credentials)) {
-    read_credentials(credentials)
-  } else if (file.exists(credentials_file)) {
-    read_credentials(credentials_file)
-  } else {
-    user <- Sys_getenv(c("LOGNAME", "USER", "LNAME", "USERNAME"),
-                       NA_character_)
-    list(username = user)
-  }
-}
-
 prompt_credentials <- function() {
   if (!interactive()) {
     stop("Credentials file needed for non-interactive use")
@@ -25,16 +11,13 @@ prompt_credentials <- function() {
 
 get_credentials <- function(credentials, need_password = TRUE) {
   if (is.null(credentials)) {
-    prompt_credentials()
+    credentials <- prompt_credentials()
   }
-  ## Jesus.  Some cleaning here to do.
-  ## Check that username/password is OK
-  ## Perhaps allow and parse environment variables
   if (is.list(credentials)) {
     ret <- check_credentials(credentials, need_password)
   } else if (is.character(credentials)) {
     if (file.exists(credentials)) {
-      ret <- read_credentials(credentials)
+      ret <- read_credentials(credentials, need_password)
     } else {
       ## Assume we have a username.
       ret <- list(username = credentials)
@@ -47,7 +30,7 @@ get_credentials <- function(credentials, need_password = TRUE) {
       }
     }
   } else {
-    stop("Unexpected type")
+    stop("Unexpected type for credentials")
   }
 
   ret$username <- sub("^DIDE\\\\", "", ret$username)
@@ -57,11 +40,11 @@ get_credentials <- function(credentials, need_password = TRUE) {
 ## Format is
 ## username=<username>
 ## password=<password>
-read_credentials <- function(filename) {
+read_credentials <- function(filename, need_password) {
   dat <- strsplit(readLines(filename), "=")
   dat <- setNames(as.list(trimws(vapply(dat, "[[", character(1), 2L))),
                   trimws(vapply(dat, "[[", character(1), 1L)))
-  check_credentials(dat, TRUE)
+  check_credentials(dat, need_password)
 }
 
 check_credentials <- function(credentials, need_password) {
@@ -77,5 +60,5 @@ check_credentials <- function(credentials, need_password) {
   if (length(msg) > 0L) {
     stop("Missing fields in credentials: ", paste(msg, collapse = ", "))
   }
-  credentials # consider credentials[req]
+  credentials
 }
