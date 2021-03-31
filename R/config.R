@@ -235,10 +235,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   ## Set up the library path here
   browser()
 
-  if (isTRUE(dat$use_java)) {
-    if (is.null(dat$java_home)) {
-      dat$java_home <- ""
-    }
+  if (isTRUE(dat$use_java) && is.null(dat$java_home)) {
+    dat$java_home <- ""
   }
 
   ret <- list(cluster = cluster,

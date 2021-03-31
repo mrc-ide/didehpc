@@ -1,29 +1,3 @@
-prepare_path <- function(path, mappings, error = TRUE) {
-  if (!file.exists(path)) {
-    stop("path does not exist: ", path)
-  }
-  path <- clean_path(normalizePath(path, mustWork = TRUE))
-  ## TODO: currently assume that mappings does not end in a trailing slash.
-  ## TODO: not sure about slash direction disagreements.
-  ## TODO: 'rel' is not relative to *our* working directory
-  for (m in mappings) {
-    if (string_starts_with(tolower(path), tolower(m$path_local))) {
-      m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
-      return(m)
-    }
-  }
-  if (error) {
-    stop("did not find network mapping for path ", path)
-  } else {
-    NULL
-  }
-}
-
-## It may be possible on many systems to infer the path_remote from
-## the local path, which would be useful;
-##   `mount` on linux
-##   `net use` or the easier to parse variant on Windows
-
 ##' Describe a path mapping for use when setting up jobs on the cluster.
 ##' @title Describe a path mapping
 ##'
@@ -66,37 +40,15 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   if (!file.exists(path_local)) {
     stop("Local mount point does not exist: ", path_local)
   }
-  clean_path <- function(x) {
-    sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
-  }
-  
-  # Make FQDN
-  
-  bits <- strsplit(clean_path(path_remote), "/")[[1]]
-  
-  # This contains... empty, empty, server-name, share, dir ...  
-  # So server_name should always be index 3.
-  # Remove .dide.local if we find it.
-  
-  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
-    bits[3] <- sub(".dide.local","", bits[3], ignore.case = TRUE)
-  }
-  
-  # Add .dide.ic.ac.uk if it's not there.
-  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
-    bits[3] <- paste0(bits[3],".dide.ic.ac.uk")
-  }
-  
-  # re_assemble
-  
-  path_remote <- paste0(bits, collapse = "\\")
-  
-  ret <-
-    list(name = name,
-         path_remote = clean_path(path_remote),
-         path_local  = clean_path(normalizePath(path_local, mustWork = TRUE)),
-         drive_remote = drive_remote)
+  clean_path_remote(path_remote)
+
+  ret <- list(
+    name = name,
+    path_remote = clean_path_remote(path_remote),
+    path_local = clean_path_local(path_local),
+    drive_remote = drive_remote)
   class(ret) <- "path_mapping"
+
   ret
 }
 
@@ -111,6 +63,7 @@ as.character.path_mapping <- function(x, ...) {
   }
 }
 
+##' @export
 print.path_mapping <- function(x, ...) {
   cat(paste0("<path mapping>: ", as.character(x), "\n"))
   invisible(x)
@@ -119,9 +72,11 @@ print.path_mapping <- function(x, ...) {
 clean_path <- function(x) {
   sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
 }
+
 windows_path <- function(x) {
   gsub("/", "\\", x, fixed = TRUE)
 }
+
 unix_path <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)
 }
@@ -252,4 +207,53 @@ wmic <- function() {
 
 detect_mount <- function() {
   if (is_windows()) detect_mount_windows() else detect_mount_unix()
+}
+
+
+clean_path_local <- function(path) {
+  clean_path(normalizePath(path, mustWork = TRUE))
+}
+
+
+clean_path_remote <- function(path) {
+  ## Make FQDN
+  bits <- strsplit(clean_path(path), "/")[[1]]
+
+  ## This contains... empty, empty, server-name, share, dir ...
+  ## So server_name should always be index 3.
+  ## Remove .dide.local if we find it.
+
+  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
+    bits[3] <- sub(".dide.local","", bits[3], ignore.case = TRUE)
+  }
+
+  ## Add .dide.ic.ac.uk if it's not there.
+  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
+    bits[3] <- paste0(bits[3],".dide.ic.ac.uk")
+  }
+
+  ## re_assemble
+  paste0(bits, collapse = "\\")
+}
+
+prepare_path <- function(path, mappings, error = TRUE) {
+  if (!file.exists(path)) {
+    stop("path does not exist: ", path)
+  }
+  path <- clean_path(normalizePath(path, mustWork = TRUE))
+  ## NOTE: The following TODO's date from 2015-16
+  ## TODO: currently assume that mappings does not end in a trailing slash.
+  ## TODO: not sure about slash direction disagreements.
+  ## TODO: 'rel' is not relative to *our* working directory
+  for (m in mappings) {
+    if (string_starts_with(tolower(path), tolower(m$path_local))) {
+      m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
+      return(m)
+    }
+  }
+  if (error) {
+    stop("did not find network mapping for path ", path)
+  } else {
+    NULL
+  }
 }
