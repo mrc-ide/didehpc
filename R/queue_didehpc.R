@@ -11,8 +11,11 @@
 ##'   queue creation (recommended on initial creation, but not
 ##'   required if you want to check on jobs).
 ##'
+##' @param root A root directory, not usually needed
+##'
+##' @param sync A vector of files to sync onto the network share
+##'
 ##' @export
-##' @importFrom provisionr package_sources
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE, sync = NULL) {
   .R6_queue_didehpc$new(context, config, root, initialise, sync)
@@ -73,7 +76,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         ## There are probably times when this needs relaxing, for
         ## example to synchronise data files that are on a local
         ## computer.
-        stop("No not specify sync if running on a network share")
+        stop("Do not specify sync if running on a network share")
       }
 
       dir.create(path_batch(self$context$root$path), FALSE, TRUE)

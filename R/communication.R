@@ -220,8 +220,8 @@ cluster_load_cols <- function(p, max = 1) {
   p[is.nan(p)] <- 0
 
   cols <- c("#FED976", "#FEB24C", "#FD8D3C", "#FC4E2A", "#E31A1C", "#B10026")
-  ret <- colorRamp(cols)(p / max)
-  rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue = 255)
+  ret <- grDevices::colorRamp(cols)(p / max)
+  grDevices::rgb(ret[, 1], ret[, 2], ret[, 3], maxColorValue = 255)
 }
 
 status_map <- function(x, reverse = FALSE) {

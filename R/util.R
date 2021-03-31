@@ -3,18 +3,7 @@
 ##' @importFrom utils modifyList packageVersion read.csv
 NULL
 
-Sys_which <- function(name) {
-  if (length(name) != 1L) {
-    stop("'name' must be a scalar")
-  }
-  ret <- Sys.which(name)
-  if (ret == "") {
-    stop(sprintf("%s not found in $PATH", name))
-  }
-  ret
-}
-
-Sys_getenv <- function(x, default = "") {
+Sys_getenv <- function(x, default = NA_character_) {
   for (i in x) {
     res <- Sys.getenv(i, NA_character_)
     if (!is.na(res)) {

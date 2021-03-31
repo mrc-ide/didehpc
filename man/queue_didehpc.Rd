@@ -17,9 +17,13 @@ queue_didehpc(
 
 \item{config}{Optional dide configuration information.}
 
+\item{root}{A root directory, not usually needed}
+
 \item{initialise}{initialise context and log in to the cluster on
 queue creation (recommended on initial creation, but not
 required if you want to check on jobs).}
+
+\item{sync}{A vector of files to sync onto the network share}
 }
 \description{
 Create a queue object

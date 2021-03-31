@@ -10,8 +10,6 @@ didehpc_config(
   home = NULL,
   temp = NULL,
   cluster = NULL,
-  build_server_host = NULL,
-  build_server_port = NULL,
   shares = NULL,
   template = NULL,
   cores = NULL,
@@ -24,7 +22,6 @@ didehpc_config(
   worker_timeout = NULL,
   rtools = NULL,
   r_version = NULL,
-  use_common_lib = NULL,
   use_java = NULL,
   java_home = NULL
 )
@@ -43,21 +40,16 @@ you will be prompted graphically for your password).}
 
 \item{cluster}{Name of the cluster to use; one of
 \code{\link{valid_clusters}()} or one of the aliases
-(small/little/dide/ide; big/mrc; linux).}
-
-\item{build_server_host, build_server_port}{Host and port for a
-\code{buildr} server for custom binary packages.  The defaults
-should generally work.}
+(small/little/dide/ide; big/mrc).}
 
 \item{shares}{Optional additional share mappings.  Can either be a
 single path mapping (as returned by \code{\link{path_mapping}}
 or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
-"GeneralNodes" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "12Core", "16Core", "12and16Core",
-"20Core", "24Core" or "32Core". For fi--didelxhn the only valid template
-is "LinuxNodes".  See the main cluster documentation if you
+"GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+"GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
+"24Core" or "32Core". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
 for the job will fail).  For training purposes there is also a
@@ -65,15 +57,14 @@ for the job will fail).  For training purposes there is also a
 instructed to.}
 
 \item{cores}{The number of cores to request.  This is mostly
-useful when using the \code{GeneralNodes} or \code{LinuxNodes}
-template.  If specified, then we will request this many cores
-from the windows queuer.  If you request too many cores then
-your task will queue forever!  24 is the largest this should be
-on fi--dideclusthn and 64 on fi--didemrchnb (assuming you have access
-to those nodes).  If omitted then a
-single core is selected for the GeneralNodes template or the
-\emph{entire machine} for the other templates (unless modified
-by \code{wholenode}).}
+useful when using the \code{GeneralNodes} template.  If
+specified, then we will request this many cores from the windows
+queuer.  If you request too many cores then your task will queue
+forever!  24 is the largest this should be on fi--dideclusthn
+and 64 on fi--didemrchnb (assuming you have access to those
+nodes).  If omitted then a single core is selected for the
+GeneralNodes template or the \emph{entire machine} for the other
+templates (unless modified by \code{wholenode}).}
 
 \item{wholenode}{Request the whole node?  This will default to
 \code{TRUE} if any template other than \code{GeneralNodes} is
@@ -138,15 +129,6 @@ a version on the cluster that will be used, or the oldest
 cluster version that is newer than yours, or the most recent
 cluster version.}
 
-\item{use_common_lib}{Logical, indicating if a common library of
-packages should be used.  This will reduce the overal startup
-time of your queue object (on the first running) and reduce the
-total disk space footprint by a few tens of megabytes.  This is
-particularly useful if using the \code{BH} package as unpacking
-that on the network drive can take a few minutes.  The common
-library can only be used if the temporary drive is mounted on
-your computer.}
-
 \item{use_java}{Logical, indicating if the script is going to
 require Java, for example via the rJava package.}
 
@@ -180,8 +162,7 @@ If you specify \code{cores}, the HPC will queue your job until an
   appropriate number of cores appears for the selected template.
   This can leave your job queing forever (e.g., selecting 20 cores
   on a 16Core template) so be careful.  The \code{cores} option is
-  most useful with the \code{GeneralNodes} template, which is the
-  default (\code{LinuxNodes} on \code{fi--didelxhn}).
+  most useful with the \code{GeneralNodes} template.
 
 In either case, if more than 1 core is implied (either by using
   any template other than \code{GeneralNodes} or by specifying a
