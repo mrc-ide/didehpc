@@ -131,7 +131,6 @@ test_that("parallel and cores with parallel given", {
 
 test_that("cluster alias", {
   expect_equal(didehpc_config(cluster = "big")$cluster, "fi--didemrchnb")
-  expect_equal(didehpc_config(cluster = "linux")$cluster, "fi--didelxhn")
   expect_equal(didehpc_config(cluster = "SMALL")$cluster, "fi--dideclusthn")
 })
 

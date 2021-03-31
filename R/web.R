@@ -69,8 +69,7 @@ web_logged_in <- function() {
 
 web_submit <- function(config, path, name) {
   assert_scalar_character(path)
-  is_windows <- windows_cluster(config$cluster)
-  if (is_windows && any(!grepl("^\\\\\\\\", path))) {
+  if (any(!grepl("^\\\\\\\\", path))) {
     stop("All paths must be Windows network paths")
   }
 
@@ -78,9 +77,9 @@ web_submit <- function(config, path, name) {
   ## test-3-path-with-spaces.R; it's likely that a similar set of
   ## tweaks using the HPC tools will be required.
   if (grepl(" ", path, fixed = TRUE)) {
-    path <- shQuote(path, if (is_windows) "cmd" else "sh")
+    path <- shQuote(path, "cmd")
   }
-  path_call <- paste(if (is_windows) "call" else "bash", path)
+  path_call <- paste("call", path)
 
   if (is.null(name)) {
     name <- ""

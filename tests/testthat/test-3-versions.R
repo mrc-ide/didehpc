@@ -6,7 +6,7 @@ test_that("supported - defaults", {
   owd <- prepare_didehpc("versions")
   on.exit(setwd(owd))
 
-  valid <- r_versions("fi--didemrchnb")
+  valid <- r_versions()
   for (i in seq_along(valid)) {
     v <- valid[[i]]
     with_mock(`base::getRversion` = function() v,
@@ -46,7 +46,7 @@ test_that("versions", {
                                sources = "mysources.R")
 
   ## Select the biggest version within each series to test
-  valid <- r_versions("fi--didemrchnb")
+  valid <- r_versions()
   test <- lapply(unique(valid[, 1:2]),
                  function(x) max(valid[valid[, 1:2] == x]))
   for (v in test) {

@@ -19,8 +19,7 @@
 ##'   appropriate number of cores appears for the selected template.
 ##'   This can leave your job queing forever (e.g., selecting 20 cores
 ##'   on a 16Core template) so be careful.  The \code{cores} option is
-##'   most useful with the \code{GeneralNodes} template, which is the
-##'   default (\code{LinuxNodes} on \code{fi--didelxhn}).
+##'   most useful with the \code{GeneralNodes} template.
 ##'
 ##' In either case, if more than 1 core is implied (either by using
 ##'   any template other than \code{GeneralNodes} or by specifying a
@@ -66,21 +65,16 @@
 ##'
 ##' @param cluster Name of the cluster to use; one of
 ##'   \code{\link{valid_clusters}()} or one of the aliases
-##'   (small/little/dide/ide; big/mrc; linux).
-##'
-##' @param build_server_host,build_server_port Host and port for a
-##'   \code{buildr} server for custom binary packages.  The defaults
-##'   should generally work.
+##'   (small/little/dide/ide; big/mrc).
 ##'
 ##' @param shares Optional additional share mappings.  Can either be a
 ##'   single path mapping (as returned by \code{\link{path_mapping}}
 ##'   or a list of such calls.
 ##'
 ##' @param template A job template.  On fi--dideclusthn this can be
-##'   "GeneralNodes" or "8Core", while on "fi--didemrchnb"
-##'   this can be "GeneralNodes", "12Core", "16Core", "12and16Core",
-##'   "20Core", "24Core" or "32Core". For fi--didelxhn the only valid template
-##'   is "LinuxNodes".  See the main cluster documentation if you
+##'   "GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+##'   "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
+##'   "24Core" or "32Core". See the main cluster documentation if you
 ##'   tweak these parameters, as you may not have permission to use
 ##'   all templates (and if you use one that you don't have permission
 ##'   for the job will fail).  For training purposes there is also a
@@ -88,15 +82,14 @@
 ##'   instructed to.
 ##'
 ##' @param cores The number of cores to request.  This is mostly
-##'   useful when using the \code{GeneralNodes} or \code{LinuxNodes}
-##'   template.  If specified, then we will request this many cores
-##'   from the windows queuer.  If you request too many cores then
-##'   your task will queue forever!  24 is the largest this should be
-##'   on fi--dideclusthn and 64 on fi--didemrchnb (assuming you have access
-##'   to those nodes).  If omitted then a
-##'   single core is selected for the GeneralNodes template or the
-##'   \emph{entire machine} for the other templates (unless modified
-##'   by \code{wholenode}).
+##'   useful when using the \code{GeneralNodes} template.  If
+##'   specified, then we will request this many cores from the windows
+##'   queuer.  If you request too many cores then your task will queue
+##'   forever!  24 is the largest this should be on fi--dideclusthn
+##'   and 64 on fi--didemrchnb (assuming you have access to those
+##'   nodes).  If omitted then a single core is selected for the
+##'   GeneralNodes template or the \emph{entire machine} for the other
+##'   templates (unless modified by \code{wholenode}).
 ##'
 ##' @param wholenode Request the whole node?  This will default to
 ##'   \code{TRUE} if any template other than \code{GeneralNodes} is
@@ -173,7 +166,6 @@
 ##' @export
 didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL,
-                           build_server_host = NULL, build_server_port = NULL,
                            shares = NULL, template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
@@ -185,7 +177,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 home = home,
                 temp = temp,
                 cluster = cluster,
-                build_server_host = build_server_host,
                 shares = shares,
                 template = template,
                 cores = cores,
@@ -232,10 +223,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
-  if (linux_cluster(cluster)) {
-    shares <- check_linux_shares(username, shares)
-  }
-
   if (isTRUE(dat$hpctools)) {
     if (!has_hpctools()) {
       stop("HPC tools are requested but not found")
@@ -244,13 +231,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$hpctools <- FALSE
   }
   dat$r_version <- select_r_version(cluster, dat$r_version)
-
-  if (is.null(dat$build_server_host)) {
-    dat$build_server_host <- build_server_host(cluster)
-  }
-  if (is.null(dat$build_server_port)) {
-    dat$build_server_port <- build_server_port(dat$r_version)
-  }
 
   ## Set up the library path here
   browser()
@@ -264,8 +244,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   ret <- list(cluster = cluster,
               credentials = dat$credentials,
               username = username,
-              build_server_host = dat$build_server_host,
-              build_server_port = dat$build_server_port,
               template = dat$template,
               wholenode = dat$wholenode,
               hpctools = dat$hpctools,
@@ -318,7 +296,6 @@ didehpc_config_defaults <- function() {
     credentials    = getOption("didehpc.credentials",    NULL),
     home           = getOption("didehpc.home",           NULL),
     temp           = getOption("didehpc.temp",           NULL),
-    build_server   = getOption("didehpc.build_server",   NULL),
     shares         = getOption("didehpc.shares",         NULL),
     template       = getOption("didehpc.template",       NULL),
     cores          = getOption("didehpc.cores",          NULL),
@@ -383,8 +360,7 @@ cluster_name <- function(name) {
     if (!(name %in% valid_clusters())) {
       alias <- list(
         "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
-        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
-        "fi--didelxhn" = c("linux", "didelxhn"))
+        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"))
       alias <-
         setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
       name <- alias[[match_value(tolower(name), names(alias), "name")]]
@@ -396,13 +372,12 @@ cluster_name <- function(name) {
 valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
-                            "20Core", "24Core", "32Core"),
-       "fi--didelxhn" = "LinuxNodes")
+                            "20Core", "24Core", "32Core"))
 }
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   assert_value(template, valid_templates()[[cluster]])
-  general <- template %in% c("GeneralNodes", "LinuxNodes", "Training")
+  general <- template %in% c("GeneralNodes", "Training")
 
   if (!is.null(cores)) {
     if (isTRUE(wholenode)) {
@@ -451,10 +426,9 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
                       dat[is_home, "remote"]), collapse = "\n")))
     } else {
       ## For now, require that home is given otherwise there are a few
-      ## things that might not work (linux cluster in particular).
-      ## This would actually be OK for the windows cluster but needs
-      ## testing I think.  Test this with passing FALSE through and
-      ## see what I can make break
+      ## things that might not work.  This might actually be OK but
+      ## needs testing I think.  Test this with passing FALSE through
+      ## and see what I can make break
       stop("I can't find your home directory!  Please mount it")
     }
   } else {
@@ -562,8 +536,6 @@ available_drive <- function(shares) {
   paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
 }
 
-BUILD_SERVER_WINDOWS <- "builderhv.dide.ic.ac.uk"
-BUILD_SERVER_LINUX <- "129.31.25.7"
 R_BITS <- 64
 
 ## TODO: document how updates happen as there's some manual
@@ -619,34 +591,13 @@ needs_rtools <- function(config, context) {
 redis_host <- function(cluster) {
   switch(cluster,
          "fi--didemrchnb" = "12.0.0.1",
-         "fi--dideclusthn" = "11.0.0.1",
-         "") # TODO: get working on the linux cluster too
-}
-
-
-build_server_host <- function(cluster) {
-  if (linux_cluster(cluster)) BUILD_SERVER_LINUX else BUILD_SERVER_WINDOWS
-}
-
-
-build_server_port <- function(r_version) {
-  as.integer(paste(c("87", unclass(r_version)[[1]][1:2]), collapse = ""))
+         "fi--dideclusthn" = "11.0.0.1")
 }
 
 
 cran_platform <- function(cluster) {
-  if (linux_cluster(cluster)) {
-    "linux"
-  } else {
-    "windows"
-  }
-}
-
-linux_cluster <- function(cluster) {
-  cluster == "fi--didelxhn"
-}
-windows_cluster <- function(cluster) {
-  !linux_cluster(cluster)
+  ## TODO: remove
+  "windows"
 }
 
 ## NOTE: Only some versions of R are supported by context; at present
@@ -656,27 +607,20 @@ windows_cluster <- function(cluster) {
 ## below) requires work in at least provisionr to get all the packages
 ## built.  See didehpc issue #54
 
-r_versions <- function(cluster) {
-  if (linux_cluster(cluster)) {
-    numeric_version(c("3.2.4", "3.3.0", "3.3.1"))
+r_versions <- function() {
+  if (is.null(cache$r_versions)) {
+    r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
+    v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
+    cache$r_versions <- vcapply(
+      v$software[vlapply(v$software, function(x) x$name == 'R')], "[[", "version")
 
-  } else {
-
-    if (is.null(cache$r_versions)) {
-      r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
-      v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-
-      cache$r_versions <- vcapply(
-        v$software[vlapply(v$software, function(x) x$name == 'R')], "[[", "version")
-
-    }
-    numeric_version(cache$r_versions)
   }
+  numeric_version(cache$r_versions)
 }
 
 select_r_version <- function(cluster, r_version) {
   if (is.null(r_version)) {
-    valid <- r_versions(cluster)
+    valid <- r_versions()
     ours <- getRversion()
     if (ours %in% valid) {
       r_version <- numeric_version(ours)
@@ -689,7 +633,7 @@ select_r_version <- function(cluster, r_version) {
     if (is.character(r_version)) {
       r_version <- numeric_version(r_version)
     }
-    if (!(r_version %in% r_versions(cluster))) {
+    if (!(r_version %in% r_versions())) {
       stop("Unsupported R version: ", as.character(r_version))
     }
   }

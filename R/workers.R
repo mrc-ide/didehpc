@@ -35,7 +35,6 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   template <- obj$templates$rrq_worker
 
   path_log <- path_worker_logs(NULL)
-  is_linux <- linux_cluster(config$cluster)
 
   base <- ids::adjective_animal()
   names <- sprintf("%s_%d", base, seq_len(n))
@@ -59,7 +58,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
               rrq_key_alive = rrq_key_alive)
   for (nm in names) {
     dat$rrq_worker_id <- nm
-    batch <- write_batch(nm, root, template, dat, is_linux)
+    batch <- write_batch(nm, root, template, dat)
     path <- remote_path(prepare_path(batch, config$shares))
     p()
     dide_id <- didehpc_submit(config, path, nm)

@@ -53,6 +53,7 @@ modify_list <- function(x, val, name = deparse(substitute(val))) {
 is_windows <- function() {
   Sys.info()[["sysname"]] == "Windows"
 }
+
 is_linux <- function() {
   Sys.info()[["sysname"]] == "Linux"
 }

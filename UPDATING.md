@@ -39,16 +39,11 @@ right version of R. Verify this is the correct version of Rtools [here](https://
                 stop("Get Rich to upgrade Rtools"))
 ```
 * Locate the `r_versions` function and update the list of valid versions with the new one. This should match the 
-filenames of the new `setr32` and `setr64` batch files created earlier. (The instructions here relate to the 
-windows (non-linux) case)
+filenames of the new `setr32` and `setr64` batch files created earlier.
 ```r
-r_versions <- function(cluster) {
-  if (linux_cluster(cluster)) {
-    v <- c("3.2.4", "3.3.0", "3.3.1")
-  } else {
-    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
-           "3.5.0", "3.6.0")
-  }
+r_versions <- function() {
+  v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
+         "3.5.0", "3.6.0")
 ```
 * Update the minor version in `DESCRIPTION`, and add an entry in `NEWS.md`.
 * Commit changes on the branch - but wait for last step before PR / merging.

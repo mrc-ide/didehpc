@@ -264,19 +264,13 @@ submit_dide <- function(obj, task_ids, names) {
     stop("incorrect length names")
   }
 
-  linux <- linux_cluster(config$cluster)
-
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface I think.
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   for (id in task_ids) {
-    batch <- write_batch(id, root, template, list(task_id = id), linux)
+    batch <- write_batch(id, root, template, list(task_id = id))
     dat <- prepare_path(batch, config$shares)
-    if (linux) {
-      path <- file.path(dat$drive_remote, dat$rel, fsep = "/")
-    } else {
-      path <- remote_path(dat)
-    }
+    path <- remote_path(dat)
     p()
     dide_id <- didehpc_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")

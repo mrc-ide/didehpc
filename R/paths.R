@@ -135,13 +135,14 @@ file_path <- function(...) {
   paths <- paths[!vapply(paths, is.null, logical(1))]
   do.call("file.path", paths, quote = TRUE)
 }
-path_batch <- function(root, id = NULL, linux = FALSE) {
+
+path_batch <- function(root, id = NULL) {
   if (!is.null(id)) {
-    ext <- if (linux) ".sh" else ".bat"
-    id <- paste0(id, ext)
+    id <- paste0(id, ".bat")
   }
   file_path(root, "batch", id)
 }
+
 path_logs <- function(root, id = NULL) {
   file_path(root, "logs", id)
 }
