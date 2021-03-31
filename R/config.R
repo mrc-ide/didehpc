@@ -376,7 +376,7 @@ valid_templates <- function() {
 }
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
-  assert_value(template, valid_templates()[[cluster]])
+  template <- match_value(template, valid_templates()[[cluster]])
   general <- template %in% c("GeneralNodes", "Training")
 
   if (!is.null(cores)) {

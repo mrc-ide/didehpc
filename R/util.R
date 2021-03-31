@@ -25,6 +25,7 @@ encode64 <- function(x) {
     storr::encode64(x, "+", "/")
   }
 }
+
 decode64 <- function(x) {
   storr::decode64(x, "+", "/")
 }
@@ -32,7 +33,7 @@ decode64 <- function(x) {
 modify_list <- function(x, val, name = deparse(substitute(val))) {
   extra <- setdiff(names(val), names(x))
   if (length(extra) > 0L) {
-    warning(sprintf("Unknown elements in %s: %s",
+    stop(sprintf("Unknown elements in %s: %s",
                     name, paste(extra, collapse = ", ")))
     val <- val[setdiff(names(val), extra)]
   }
@@ -66,16 +67,13 @@ time_checker <- function(timeout) {
 vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
+
 vlapply <- function(X, FUN, ...) {
   vapply(X, FUN, logical(1), ...)
 }
 
 `%||%` <- function(a, b) {
   if (is.null(a)) b else a
-}
-
-strrep <- function(x, times) {
-  paste(rep(x, times), collapse = "")
 }
 
 is_directory <- function(path) {
@@ -98,7 +96,7 @@ squote <- function(x) {
   sprintf("'%s'", x)
 }
 
-backup <- function(filename, verbose = TRUE, move = FALSE) {
+backup <- function(filename, verbose = TRUE) {
   if (file.exists(filename)) {
     pat <- sprintf("%s\\.([0-9]+)", basename(filename))
     found <- dir(dirname(filename), pattern = pat)
@@ -109,18 +107,13 @@ backup <- function(filename, verbose = TRUE, move = FALSE) {
     }
     dest <- sprintf("%s.%d", filename, n)
     if (verbose) {
-      action <- if (move) "Moving" else "Copying"
-      message(sprintf("%s %s -> %s", action, filename, basename(dest)))
+      message(sprintf("Copying %s -> %s", filename, basename(dest)))
     }
-    if (move) {
-      file.rename(filename, dest)
-    } else {
-      file.copy(filename, dest)
-    }
+    file.copy(filename, dest)
   }
 }
 
 from_json <- function(x) {
-  jsonlite::fromJSON(x, simplifyDataFrame = FALSE,  simplifyMatrix = FALSE)
+  jsonlite::fromJSON(x, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 }
 
