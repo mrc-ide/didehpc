@@ -85,11 +85,6 @@ batch_templates <- function(context, config, workdir) {
     }
   }
 
-  if (!is.null(config$common_lib)) {
-    dat$common_lib <- unix_path(file.path(config$common_lib$drive_remote,
-                                          config$common_lib$rel))
-  }
-
   templates <- read_templates(if (linux) "sh" else "bat")
   lapply(templates, function(x)
     drop_blank(whisker::whisker.render(x, dat)))

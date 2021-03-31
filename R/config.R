@@ -161,15 +161,6 @@
 ##'   cluster version that is newer than yours, or the most recent
 ##'   cluster version.
 ##'
-##' @param use_common_lib Logical, indicating if a common library of
-##'   packages should be used.  This will reduce the overal startup
-##'   time of your queue object (on the first running) and reduce the
-##'   total disk space footprint by a few tens of megabytes.  This is
-##'   particularly useful if using the \code{BH} package as unpacking
-##'   that on the network drive can take a few minutes.  The common
-##'   library can only be used if the temporary drive is mounted on
-##'   your computer.
-##'
 ##' @param use_java Logical, indicating if the script is going to
 ##'   require Java, for example via the rJava package.
 ##'
@@ -187,8 +178,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            wholenode = NULL, parallel = NULL, hpctools = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
-                           r_version = NULL, use_common_lib = NULL,
-                           use_java = NULL, java_home = NULL) {
+                           r_version = NULL, use_java = NULL,
+                           java_home = NULL) {
   defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -207,7 +198,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 worker_timeout = worker_timeout,
                 rtools = rtools,
                 r_version = r_version,
-                use_common_lib = use_common_lib,
                 use_java = use_java,
                 java_home = java_home)
   dat <- modify_list(defaults,
@@ -262,20 +252,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$build_server_port <- build_server_port(dat$r_version)
   }
 
-  if (isTRUE(dat$use_common_lib)) {
-    temp <- shares$temp
-    if (is.null(temp)) {
-      stop("Can't use common_lib if temp is not mounted or detected")
-    }
-    p <- context:::path_library(file.path(temp$path_local, "didehpc"),
-                                cran_platform(cluster),
-                                dat$r_version)
-    if (!file.exists(p)) {
-      stop(sprintf("Failed to find library at '%s' - please email Rich", p))
-    }
-    dat$common_lib <- prepare_path(p, shares)
-  }
-
+  ## Set up the library path here
+  browser()
 
   if (isTRUE(dat$use_java)) {
     if (is.null(dat$java_home)) {
@@ -299,7 +277,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               worker_timeout = dat$worker_timeout,
               rtools = dat$rtools,
               r_version = dat$r_version,
-              common_lib = dat$common_lib,
               use_java = dat$use_java,
               java_home = dat$java_home)
 
@@ -354,7 +331,6 @@ didehpc_config_defaults <- function() {
     rtools         = getOption("didehpc.rtools",         FALSE),
     hpctools       = getOption("didehpc.hpctools",       FALSE),
     r_version      = getOption("didehpc.r_version",      NULL),
-    use_common_lib = getOption("didehpc.use_common_lib", FALSE),
     use_java       = getOption("didehpc.use_java",       FALSE),
     java_home      = getOption("didehpc.java_home",      NULL))
 
