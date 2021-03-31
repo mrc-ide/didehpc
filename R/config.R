@@ -230,7 +230,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   } else {
     dat$hpctools <- FALSE
   }
-  dat$r_version <- select_r_version(cluster, dat$r_version)
+  dat$r_version <- select_r_version(dat$r_version)
 
   ## Set up the library path here
   browser()
@@ -305,7 +305,7 @@ didehpc_config_defaults <- function() {
     use_workers    = getOption("didehpc.use_workers",    FALSE),
     use_rrq        = getOption("didehpc.use_rrq",        FALSE),
     worker_timeout = getOption("didehpc.worker_timeout", 600),
-    rtools         = getOption("didehpc.rtools",         FALSE),
+    rtools         = getOption("didehpc.rtools",         TRUE),
     hpctools       = getOption("didehpc.hpctools",       FALSE),
     r_version      = getOption("didehpc.r_version",      NULL),
     use_java       = getOption("didehpc.use_java",       FALSE),
@@ -349,7 +349,7 @@ print.didehpc_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb", "fi--didelxhn")
+  c("fi--dideclusthn", "fi--didemrchnb")
 }
 
 cluster_name <- function(name) {
@@ -383,7 +383,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     if (isTRUE(wholenode)) {
       stop("Cannot specify both wholenode and cores")
     }
-    assert_scalar_integer(cores)
+    ## assert_scalar_integer(cores)
     max_cores <- if (cluster == "fi--didemrchnb") 64 else 24
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
@@ -531,6 +531,7 @@ dide_detect_mount <- function(home, temp, shares, workdir, username, cluster,
   }
   ret
 }
+
 available_drive <- function(shares) {
   used <- toupper(substr(vcapply(shares, "[[", "drive_remote"), 1, 1))
   paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
@@ -547,7 +548,7 @@ rtools_versions <- function(r_version, path = NULL) {
   } else {
     mingw <- sprintf("mingw%d", R_BITS)
   }
-  
+
   ret <- switch(r_version_2,
     "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
     "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
@@ -555,14 +556,14 @@ rtools_versions <- function(r_version, path = NULL) {
     "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
     "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
     stop(sprintf("No RTools version found for R %s", r_version)))
-      
+
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
-  
+
   ret$rtools_root <- windows_path(file_path(path, "Rtools", ret$path))
   ret$gcc_path <- windows_path(file_path(ret$rtools_root, ret$gcc, "bin"))
   ret$make_path <- windows_path(file_path(ret$rtools_root, ret$make, "bin"))
-  
+
   ret$path <- NULL
   ret
 }
@@ -582,23 +583,14 @@ rtools_info <- function(config) {
   rtools_versions(config$r_version, tmpdrive)
 }
 
-needs_rtools <- function(config, context) {
-  rtools_pkgs <- c("rstan", "odin", "pomp")
-  isTRUE(unname(config$rtools)) ||
-    any(rtools_pkgs %in% unlist(context$packages))
-}
 
 redis_host <- function(cluster) {
   switch(cluster,
          "fi--didemrchnb" = "12.0.0.1",
-         "fi--dideclusthn" = "11.0.0.1")
+         "fi--dideclusthn" = "11.0.0.1",
+         stop(sprintf("No redis host for cluster '%s'", cluster)))
 }
 
-
-cran_platform <- function(cluster) {
-  ## TODO: remove
-  "windows"
-}
 
 ## NOTE: Only some versions of R are supported by context; at present
 ## we require >= 3.2.2.
@@ -606,7 +598,6 @@ cran_platform <- function(cluster) {
 ## NOTE: Practically supporting old versions (currently 3.3.x and
 ## below) requires work in at least provisionr to get all the packages
 ## built.  See didehpc issue #54
-
 r_versions <- function() {
   if (is.null(cache$r_versions)) {
     r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
@@ -618,10 +609,9 @@ r_versions <- function() {
   numeric_version(cache$r_versions)
 }
 
-select_r_version <- function(cluster, r_version) {
+select_r_version <- function(r_version, ours = getRversion()) {
   if (is.null(r_version)) {
     valid <- r_versions()
-    ours <- getRversion()
     if (ours %in% valid) {
       r_version <- numeric_version(ours)
     } else {

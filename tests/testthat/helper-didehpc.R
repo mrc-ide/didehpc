@@ -76,3 +76,16 @@ alter_version <- function(v, increase) {
 read_version <- function(path) {
   numeric_version(read.dcf(file.path(path, "DESCRIPTION"), "Version")[[1]])
 }
+
+
+tmp_options_didehpc <- function(...) {
+  opts <- options()
+  i <- grepl("^didehpc\\.", names(opts))
+  if (any(i)) {
+    opts[i] <- list(NULL)
+    base <- opts[i]
+  } else {
+    base <- list()
+  }
+  c(base, ...)
+}
