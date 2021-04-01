@@ -44,10 +44,19 @@ web_client <- R6::R6Class(
     ##' @description Test whether the client is logged in, returning `TRUE`
     ##'   or `FALSE`.
     logged_in = function() {
-      r <- private$client$POST("/_listheadnodes.php",
-                               httr::accept("text/plain"),
-                               body = list(user = encode64("")))
+      data <- list(user = encode64(""))
+      r <- private$client$POST("/_listheadnodes.php", data)
       httr::status_code(r) < 300
+    },
+
+
+    ##' @description Validate that we have access to a given cluster
+    ##'
+    ##' @param cluster The name of the cluster to check, defaulting to
+    ##'   the value given when creating the client.
+    check = function(cluster = NULL) {
+      valid <- self$headnodes()
+      client_check(cluster %||% private$cluster, self$headnodes())
     },
 
     ##' @description Submit a job to the cluster
@@ -70,8 +79,7 @@ web_client <- R6::R6Class(
       data <- client_submit_body(
         path, name, template, cluster %||% private$cluster,
         resource_type, resource_count)
-      r <- private$client$POST("/submit_1.php", httr::accept("text/plain"),
-                               body = data)
+      r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
     },
 
@@ -91,8 +99,7 @@ web_client <- R6::R6Class(
         stop("Need at least one task to cancel")
       }
       data <- client_cancel_body(dide_id, cluster %||% private$cluster)
-      r <- private$client$POST("/cancel.php", httr::accept("text/plain"),
-                               body = data)
+      r <- private$client$POST("/cancel.php", data)
       client_parse_cancel(httr_text(r))
     },
 
@@ -107,8 +114,7 @@ web_client <- R6::R6Class(
       data <- list(hpcfunc = "showfail",
                    cluster = encode64(cluster %||% private$cluster),
                    id = dide_id)
-      r <- private$client$POST("/showjobfail.php", httr::accept("text/plain"),
-                               body = data)
+      r <- private$client$POST("/showjobfail.php", data)
       client_parse_log(httr_text(r))
     },
 
@@ -127,8 +133,7 @@ web_client <- R6::R6Class(
                    scheduler = encode64(cluster %||% private$cluster),
                    state = encode64(state),
                    jobs = encode64(as.character(-1)))
-      r <- private$client$POST("/_listalljobs.php", httr::accept("text/plain"),
-                               body = data)
+      r <- private$client$POST("/_listalljobs.php", data)
       client_parse_status(httr_text(r))
     },
 
@@ -142,8 +147,7 @@ web_client <- R6::R6Class(
       data <- list(cluster = encode64(cluster %||% private$cluster),
                    hpcfunc = "shownodes",
                    cluster_no = as.character(match(cluster, valid_clusters())))
-      r <- private$client$POST("/shownodes.php", httr::accept("text/plain"),
-                               body = data)
+      r <- private$client$POST("/shownodes.php", data)
       client_parse_load_cluster(httr_text(r), cluster)
     },
 
@@ -159,9 +163,8 @@ web_client <- R6::R6Class(
     ##'   be used as a relativelyly fast "ping" to check that you are
     ##'   logged in the client and server are talking properly.
     headnodes = function() {
-      r <- private$client$POST("/_listheadnodes.php",
-                               httr::accept("text/plain"),
-                               body = list(user = encode64("")))
+      data <- list(user = encode64(""))
+      r <- private$client$POST("/_listheadnodes.php", data)
       client_parse_headnodes(httr_text(r))
     },
 
@@ -196,20 +199,21 @@ api_client <- R6::R6Class(
       private$credentials$username
     },
 
-    GET = function(...) {
-      self$request(httr::GET, ...)
+    GET = function(path, ...) {
+      self$request(httr::GET, path, ...)
     },
 
-    POST = function(...) {
-      ## If login will work with accept:plain then we can add this here
-      self$request(httr::POST, ..., encode = "form")
+    POST = function(path, body, ...) {
+      self$request(httr::POST, path, body, ...,
+                   httr::accept("text/plain"), encode = "form")
     },
 
     request = function(verb, path, ..., public = FALSE) {
       self$login(public)
       url <- paste0(private$url, path)
       r <- verb(url, ...)
-      if (!public && httr::status_code(r) >= 300) {
+      status <- httr::status_code(r)
+      if (status %in% c(401, 403)) {
         stop("Please login first")
       }
       httr::stop_for_status(r)
@@ -220,28 +224,43 @@ api_client <- R6::R6Class(
       if (public && !refresh) {
         return()
       }
-      if (refresh || is.null(private$logged_in)) {
+      if (refresh || !private$has_logged_in) {
         private$credentials <- dide_credentials(private$credentials, TRUE)
-        data <- list(us = encode64(private$credentials$username),
-                     pw = encode64(private$credentials$password),
-                     hpcfunc = encode64("login"))
-        r <- self$POST("/index.php", body = data, public = TRUE)
-        txt <- httr_text(r)
-        err <- grepl("You don't seem to have any HPC access.", txt,
-                     fixed = TRUE)
-        if (err) {
-          stop("Error logging on")
-        }
-        private$logged_in <- TRUE
+        api_client_login(private$credentials$username,
+                         private$credentials$password)
+        private$has_logged_in <- TRUE
       }
+    },
+
+    logged_in = function() {
+      if (!private$has_logged_in) {
+        return(FALSE)
+      }
+      r <- self$POST("/_listheadnodes.php", list(user = encode64("")))
+      httr::status_code(r) < 300
     }
   ),
 
   private = list(
     url = "https://mrcdata.dide.ic.ac.uk/hpc",
     credentials = NULL,
-    logged_in = FALSE
+    has_logged_in = FALSE
   ))
+
+
+api_client_login <- function(username, password) {
+  data <- list(us = encode64(username),
+               pw = encode64(password),
+               hpcfunc = encode64("login"))
+  r <- httr::POST("https://mrcdata.dide.ic.ac.uk/hpc/index.php",
+                  body = data, encode = "form")
+  httr::stop_for_status(r)
+  ## We get this where DIDE username/password ok but access is not
+  ## allowed
+  if (grepl("You don't seem to have any HPC access", httr_text(r))) {
+    stop("You do not have HPC access - please contact Wes")
+  }
+}
 
 
 client_submit_body <- function(path, name, template, cluster,
@@ -434,19 +453,26 @@ client_parse_load_overall <- function(dat) {
 }
 
 
-status_map <- function(x, reverse = FALSE) {
+client_check <- function(cluster, valid) {
+  if (!(cluster %in% valid)) {
+    if (length(valid) == 0L) {
+      stop("You do not have access to any cluster")
+    } else if (length(valid) == 1L) {
+      stop(sprintf("You do not have access to '%s'; try '%s'", cluster, valid))
+    } else {
+      stop(sprintf("You do not have access to '%s'; try one of %s",
+                   cluster, paste(squote(valid), collapse = ", ")))
+    }
+  }
+}
+
+
+status_map <- function(x) {
   map <- c(Running = "RUNNING",
            Finished = "COMPLETE",
            Queued = "PENDING",
            Failed = "ERROR",
            Canceled = "CANCELLED",
            Cancelled = "CANCELLED") # I don't think the cluster gives this.
-  ## for reverse,
-  ##   MISSING -> NA
-  ##   REDIRECT -> ?
-  if (reverse) {
-    unname(map[match(x, names(map))])
-  } else {
-    unname(map[x])
-  }
+  unname(map[x])
 }

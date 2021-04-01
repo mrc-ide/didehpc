@@ -27,7 +27,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
   inherit = queuer:::R6_queue_base,
   public = list(
     config = NULL,
-    logged_in = FALSE,
+    client = NULL,
     provisioned = FALSE,
     sync = NULL,
     templates = NULL,
@@ -116,28 +116,12 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     login = function(always = TRUE) {
-      ## TODO: this logic needs to go into the client!
-      stop("FIXME")
-      if (always || !self$logged_in) {
-        if (web_logged_in()) {
-          message("Already logged in")
-        } else {
-          web_login(self$config)
-          valid <- web_headnodes()
-          if (!(self$config$cluster %in% valid)) {
-            web_logout()
-            if (length(valid) == 0L) {
-              fmt <- "You do not have access to any cluster"
-            } else if (length(valid) == 1L) {
-              fmt <- "You do not have access to '%s'; try '%s'"
-            } else {
-              fmt <- "You do not have access to '%s'; try one of %s"
-              valid <- paste(squote(valid), collapse = ", ")
-            }
-            stop(sprintf(fmt, self$config$cluster, valid))
-          }
-        }
-        self$logged_in <- TRUE
+      if (always || is.null(private$client)) {
+        client <- web_client(self$config$credentials,
+                             self$config$cluster,
+                             TRUE)
+        client$check(self$config$cluster)
+        private$client <- client
       }
     },
 
