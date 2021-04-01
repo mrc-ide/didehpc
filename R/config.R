@@ -249,6 +249,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   ret
 }
 
+
 ##' @param ... arguments to \code{didehpc_config}
 ##' @export
 ##' @rdname didehpc_config
@@ -276,6 +277,7 @@ didehpc_config_global <- function(...) {
     invisible(list())
   }
 }
+
 
 didehpc_config_defaults <- function() {
   defaults <- list(
@@ -314,6 +316,7 @@ didehpc_config_defaults <- function() {
   defaults
 }
 
+
 ##' @export
 print.didehpc_config <- function(x, ...) {
   cat("<didehpc_config>\n")
@@ -331,12 +334,14 @@ print.didehpc_config <- function(x, ...) {
   invisible(x)
 }
 
+
 ##' Valid cluster names
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
   c("fi--dideclusthn", "fi--didemrchnb")
 }
+
 
 cluster_name <- function(name) {
   if (is.null(name)) {
@@ -355,11 +360,13 @@ cluster_name <- function(name) {
   name
 }
 
+
 valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
                             "20Core", "24Core", "32Core"))
 }
+
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   template <- match_value(template, valid_templates()[[cluster]])
@@ -385,16 +392,14 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 }
 
 
-R_BITS <- 64
-
 ## TODO: document how updates happen as there's some manual
 ## downloading and installation of rtools.
 rtools_versions <- function(r_version, path = NULL) {
   r_version_2 <- as.character(r_version[1, 1:2])
   if (r_version < "4.0.0") {
-    mingw <- sprintf("mingw_%d", R_BITS)
+    mingw <- "mingw_64"
   } else {
-    mingw <- sprintf("mingw%d", R_BITS)
+    mingw <- "mingw64"
   }
 
   ret <- switch(r_version_2,
@@ -456,6 +461,7 @@ r_versions <- function() {
   }
   numeric_version(cache$r_versions)
 }
+
 
 select_r_version <- function(r_version, ours = getRversion()) {
   if (is.null(r_version)) {

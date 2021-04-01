@@ -39,7 +39,7 @@ batch_templates <- function(context, config, workdir) {
   ## the workdir.
   ##
   ## TODO: Date might be wrong, because this is cached.
-  r_version <- sprintf("%d_%s", R_BITS,
+  r_version <- sprintf("%d_64",
                        paste(unclass(config$r_version)[[1]], collapse = "_"))
   context_workdir <- windows_path(wd$rel)
 
