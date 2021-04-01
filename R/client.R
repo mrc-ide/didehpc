@@ -395,7 +395,8 @@ client_parse_load_cluster <- function(txt, cluster) {
   used <- total - free
   percent_used <- round(used / total * 100)
 
-  summary <- data.frame(name = names(free), free = unname(free),
+  summary <- data.frame(name = names(free),
+                        free = unname(free),
                         used = unname(used),
                         total = unname(total),
                         percent_used = unname(percent_used),
@@ -407,8 +408,10 @@ client_parse_load_cluster <- function(txt, cluster) {
                   total = sum(total),
                   percent_used = round((1 - sum(free) / sum(total)) * 100))
 
-  ret <- list(cluster = cluster, detail = res,
-              summary = summary, overall = overall)
+  ret <- list(cluster = cluster,
+              detail = res,
+              summary = summary,
+              overall = overall)
   class(ret) <- "dide_clusterload"
   ret
 }
