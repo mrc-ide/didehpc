@@ -20,26 +20,22 @@ detect_mount_windows <- function() {
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
 ## pretty, that's for sure.
 detect_mount_unix <- function() {
-  fail <- cbind(host = character(), path = character(), local = character(),
-                remote = character())
-
-  mount <- Sys.which("mount")
-  if (mount == "") {
-    return(fail)
-  }
-
+  mount <- Sys_which("mount")
   type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
+
   re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
   dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
+
   i <- grepl(re, dat, perl = TRUE)
   if (!all(i)) {
-    ## This will be useful to see until I get this correct.
-    warning("Ignoring mounts:\n", paste(re[!i], collapse = "\n"))
+    ## This will be useful to see if the above regex becomes wrong
+    warning("Ignoring mounts:\n", paste(dat[!i], collapse = "\n"),
+            immediate. = TRUE)
   }
   dat <- dat[i]
 
   if (length(dat) == 0L) {
-    return(fail)
+    return(cbind(remote = character(), local = character()))
   }
 
   ## There are a couple of formats here.  On the VPN and with OSX

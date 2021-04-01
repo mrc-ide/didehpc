@@ -124,3 +124,12 @@ backup <- function(filename, verbose = TRUE) {
 from_json <- function(x) {
   jsonlite::fromJSON(x, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
 }
+
+
+Sys_which <- function(name) {
+  ret <- Sys.which(name)
+  if (ret == "") {
+    stop(sprintf("%s not found in $PATH", name))
+  }
+  ret
+}
