@@ -90,12 +90,8 @@ test_that("file_path elides NULL elements", {
 
 test_that("dide path helpers return windows network paths", {
   expect_equal(
-    dide_home("a/b", "bob"),
-    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob\\a\\b")
-  expect_equal(
-    dide_home(c("a\\b", "x"), "bob"),
-    c("\\\\fi--san03.dide.ic.ac.uk\\homes\\bob\\a\\b",
-      "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob\\x"))
+    dide_home("bob"),
+    "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
   expect_equal(
     dide_temp("x/y"),
     "\\\\fi--didef3.dide.ic.ac.uk\\tmp\\x\\y")

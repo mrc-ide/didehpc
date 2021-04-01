@@ -117,11 +117,9 @@ path_worker_logs <- function(root, id = NULL) {
 }
 
 
-dide_home <- function(path, username) {
+dide_home <- function(username) {
   assert_scalar_character(username)
-  assert_character(path)
-  file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username,
-            windows_path(path), fsep = "\\")
+  file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username, fsep = "\\")
 }
 
 

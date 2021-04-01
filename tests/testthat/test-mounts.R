@@ -157,3 +157,160 @@ test_that("wmic_call copes with command and parse errors", {
     mockery::mock_args(mock_system),
     rep(list(list('wmic netuse list brief /format:"csv"')), 3))
 })
+
+
+test_that("Can auto-detect home", {
+  mounts <- example_mounts()
+  res <- dide_detect_mount_home(NULL, mounts, "bob")
+  expect_equal(res$name, "home")
+  expect_equal(res$path_local, file.path(example_root, "home"))
+  expect_equal(res$path_remote, "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
+  expect_equal(res$drive_remote, "Q:")
+})
+
+
+test_that("Can fall-back onto default drive if requested", {
+  mounts <- example_mounts()
+  home <- file.path(example_root, "home")
+  res <- dide_detect_mount_home(home, mounts, "bob")
+  expect_equal(res, dide_detect_mount_home(NULL, mounts, "bob"))
+})
+
+
+test_that("Can leave home unmounted", {
+  mounts <- example_mounts()
+  expect_null(dide_detect_mount_home(FALSE, mounts, "bob"))
+})
+
+
+test_that("Fail to auto-detect home if ambiguous or impossible", {
+  mounts <- example_mounts()
+  expect_error(
+    dide_detect_mount_home(NULL, mounts[1, , drop = FALSE], "bob"),
+    "I can't find your home directory!  Please mount it")
+  expect_error(
+    dide_detect_mount_home(NULL, mounts[c(1, 2, 2, 3), , drop = FALSE], "bob"),
+    "I am confused about your home directory; there are 2 choices")
+  expect_error(
+    dide_detect_mount_home(TRUE, mounts, "bob"),
+    "Unexpected type for 'home'")
+})
+
+
+test_that("Autodetect temp", {
+  mounts <- example_mounts()
+  res <- dide_detect_mount_temp(NULL, mounts)
+  expect_equal(res$name, "temp")
+  expect_equal(res$path_local, file.path(example_root, "temp"))
+  expect_equal(res$path_remote, "\\\\fi--didef3.dide.ic.ac.uk\\tmp")
+  expect_equal(res$drive_remote, "T:")
+})
+
+
+test_that("Can fall-back onto default drive if requested", {
+  mounts <- example_mounts()
+  temp <- file.path(example_root, "temp")
+  res <- dide_detect_mount_temp(temp, mounts)
+  expect_equal(res, dide_detect_mount_temp(NULL, mounts))
+})
+
+
+test_that("Fail to auto-detect temp if ambiguous or impossible", {
+  mounts <- example_mounts()
+  expect_null(
+    dide_detect_mount_temp(NULL, mounts[1, , drop = FALSE]))
+  expect_error(
+    dide_detect_mount_temp(NULL, mounts[c(1, 4, 4, 3), , drop = FALSE]),
+    "I am confused about your temp directory; there are 2 choices")
+  expect_error(
+    dide_detect_mount_temp(TRUE, mounts),
+    "Unexpected type for 'temp'")
+})
+
+
+test_that("dide_detect_mount", {
+  mounts <- example_mounts()
+  expect_message(
+    res <- dide_detect_mount(mounts, NULL, NULL, NULL, NULL, NULL, FALSE),
+    "Running out of place: .+ is not on a network share")
+
+  ## If we've already told it we'll be working within a drive, all is ok
+  workdir <- file.path(example_root, "home", "path")
+  expect_silent(
+    res2 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE))
+  expect_equal(res2, res)
+
+  ## If we are working within a drive we never explicitly mounted,
+  ## let's mount that
+  workdir <- file.path(example_root, "proj", "sub")
+  res3 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE)
+  expect_equal(res3[1:2], res)
+  expect_length(res3, 3)
+  expect_s3_class(res3$workdir, "path_mapping")
+  expect_equal(res3$workdir$path_local, file.path(example_root, "proj"))
+  expect_equal(res3$workdir$path_remote,
+               "\\\\fi--didenas1.dide.ic.ac.uk\\Project")
+
+  ## This will only be ambiguous rarely by this point:
+  workdir <- file.path(example_root, "proj", "sub")
+  expect_error(
+    dide_detect_mount_find_workdir(res, workdir, mounts[c(1:4, 1:4), ]),
+    "Having trouble determining the working directory mount point")
+})
+
+
+test_that("Find an available drive", {
+  shares <- list(list(drive_remote = "V:"),
+                 list(drive_remote = "W:"))
+  expect_equal(available_drive(shares, "X:"), "X:")
+  expect_equal(available_drive(shares, "/path"), "X:")
+  expect_equal(available_drive(list(), "/path"), "V:")
+})
+
+
+test_that("Validate additional shares", {
+  mounts <- example_mounts()
+  shares <- Map(path_mapping,
+                c("other", "home", "project", "temp"),
+                mounts[, "local"],
+                mounts[, "remote"],
+                c("O:", "Q:", "P:", "T:"))
+  expect_silent(dide_detect_mount_check_shares(shares))
+  expect_equal(dide_detect_mount_check_shares(shares[[1]]), shares[1])
+  expect_error(dide_detect_mount_check_shares(c(shares, TRUE)),
+               "All elements of 'shares' must be a path_mapping")
+  expect_error(dide_detect_mount_check_shares(TRUE),
+               "Invalid input for 'shares'")
+})
+
+
+test_that("Prevent duplicated drives", {
+  mounts <- example_mounts()
+  shares <- Map(path_mapping,
+                c("other", "project"),
+                mounts[c(1, 3), "local"],
+                mounts[c(1, 3), "remote"],
+                c("O:", "T:"))
+  expect_error(
+    dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE),
+    "Duplicate remote drive names: T:")
+})
+
+
+test_that("Remap nas", {
+  mounts <- example_mounts()
+  shares <- Map(path_mapping,
+                c("other", "project"),
+                mounts[c(1, 3), "local"],
+                mounts[c(1, 3), "remote"],
+                c("O:", "P:"))
+  res1 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", TRUE)
+  res2 <- dide_detect_mount(mounts, shares, NULL, NULL, NULL, "bob", FALSE)
+  expect_equal(res1[1:3], res2[1:3])
+
+  expect_equal(res1[[4]]$path_remote,
+               "\\\\fi--didenas1-app.dide.ic.ac.uk\\Project")
+  expect_equal(res2[[4]]$path_remote,
+               "\\\\fi--didenas1.dide.ic.ac.uk\\Project")
+  expect_equal(res1[[4]][-2], res2[[4]][-2])
+})
