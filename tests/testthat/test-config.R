@@ -181,6 +181,39 @@ test_that("Build config", {
   expect_s3_class(cfg, "didehpc_config")
   str <- capture.output(print(cfg))
   expect_match(str, "<didehpc_config>", all = FALSE)
-  expect_match(str, " - credentials: bob", all = FALSE)
+  expect_match(str, " - username: bob", all = FALSE)
   expect_match(str, "    - parallel: FALSE", all = FALSE)
+})
+
+
+test_that("Build config", {
+  mounts <- example_mounts()
+  workdir <- file.path(example_root, "home", "sub")
+  mock_detect_mount <- mockery::mock(mounts)
+  mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  cfg <- withr::with_options(
+    tmp_options_didehpc(),
+    didehpc_config(credentials = "bob", workdir = workdir))
+  mockery::expect_called(mock_detect_mount, 1L)
+  expect_equal(
+    mockery::mock_args(mock_detect_mount), list(list()))
+
+  expect_s3_class(cfg, "didehpc_config")
+  str <- capture.output(print(cfg))
+  expect_match(str, "<didehpc_config>", all = FALSE)
+  expect_match(str, " - username: bob", all = FALSE)
+  expect_match(str, "    - parallel: FALSE", all = FALSE)
+})
+
+
+test_that("workdir must exist", {
+  mounts <- example_mounts()
+  workdir <- file.path(example_root, "home", "sub")
+  mock_detect_mount <- mockery::mock(mounts)
+  mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  withr::with_options(
+    tmp_options_didehpc(),
+    expect_error(
+      didehpc_config(credentials = "bob", workdir = tempfile()),
+      "workdir must be an existing directory"))
 })

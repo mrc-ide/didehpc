@@ -1,64 +1,77 @@
-prompt_credentials <- function() {
-  if (!interactive()) {
-    stop("Credentials file needed for non-interactive use")
-  }
-  credentials <- trimws(readline(prompt = "DIDE username: "))
-  if (credentials == "") {
-    stop("Invalid empty username")
-  }
-  credentials
+dide_username <- function(username) {
+  check_username(username %||% prompt_username())
 }
 
-get_credentials <- function(credentials, need_password = TRUE) {
-  if (is.null(credentials)) {
-    credentials <- prompt_credentials()
+
+dide_credentials <- function(credentials, need_password) {
+  if (is.character(credentials) && file.exists(credentials)) {
+    credentials <- read_credentials(credentials)
   }
-  if (is.list(credentials)) {
-    ret <- check_credentials(credentials, need_password)
-  } else if (is.character(credentials)) {
-    if (file.exists(credentials)) {
-      ret <- read_credentials(credentials, need_password)
-    } else {
-      ## Assume we have a username.
-      ret <- list(username = credentials)
-      if (need_password) {
-        if (!interactive()) {
-          stop("Credentials file needed for non-interactive use")
-        }
-        ret$password <- getPass::getPass(
-          sprintf("Enter DIDE password for %s: ", ret$username))
-      }
+  if (is.null(credentials) || is.character(credentials)) {
+    credentials <- list(username = dide_username(credentials))
+  } else if (is.list(credentials)) {
+    if (is.null(names(credentials))) {
+      stop("Credentials must be named")
     }
+    extra <- setdiff(names(credentials), c("username", "password"))
+    if (length(extra) > 0L) {
+      stop("Unknown fields in credentials: ", paste(extra, collapse = ", "))
+    }
+    if (!("username" %in% names(credentials))) {
+      stop("Missing fields in credentials: username")
+    }
+    credentials$username <- check_username(credentials$username)
   } else {
     stop("Unexpected type for credentials")
   }
 
-  ret$username <- sub("^DIDE\\\\", "", ret$username)
-  ret
+  if (!is.null(credentials$password)) {
+    assert_scalar_character(credentials$password)
+  }
+
+  if (need_password && is.null(credentials$password)) {
+    credentials$password <- prompt_password(credentials$username)
+  }
+
+  credentials
 }
+
+
+prompt_username <- function() {
+  if (!interactive()) {
+    stop("Credentials file needed for non-interactive use")
+  }
+  trimws(readline(prompt = "DIDE username: "))
+}
+
+
+prompt_password <- function(username) {
+  if (!interactive()) {
+    stop("Credentials file needed for non-interactive use")
+  }
+  getPass::getPass(sprintf("Enter DIDE password for %s: ", username))
+}
+
+
+check_username <- function(username) {
+  assert_scalar_character(username)
+  if (file.exists(username)) {
+    username <- read_credentials(credentials, FALSE)$username
+  }
+  username <- sub("^DIDE\\\\", "", username)
+  if (username == "") {
+    stop("Invalid empty username")
+  }
+  username
+}
+
 
 ## Format is
 ## username=<username>
 ## password=<password>
-read_credentials <- function(filename, need_password) {
+read_credentials <- function(filename) {
   dat <- strsplit(readLines(filename), "=")
-  dat <- setNames(as.list(trimws(vapply(dat, "[[", character(1), 2L))),
-                  trimws(vapply(dat, "[[", character(1), 1L)))
-  check_credentials(dat, need_password)
-}
-
-check_credentials <- function(credentials, need_password) {
-  if (is.null(names(credentials))) {
-    stop("Credentials must be named")
-  }
-  extra <- setdiff(names(credentials), c("username", "password"))
-  if (length(extra) > 0L) {
-    stop("Unknown fields in credentials: ", paste(extra, collapse = ", "))
-  }
-  req <- c("username", if (need_password) "password")
-  msg <- setdiff(req, names(credentials))
-  if (length(msg) > 0L) {
-    stop("Missing fields in credentials: ", paste(msg, collapse = ", "))
-  }
-  credentials
+  values <- trimws(vcapply(dat, "[[", 2L))
+  nms <- trimws(vcapply(dat, "[[", 1L))
+  setNames(as.list(values), nms)
 }

@@ -190,11 +190,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 java_home = java_home)
   dat <- modify_list(defaults,
                      given[!vapply(given, is.null, logical(1))])
-  ## NOTE: does *not* store (or request password)
-  username <- get_credentials(dat$credentials, FALSE)$username
-  if (is.null(dat$credentials)) {
-    dat$credentials <- username
-  }
+
+  credentials <- dide_credentials(dat$credentials, FALSE)
 
   if (!is.null(dat$workdir)) {
     assert_scalar_character(dat$workdir, "workdir")
@@ -218,7 +215,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   mounts <- detect_mount()
   remap_nas <- cluster == "fi--didemrchnb"
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
-                              workdir, username, remap_nas)
+                              workdir, credentials$username, remap_nas)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
@@ -232,8 +229,8 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   }
 
   ret <- list(cluster = cluster,
-              credentials = dat$credentials,
-              username = username,
+              credentials = credentials,
+              username = credentials$username,
               template = dat$template,
               wholenode = dat$wholenode,
               resource = resource,
@@ -423,6 +420,7 @@ rtools_versions <- function(r_version, path = NULL) {
   ret
 }
 
+## TODO: this is quite probably incorrect
 rtools_info <- function(config) {
   tmpdrive <- NULL
 
