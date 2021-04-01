@@ -104,8 +104,6 @@
 ##'   manage your own job level parallelism (e.g. using OpenMP) or if
 ##'   you're just after the whole node for the memory).
 ##'
-##' @param hpctools Use HPC tools if available?
-##'
 ##' @param workdir The path to work in on the cluster, if running out of place.
 ##'
 ##' @param use_workers Submit jobs to an internal queue, and run them
@@ -167,7 +165,7 @@
 didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            cluster = NULL,
                            shares = NULL, template = NULL, cores = NULL,
-                           wholenode = NULL, parallel = NULL, hpctools = NULL,
+                           wholenode = NULL, parallel = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
                            worker_timeout = NULL, rtools = NULL,
                            r_version = NULL, use_java = NULL,
@@ -182,7 +180,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 cores = cores,
                 wholenode = wholenode,
                 parallel = parallel,
-                hpctools = hpctools,
                 workdir = workdir,
                 use_workers = use_workers,
                 use_rrq = use_rrq,
@@ -223,13 +220,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
-  if (isTRUE(dat$hpctools)) {
-    if (!has_hpctools()) {
-      stop("HPC tools are requested but not found")
-    }
-  } else {
-    dat$hpctools <- FALSE
-  }
   dat$r_version <- select_r_version(dat$r_version)
 
   ## Set up the library path here
@@ -244,7 +234,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               username = username,
               template = dat$template,
               wholenode = dat$wholenode,
-              hpctools = dat$hpctools,
               resource = resource,
               shares = shares,
               workdir = workdir,
@@ -304,7 +293,6 @@ didehpc_config_defaults <- function() {
     use_rrq        = getOption("didehpc.use_rrq",        FALSE),
     worker_timeout = getOption("didehpc.worker_timeout", 600),
     rtools         = getOption("didehpc.rtools",         TRUE),
-    hpctools       = getOption("didehpc.hpctools",       FALSE),
     r_version      = getOption("didehpc.r_version",      NULL),
     use_java       = getOption("didehpc.use_java",       FALSE),
     java_home      = getOption("didehpc.java_home",      NULL))

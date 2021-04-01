@@ -5,7 +5,7 @@ test_that("defaults are sensible", {
     tmp_options_didehpc(),
     didehpc_config_defaults())
   non_null <- c("cluster", "use_workers", "use_rrq", "worker_timeout",
-                "rtools", "hpctools", "use_java")
+                "rtools", "use_java")
   null <- c("credentials", "home", "temp", "shares", "template", "cores",
             "wholenode", "parallel", "workdir", "r_version", "java_home")
   i <- vlapply(res, is.null)
@@ -16,7 +16,6 @@ test_that("defaults are sensible", {
   expect_false(res$use_rrq)
   expect_equal(res$worker_timeout, 600)
   expect_true(res$rtools)
-  expect_false(res$hpctools)
   expect_false(res$use_java)
 })
 

@@ -26,11 +26,7 @@ didehpc_submit <- function(config, path, name = NULL) {
     assert_scalar_character(name)
   }
 
-  if (use_hpctools(config)) {
-    hpc_submit(config, path, name)
-  } else {
-    web_submit(config, path, name)
-  }
+  web_submit(config, path, name)
 }
 
 ## NOTE: this is the *dide_task_id*, not our ID.  Do the lookup elsewhere.
@@ -42,11 +38,7 @@ didehpc_cancel <- function(config, dide_task_id) {
     stop("Need at least one task to cancel")
   }
   cluster <- config$cluster
-  if (use_hpctools(config)) {
-    hpc_cancel(cluster, dide_task_id)
-  } else {
-    web_cancel(cluster, dide_task_id)
-  }
+  web_cancel(cluster, dide_task_id)
 }
 
 didehpc_shownodes <- function(config, cluster = NULL) {
@@ -55,29 +47,17 @@ didehpc_shownodes <- function(config, cluster = NULL) {
   } else {
     cluster <- cluster_name(cluster)
   }
-  if (use_hpctools(config)) {
-    hpc_shownodes(cluster)
-  } else {
-    web_shownodes(cluster)
-  }
+  web_shownodes(cluster)
 }
 
 didehpc_load <- function(config) {
-  if (use_hpctools(config)) {
-    hpc_load()
-  } else {
-    web_load()
-  }
+  web_load()
 }
 
 didehpc_jobstatus <- function(config, state = "*", n = Inf) {
   valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
   state <- match_value(state, valid)
-  if (use_hpctools(config)) {
-    hpc_jobstatus(config, state)
-  } else {
-    web_jobstatus(config, state)
-  }
+  web_jobstatus(config, state)
 }
 
 ## This one is not available via the HPC tools I think.  Check with
@@ -85,16 +65,9 @@ didehpc_jobstatus <- function(config, state = "*", n = Inf) {
 didehpc_joblog <- function(config, dide_task_id) {
   assert_scalar_character(dide_task_id)
   stopifnot(grepl("^[0-9]+$", dide_task_id))
-  if (use_hpctools(config)) {
-    hpc_joblog(config, dide_task_id)
-  } else {
-    web_joblog(config, dide_task_id)
-  }
+  web_joblog(config, dide_task_id)
 }
 
-use_hpctools <- function(config) {
-  isTRUE(config$hpctools)
-}
 
 ##' @export
 print.dide_log <- function(x, ...) {

@@ -81,13 +81,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       dir.create(path_batch(self$context$root$path), FALSE, TRUE)
       dir.create(path_logs(self$context$root$path), FALSE, TRUE)
 
-      if (use_hpctools(self$config)) {
-        self$logged_in <- TRUE
-      } else if (initialise) {
-        self$login()
-      }
-
       if (initialise) {
+        self$login()
         self$sync_files()
         self$provision()
       }
