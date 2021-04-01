@@ -445,24 +445,6 @@ redis_host <- function(cluster) {
 }
 
 
-## NOTE: Only some versions of R are supported by context; at present
-## we require >= 3.2.2.
-##
-## NOTE: Practically supporting old versions (currently 3.3.x and
-## below) requires work in at least provisionr to get all the packages
-## built.  See didehpc issue #54
-r_versions <- function() {
-  if (is.null(cache$r_versions)) {
-    r <- httr::GET("https://mrcdata.dide.ic.ac.uk/hpc/api/v1/cluster_software/")
-    v <- from_json(httr::content(r, as = "text", encoding = "UTF-8"))
-    cache$r_versions <- vcapply(
-      v$software[vlapply(v$software, function(x) x$name == 'R')], "[[", "version")
-
-  }
-  numeric_version(cache$r_versions)
-}
-
-
 select_r_version <- function(r_version, ours = getRversion()) {
   if (is.null(r_version)) {
     valid <- r_versions()

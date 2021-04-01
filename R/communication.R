@@ -12,3 +12,11 @@ cluster_load <- function(credentials = NULL) {
   credentials <- dide_credentials(credentials)
   print(web_client$new(credentials)$load_overall())
 }
+
+
+r_versions <- function() {
+  if (is.null(cache$r_versions)) {
+    cache$r_versions <- web_client$new("public", login = FALSE)$r_versions()
+  }
+  cache$r_versions
+}
