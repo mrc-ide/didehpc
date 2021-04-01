@@ -133,7 +133,7 @@ test_that("wmic_call copes with command and parse errors", {
          "BUILDERHV,Connected,T:,\\\\fi--didef3\\tmp,OK\r")
 
   mock_system <- mockery::mock(stop("Error running command"), res_bad, res_good)
-  mockery::stub(wmic_call, "system_internal_check", mock_system)
+  mockery::stub(wmic_call, "system_intern_check", mock_system)
 
   res1 <- wmic_call("csv")
   res2 <- wmic_call("csv")

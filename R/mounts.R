@@ -67,7 +67,7 @@ wmic_call <- function(formatstr) {
   cmd <- sprintf('wmic netuse list brief /format:"%s"', formatstr)
   res <- tryCatch(
     list(success = TRUE,
-         result = wmic_parse(system_internal_check(cmd))),
+         result = wmic_parse(system_intern_check(cmd))),
     error = function(e) list(success = FALSE, result = e$message))
 }
 

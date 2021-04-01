@@ -3,11 +3,6 @@
 ##' @importFrom utils modifyList packageVersion read.csv
 NULL
 
-curl_insecure <- function() {
-  httr::config(ssl_verifypeer = 0)
-}
-
-
 ## Consider adopting the version in caTools
 encode64 <- function(x) {
   if (x == "") {
@@ -54,15 +49,6 @@ drop_blank <- function(x) {
 }
 
 
-time_checker <- function(timeout) {
-  t0 <- Sys.time()
-  timeout <- as.difftime(timeout, units = "secs")
-  function() {
-    Sys.time() - t0 > timeout
-  }
-}
-
-
 vcapply <- function(X, FUN, ...) {
   vapply(X, FUN, character(1), ...)
 }
@@ -90,11 +76,6 @@ hostname <- function() {
 
 read_lines <- function(...) {
   paste(readLines(...), collapse = "\n")
-}
-
-
-dquote <- function(x) {
-  sprintf('"%s"', x)
 }
 
 
