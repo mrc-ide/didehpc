@@ -15,7 +15,6 @@ didehpc_config(
   cores = NULL,
   wholenode = NULL,
   parallel = NULL,
-  hpctools = NULL,
   workdir = NULL,
   use_workers = NULL,
   use_rrq = NULL,
@@ -79,8 +78,6 @@ will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
 you're just after the whole node for the memory).}
 
-\item{hpctools}{Use HPC tools if available?}
-
 \item{workdir}{The path to work in on the cluster, if running out of place.}
 
 \item{use_workers}{Submit jobs to an internal queue, and run them
@@ -105,7 +102,7 @@ should be willing to set idle before exiting.  If set to zero
 then workers will be added to the queue, run jobs, and
 immediatly exit.  If greater than zero, then the workers will
 wait at least this many seconds after running the last task
-before quitting.  The number provoided can be `Inf`, in which
+before quitting.  The number provoided can be \code{Inf}, in which
 case the worker will never exit (but be careful to clean the
 worker up in this case!).  The default is 600s (10 minutes)
 should be more than enough to get your jobs up and running.
@@ -148,32 +145,32 @@ documentation coming later.
 
 
 If you need more than one core per task (i.e., you want the each
-  task to do some parallel processing \emph{in addition} to the
-  parallelism between tasks) you can do that through the
-  configuration options here.
+task to do some parallel processing \emph{in addition} to the
+parallelism between tasks) you can do that through the
+configuration options here.
 
 The \code{template} option choses among templates defined on the
-  cluster.  If you select one of these then we will reserve an
-  entire node \emph{unless} you also specify \code{cores}.
-  Alternatively if \code{wholenode} is specified this overrides
-  the logic here.
+cluster.  If you select one of these then we will reserve an
+entire node \emph{unless} you also specify \code{cores}.
+Alternatively if \code{wholenode} is specified this overrides
+the logic here.
 
 If you specify \code{cores}, the HPC will queue your job until an
-  appropriate number of cores appears for the selected template.
-  This can leave your job queing forever (e.g., selecting 20 cores
-  on a 16Core template) so be careful.  The \code{cores} option is
-  most useful with the \code{GeneralNodes} template.
+appropriate number of cores appears for the selected template.
+This can leave your job queing forever (e.g., selecting 20 cores
+on a 16Core template) so be careful.  The \code{cores} option is
+most useful with the \code{GeneralNodes} template.
 
 In either case, if more than 1 core is implied (either by using
-  any template other than \code{GeneralNodes} or by specifying a
-  \code{cores} value greater than 1) on startup, a \code{parallel}
-  cluster will be started, using \code{parallel::makePSOCKcluster}
-  and this will be registered as the default cluster.  The nodes
-  will all have the appropriate context loaded and you can
-  immediately use them with \code{parallel::clusterApply} and
-  related functions by passing \code{NULL} as the first argument.
-  The cluster will be shut down politely on exit, and logs will be
-  output to the "workers" directory below your context root.
+any template other than \code{GeneralNodes} or by specifying a
+\code{cores} value greater than 1) on startup, a \code{parallel}
+cluster will be started, using \code{parallel::makePSOCKcluster}
+and this will be registered as the default cluster.  The nodes
+will all have the appropriate context loaded and you can
+immediately use them with \code{parallel::clusterApply} and
+related functions by passing \code{NULL} as the first argument.
+The cluster will be shut down politely on exit, and logs will be
+output to the "workers" directory below your context root.
 }
 
 \section{Workers and rrq}{

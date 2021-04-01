@@ -116,6 +116,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     login = function(always = TRUE) {
+      ## TODO: this logic needs to go into the client!
+      stop("FIXME")
       if (always || !self$logged_in) {
         if (web_logged_in()) {
           message("Already logged in")

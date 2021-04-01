@@ -143,3 +143,15 @@ system_intern_check <- function(...) {
   }
   res
 }
+
+
+httr_text <- function(r) {
+  httr::content(r, as = "text", encoding = "UTF-8")
+}
+
+
+dide_time_parse <- function(x) {
+  ## YYYYMMDDHHMMSS
+  ## 20151109170805
+  strptime(x, "%Y%m%d%H%M%S")
+}

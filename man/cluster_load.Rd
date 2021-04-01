@@ -4,12 +4,10 @@
 \alias{cluster_load}
 \title{Overall cluster load}
 \usage{
-cluster_load(...)
+cluster_load(credentials = NULL)
 }
 \arguments{
-\item{...}{Parameters to pass through to
-\code{\link{didehpc_config}}, or a \code{didehpc_config} object
-as the first (and only) argument.}
+\item{credentials}{Your credentials}
 }
 \description{
 Overall cluster load for all clusters that you have access to.
