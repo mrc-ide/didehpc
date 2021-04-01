@@ -215,15 +215,17 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   if (is.null(dat$template)) {
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
-  shares <- dide_detect_mount(dat$home, dat$temp, dat$shares,
-                              workdir, username, cluster, FALSE)
+  mounts <- detect_mount()
+  remap_nas <- cluster == "fi--didemrchnb"
+  shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
+                              workdir, username, remap_nas)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
   dat$r_version <- select_r_version(dat$r_version)
 
   ## Set up the library path here
-  browser()
+  ## browser()
 
   if (isTRUE(dat$use_java) && is.null(dat$java_home)) {
     dat$java_home <- ""

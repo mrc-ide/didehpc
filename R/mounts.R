@@ -92,8 +92,8 @@ wmic_parse <- function(x) {
 ## This function will detect home, temp and if the current working
 ## directory is not in one of those then continue on to detect the cwd
 ## too.
-dide_detect_mount <- function(mounts, shares, home, temp, workdir, username,
-                              remap_nas) {
+dide_detect_mount <- function(mounts, shares, home, temp,
+                              workdir, username, remap_nas) {
   ret <- list()
 
   ## These two have a bit of logic, and will try to guess as best they

@@ -164,3 +164,23 @@ test_that("Select a sensible r version", {
   expect_equal(select_r_version(NULL, vmid), vmid)
   expect_equal(select_r_version(NULL, "3.4.9"), numeric_version("3.5.0"))
 })
+
+
+test_that("Build config", {
+  mounts <- example_mounts()
+  workdir <- file.path(example_root, "home", "sub")
+  mock_detect_mount <- mockery::mock(mounts)
+  mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  cfg <- withr::with_options(
+    tmp_options_didehpc(),
+    didehpc_config(credentials = "bob", workdir = workdir))
+  mockery::expect_called(mock_detect_mount, 1L)
+  expect_equal(
+    mockery::mock_args(mock_detect_mount), list(list()))
+
+  expect_s3_class(cfg, "didehpc_config")
+  str <- capture.output(print(cfg))
+  expect_match(str, "<didehpc_config>", all = FALSE)
+  expect_match(str, " - credentials: bob", all = FALSE)
+  expect_match(str, "    - parallel: FALSE", all = FALSE)
+})
