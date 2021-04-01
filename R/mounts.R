@@ -8,12 +8,19 @@ detect_mount <- function() {
 
 
 detect_mount_windows <- function() {
-  res <- call_wmic()
-  path <- tempfile()
-  writeLines(res, path)
-  on.exit(file.remove(path))
-  dat <- read.csv(path, stringsAsFactors = FALSE)
-  cbind(remote = dat$RemoteName, local = dat$LocalName)
+  windir <- Sys.getenv("WINDIR", "C:\\windows")
+  methods <- c("csv",
+               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
+               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
+
+  for (meth in methods) {
+    res <- wmic_call(meth)
+    if (res$success) {
+      return(res$result)
+    }
+  }
+
+  stop("Could not determine windows mounts using wmic\n", res$result)
 }
 
 
@@ -52,42 +59,29 @@ detect_mount_unix <- function() {
 
 
 ## Windows support:
-call_wmic <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
-
-  methods <- c("csv",
-               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
-
-  for (meth in methods) {
-    res <- detect_mount_windows_wmic(meth)
-    if (res$success) {
-      return(res$result)
-    }
-  }
-
-  stop(sprintf("Error: Could not determine windows mounts using wmic\n%s",
-               res$result))
+wmic_call <- function(formatstr) {
+  ## ordinarily we'd use system2 but that writes a string that can't
+  ## be parsed under Rgui due to odd encoding.
+  ## https://stackoverflow.com/q/61067574
+  ## Using system() does not seem to suffer the same problem
+  cmd <- sprintf('wmic netuse list brief /format:"%s"', formatstr)
+  res <- tryCatch(
+    list(success = TRUE,
+         result = wmic_parse(system_internal_check(cmd))),
+    error = function(e) list(success = FALSE, result = e$message))
 }
 
 
-detect_mount_windows_wmic <- function(formatstr) {
-  format_csv <- sprintf('/format:"%s"', formatstr)
-  path <- tempfile()
-  res <- try(
-
-    ## Using stdout = path does not work here, yielding a file that has
-    ## embedded NULs and failing to be read.
-
-    suppressWarnings(
-      system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)),
-    silent = TRUE)
-
-  status <- attr(res, "status")
-
-  if (inherits(res, "try-error") || (!is.null(status) && status != 0L)) {
-    list(success = FALSE, result = res)
-  } else {
-    list(success = TRUE, result = res)
+wmic_parse <- function(x) {
+  tmp <- tempfile()
+  writeLines(x, tmp)
+  on.exit(unlink(tmp))
+  dat <- read.csv(tmp, stringsAsFactors = FALSE)
+  expected <- c("RemoteName", "LocalName")
+  msg <- setdiff(expected, names(dat))
+  if (length(msg) > 0) {
+    stop("Failed to find expected names in wmic output: ",
+         paste(msg, collapse = ", "))
   }
+  cbind(remote = dat$RemoteName, local = dat$LocalName)
 }

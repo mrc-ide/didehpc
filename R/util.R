@@ -133,3 +133,13 @@ Sys_which <- function(name) {
   }
   ret
 }
+
+
+system_intern_check <- function(...) {
+  res <- suppressWarnings(system(..., intern = TRUE))
+  status <- attr(res, "status", exact = TRUE)
+  if (!is.null(status) && status > 0) {
+    stop("Error running command")
+  }
+  res
+}
