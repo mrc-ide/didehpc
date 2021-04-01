@@ -81,7 +81,8 @@ unix_path <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)
 }
 
-remote_path <- function(x) {
+remote_path <- function(x, shares) {
+  x <- prepare_path(x, shares)
   windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
 }
 
@@ -106,15 +107,17 @@ path_worker_logs <- function(root, id = NULL) {
   file_path(root, "workers", id)
 }
 
-## These will change.
 dide_home <- function(path, username) {
   assert_scalar_character(username)
   assert_character(path)
-  paste0("\\\\fi--san03.dide.ic.ac.uk\\homes\\", username, "\\", gsub("/", "\\\\", path))
+  file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username,
+            windows_path(path), fsep = "\\")
 }
+
 dide_temp <- function(path) {
   assert_character(path)
-  paste0("\\\\fi--didef3.dide.ic.ac.uk\\tmp\\", "\\", gsub("/", "\\\\", path))
+  file.path("\\\\fi--didef3.dide.ic.ac.uk\\tmp", windows_path(path),
+            fsep = "\\")
 }
 
 detect_mount_fail <- function() {
@@ -131,9 +134,6 @@ detect_mount_unix <- function() {
   }
 
   type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
-  ## consider
-  ##   mount -t cifs  # (linux)
-  ##   mount -t smbfs # (osx)
   re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
   dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
   i <- grepl(re, dat, perl = TRUE)

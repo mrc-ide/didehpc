@@ -59,7 +59,7 @@ submit_workers <- function(obj, n, timeout = 600, progress = NULL) {
   for (nm in names) {
     dat$rrq_worker_id <- nm
     batch <- write_batch(nm, root, template, dat)
-    path <- remote_path(prepare_path(batch, config$shares))
+    path <- remote_path(batch, config$shares)
     p()
     dide_id <- didehpc_submit(config, path, nm)
     db$mset(nm,

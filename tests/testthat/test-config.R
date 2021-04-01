@@ -165,12 +165,3 @@ test_that("Select a sensible r version", {
   expect_equal(select_r_version(NULL, vmid), vmid)
   expect_equal(select_r_version(NULL, "3.4.9"), numeric_version("3.5.0"))
 })
-
-
-test_that("Can configure rtools", {
-  skip("wip")
-  config <- withr::with_options(
-    tmp_options_didehpc(),
-    didehpc_config_defaults())
-  rtools_info(config)
-})

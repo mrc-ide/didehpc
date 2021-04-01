@@ -271,8 +271,7 @@ submit_dide <- function(obj, task_ids, names) {
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   for (id in task_ids) {
     batch <- write_batch(id, root, template, list(task_id = id))
-    dat <- prepare_path(batch, config$shares)
-    path <- remote_path(dat)
+    path <- remote_path(batch, config$shares)
     p()
     dide_id <- didehpc_submit(config, path, names[[id]])
     db$set(id, dide_id,        "dide_id")
