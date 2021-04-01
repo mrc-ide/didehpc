@@ -104,3 +104,16 @@ test_that("dide path helpers return windows network paths", {
     c("\\\\fi--didef3.dide.ic.ac.uk\\tmp\\x\\y",
       "\\\\fi--didef3.dide.ic.ac.uk\\tmp\\a"))
 })
+
+
+test_that("Construct internals paths", {
+  root <- tempdir()
+  expect_equal(path_batch(root), file.path(root, "batch"))
+  expect_equal(path_batch(root, "id"), file.path(root, "batch", "id.bat"))
+
+  expect_equal(path_logs(root), file.path(root, "logs"))
+  expect_equal(path_logs(root, "id"), file.path(root, "logs", "id"))
+
+  expect_equal(path_worker_logs(root), file.path(root, "workers"))
+  expect_equal(path_worker_logs(root, "id"), file.path(root, "workers", "id"))
+})

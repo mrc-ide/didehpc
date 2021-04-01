@@ -52,6 +52,7 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   ret
 }
 
+
 ##' @export
 as.character.path_mapping <- function(x, ...) {
   if (is.null(x$rel)) {
@@ -63,34 +64,41 @@ as.character.path_mapping <- function(x, ...) {
   }
 }
 
+
 ##' @export
 print.path_mapping <- function(x, ...) {
   cat(paste0("<path mapping>: ", as.character(x), "\n"))
   invisible(x)
 }
 
+
 clean_path <- function(x) {
   sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
 }
+
 
 windows_path <- function(x) {
   gsub("/", "\\", x, fixed = TRUE)
 }
 
+
 unix_path <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)
 }
+
 
 remote_path <- function(x, shares) {
   x <- prepare_path(x, shares)
   windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
 }
 
+
 file_path <- function(...) {
   paths <- list(...)
   paths <- paths[!vapply(paths, is.null, logical(1))]
   do.call("file.path", paths, quote = TRUE)
 }
+
 
 path_batch <- function(root, id = NULL) {
   if (!is.null(id)) {
@@ -103,9 +111,11 @@ path_logs <- function(root, id = NULL) {
   file_path(root, "logs", id)
 }
 
+
 path_worker_logs <- function(root, id = NULL) {
   file_path(root, "workers", id)
 }
+
 
 dide_home <- function(path, username) {
   assert_scalar_character(username)
@@ -114,99 +124,11 @@ dide_home <- function(path, username) {
             windows_path(path), fsep = "\\")
 }
 
+
 dide_temp <- function(path) {
   assert_character(path)
   file.path("\\\\fi--didef3.dide.ic.ac.uk\\tmp", windows_path(path),
             fsep = "\\")
-}
-
-detect_mount_fail <- function() {
-  cbind(host = character(), path = character(), local = character(),
-        remote = character())
-}
-
-## TODO: No idea what spaces in the filenames will do here.  Nothing
-## pretty, that's for sure.
-detect_mount_unix <- function() {
-  mount <- Sys.which("mount")
-  if (mount == "") {
-    return(detect_mount_fail())
-  }
-
-  type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
-  re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
-  dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
-  i <- grepl(re, dat, perl = TRUE)
-  if (!all(i)) {
-    ## This will be useful to see until I get this correct.
-    warning("Ignoring mounts:\n", paste(re[!i], collapse = "\n"))
-  }
-  dat <- dat[i]
-
-  if (length(dat) == 0L) {
-    return(detect_mount_fail())
-  }
-
-  ## There are a couple of formats here.  On the VPN and with OSX
-  ## (currently correlated) I see a //username@host/path format while
-  ## on on the wired network and Linux I see //shorthost/path
-  ##
-  ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
-  m <- rematch::re_match(re, dat)[, c("host", "path", "local"), drop = FALSE]
-
-  host <- sub("\\.dide\\.ic\\.ac\\.uk$", "", m[, "host"])
-  remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
-  cbind(remote = remote, local = m[, "local"])
-}
-
-detect_mount_windows2 <- function(formatstr) {
-  format_csv <- sprintf('/format:"%s"', formatstr)
-  path <- tempfile()
-  res <- try(
-
-    ## Using stdout = path does not work here, yielding a file that has
-    ## embedded NULs and failing to be read.
-
-    suppressWarnings(
-      system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)),
-    silent = TRUE)
-
-  status <- attr(res, "status")
-
-  if (inherits(res, "try-error") || (!is.null(status) && status != 0L)) {
-    list(success = FALSE, result = res)
-  } else {
-    list(success = TRUE, result = res)
-  }
-}
-
-detect_mount_windows <- function() {
-  res <- wmic()
-  path <- tempfile()
-  writeLines(res, path)
-  on.exit(file.remove(path))
-  dat <- read.csv(path, stringsAsFactors = FALSE)
-  cbind(remote = dat$RemoteName, local = dat$LocalName)
-}
-
-wmic <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
-
-  methods <- c("csv",
-               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
-
-  for (meth in methods) {
-    res <- detect_mount_windows2(meth)
-    if (res$success) {
-      return(res$result)
-    }
-  }
-  stop(sprintf("Error: Could not determine windows mounts using wmic\n%s", res$result))
-}
-
-detect_mount <- function() {
-  if (is_windows()) detect_mount_windows() else detect_mount_unix()
 }
 
 
@@ -235,6 +157,7 @@ clean_path_remote <- function(path) {
   ## re_assemble
   paste0(bits, collapse = "\\")
 }
+
 
 prepare_path <- function(path, mappings, error = TRUE) {
   if (!file.exists(path)) {
