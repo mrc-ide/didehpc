@@ -57,3 +57,69 @@ test_that("Can parse empty status payload", {
                           template = character(0),
                           stringsAsFactors = FALSE))
 })
+
+
+test_that("Can parse status payload", {
+  txt <- read_lines("responses/status.txt")
+  res <- client_parse_status(txt)
+
+  t1 <- c("20210402094710", "20210402093402", "20210402093346",
+          "20210402092833", "20210402091124")
+  t2 <- c("20210402094710", "20210402093401", "20210402093346",
+          "20210402092833", "20210402091124")
+  t3 <- c("20210402094720", "20210402093412", "20210402093356",
+          "20210402092843", "20210402091134")
+
+  cmp <- data.frame(
+    dide_id = c("3490639", "3490638", "3490637", "3490636", "3490635"),
+    name = c("test", "test_old", "test_old", "test_web", "test"),
+    status = "COMPLETE",
+    resources = "1 core",
+    user = "bob",
+    time_start = dide_time_parse(t1),
+    time_submit = dide_time_parse(t2),
+    time_end = dide_time_parse(t3),
+    template = "GeneralNodes",
+    stringsAsFactors = FALSE)
+  expect_equal(res, cmp)
+})
+
+
+test_that("Handle parse failure", {
+  txt <- read_lines("responses/status.txt")
+  expect_error(
+    client_parse_status(sub("bob\\s+", "", txt)),
+    "Parse error; unexpected output from server")
+})
+
+
+test_that("Can parse submission of a single job", {
+  expect_equal(
+    client_parse_submit("Job has been submitted. ID: 3490639.\n", 1L),
+    "3490639")
+  expect_error(
+    client_parse_submit("", 1L),
+    "Job submission has likely failed; could be a login error")
+  expect_error(
+    client_parse_submit("Job has been submitted. ID: 3490639.\n", 2L),
+    "Unexpected response length from server")
+  expect_message(
+    res <- client_parse_submit(
+      "Job has been submitted. ID: 3490639.\nother", 1L),
+    "Discarding additional response from server:\nother")
+  expect_equal(res, "3490639")
+})
+
+
+test_that("Can parse logs", {
+  txt <- read_lines("responses/log.txt")
+  expect_equal(
+    client_parse_log(txt),
+    c("C:\\Users\\rfitzjoh>echo starting!",
+      "starting!",
+      "",
+      "C:\\Users\\rfitzjoh>sleep 10",
+      "",
+      "C:\\Users\\rfitzjoh>echo done!",
+      "done!"))
+})

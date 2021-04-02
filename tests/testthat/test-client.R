@@ -90,7 +90,7 @@ test_that("POST forwards args to request", {
   ## Many more options here than above:
   expect_equal(
     mockery::mock_args(mock_request)[[1]],
-    list(httr::POST, "/_listheadnodes.php", data, public = TRUE,
+    list(httr::POST, "/_listheadnodes.php", body = data, public = TRUE,
          httr::accept("text/plain"), encode = "form"))
 })
 

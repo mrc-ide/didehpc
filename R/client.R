@@ -49,7 +49,6 @@ web_client <- R6::R6Class(
       httr::status_code(r) < 300
     },
 
-
     ##' @description Validate that we have access to a given cluster
     ##'
     ##' @param cluster The name of the cluster to check, defaulting to
@@ -203,7 +202,7 @@ api_client <- R6::R6Class(
     },
 
     POST = function(path, body, ...) {
-      self$request(httr::POST, path, body, ...,
+      self$request(httr::POST, path, body = body, ...,
                    httr::accept("text/plain"), encode = "form")
     },
 
@@ -265,19 +264,17 @@ api_client_login <- function(username, password) {
 client_submit_body <- function(path, name, template, cluster,
                                resource_type, resource_count) {
   ## TODO: this clearly used to allow batch submission of several jobs
-  ## at once, and we should consider re-allowing that.
+  ## at once, and we should consider re-allowing that. It looks like
+  ## the issue is we can't easily get the names sent as a vector? Or
+  ## is that allowed?
   assert_scalar_character(path)
   if (!grepl("^\\\\\\\\", path)) {
     stop("All paths must be Windows network paths")
   }
-
   path_call <- paste("call", shQuote(path, "cmd"))
 
-  if (is.null(name)) {
-    name <- ""
-  } else if (length(name) != 1L) {
-    stop("Incorrect number of names")
-  }
+  name <- name %||% ""
+  assert_scalar_character(name)
 
   workdir <- ""
   stderr <- ""
@@ -339,10 +336,8 @@ client_parse_log <- function(txt) {
   xml <- xml2::read_html(txt)
   value <- xml2::xml_attr(xml2::xml_find_first(xml, '//input[@id="res"]'),
                           "value")
-  value <- decode64(value)
-  value <- sub("^Output\\s*:\\s*?\n", "", value)
-  class(value) <- "dide_log"
-  value
+  value <- trimws(sub("^Output\\s*:\\s*?\n+", "", decode64(value)))
+  strsplit(value, "\n")[[1]]
 }
 
 
@@ -367,7 +362,8 @@ client_parse_submit <- function(txt, n) {
 
   extra <- txt[!i]
   if (length(extra) > 0L) {
-    warning(paste(extra, collapse = "\n"), immediate. = TRUE)
+    message("Discarding additional response from server:\n",
+            paste(extra, collapse = "\n"))
   }
 
   nok <- sum(i)
