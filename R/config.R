@@ -136,13 +136,6 @@
 ##'   by sending the \code{TIMEOUT_SET} message (proper documentation
 ##'   will come for this soon).
 ##'
-##' @param rtools Make sure that rtools are installed (even if they
-##'   aren't implicitly required by one of the required packages).  If
-##'   \code{TRUE}, then network paths will be set up appropriately
-##'   such that R on the cluster should find the appropriate version
-##'   of rtools so that packages such as \code{rstan} and
-##'   \code{Rcpp}'s inline functionality work correctly.
-##'
 ##' @param r_version A string, or \code{numeric_version} object,
 ##'   describing the R version required.  Not all R versions are known
 ##'   to be supported, so this will check against a list of installed
@@ -167,7 +160,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            shares = NULL, template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
-                           worker_timeout = NULL, rtools = NULL,
+                           worker_timeout = NULL, conan_cache = NULL,
                            r_version = NULL, use_java = NULL,
                            java_home = NULL) {
   defaults <- didehpc_config_defaults()
@@ -184,7 +177,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 use_workers = use_workers,
                 use_rrq = use_rrq,
                 worker_timeout = worker_timeout,
-                rtools = rtools,
+                conan_cache = conan_cache,
                 r_version = r_version,
                 use_java = use_java,
                 java_home = java_home)
@@ -239,7 +232,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               use_workers = dat$use_workers,
               use_rrq = dat$use_rrq,
               worker_timeout = dat$worker_timeout,
-              rtools = dat$rtools,
+              conan_cache = dat$conan_cache,
               r_version = dat$r_version,
               use_java = dat$use_java,
               java_home = dat$java_home)
@@ -293,7 +286,7 @@ didehpc_config_defaults <- function() {
     use_workers    = getOption("didehpc.use_workers",    FALSE),
     use_rrq        = getOption("didehpc.use_rrq",        FALSE),
     worker_timeout = getOption("didehpc.worker_timeout", 600),
-    rtools         = getOption("didehpc.rtools",         TRUE),
+    conan_cache    = getOption("didehpc.conan_cache",    TRUE),
     r_version      = getOption("didehpc.r_version",      NULL),
     use_java       = getOption("didehpc.use_java",       FALSE),
     java_home      = getOption("didehpc.java_home",      NULL))
@@ -393,7 +386,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 
 ## TODO: document how updates happen as there's some manual
 ## downloading and installation of rtools.
-rtools_versions <- function(r_version, path = NULL) {
+rtools_versions <- function(path, r_version) {
   r_version_2 <- as.character(r_version[1, 1:2])
   if (r_version < "4.0.0") {
     mingw <- "mingw_64"
@@ -418,22 +411,6 @@ rtools_versions <- function(r_version, path = NULL) {
 
   ret$path <- NULL
   ret
-}
-
-## TODO: this is quite probably incorrect
-rtools_info <- function(config) {
-  tmpdrive <- NULL
-
-  for (s in config$shares) {
-    if (grepl("//fi--didef3/tmp/?", tolower(unname(s$path_remote)))) {
-      tmpdrive <- s$drive_remote
-      break
-    }
-  }
-  if (is.null(tmpdrive)) {
-    tmpdrive <- "//fi--didef3/tmp"
-  }
-  rtools_versions(config$r_version, tmpdrive)
 }
 
 
@@ -464,4 +441,16 @@ select_r_version <- function(r_version, ours = getRversion()) {
     }
   }
   r_version
+}
+
+
+## TODO: We might improve this because we *always* need the temp drive now
+remote_drive_temp <- function(shares) {
+  for (s in shares) {
+    re <- "^\\\\\\\\fi--didef3(\\.dide\\.ic\\.ac\\.uk)?\\\\tmp"
+    if (grepl(re, s$path_remote, ignore.case = TRUE)) {
+      return(s$drive_remote)
+    }
+  }
+  NULL
 }

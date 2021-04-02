@@ -123,6 +123,12 @@ path_library <- function(root, r_version) {
 }
 
 
+path_conan <- function(root, r_version) {
+  version_str <- as.character(r_version[1, 1:2])
+  file.path(root, "conan", version_str)
+}
+
+
 dide_home <- function(username) {
   assert_scalar_character(username)
   file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username, fsep = "\\")

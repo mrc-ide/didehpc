@@ -5,7 +5,7 @@ test_that("defaults are sensible", {
     tmp_options_didehpc(),
     didehpc_config_defaults())
   non_null <- c("cluster", "use_workers", "use_rrq", "worker_timeout",
-                "rtools", "use_java")
+                "use_java", "conan_cache")
   null <- c("credentials", "home", "temp", "shares", "template", "cores",
             "wholenode", "parallel", "workdir", "r_version", "java_home")
   i <- vlapply(res, is.null)
@@ -15,7 +15,7 @@ test_that("defaults are sensible", {
   expect_false(res$use_workers)
   expect_false(res$use_rrq)
   expect_equal(res$worker_timeout, 600)
-  expect_true(res$rtools)
+  expect_true(res$conan_cache)
   expect_false(res$use_java)
 })
 
@@ -117,7 +117,7 @@ test_that("Can find redis host, given cluster", {
 
 test_that("Can get a reasonable rtools version", {
   expect_equal(
-    rtools_versions(numeric_version("4.0.0"), "<prefix>"),
+    rtools_versions("<prefix>", numeric_version("4.0.0")),
     list(gcc = "mingw64",
          make = "usr",
          binpref = "<prefix>/Rtools/Rtools40/mingw64/bin",
@@ -125,7 +125,7 @@ test_that("Can get a reasonable rtools version", {
          gcc_path = "<prefix>\\Rtools\\Rtools40\\mingw64\\bin",
          make_path = "<prefix>\\Rtools\\Rtools40\\usr\\bin"))
   expect_equal(
-    rtools_versions(numeric_version("3.6.3"), "<prefix>"),
+    rtools_versions("<prefix>", numeric_version("3.6.3")),
     list(gcc = "mingw_64",
          make = "",
          binpref = "<prefix>/Rtools/Rtools35/mingw_64/bin",
@@ -133,14 +133,14 @@ test_that("Can get a reasonable rtools version", {
          gcc_path = "<prefix>\\Rtools\\Rtools35\\mingw_64\\bin",
          make_path = "<prefix>\\Rtools\\Rtools35\\\\bin"))
   expect_equal(
-    rtools_versions(numeric_version("3.5.0"), "<prefix>"),
-    rtools_versions(numeric_version("3.6.0"), "<prefix>"))
+    rtools_versions("<prefix>", numeric_version("3.5.0")),
+    rtools_versions("<prefix>", numeric_version("3.6.0")))
   expect_equal(
-    rtools_versions(numeric_version("3.4.3"), "<prefix>"),
-    rtools_versions(numeric_version("3.5.0"), "<prefix>"))
+    rtools_versions("<prefix>", numeric_version("3.4.3")),
+    rtools_versions("<prefix>", numeric_version("3.5.0")))
   expect_equal(
-    rtools_versions(numeric_version("3.3.3"), "<prefix>"),
-    rtools_versions(numeric_version("3.5.0"), "<prefix>"))
+    rtools_versions("<prefix>", numeric_version("3.3.3")),
+    rtools_versions("<prefix>", numeric_version("3.5.0")))
 })
 
 

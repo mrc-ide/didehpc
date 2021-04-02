@@ -198,7 +198,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
 initialise_templates <- function(obj) {
   workdir <- obj$config$workdir %||% obj$workdir
-  obj$templates <- batch_templates(obj$context, obj$config, workdir)
+  obj$templates <- batch_templates(obj$context$root, obj$context$id,
+                                   obj$config, workdir)
 }
 
 ## TODO: It would be heaps nicer if there was per-context log

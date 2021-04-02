@@ -239,11 +239,12 @@ dide_detect_mount_find_workdir <- function(mapping, workdir, mounts) {
 ## If we're mounting some local drive (not home/temp) then on windows
 ## we'll reflect the local drive letter. Otherwise on linux/mac we'll
 ## pick from a late letter.
-available_drive <- function(shares, local_mount) {
+available_drive <- function(shares, local_mount, prefer = NULL) {
   if (grepl("^[A-Za-z]:", local_mount)) {
     local_mount
   } else {
     used <- toupper(substr(vcapply(shares, "[[", "drive_remote"), 1, 1))
-    paste0(setdiff(LETTERS[22:26], used)[[1L]], ":")
+    pos <- c(prefer, LETTERS[22:26])
+    paste0(setdiff(pos, used)[[1L]], ":")
   }
 }
