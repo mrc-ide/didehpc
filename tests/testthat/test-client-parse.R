@@ -18,6 +18,34 @@ test_that("can parse load return payloads", {
 })
 
 
+test_that("can compute overall load", {
+  d1 <- readRDS("responses/load.rds")
+  d2 <- d1
+  d2$overall$name <- "other"
+  d2$overall$free <- 100
+  d2$overall$used <- 116
+  d2$overall$percent_used <- 54
+  res <- client_parse_load_overall(list(d1, d2))
+  expect_equal(res$cluster, "didehpc")
+  expect_null(res$detail)
+  expect_equal(
+    res$summary,
+    data.frame(name = c("fi--dideclusthn", "other"),
+               free = c(203, 100),
+               used = c(13, 116),
+               total = 216,
+               percent_used = c(6, 54),
+               stringsAsFactors = FALSE))
+  expect_equal(
+    res$overall,
+    list(name = "didehpc",
+         free = 303,
+         used = 129,
+         total = 432,
+         percent_used = 30))
+})
+
+
 test_that("can parse R versions", {
   txt <- paste(
     '{"software": [',
