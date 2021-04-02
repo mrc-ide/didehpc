@@ -112,4 +112,9 @@ test_that("Construct internals paths", {
 
   expect_equal(path_worker_logs(root), file.path(root, "workers"))
   expect_equal(path_worker_logs(root, "id"), file.path(root, "workers", "id"))
+
+  expect_equal(path_library(root, numeric_version("4.0.4")),
+               file.path(root, "lib/windows/4.0"))
+  expect_equal(path_library(root, numeric_version("3.5.0")),
+               file.path(root, "lib/windows/3.5"))
 })
