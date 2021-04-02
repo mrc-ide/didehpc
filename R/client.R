@@ -55,7 +55,6 @@ web_client <- R6::R6Class(
     ##' @param cluster The name of the cluster to check, defaulting to
     ##'   the value given when creating the client.
     check = function(cluster = NULL) {
-      valid <- self$headnodes()
       client_check(cluster %||% private$cluster, self$headnodes())
     },
 

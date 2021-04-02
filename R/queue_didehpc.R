@@ -43,21 +43,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         }
       }
       super$initialize(context, root, initialise)
-
-      ## This is going to be useful for collecting up information on
-      ## things that should be cleaned away.  The context root
-      ## contains information on the time of last access.
-      if (inherits(context$db$driver, "driver_DBI") &&
-          !context$db$exists("info", "didehpc")) {
-        info <- list(user = config$username,
-                     host = hostname(),
-                     path = getwd(),
-                     date = Sys.time(),
-                     workdir = config$workdir,
-                     cluster = config$cluster)
-        context$db$set("info", info, "didehpc")
-      }
-
       self$config <- config
 
       ## Will throw if the context is not network accessible.
