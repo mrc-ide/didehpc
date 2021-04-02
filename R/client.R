@@ -37,16 +37,14 @@ web_client <- R6::R6Class(
 
     ##' @description Log the client out
     logout = function() {
-      private$client$GET("/logout.php")
+      private$client$GET("/logout.php", public = TRUE)
       invisible(TRUE)
     },
 
     ##' @description Test whether the client is logged in, returning `TRUE`
     ##'   or `FALSE`.
     logged_in = function() {
-      data <- list(user = encode64(""))
-      r <- private$client$POST("/_listheadnodes.php", data)
-      httr::status_code(r) < 300
+      private$client$logged_in()
     },
 
     ##' @description Validate that we have access to a given cluster
@@ -93,9 +91,6 @@ web_client <- R6::R6Class(
     ##'   and values one of `OK`, `NOT_FOUND`, `WRONG_USER`, `WRONG_STATE`,
     ##'   `ID_ERROR`
     cancel = function(dide_id, cluster = NULL) {
-      if (length(dide_task) == 0L) {
-        stop("Need at least one task to cancel")
-      }
       data <- client_cancel_body(dide_id, cluster %||% private$cluster)
       r <- private$client$POST("/cancel.php", data)
       client_parse_cancel(httr_text(r))
@@ -174,7 +169,7 @@ web_client <- R6::R6Class(
 
     ##' @description Returns the low-level api client for debugging
     api_client = function() {
-      private$client()
+      private$client
     }
   ),
 
@@ -295,6 +290,9 @@ client_submit_body <- function(path, name, template, cluster,
 
 
 client_cancel_body <- function(dide_id, cluster) {
+  if (length(dide_id) == 0L) {
+    stop("Need at least one task to cancel")
+  }
   jobs <- setNames(as.list(dide_id), paste0("c", dide_id))
   c(list(cluster = encode64(cluster),
          hpcfunc = encode64("cancel")),

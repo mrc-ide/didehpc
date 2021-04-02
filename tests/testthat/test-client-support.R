@@ -43,3 +43,22 @@ test_that("submission body validates path", {
                        "fi--dideclusthn", "Cores", 1),
     "All paths must be Windows network paths")
 })
+
+
+test_that("Construct a cancel body", {
+  cluster <- "fi--dideclusthn"
+  expect_equal(
+    client_cancel_body("123456", cluster),
+    list(cluster = encode64(cluster),
+         hpcfunc = encode64("cancel"),
+         c123456 = "123456"))
+  expect_equal(
+    client_cancel_body(c("123456", "234567"), cluster),
+    list(cluster = encode64(cluster),
+         hpcfunc = encode64("cancel"),
+         c123456 = "123456",
+         c234567 = "234567"))
+  expect_error(
+    client_cancel_body(character(0), cluster),
+    "Need at least one task to cancel")
+})

@@ -123,3 +123,24 @@ test_that("Can parse logs", {
       "C:\\Users\\rfitzjoh>echo done!",
       "done!"))
 })
+
+
+test_that("Can parse cancel payload", {
+  expect_equal(
+    client_parse_cancel("3490640\tOK\n"),
+    setNames("OK", "3490640"))
+  expect_equal(
+    client_parse_cancel("3490640\tWRONG_STATE\n"),
+    setNames("WRONG_STATE", "3490640"))
+  expect_equal(
+    client_parse_cancel("3490640\tWRONG_STATE\n"),
+    setNames("WRONG_STATE", "3490640"))
+  s <- paste0("3490640\tWRONG_STATE\n3490641\tNOT_FOUND\n\n",
+              "3490642\tNOT_FOUND\n\n3490643\tNOT_FOUND\n\n")
+  expect_equal(
+    client_parse_cancel(s),
+    c("3490640" = "WRONG_STATE",
+      "3490641" = "NOT_FOUND",
+      "3490642" = "NOT_FOUND",
+      "3490643" = "NOT_FOUND"))
+})

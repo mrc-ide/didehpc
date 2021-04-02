@@ -120,3 +120,12 @@ test_that("Can send sensible login request", {
                      hpcfunc = encode64("login")),
          encode = "form"))
 })
+
+
+test_that("Create client", {
+  credentials <- example_credentials()
+  cl <- web_client$new(credentials, login = FALSE)
+  expect_s3_class(cl, "web_client")
+  expect_false(cl$logged_in())
+  expect_s3_class(cl$api_client(), "api_client")
+})
