@@ -83,8 +83,14 @@ test_that("dide_credentials does reasonable things", {
     dide_credentials(list("bob"), TRUE),
     "Credentials must be named")
   expect_error(
+    dide_credentials(list("bob", password = "secret"), TRUE),
+    "Credentials must be named")
+  expect_error(
     dide_credentials(1, TRUE),
     "Unexpected type for credentials")
+  expect_error(
+    dide_credentials(setNames(list(), character(0))),
+    "Missing fields in credentials: username")
 })
 
 
