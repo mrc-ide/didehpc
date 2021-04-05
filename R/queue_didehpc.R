@@ -13,12 +13,10 @@
 ##'
 ##' @param root A root directory, not usually needed
 ##'
-##' @param sync A vector of files to sync onto the network share
-##'
 ##' @export
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
-                          initialise = TRUE, sync = NULL) {
-  .R6_queue_didehpc$new(context, config, root, initialise, sync)
+                          initialise = TRUE) {
+  .R6_queue_didehpc$new(context, config, root, initialise)
 }
 
 .R6_queue_didehpc <- R6::R6Class(
@@ -29,96 +27,50 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     config = NULL,
     client = NULL,
     provisioned = FALSE,
-    sync = NULL,
     templates = NULL,
     workers = NULL,
     rrq = NULL,
 
-    initialize = function(context, config, root, initialise, sync) {
-      if (!inherits(config, "didehpc_config")) {
-        if (is.list(config)) {
-          config <- do.call("didehpc_config", config)
-        } else {
-          stop("Expected a didehpc_config for 'config'")
-        }
-      }
+    initialize = function(context, config, root, initialise) {
       super$initialize(context, root, initialise)
-      self$config <- config
+      self$config <- as_didehpc_config(config)
 
       ## Will throw if the context is not network accessible.
-      prepare_path(self$context$root$path, config$shares)
+      path_root <- self$context$root$path
+      prepare_path(path_root, config$shares)
 
-      if (is.null(prepare_path(getwd(), self$config$shares, FALSE))) {
-        if (!is.null(sync)) {
-          assert_character(sync)
-        }
-        self$sync <- union(self$context$sources, sync)
-        if (length(self$sync) > 0L && is.null(config$workdir)) {
-          stop("Specify 'workdir' in didehpc config to run out of place")
-        }
-      } else if (!is.null(sync)) {
-        ## There are probably times when this needs relaxing, for
-        ## example to synchronise data files that are on a local
-        ## computer.
-        stop("Do not specify sync if running on a network share")
-      }
 
-      dir.create(path_batch(self$context$root$path), FALSE, TRUE)
-      dir.create(path_logs(self$context$root$path), FALSE, TRUE)
+      ## These are useful later
+      dir.create(path_batch(path_root), FALSE, TRUE)
+      dir.create(path_logs(path_root), FALSE, TRUE)
 
-      if (initialise) {
-        self$login()
-        self$sync_files()
-        self$provision()
-      }
-
+      self$client <- web_client$new(self$config$credentials,
+                                    self$config$cluster,
+                                    FALSE)
       ## This is needed for both use_workers and use_rrq, will do
       ## nothing if neither are used.  This sets up the `workers` and
       ## `rrq` elements as required.
-      initialise_rrq(self)
+      ## initialise_rrq(self)
 
-      ## NOTE: templates need to be done last because any of the bits
-      ## above might alter things that are used in constructing the
-      ## templates.
-      initialise_templates(self)
-    },
+      workdir <- self$config$workdir %||% self$workdir
+      self$templates <- batch_templates(path_root, self$context$id,
+                                        self$config, workdir)
 
-    ## Similar to login() but tests for package initialisation too.
-    ## As I fix up the file sync stuff, I'll see if this belongs in
-    ## here too, or if it should be moved elsewhere.  It's not clear
-    ## that it should happen _every_ job submission (because that gets
-    ## a bit heavy on the IO) but it should happen _at least_ once on
-    ## queue startup.
-    preflight = function() {
-      self$login(FALSE)
-      if (!self$provisioned) {
-        ## TODO: this is not quite the right place to put the syncing,
-        ## but the idea is right.  It probably just needs its own
-        ## conditional.
-        self$sync_files()
+      if (initialise) {
+        self$login()
         self$provision()
       }
     },
 
-    login = function(always = TRUE) {
-      if (always || is.null(private$client)) {
-        client <- web_client(self$config$credentials,
-                             self$config$cluster,
-                             TRUE)
-        client$check(self$config$cluster)
-        private$client <- client
+    preflight = function() {
+      self$login(FALSE)
+      if (!self$provisioned) {
+        self$provision()
       }
     },
 
-    sync_files = function(verbose = TRUE, delete = TRUE) {
-      if (length(self$sync) > 0L) {
-        check_rsync(self$config)
-        wd <- prepare_path(self$config$workdir, self$config$shares)
-        dest <- file_path(wd$path_local, wd$rel)
-        context::context_log("sync", "Syncronising files")
-        syncr::syncr(self$sync, dest, relative = TRUE,
-                     verbose = verbose, delete = delete)
-      }
+    login = function(refresh = TRUE) {
+      self$client$login(refresh)
     },
 
     cluster_load = function(cluster = NULL, nodes = TRUE) {
@@ -138,18 +90,11 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     submit = function(task_ids, names = NULL) {
       self$preflight()
-      ## See below:
       submit(self, task_ids, names)
     },
 
     unsubmit = function(t) {
       self$login(FALSE)
-      ## TODO: The task_get_id functionality would be nice throughout
-      ## the class, probably at the base level.  But need to be
-      ## careful to get it really consistent or it will just be
-      ## confusing.
-      ##
-      ## Also would be really nice in delete at queue_base level
       unsubmit(self, task_get_id(t))
     },
 
@@ -176,17 +121,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       didehpc_joblog(self$config, dide_task_id)
     },
 
-    ## TODO: These could check that the connection is still OK, but
-    ## that's hard to do in general.  People should just not serialise
-    ## these objects!  I might remove these in favour of just hitting
-    ## the fields directly.
     rrq_controller = function() {
-      self$rrq %||% stop("rrq is not enabled")
-    },
-
-    worker_controller = function() {
-      .Deprecated("$rrq_controller", old = "$worker_controller")
-      self$rrq %||% stop("workers are not enabled")
+      ## con <- rrq_redis_con(self$config)
+      ## rrq::rrq_controller(self$context, rrq_redis_con(self$config))
+      ## self$rrq %||% stop("rrq is not enabled")
     },
 
     provision = function(installed_action = "upgrade", refresh_drat = FALSE) {
@@ -196,12 +134,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
   ))
 
 
-initialise_templates <- function(obj) {
-  workdir <- obj$config$workdir %||% obj$workdir
-  obj$templates <- batch_templates(obj$context$root, obj$context$id,
-                                   obj$config, workdir)
-}
-
 ## TODO: It would be heaps nicer if there was per-context log
 ## directory setting...
 submit <- function(obj, task_ids, names) {
@@ -209,10 +141,8 @@ submit <- function(obj, task_ids, names) {
     ## This is not generally going to be a reasonable thing to do, but
     ## until I get things nailed down, some sort of pause here is
     ## necessary or the jobs get consumed too quickly.
-    if (obj$db$driver$type() == "rds") {
-      message("sleeping in the hope of a disk sync")
-      Sys.sleep(2)
-    }
+    message("sleeping in the hope of a disk sync")
+    Sys.sleep(2)
     obj$rrq$queue_submit(task_ids)
   } else {
     submit_dide(obj, task_ids, names)
@@ -288,23 +218,6 @@ unsubmit_dide <- function(obj, task_ids) {
     }
   }
   ret
-}
-
-check_rsync <- function(config) {
-  requireNamespace("syncr", quietly = TRUE) ||
-    stop("Please install syncr; see https://mrc-ide.github.io/didehpc")
-  if (!syncr::has_rsync()) {
-    if (is_windows()) {
-      path_rsync <- file.path(rtools_info(config)$path, "bin", "rsync")
-      if (file.exists(path_rsync)) {
-        options("syncr.rsync" = path_rsync)
-        if (syncr::has_rsync()) {
-          return()
-        }
-      }
-    }
-    stop("Could not find rsync binary; can't run out of place")
-  }
 }
 
 ## A helper function that will probably move into queue_base

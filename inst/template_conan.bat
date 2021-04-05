@@ -16,10 +16,11 @@ ECHO Using Rtools at {{{rtools.rtools_root}}}
 set PATH={{{rtools.gcc_path}}};{{{rtools.make_path}}};%PATH%
 set BINPREF={{{rtools.binpref}}}/
 
-{{{#conan_root}}}
-set CONAN_PATH_BOOTSTRAP={{{conan_root}}}\bootstrap
-set CONAN_PATH_CACHE={{{conan_root}}}\cache
-{{{/conan_root}}}
+{{{#conan_path_bootstrap}}}
+set CONAN_PATH_BOOTSTRAP={{{conan_path_boostrap}}}
+{{{/conan_path_bootstrap}}}
+
+set CONAN_PATH_CACHE="{{{context_root}}}\conan\cache
 
 {{=<% %>=}}
 set CONAN_ID={{{conan_id}}}

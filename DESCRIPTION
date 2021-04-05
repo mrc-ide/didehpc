@@ -20,6 +20,7 @@ Imports:
     httr (>= 1.0.0),
     ids,
     jsonlite (>= 1.6),
+    progress,
     queuer (>= 0.2.0),
     rematch,
     storr (>= 1.1.1),
@@ -32,7 +33,6 @@ Suggests:
     redux,
     rmarkdown,
     rrq (>= 0.1.0),
-    syncr (>= 0.0.3),
     testthat,
     withr
 RoxygenNote: 7.1.1

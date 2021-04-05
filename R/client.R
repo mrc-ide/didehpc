@@ -126,7 +126,7 @@ web_client <- R6::R6Class(
     ##'
     ##' @param cluster The cluster to query, defaulting to the value
     ##'   given when creating the client.
-    status = function(state = "*", cluster = NULL) {
+    status_user = function(state = "*", cluster = NULL) {
       valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
       state <- match_value(state, valid)
       data <- list(user = encode64(private$client$username()),
@@ -135,6 +135,13 @@ web_client <- R6::R6Class(
                    jobs = encode64(as.character(-1)))
       r <- private$client$POST("/_listalljobs.php", data)
       client_parse_status(httr_text(r))
+    },
+
+    status_job = function(dide_id, cluster = NULL) {
+      pars <- list(scheduler = cluster %||% private$cluster,
+                   jobid = dide_id)
+      r <- private$client$GET("/api/v1/get_job_status/", query = pars)
+      status_map(httr_text(r))
     },
 
     ##' @description Return an overall measure of cluster use, one
@@ -479,6 +486,8 @@ status_map <- function(x) {
            Queued = "PENDING",
            Failed = "ERROR",
            Canceled = "CANCELLED",
-           Cancelled = "CANCELLED") # I don't think the cluster gives this.
-  unname(map[x])
+           Cancelled = "CANCELLED")
+  ret <- unname(map[x])
+  ret[is.na(ret)] <- "MISSING"
+  ret
 }

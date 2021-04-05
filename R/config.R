@@ -242,6 +242,18 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
 }
 
 
+as_didehpc_config <- function(config) {
+  if (!inherits(config, "didehpc_config")) {
+    if (is.list(config)) {
+      config <- do.call("didehpc_config", config)
+    } else {
+      stop("Expected a didehpc_config for 'config'")
+    }
+  }
+  config
+}
+
+
 ##' @param ... arguments to \code{didehpc_config}
 ##' @export
 ##' @rdname didehpc_config
@@ -318,6 +330,8 @@ print.didehpc_config <- function(x, ...) {
     if (is.atomic(el) || inherits(el, expand)) {
       cat(sprintf(" - %s: %s\n", names(x)[[i]], as.character(el)))
     } else if (is.list(el)) {
+      ## TODO: swap out password here if present, or do this by adding
+      ## a class attribute to it so it prints as "***********"
       cat(sprintf(" - %s:\n", names(x)[[i]]))
       cat(paste(sprintf("    - %s: %s\n", names(el),
                         vcapply(el, as.character)), collapse = ""))
@@ -389,9 +403,9 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
 rtools_versions <- function(path, r_version) {
   r_version_2 <- as.character(r_version[1, 1:2])
   if (r_version < "4.0.0") {
-    mingw <- "mingw_64"
+    mingw <- "mingw_$(WIN)"
   } else {
-    mingw <- "mingw64"
+    mingw <- "mingw$(WIN)"
   }
 
   ret <- switch(r_version_2,

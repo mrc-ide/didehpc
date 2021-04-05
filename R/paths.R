@@ -123,9 +123,17 @@ path_library <- function(root, r_version) {
 }
 
 
-path_conan <- function(root, r_version) {
+path_conan_bootstrap <- function(root, r_version) {
   version_str <- as.character(r_version[1, 1:2])
-  file.path(root, "conan", version_str)
+  file.path(root, "conan", version_str, "bootstrap")
+}
+
+
+path_conan_other <- function(root) {
+  base <- file.path(root, "conan")
+  list(bin = file.path(base, "bin"), # must match template
+       log = file.path(base, "log"), # must match template
+       batch = file.path(base, "log"))
 }
 
 

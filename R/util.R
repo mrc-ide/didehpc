@@ -14,7 +14,9 @@ encode64 <- function(x) {
 
 
 decode64 <- function(x) {
-  storr::decode64(x, "+", "/")
+  ## There's a bug in storr we should fix, but we can work around it
+  ## easily enough
+  storr::decode64(chartr("+/", "-_", x))
 }
 
 
@@ -135,4 +137,32 @@ dide_time_parse <- function(x) {
   ## YYYYMMDDHHMMSS
   ## 20151109170805
   strptime(x, "%Y%m%d%H%M%S")
+}
+
+
+clear_progress_bar <- function(p) {
+  private <- environment(p$tick)$private
+  if (nchar(private$last_draw) > 0) {
+    str <- paste0(c("\r", rep(" ", private$width)), collapse = "")
+    message(str, appendLF = FALSE)
+  }
+  message("\r", appendLF = FALSE)
+}
+
+
+readlines_if_exists <- function(path) {
+  if (!file.exists(path)) {
+    return(NULL)
+  }
+  readLines(path)
+}
+
+
+new_log <- function(curr, prev) {
+  if (length(prev) == 0) {
+    curr
+  } else {
+    ## TODO: could also print any changed lines
+    curr[-seq_along(prev)]
+  }
 }
