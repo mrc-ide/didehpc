@@ -64,3 +64,17 @@ test_that("assertions work", {
   expect_silent(assert_character("a"))
   expect_error(assert_character(pi), "'pi' must be a character")
 })
+
+
+test_that("throttle", {
+  a <- 0
+  f <- function(n) {
+    a <<- a + n
+  }
+  g <- throttle(f, 0.01)
+  t1 <- Sys.time() + 0.1
+  while (Sys.time() < t1) {
+    g(1)
+  }
+  expect_gte(a, 10) # 0.1 / 0.01
+})

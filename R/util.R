@@ -182,10 +182,11 @@ throttle <- function(f, interval) {
   force(f)
   last <- Sys.time() - interval
   function(...) {
-    wait <- (Sys.time() - last) - interval
+    wait <- interval - (Sys.time() - last)
     if (wait > 0) {
       Sys.sleep(wait)
     }
+    last <<- Sys.time()
     f(...)
   }
 }
