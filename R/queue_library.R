@@ -66,15 +66,18 @@ queue_template <- function(cluster) {
 }
 
 
-provision_watch <- function(dide_id, cluster, path_log, client, force = FALSE) {
+provision_watch <- function(dide_id, cluster, path_log, client, force = FALSE,
+                            poll = 1) {
   fmt <- "[:spin] :elapsed :status"
   p <- progress::progress_bar$new(fmt, NA, show_after = 0, force = force)
   p$tick(0, list(status = "..."))
 
+  status_job <- throttle(client$status_job, poll)
+
   log_prev <- NULL
   repeat {
-    status <- client$status_job(dide_id, cluster)
-    log <- readlines_if_exists(path_log)
+    status <- status_job(dide_id, cluster)
+    log <- readlines_if_exists(path_log, warn = FALSE)
 
     if (length(log) > length(log_prev)) {
       clear_progress_bar(p)

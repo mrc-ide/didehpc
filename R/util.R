@@ -150,11 +150,11 @@ clear_progress_bar <- function(p) {
 }
 
 
-readlines_if_exists <- function(path) {
+readlines_if_exists <- function(path, ...) {
   if (!file.exists(path)) {
     return(NULL)
   }
-  readLines(path)
+  readLines(path, ...)
 }
 
 
@@ -175,4 +175,17 @@ glue_whisker <- function(template, data) {
   }
   glue::glue(template, .envir = data, .open = "{{", .close = "}}",
              .trim = FALSE, .transformer = transformer)
+}
+
+
+throttle <- function(f, interval) {
+  force(f)
+  last <- Sys.time() - interval
+  function(...) {
+    wait <- (Sys.time() - last) - interval
+    if (wait > 0) {
+      Sys.sleep(wait)
+    }
+    f(...)
+  }
 }
