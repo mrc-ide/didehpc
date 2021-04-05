@@ -140,7 +140,7 @@ submit_dide <- function(obj, task_ids, names) {
   db <- obj$db
   root <- obj$context$root$path
   config <- obj$config
-  template <- obj$templates$runner
+  batch_template <- obj$templates$runner
 
   if (is.null(names)) {
     names <- setNames(task_ids, task_ids)
@@ -150,16 +150,23 @@ submit_dide <- function(obj, task_ids, names) {
     stop("incorrect length names")
   }
 
+  ## Will be shared across all jobs submitted
+  template <- config$template
+  cluster <- config$cluster
+  resource_type <- config$resource$type
+  resource_count <- config$resource$count
+
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface as we do not get
   ## access to multiple names via the form.
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   for (id in task_ids) {
-    batch <- write_batch(id, root, template, list(task_id = id))
+    batch <- write_batch(id, root, batch_template, list(task_id = id))
     path <- remote_path(batch, config$shares)
     p()
-    dide_id <- didehpc_submit(config, path, names[[id]])
-    db$set(id, dide_id,        "dide_id")
+    dide_id <- obj$client$submit(path, names[[id]], template, cluster,
+                                 resource_type, resource_count)
+    db$set(id, dide_id, "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
   }
@@ -168,8 +175,6 @@ submit_dide <- function(obj, task_ids, names) {
 
 unsubmit_dide <- function(obj, task_ids) {
   db <- obj$db
-  dide_id <- vcapply(task_ids, db$get, "dide_id")
-  dide_cluster <- vcapply(task_ids, db$get, "dide_cluster")
   config <- obj$config
 
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "cancelling ")
@@ -182,10 +187,8 @@ unsubmit_dide <- function(obj, task_ids) {
     ## Only try and cancel tasks if they seem cancellable:
     if (!is.null(st) && st %in% c("RUNNING", "PENDING")) {
       dide_id <- db$get(id, "dide_id")
-      ## TODO: should alter the cluster here?  For now assumes that this
-      ## is not needed.
-      ##   config$cluster <- db$get(id, "dide_cluster")
-      ret[[i]] <- didehpc_cancel(config, dide_id)
+      cluster <- db$get(id, "dide_cluster")
+      ret[[i]] <- client$cancel(dide_id, cluster)
       if (ret[[i]] == "OK") {
         db$set(id, "CANCELLED", "task_status")
         db$set(id, simpleError("Task cancelled"), "task_results")
