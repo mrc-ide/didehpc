@@ -166,3 +166,13 @@ new_log <- function(curr, prev) {
     curr[-seq_along(prev)]
   }
 }
+
+
+glue_whisker <- function(template, data) {
+  transformer <- function(...) {
+    ## This transformer prevents a NULL entry destroying the string
+    glue::identity_transformer(...) %||% ""
+  }
+  glue::glue(template, .envir = data, .open = "{{", .close = "}}",
+             .trim = FALSE, .transformer = transformer)
+}

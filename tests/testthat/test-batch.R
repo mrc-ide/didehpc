@@ -18,11 +18,24 @@ test_that("Create templates", {
   res <- batch_templates(root, context_id, config, config$workdir)
 
   expect_length(
-    grep("{{{", strsplit(res$conan, "\n")[[1]], fixed = TRUE), 1)
+    grep("{{", strsplit(res$conan, "\n")[[1]], fixed = TRUE), 1)
   expect_length(
-    grep("{{{", strsplit(res$runner, "\n")[[1]], fixed = TRUE), 1)
+    grep("{{", strsplit(res$runner, "\n")[[1]], fixed = TRUE), 1)
   expect_length(
-    grep("{{{", strsplit(res$rrq_worker, "\n")[[1]], fixed = TRUE), 2)
+    grep("{{", strsplit(res$rrq_worker, "\n")[[1]], fixed = TRUE), 2)
+})
+
+
+test_that("batch data creates entries for share drives", {
+  config <- example_config(r_version = numeric_version("4.0.3"))
+  root <- file.path(config$workdir, "context")
+  dir.create(root, FALSE, TRUE)
+  context_id <- ids::random_id()
+  dat <- template_data(root, context_id, config, config$workdir)
+  expect_length(dat$network_shares_create, 2)
+  expect_match(dat$network_shares_create,
+               "net use T:", fixed = TRUE,
+               all = FALSE)
 })
 
 

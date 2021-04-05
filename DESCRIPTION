@@ -17,6 +17,7 @@ Imports:
     crayon,
     context (>= 0.3.0),
     getPass,
+    glue,
     httr (>= 1.0.0),
     ids,
     jsonlite (>= 1.6),
@@ -24,7 +25,6 @@ Imports:
     queuer (>= 0.2.0),
     rematch,
     storr (>= 1.1.1),
-    whisker,
     xml2 (>= 1.0.0)
 Suggests:
     ape,

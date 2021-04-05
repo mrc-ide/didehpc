@@ -4,7 +4,7 @@ write_batch <- function(id, root, template, dat) {
   if (!file.exists(filename)) {
     ## This is for debugging - allowing me to edit the batch files and
     ## relaunch without overwriting.
-    writeLines(whisker::whisker.render(template, dat), filename)
+    writeLines(glue_whisker(template, dat), filename)
   }
   filename
 }
@@ -34,17 +34,29 @@ template_data <- function(context_root, context_id, config, workdir) {
   r_version_str <- paste(unclass(config$r_version)[[1]], collapse = "_")
   r_libs_user <- windows_path(path_library(context_root_abs, config$r_version))
 
-  ## NOTE: don't forget the unname()
-  network_shares <- unname(lapply(config$shares, function(x)
-    list(drive = x$drive_remote, path = windows_path(x$path_remote))))
-
+  network_shares_data <- list(
+    drive = lapply(config$shares, "[[", "drive_remote"),
+    path = lapply(config$shares, "[[", "path_remote"))
   temp_drive <- remote_drive_temp(config$shares)
   if (is.null(temp_drive)) {
     temp_drive <- available_drive(config$shares, "", "T")
-    network_shares <- c(
-      network_shares,
-      list(list(drive = temp_drive,
-                path = "\\\\fi--didef3.dide.ic.ac.uk\\tmp")))
+    network_shares_data$drive <- c(network_shares_data$drive, temp_drive)
+    network_shares_data$path <- c(network_shares_data$path,
+                                  "\\\\fi--didef3.dide.ic.ac.uk\\tmp")
+  }
+  network_shares_create <- glue_whisker(
+    "ECHO mapping {{drive}} -^> {{path}}\nnet use {{drive}} {{path}} /y",
+    network_shares_data)
+  network_shares_delete <- glue_whisker(
+    "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
+    network_shares_data)
+
+  if (config$resource$parallel) {
+    parallel <- paste("ECHO This is a parallel job: will use %CPP_NUMCPUS%",
+                      "set CONTEXT_CORES=%CCP_NUMCPUS%",
+                      sep = "\n")
+  } else {
+    parallel <- NULL
   }
 
   if (config$conan_bootstrap) {
@@ -62,7 +74,8 @@ template_data <- function(context_root, context_id, config, workdir) {
        context_version = as.character(packageVersion("context")),
        conan_version = as.character(packageVersion("conan")),
        r_version = r_version_str,
-       network_shares = network_shares,
+       network_shares_create = network_shares_create,
+       network_shares_delete = network_shares_delete,
        context_workdrive = workdir$drive_remote,
        context_workdir = windows_path(workdir$rel),
        context_root = context_root_abs,
@@ -70,7 +83,7 @@ template_data <- function(context_root, context_id, config, workdir) {
        conan_path_bootstrap = conan_path_bootstrap,
        r_libs_user = r_libs_user,
        rtools = rtools,
-       parallel = config$resource$parallel,
+       parallel = parallel,
        redis_host = redis_host(config$cluster),
        rrq_key_alive = config$rrq_key_alive,
        worker_timeout = config$worker_timeout,
@@ -85,5 +98,5 @@ batch_templates <- function(context_root, context_id, config, workdir) {
   dat <- template_data(context_root, context_id, config, workdir)
   templates <- read_templates()
   lapply(templates, function(x)
-    drop_blank(whisker::whisker.render(x, dat)))
+    drop_blank(glue_whisker(x, dat)))
 }
