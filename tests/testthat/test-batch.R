@@ -32,10 +32,10 @@ test_that("batch data creates entries for share drives", {
   dir.create(root, FALSE, TRUE)
   context_id <- ids::random_id()
   dat <- template_data(root, context_id, config, config$workdir)
-  expect_length(dat$network_shares_create, 2)
   expect_match(dat$network_shares_create,
-               "net use T:", fixed = TRUE,
-               all = FALSE)
+               "net use Q:", fixed = TRUE)
+  expect_match(dat$network_shares_create,
+               "net use T:", fixed = TRUE)
 })
 
 
