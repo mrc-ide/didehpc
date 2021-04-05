@@ -26,7 +26,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
   public = list(
     config = NULL,
     client = NULL,
-    provisioned = FALSE,
     templates = NULL,
     workers = NULL,
     rrq = NULL,
@@ -38,7 +37,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       ## Will throw if the context is not network accessible.
       path_root <- self$context$root$path
       prepare_path(path_root, config$shares)
-
 
       ## These are useful later
       dir.create(path_batch(path_root), FALSE, TRUE)
@@ -56,16 +54,17 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       self$templates <- batch_templates(path_root, self$context$id,
                                         self$config, workdir)
 
-      if (initialise) {
-        self$login()
-        self$provision()
-      }
-    },
+      ## We may tidy this up as it's quite a long call
+      private$lib <- queue_library$new(
+        path_library(self$context$root$path, self$config$r_version),
+        file.path(self$context$root$path, "conan"),
+        self$config$shares,
+        self$templates$conan,
+        self$config$cluster,
+        self$client)
 
-    preflight = function() {
-      self$login(FALSE)
-      if (!self$provisioned) {
-        self$provision()
+      if (initialise) {
+        private$preflight()
       }
     },
 
@@ -89,17 +88,29 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     submit = function(task_ids, names = NULL) {
-      self$preflight()
-      submit(self, task_ids, names)
+      private$preflight()
+      if (isTRUE(self$config$use_workers)) {
+        self$rrq$queue_submit(task_ids)
+      } else {
+        submit_dide(obj, task_ids, names)
+      }
     },
 
     unsubmit = function(t) {
       self$login(FALSE)
-      unsubmit(self, task_get_id(t))
+      if (isTRUE(self$config$use_workers)) {
+        ## TODO: unexported function.
+        ##
+        ## NOTE: This does not unsubmit the *worker* but pulls task ids
+        ## out of the local queue.
+        self$rrq$queue_unsubmit(task_ids)
+      } else {
+        unsubmit_dide(obj, task_ids)
+      }
     },
 
     submit_workers = function(n, timeout = 600, progress = NULL) {
-      self$preflight()
+      private$preflight()
       submit_workers(self, n, timeout, progress)
     },
 
@@ -127,27 +138,39 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       ## self$rrq %||% stop("rrq is not enabled")
     },
 
-    provision = function(installed_action = "upgrade", refresh_drat = FALSE) {
-      browser()
-      initialise_cluster_packages(self, installed_action, refresh_drat)
+    provision_context = function(policy = "skip", dryrun = FALSE) {
+      packages <- c(self$context$packages$loaded,
+                    self$context$packages$attached,
+                    "context",
+                    self$context$package_sources$packages)
+      repos <- c(self$context$package_sources$repos,
+                 didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+      private$install_packages(packages, repos, policy, dryrun)
+      private$provisioned <- TRUE
+    },
+
+    install_packages = function(packages, repos = NULL,
+                                policy = "skip", dryrun = FALSE) {
+      complete <- self$lib$check(packages)$complete
+      if (complete && policy == "skip") {
+        return()
+      }
+      self$lib$provision(packages, repos, policy, NULL, dryrun)
+    }
+  ),
+
+  private = list(
+    lib = NULL,
+    provisioned = NULL,
+
+    preflight = function() {
+      self$login(FALSE)
+      if (!private$provisioned) {
+        self$provision_context("skip")
+      }
     }
   ))
 
-
-## TODO: It would be heaps nicer if there was per-context log
-## directory setting...
-submit <- function(obj, task_ids, names) {
-  if (isTRUE(obj$config$use_workers)) {
-    ## This is not generally going to be a reasonable thing to do, but
-    ## until I get things nailed down, some sort of pause here is
-    ## necessary or the jobs get consumed too quickly.
-    message("sleeping in the hope of a disk sync")
-    Sys.sleep(2)
-    obj$rrq$queue_submit(task_ids)
-  } else {
-    submit_dide(obj, task_ids, names)
-  }
-}
 
 submit_dide <- function(obj, task_ids, names) {
   db <- obj$db
@@ -164,7 +187,8 @@ submit_dide <- function(obj, task_ids, names) {
   }
 
   ## TODO: in theory this can be done in bulk on the cluster but it
-  ## requires some support on the web interface I think.
+  ## requires some support on the web interface as we do not get
+  ## access to multiple names via the form.
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   for (id in task_ids) {
     batch <- write_batch(id, root, template, list(task_id = id))
@@ -177,17 +201,6 @@ submit_dide <- function(obj, task_ids, names) {
   }
 }
 
-unsubmit <- function(obj, task_ids) {
-  if (isTRUE(obj$config$use_workers)) {
-    ## TODO: unexported function.
-    ##
-    ## NOTE: This does not unsubmit the *worker* but pulls task ids
-    ## out of the local queue.
-    obj$rrq$queue_unsubmit(task_ids)
-  } else {
-    unsubmit_dide(obj, task_ids)
-  }
-}
 
 unsubmit_dide <- function(obj, task_ids) {
   db <- obj$db
@@ -219,6 +232,7 @@ unsubmit_dide <- function(obj, task_ids) {
   }
   ret
 }
+
 
 ## A helper function that will probably move into queue_base
 task_get_id <- function(x, obj = NULL) {

@@ -210,7 +210,7 @@ the value given when creating the client.}
 \if{html}{\out{<a id="method-status_user"></a>}}
 \if{latex}{\out{\hypertarget{method-status_user}{}}}
 \subsection{Method \code{status_user()}}{
-Return job status
+Return status of all your jobs
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{web_client$status_user(state = "*", cluster = NULL)}\if{html}{\out{</div>}}
 }
@@ -232,10 +232,21 @@ given when creating the client.}
 \if{html}{\out{<a id="method-status_job"></a>}}
 \if{latex}{\out{\hypertarget{method-status_job}{}}}
 \subsection{Method \code{status_job()}}{
+Return status of a single job
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{web_client$status_job(dide_id, cluster = NULL)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dide_id}}{The id of the job - this will be an integer}
+
+\item{\code{cluster}}{The cluster to query, defaulting to the value
+given when creating the client.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-load_node"></a>}}

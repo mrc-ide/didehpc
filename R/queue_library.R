@@ -23,14 +23,15 @@ queue_library <- R6::R6Class(
     },
 
     write_batch = function(packages, repos = NULL, policy = "upgrade",
-                           cran = NULL, dryrun = FALSE) {
+                           dryrun = FALSE) {
       id <- ids::random_id()
       path_script <- file.path(self$path_conan, "bin", id)
       path_batch <- file.path(self$path_conan, "batch", paste0(id, ".bat"))
       path_log <- file.path(self$path_conan, "log", id)
       dat <- list(conan_id = id)
 
-      conan::conan(path_script, packages, repos, policy, cran, dryrun)
+      conan::conan(path_script, packages, repos = repos, policy = policy,
+                   dryrun = dryrun)
 
       dir.create(dirname(path_batch), FALSE, TRUE)
       dir.create(dirname(path_log), FALSE, TRUE)
@@ -96,4 +97,11 @@ provision_watch <- function(dide_id, cluster, path_log, client, force = FALSE,
   if (status == "ERROR") {
     stop("Installation failed ")
   }
+}
+
+
+default_packages <- function(context) {
+  c("context",
+    context$packages$attached,
+    context$packages$loaded)
 }

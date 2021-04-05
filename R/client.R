@@ -118,7 +118,7 @@ web_client <- R6::R6Class(
       client_parse_log(httr_text(r))
     },
 
-    ##' @description Return job status
+    ##' @description Return status of all your jobs
     ##'
     ##' @param state The state the job is in. Can be one of `Running`,
     ##'   `Finished`, `Queued`, `Failed` or `Cancelled`. Or give `*`
@@ -137,6 +137,12 @@ web_client <- R6::R6Class(
       client_parse_status(httr_text(r))
     },
 
+    ##' @description Return status of a single job
+    ##'
+    ##' @param dide_id The id of the job - this will be an integer
+    ##'
+    ##' @param cluster The cluster to query, defaulting to the value
+    ##'   given when creating the client.
     status_job = function(dide_id, cluster = NULL) {
       pars <- list(scheduler = cluster %||% private$cluster,
                    jobid = dide_id)
