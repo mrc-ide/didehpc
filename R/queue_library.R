@@ -100,8 +100,12 @@ provision_watch <- function(dide_id, cluster, path_log, client, force = FALSE,
 }
 
 
-default_packages <- function(context) {
-  c("context",
-    context$packages$attached,
-    context$packages$loaded)
+context_packages <- function(context, need_rrq = FALSE) {
+  list(packages = c("context",
+                    if (need_rrq) "rrq",
+                    context$packages$attached,
+                    context$packages$loaded,
+                    context$package_sources$packages),
+       repos = c(self$context$package_sources$repos,
+                 didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
 }

@@ -28,7 +28,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     client = NULL,
     templates = NULL,
     workers = NULL,
-    rrq = NULL,
 
     initialize = function(context, config, root, initialise) {
       super$initialize(context, root, initialise)
@@ -45,10 +44,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       self$client <- web_client$new(self$config$credentials,
                                     self$config$cluster,
                                     FALSE)
-      ## This is needed for both use_workers and use_rrq, will do
-      ## nothing if neither are used.  This sets up the `workers` and
-      ## `rrq` elements as required.
-      ## initialise_rrq(self)
 
       workdir <- self$config$workdir %||% self$workdir
       self$templates <- batch_templates(path_root, self$context$id,
@@ -89,33 +84,12 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     submit = function(task_ids, names = NULL) {
       private$preflight()
-      if (isTRUE(self$config$use_workers)) {
-        self$rrq$queue_submit(task_ids)
-      } else {
-        submit_dide(obj, task_ids, names)
-      }
+      submit_dide(obj, task_ids, names)
     },
 
     unsubmit = function(t) {
       self$login(FALSE)
-      if (isTRUE(self$config$use_workers)) {
-        ## TODO: unexported function.
-        ##
-        ## NOTE: This does not unsubmit the *worker* but pulls task ids
-        ## out of the local queue.
-        self$rrq$queue_unsubmit(task_ids)
-      } else {
-        unsubmit_dide(obj, task_ids)
-      }
-    },
-
-    submit_workers = function(n, timeout = 600, progress = NULL) {
-      private$preflight()
-      submit_workers(self, n, timeout, progress)
-    },
-
-    stop_workers = function(worker_ids = NULL) {
-      self$rrq$worker_stop(worker_ids)
+      unsubmit_dide(obj, task_ids)
     },
 
     dide_id = function(t) {
@@ -132,20 +106,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       didehpc_joblog(self$config, dide_task_id)
     },
 
-    rrq_controller = function() {
-      ## con <- rrq_redis_con(self$config)
-      ## rrq::rrq_controller(self$context, rrq_redis_con(self$config))
-      ## self$rrq %||% stop("rrq is not enabled")
-    },
-
     provision_context = function(policy = "skip", dryrun = FALSE) {
-      packages <- c(self$context$packages$loaded,
-                    self$context$packages$attached,
-                    "context",
-                    self$context$package_sources$packages)
-      repos <- c(self$context$package_sources$repos,
-                 didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
-      private$install_packages(packages, repos, policy, dryrun)
+      need_rrq <- self$config$use_rrq || self$config$use_workers
+      dat <- context_packages(self$context, need_rrq)
+      private$install_packages(dat$packages, dat$repos, policy, dryrun)
       private$provisioned <- TRUE
     },
 
