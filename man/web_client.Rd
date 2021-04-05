@@ -18,11 +18,12 @@ Client for the DIDE cluster web interface.
 \item \href{#method-login}{\code{web_client$login()}}
 \item \href{#method-logout}{\code{web_client$logout()}}
 \item \href{#method-logged_in}{\code{web_client$logged_in()}}
-\item \href{#method-check}{\code{web_client$check()}}
+\item \href{#method-check_access}{\code{web_client$check_access()}}
 \item \href{#method-submit}{\code{web_client$submit()}}
 \item \href{#method-cancel}{\code{web_client$cancel()}}
 \item \href{#method-log}{\code{web_client$log()}}
-\item \href{#method-status}{\code{web_client$status()}}
+\item \href{#method-status_user}{\code{web_client$status_user()}}
+\item \href{#method-status_job}{\code{web_client$status_job()}}
 \item \href{#method-load_node}{\code{web_client$load_node()}}
 \item \href{#method-load_overall}{\code{web_client$load_overall()}}
 \item \href{#method-headnodes}{\code{web_client$headnodes()}}
@@ -103,12 +104,12 @@ or \code{FALSE}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-check"></a>}}
-\if{latex}{\out{\hypertarget{method-check}{}}}
-\subsection{Method \code{check()}}{
+\if{html}{\out{<a id="method-check_access"></a>}}
+\if{latex}{\out{\hypertarget{method-check_access}{}}}
+\subsection{Method \code{check_access()}}{
 Validate that we have access to a given cluster
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{web_client$check(cluster = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{web_client$check_access(cluster = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -206,12 +207,12 @@ the value given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-status"></a>}}
-\if{latex}{\out{\hypertarget{method-status}{}}}
-\subsection{Method \code{status()}}{
+\if{html}{\out{<a id="method-status_user"></a>}}
+\if{latex}{\out{\hypertarget{method-status_user}{}}}
+\subsection{Method \code{status_user()}}{
 Return job status
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{web_client$status(state = "*", cluster = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{web_client$status_user(state = "*", cluster = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -226,6 +227,15 @@ given when creating the client.}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-status_job"></a>}}
+\if{latex}{\out{\hypertarget{method-status_job}{}}}
+\subsection{Method \code{status_job()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{web_client$status_job(dide_id, cluster = NULL)}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-load_node"></a>}}

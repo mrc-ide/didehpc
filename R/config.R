@@ -214,9 +214,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
 
   dat$r_version <- select_r_version(dat$r_version)
 
-  ## Set up the library path here
-  ## browser()
-
   if (isTRUE(dat$use_java) && is.null(dat$java_home)) {
     dat$java_home <- ""
   }
@@ -330,8 +327,6 @@ print.didehpc_config <- function(x, ...) {
     if (is.atomic(el) || inherits(el, expand)) {
       cat(sprintf(" - %s: %s\n", names(x)[[i]], as.character(el)))
     } else if (is.list(el)) {
-      ## TODO: swap out password here if present, or do this by adding
-      ## a class attribute to it so it prints as "***********"
       cat(sprintf(" - %s:\n", names(x)[[i]]))
       cat(paste(sprintf("    - %s: %s\n", names(el),
                         vcapply(el, as.character)), collapse = ""))

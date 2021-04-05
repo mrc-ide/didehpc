@@ -10,7 +10,7 @@ dide_credentials <- function(credentials, need_password) {
   if (is.null(credentials) || is.character(credentials)) {
     credentials <- list(username = dide_username(credentials))
   } else if (is.list(credentials)) {
-    if (is.null(names(credentials))) {
+    if (is.null(names(credentials)) || any(names(credentials) == "")) {
       stop("Credentials must be named")
     }
     extra <- setdiff(names(credentials), c("username", "password"))
@@ -31,6 +31,10 @@ dide_credentials <- function(credentials, need_password) {
 
   if (need_password && is.null(credentials$password)) {
     credentials$password <- prompt_password(credentials$username)
+  }
+
+  if (!is.null(credentials$password)) {
+    class(credentials$password) <- "password"
   }
 
   credentials
@@ -74,4 +78,10 @@ read_credentials <- function(filename) {
   values <- trimws(vcapply(dat, "[[", 2L))
   nms <- trimws(vcapply(dat, "[[", 1L))
   setNames(as.list(values), nms)
+}
+
+
+##' @export
+as.character.password <- function(x, ...) {
+  "*******************"
 }

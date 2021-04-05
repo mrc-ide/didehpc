@@ -118,19 +118,19 @@ test_that("Can find redis host, given cluster", {
 test_that("Can get a reasonable rtools version", {
   expect_equal(
     rtools_versions("<prefix>", numeric_version("4.0.0")),
-    list(gcc = "mingw64",
+    list(gcc = "mingw$(WIN)",
          make = "usr",
-         binpref = "<prefix>/Rtools/Rtools40/mingw64/bin",
+         binpref = "<prefix>/Rtools/Rtools40/mingw$(WIN)/bin",
          rtools_root = "<prefix>\\Rtools\\Rtools40",
-         gcc_path = "<prefix>\\Rtools\\Rtools40\\mingw64\\bin",
+         gcc_path = "<prefix>\\Rtools\\Rtools40\\mingw$(WIN)\\bin",
          make_path = "<prefix>\\Rtools\\Rtools40\\usr\\bin"))
   expect_equal(
     rtools_versions("<prefix>", numeric_version("3.6.3")),
-    list(gcc = "mingw_64",
+    list(gcc = "mingw_$(WIN)",
          make = "",
-         binpref = "<prefix>/Rtools/Rtools35/mingw_64/bin",
+         binpref = "<prefix>/Rtools/Rtools35/mingw_$(WIN)/bin",
          rtools_root = "<prefix>\\Rtools\\Rtools35",
-         gcc_path = "<prefix>\\Rtools\\Rtools35\\mingw_64\\bin",
+         gcc_path = "<prefix>\\Rtools\\Rtools35\\mingw_$(WIN)\\bin",
          make_path = "<prefix>\\Rtools\\Rtools35\\\\bin"))
   expect_equal(
     rtools_versions("<prefix>", numeric_version("3.5.0")),
@@ -173,7 +173,8 @@ test_that("Build config", {
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
   cfg <- withr::with_options(
     tmp_options_didehpc(),
-    didehpc_config(credentials = "bob", workdir = workdir))
+    didehpc_config(credentials = list(username = "bob", password = "secret"),
+                   workdir = workdir))
   mockery::expect_called(mock_detect_mount, 1L)
   expect_equal(
     mockery::mock_args(mock_detect_mount), list(list()))
@@ -182,6 +183,7 @@ test_that("Build config", {
   str <- capture.output(print(cfg))
   expect_match(str, "<didehpc_config>", all = FALSE)
   expect_match(str, " - username: bob", all = FALSE)
+  expect_match(str, " - password: \\*+$", all = FALSE)
   expect_match(str, "    - parallel: FALSE", all = FALSE)
 })
 

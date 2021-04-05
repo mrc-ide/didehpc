@@ -54,3 +54,8 @@ mock_response <- function(code, ..., url = NULL, content = NULL) {
 r6_private <- function(x) {
   x[[".__enclos_env__"]]$private
 }
+
+
+password <- function(x) {
+  structure(x, class = "password")
+}

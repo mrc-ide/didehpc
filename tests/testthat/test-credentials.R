@@ -60,7 +60,7 @@ test_that("Prompt for a password if required", {
                list(username = "bob"))
   mockery::expect_called(mock_prompt_password, 0L)
   expect_equal(dide_credentials("bob", TRUE),
-               list(username = "bob", password = "secret"))
+               list(username = "bob", password = password("secret")))
   mockery::expect_called(mock_prompt_password, 1L)
   expect_equal(mockery::mock_args(mock_prompt_password), list(list("bob")))
 })
@@ -75,7 +75,7 @@ test_that("dide_credentials does reasonable things", {
     list(username = "bob"))
   expect_equal(
     dide_credentials(list(username = "bob", password = "secret"), TRUE),
-    list(username = "bob", password = "secret"))
+    list(username = "bob", password = password("secret")))
   expect_error(
     dide_credentials(list(username = "bob", pass = "secret"), TRUE),
     "Unknown fields in credentials: pass")
@@ -94,7 +94,7 @@ test_that("read smb credentials", {
   expect_equal(read_credentials(path),
                list(username = "bob", password = "secret"))
   expect_equal(dide_credentials(path, TRUE),
-               list(username = "bob", password = "secret"))
+               list(username = "bob", password = password("secret")))
   writeLines(c("user=bob", "pass=secret"), path)
   expect_error(dide_credentials(path, TRUE),
                "Unknown fields in credentials")
