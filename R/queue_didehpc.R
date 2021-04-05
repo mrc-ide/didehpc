@@ -109,17 +109,17 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     provision_context = function(policy = "skip", dryrun = FALSE) {
       need_rrq <- self$config$use_rrq || self$config$use_workers
       dat <- context_packages(self$context, need_rrq)
-      private$install_packages(dat$packages, dat$repos, policy, dryrun)
+      self$install_packages(dat$packages, dat$repos, policy, dryrun)
       private$provisioned <- TRUE
     },
 
     install_packages = function(packages, repos = NULL,
                                 policy = "skip", dryrun = FALSE) {
-      complete <- self$lib$check(packages)$complete
+      complete <- private$lib$check(packages)$complete
       if (complete && policy == "skip") {
         return()
       }
-      self$lib$provision(packages, repos, policy, NULL, dryrun)
+      private$lib$provision(packages, repos, policy, dryrun)
     }
   ),
 

@@ -40,9 +40,10 @@ queue_library <- R6::R6Class(
       list(id = id, batch = path_batch, script = path_script, log = path_log)
     },
 
-    provision = function(...) {
+    provision = function(packages, repos = NULL, policy = "upgrade",
+                         dryrun = FALSE) {
       self$client$login()
-      dat <- self$write_batch(...)
+      dat <- self$write_batch(packages, repos, policy, dryrun)
 
       ## Make sure that the path exists; it's possible that this is
       ## not needed - check in conan/pkgdepends
@@ -106,6 +107,6 @@ context_packages <- function(context, need_rrq = FALSE) {
                     context$packages$attached,
                     context$packages$loaded,
                     context$package_sources$packages),
-       repos = c(self$context$package_sources$repos,
+       repos = c(context$package_sources$repos,
                  didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
 }
