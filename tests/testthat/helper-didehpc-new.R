@@ -49,3 +49,8 @@ mock_response <- function(code, ..., url = NULL, content = NULL) {
   class(dat) <- "response"
   dat
 }
+
+
+r6_private <- function(x) {
+  x[[".__enclos_env__"]]$private
+}

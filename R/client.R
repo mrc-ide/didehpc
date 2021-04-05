@@ -18,9 +18,14 @@ web_client <- R6::R6Class(
     ##'   overridden in any command.
     ##'
     ##' @param login Logical, indicating if we should immediately login
-    initialize = function(credentials, cluster_default = "fi--dideclusthn",
-                          login = FALSE) {
-      private$client <- api_client$new(credentials)
+    ##'
+    ##' @param client Optional api client object - if given then we prefer
+    ##'   this object rather than trying to create a new client with the
+    ##'   given credentials.
+    initialize = function(credentials = NULL,
+                          cluster_default = "fi--dideclusthn",
+                          login = FALSE, client = NULL) {
+      private$client <- client %||% api_client$new(credentials)
       private$cluster <- cluster_name(cluster_default)
       if (login) {
         self$login()
@@ -37,8 +42,7 @@ web_client <- R6::R6Class(
 
     ##' @description Log the client out
     logout = function() {
-      private$client$GET("/logout.php", public = TRUE)
-      invisible(TRUE)
+      private$client$logout()
     },
 
     ##' @description Test whether the client is logged in, returning `TRUE`
@@ -51,17 +55,20 @@ web_client <- R6::R6Class(
     ##'
     ##' @param cluster The name of the cluster to check, defaulting to
     ##'   the value given when creating the client.
-    check = function(cluster = NULL) {
+    check_access = function(cluster = NULL) {
       client_check(cluster %||% private$cluster, self$headnodes())
     },
 
     ##' @description Submit a job to the cluster
     ##'
-    ##' @param path to the job to submit. This must be a windows (UNC) network
-    ##'   path, starting with two backslashes, and must be somewhere that
-    ##'    the cluster can see.
+    ##' @param path The pathto the job to submit. This must be a windows (UNC)
+    ##'   network path, starting with two backslashes, and must be somewhere
+    ##'   that the cluster can see.
     ##'
-    ##' @param template The name of the template to use
+    ##' @param name The name of the job (will be displayed in the
+    ##'    web interface).
+    ##'
+    ##' @param template The name of the template to use.
     ##'
     ##' @param cluster The cluster to submit to, defaulting to the value
     ##'   given when creating the client.
@@ -86,7 +93,7 @@ web_client <- R6::R6Class(
     ##' @param cluster The cluster that the task is running on, defaulting to
     ##'   the value given when creating the client.
     ##'
-    ##' @value A named character vector with a status reported by the
+    ##' @return A named character vector with a status reported by the
     ##'   cluster head node. Names will be the values of `dide_id`
     ##'   and values one of `OK`, `NOT_FOUND`, `WRONG_USER`, `WRONG_STATE`,
     ##'   `ID_ERROR`
@@ -223,6 +230,12 @@ api_client <- R6::R6Class(
                          private$credentials$password)
         private$has_logged_in <- TRUE
       }
+    },
+
+    logout = function() {
+      private$has_logged_in <- FALSE
+      self$GET("/logout.php", public = TRUE)
+      invisible()
     },
 
     logged_in = function() {

@@ -43,6 +43,25 @@ test_that("login sends sensible data", {
 })
 
 
+test_that("logout uses correct endpoint", {
+  credentials <- example_credentials()
+  cl <- api_client$new(credentials, "fi--dideclusthn")
+  private <- r6_private(cl)
+  private$has_logged_in <- TRUE
+
+  mock_logout <- mockery::mock(cycle = TRUE)
+  mock_get <- mockery::mock(mock_response(200))
+  mockery::stub(cl$logout, "self$GET", mock_get)
+
+  cl$logout()
+  expect_false(private$has_logged_in)
+  mockery::expect_called(mock_get, 1)
+  expect_equal(
+    mockery::mock_args(mock_get)[[1]],
+    list("/logout.php", public = TRUE))
+})
+
+
 test_that("request handles http requests", {
   verb <- mockery::mock(mock_response(200),
                         mock_response(403),
@@ -128,4 +147,55 @@ test_that("Create client", {
   expect_s3_class(cl, "web_client")
   expect_false(cl$logged_in())
   expect_s3_class(cl$api_client(), "api_client")
+})
+
+
+test_that("login uses client to login and logout", {
+  mock_client <- list(
+    login = mockery::mock(),
+    logout = mockery::mock())
+
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  mockery::expect_called(mock_client$login, 0)
+  cl$login()
+  mockery::expect_called(mock_client$login, 1)
+  expect_equal(mockery::mock_args(mock_client$login),
+               list(list(refresh = TRUE)))
+
+  cl <- web_client$new(login = TRUE, client = mock_client)
+  mockery::expect_called(mock_client$login, 2)
+  expect_equal(mockery::mock_args(mock_client$login),
+               rep(list(list(refresh = TRUE)), 2))
+
+  cl$logout()
+  mockery::expect_called(mock_client$logout, 1)
+  expect_equal(mockery::mock_args(mock_client$logout)[[1]], list())
+})
+
+
+test_that("client checks access", {
+  mock_client <- list(
+    login = function() NULL)
+  mock_headnodes <- mockery::mock(
+    character(0),
+    "fi--dideclusthn",
+    c("fi--dideclusthn", "fi--didemrchnb"),
+    cycle = TRUE)
+  cl <- web_client$new(cluster_default = "fi--didemrchnb",
+                       client = mock_client)
+  mockery::stub(cl$check_access, "self$headnodes", mock_headnodes)
+
+  expect_error(
+    cl$check_access(),
+    "You do not have access to any cluster")
+  expect_error(
+    cl$check_access(),
+    "You do not have access to 'fi--didemrchnb'; try 'fi--dideclusthn'")
+  expect_silent(cl$check_access())
+
+  expect_error(
+    cl$check_access("fi--dideclusthn"),
+    "You do not have access to any cluster")
+  expect_silent(cl$check_access("fi--dideclusthn"))
+  expect_silent(cl$check_access("fi--dideclusthn"))
 })

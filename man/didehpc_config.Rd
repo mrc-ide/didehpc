@@ -19,7 +19,7 @@ didehpc_config(
   use_workers = NULL,
   use_rrq = NULL,
   worker_timeout = NULL,
-  rtools = NULL,
+  conan_cache = NULL,
   r_version = NULL,
   use_java = NULL,
   java_home = NULL
@@ -109,13 +109,6 @@ should be more than enough to get your jobs up and running.
 Once workers are established you can extend or reset the timeout
 by sending the \code{TIMEOUT_SET} message (proper documentation
 will come for this soon).}
-
-\item{rtools}{Make sure that rtools are installed (even if they
-aren't implicitly required by one of the required packages).  If
-\code{TRUE}, then network paths will be set up appropriately
-such that R on the cluster should find the appropriate version
-of rtools so that packages such as \code{rstan} and
-\code{Rcpp}'s inline functionality work correctly.}
 
 \item{r_version}{A string, or \code{numeric_version} object,
 describing the R version required.  Not all R versions are known

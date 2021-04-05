@@ -18,6 +18,7 @@ Client for the DIDE cluster web interface.
 \item \href{#method-login}{\code{web_client$login()}}
 \item \href{#method-logout}{\code{web_client$logout()}}
 \item \href{#method-logged_in}{\code{web_client$logged_in()}}
+\item \href{#method-check}{\code{web_client$check()}}
 \item \href{#method-submit}{\code{web_client$submit()}}
 \item \href{#method-cancel}{\code{web_client$cancel()}}
 \item \href{#method-log}{\code{web_client$log()}}
@@ -35,7 +36,12 @@ Client for the DIDE cluster web interface.
 \subsection{Method \code{new()}}{
 Create an API client for the DIDE cluster
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{web_client$new(credentials, cluster_default = "fi--dideclusthn", login = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{web_client$new(
+  credentials = NULL,
+  cluster_default = "fi--dideclusthn",
+  login = FALSE,
+  client = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -49,6 +55,10 @@ given, your password will be prompted for at login.}
 overridden in any command.}
 
 \item{\code{login}}{Logical, indicating if we should immediately login}
+
+\item{\code{client}}{Optional api client object - if given then we prefer
+this object rather than trying to create a new client with the
+given credentials.}
 }
 \if{html}{\out{</div>}}
 }
@@ -93,6 +103,24 @@ or \code{FALSE}.
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-check"></a>}}
+\if{latex}{\out{\hypertarget{method-check}{}}}
+\subsection{Method \code{check()}}{
+Validate that we have access to a given cluster
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{web_client$check(cluster = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{cluster}}{The name of the cluster to check, defaulting to
+the value given when creating the client.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-submit"></a>}}
 \if{latex}{\out{\hypertarget{method-submit}{}}}
 \subsection{Method \code{submit()}}{
@@ -111,11 +139,14 @@ Submit a job to the cluster
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{to the job to submit. This must be a windows (UNC) network
-path, starting with two backslashes, and must be somewhere that
-the cluster can see.}
+\item{\code{path}}{The pathto the job to submit. This must be a windows (UNC)
+network path, starting with two backslashes, and must be somewhere
+that the cluster can see.}
 
-\item{\code{template}}{The name of the template to use}
+\item{\code{name}}{The name of the job (will be displayed in the
+web interface).}
+
+\item{\code{template}}{The name of the template to use.}
 
 \item{\code{cluster}}{The cluster to submit to, defaulting to the value
 given when creating the client.}
@@ -146,6 +177,12 @@ Cancel a cluster task
 the value given when creating the client.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named character vector with a status reported by the
+cluster head node. Names will be the values of \code{dide_id}
+and values one of \code{OK}, \code{NOT_FOUND}, \code{WRONG_USER}, \code{WRONG_STATE},
+\code{ID_ERROR}
 }
 }
 \if{html}{\out{<hr>}}
