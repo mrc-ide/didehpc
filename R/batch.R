@@ -47,9 +47,12 @@ template_data <- function(context_root, context_id, config, workdir) {
                 path = "\\\\fi--didef3.dide.ic.ac.uk\\tmp")))
   }
 
-  ## Unconditionally for now
-  conan_root_bootstrap <-
-    windows_path(path_conan_bootstrap(temp_drive, config$r_version))
+  if (config$conan_bootstrap) {
+    conan_path_bootstrap <-
+      windows_path(path_conan_bootstrap(temp_drive, config$r_version))
+  } else {
+    conan_path_bootstrap <- NULL
+  }
 
   rtools <- rtools_versions(temp_drive, config$r_version)
 
@@ -64,7 +67,7 @@ template_data <- function(context_root, context_id, config, workdir) {
        context_workdir = windows_path(workdir$rel),
        context_root = context_root_abs,
        context_id = context_id,
-       conan_root_bootstrap = conan_root_bootstrap,
+       conan_path_bootstrap = conan_path_bootstrap,
        r_libs_user = r_libs_user,
        rtools = rtools,
        parallel = config$resource$parallel,

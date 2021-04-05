@@ -160,7 +160,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            shares = NULL, template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
-                           worker_timeout = NULL, conan_cache = NULL,
+                           worker_timeout = NULL, conan_bootstrap = NULL,
                            r_version = NULL, use_java = NULL,
                            java_home = NULL) {
   defaults <- didehpc_config_defaults()
@@ -177,7 +177,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                 use_workers = use_workers,
                 use_rrq = use_rrq,
                 worker_timeout = worker_timeout,
-                conan_cache = conan_cache,
+                conan_bootstrap = conan_bootstrap,
                 r_version = r_version,
                 use_java = use_java,
                 java_home = java_home)
@@ -229,7 +229,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               use_workers = dat$use_workers,
               use_rrq = dat$use_rrq,
               worker_timeout = dat$worker_timeout,
-              conan_cache = dat$conan_cache,
+              conan_bootstrap = dat$conan_bootstrap,
               r_version = dat$r_version,
               use_java = dat$use_java,
               java_home = dat$java_home)
@@ -282,23 +282,23 @@ didehpc_config_global <- function(...) {
 
 didehpc_config_defaults <- function() {
   defaults <- list(
-    cluster        = getOption("didehpc.cluster",        cluster_name(NULL)),
-    credentials    = getOption("didehpc.credentials",    NULL),
-    home           = getOption("didehpc.home",           NULL),
-    temp           = getOption("didehpc.temp",           NULL),
-    shares         = getOption("didehpc.shares",         NULL),
-    template       = getOption("didehpc.template",       NULL),
-    cores          = getOption("didehpc.cores",          NULL),
-    wholenode      = getOption("didehpc.wholenode",      NULL),
-    parallel       = getOption("didehpc.parallel",       NULL),
-    workdir        = getOption("didehpc.workdir",        NULL),
-    use_workers    = getOption("didehpc.use_workers",    FALSE),
-    use_rrq        = getOption("didehpc.use_rrq",        FALSE),
-    worker_timeout = getOption("didehpc.worker_timeout", 600),
-    conan_cache    = getOption("didehpc.conan_cache",    TRUE),
-    r_version      = getOption("didehpc.r_version",      NULL),
-    use_java       = getOption("didehpc.use_java",       FALSE),
-    java_home      = getOption("didehpc.java_home",      NULL))
+    cluster         = getOption("didehpc.cluster",         cluster_name(NULL)),
+    credentials     = getOption("didehpc.credentials",     NULL),
+    home            = getOption("didehpc.home",            NULL),
+    temp            = getOption("didehpc.temp",            NULL),
+    shares          = getOption("didehpc.shares",          NULL),
+    template        = getOption("didehpc.template",        NULL),
+    cores           = getOption("didehpc.cores",           NULL),
+    wholenode       = getOption("didehpc.wholenode",       NULL),
+    parallel        = getOption("didehpc.parallel",        NULL),
+    workdir         = getOption("didehpc.workdir",         NULL),
+    use_workers     = getOption("didehpc.use_workers",     FALSE),
+    use_rrq         = getOption("didehpc.use_rrq",         FALSE),
+    worker_timeout  = getOption("didehpc.worker_timeout",  600),
+    conan_bootstrap = getOption("didehpc.conan_bootstrap", TRUE),
+    r_version       = getOption("didehpc.r_version",       NULL),
+    use_java        = getOption("didehpc.use_java",        FALSE),
+    java_home       = getOption("didehpc.java_home",       NULL))
 
 
   if (is.null(defaults$credentials)) {

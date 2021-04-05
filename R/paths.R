@@ -125,7 +125,7 @@ path_library <- function(root, r_version) {
 
 path_conan_bootstrap <- function(root, r_version) {
   version_str <- as.character(r_version[1, 1:2])
-  file.path(root, "conan", version_str, "bootstrap")
+  file.path(root, "conan", "bootstrap", version_str)
 }
 
 

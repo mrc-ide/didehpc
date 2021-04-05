@@ -26,19 +26,19 @@ test_that("Create templates", {
 })
 
 
-test_that("can disable conan cache", {
-  config <- example_config()
+test_that("can disable conan bootstrap", {
+  config <- example_config(r_version = numeric_version("4.0.3"))
   root <- file.path(config$workdir, "context")
   dir.create(root, FALSE, TRUE)
   context_id <- ids::random_id()
   dat1 <- template_data(root, context_id, config, config$workdir)
-  config$conan_cache <- FALSE
+  config$conan_bootstrap <- FALSE
   dat2 <- template_data(root, context_id, config, config$workdir)
 
-  expect_equal(dat1$conan_root, "T:\\conan\\4.0")
-  expect_null(dat2$conan_root)
-  expect_equal(dat1[names(dat1) != "conan_root"],
-               dat2[names(dat2) != "conan_root"])
+  expect_equal(dat1$conan_path_bootstrap, "T:\\conan\\bootstrap\\4.0")
+  expect_null(dat2$conan_path_bootstrap)
+  expect_equal(dat1[names(dat1) != "conan_path_bootstrap"],
+               dat2[names(dat2) != "conan_path_bootstrap"])
 })
 
 

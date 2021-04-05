@@ -5,7 +5,7 @@ test_that("defaults are sensible", {
     tmp_options_didehpc(),
     didehpc_config_defaults())
   non_null <- c("cluster", "use_workers", "use_rrq", "worker_timeout",
-                "use_java", "conan_cache")
+                "use_java", "conan_bootstrap")
   null <- c("credentials", "home", "temp", "shares", "template", "cores",
             "wholenode", "parallel", "workdir", "r_version", "java_home")
   i <- vlapply(res, is.null)
@@ -15,7 +15,7 @@ test_that("defaults are sensible", {
   expect_false(res$use_workers)
   expect_false(res$use_rrq)
   expect_equal(res$worker_timeout, 600)
-  expect_true(res$conan_cache)
+  expect_true(res$conan_bootstrap)
   expect_false(res$use_java)
 })
 

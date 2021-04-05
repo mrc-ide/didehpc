@@ -13,14 +13,14 @@ example_mounts <- function() {
 }
 
 
-example_config <- function() {
+example_config <- function(...) {
   mounts <- example_mounts()
   workdir <- file.path(example_root, "home", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
   withr::with_options(
     tmp_options_didehpc(),
-    didehpc_config(credentials = "bob", workdir = workdir))
+    didehpc_config(credentials = "bob", workdir = workdir, ...))
 }
 
 
@@ -32,7 +32,7 @@ example_credentials <- function(online = FALSE) {
     }
     dide_credentials(path, TRUE)
   } else {
-    list(username = "bob", password = "secret")
+    dide_credentials(list(username = "bob", password = "secret"), TRUE)
   }
 }
 
