@@ -129,14 +129,6 @@ path_conan_bootstrap <- function(root, r_version) {
 }
 
 
-path_conan_other <- function(root) {
-  base <- file.path(root, "conan")
-  list(bin = file.path(base, "bin"), # must match template
-       log = file.path(base, "log"), # must match template
-       batch = file.path(base, "log"))
-}
-
-
 dide_home <- function(username) {
   assert_scalar_character(username)
   file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username, fsep = "\\")
