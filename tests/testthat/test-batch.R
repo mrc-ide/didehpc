@@ -66,3 +66,19 @@ test_that("can create temp drive if not listed cache", {
   dat2 <- template_data(root, context_id, config, config$workdir)
   expect_equal(dat1, dat2)
 })
+
+
+test_that("Parallel sets CONTEXT_CORES", {
+  config <- example_config()
+  root <- file.path(config$workdir, "context")
+  dir.create(root, FALSE, TRUE)
+  context_id <- ids::random_id()
+  dat1 <- template_data(root, context_id, config, config$workdir)
+
+  config <- example_config(cores = 10)
+  dat2 <- template_data(root, context_id, config, config$workdir)
+
+  expect_null(dat1$parallel)
+  expect_match(dat2$parallel, "CONTEXT_CORES=%CCP_NUMCPUS%")
+  expect_equal(dat1[names(dat1) != "parallel"], dat2[names(dat2) != "parallel"])
+})
