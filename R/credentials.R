@@ -59,9 +59,6 @@ prompt_password <- function(username) {
 
 check_username <- function(username) {
   assert_scalar_character(username)
-  if (file.exists(username)) {
-    username <- read_credentials(credentials, FALSE)$username
-  }
   username <- sub("^DIDE\\\\", "", username)
   if (username == "") {
     stop("Invalid empty username")
