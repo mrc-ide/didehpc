@@ -222,3 +222,51 @@ test_that("workdir must exist", {
       didehpc_config(credentials = "bob", workdir = tempfile()),
       "workdir must be an existing directory"))
 })
+
+
+test_that("config getter requires sensible args", {
+  expect_error(
+    as_didehpc_config("bob"),
+    "Expected a didehpc_config for 'config'")
+})
+
+
+test_that("config getter tries to construct options", {
+  root <- tempfile()
+  workdir <- file.path(root, "home", "sub")
+  config <- example_config()
+  mock_do_call <- mockery::mock(config)
+  mockery::stub(as_didehpc_config, "do.call", mock_do_call)
+  cmp <- withr::with_options(
+    tmp_options_didehpc(),
+    as_didehpc_config(list(credentials = "bob", workdir = workdir)))
+  expect_equal(cmp, config)
+  mockery::expect_called(mock_do_call, 1L)
+  expect_equal(
+    mockery::mock_args(mock_do_call)[[1]],
+    list("didehpc_config", list(credentials = "bob", workdir = workdir)))
+})
+
+
+test_that("Can't use both rrq types", {
+  expect_error(
+    example_config(use_workers = TRUE, use_rrq = TRUE),
+    "You can't specify both use_workers and use_rrq")
+})
+
+
+test_that("java options", {
+  root <- tempfile()
+  cfg1 <- example_config(root = tempfile())
+  expect_false(cfg1$use_java)
+  expect_null(cfg1$java_home)
+
+  cfg2 <- example_config(use_java = TRUE, root = tempfile())
+  expect_true(cfg2$use_java)
+  expect_equal(cfg2$java_home, "")
+
+  cfg3 <- example_config(use_java = TRUE, java_home = "T:/java",
+                         root = tempfile())
+  expect_true(cfg3$use_java)
+  expect_equal(cfg3$java_home, "T:/java")
+})

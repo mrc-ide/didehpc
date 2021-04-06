@@ -151,3 +151,50 @@ test_that("name expansion", {
   expect_error(task_names(ids, nms[-2]),
                "incorrect length names")
 })
+
+
+test_that("task id getter", {
+  id <- ids::random_id()
+  expect_error(task_get_id(1), "Can't determine task id")
+  expect_equal(task_get_id(id), id)
+  expect_equal(
+    task_get_id(structure(list(id = id), class = "queuer_task")), id)
+  expect_equal(
+    task_get_id(structure(list(ids = id), class = "task_bundle")), id)
+})
+
+
+test_that("Can get all context packages", {
+  root <- tempfile()
+  repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  ctx <- context::context_save(root, packages = "foo")
+  expect_equal(context_packages(ctx),
+               list(packages = c("context", "foo"), repos = repos))
+  expect_equal(context_packages(ctx, TRUE),
+               list(packages = c("context", "rrq", "foo"), repos = repos))
+})
+
+
+test_that("Can get all context packages where loaded is used", {
+  root <- tempfile()
+  repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  ctx <- context::context_save(
+    root,
+    packages = list(attached = "foo", loaded = "bar"))
+  expect_equal(context_packages(ctx),
+               list(packages = c("context", "foo", "bar"), repos = repos))
+})
+
+
+test_that("Can include sources", {
+  root <- tempfile()
+  repos <- c(CRAN = "https://cloud.r-project.org",
+             didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  ctx <- context::context_save(
+    root,
+    packages = list(attached = "foo", loaded = "bar"),
+    package_sources = conan::conan_sources("user/foo@ref"))
+  expect_equal(context_packages(ctx),
+               list(packages = c("context", "foo", "bar", "user/foo@ref"),
+                    repos = repos))
+})

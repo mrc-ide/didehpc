@@ -188,11 +188,11 @@ task_get_id <- function(x) {
 
 ## What packages do we need?
 context_packages <- function(context, need_rrq = FALSE) {
-  list(packages = c("context",
-                    if (need_rrq) "rrq",
-                    context$packages$attached,
-                    context$packages$loaded,
-                    context$package_sources$packages),
+  list(packages = unique(c("context",
+                           if (need_rrq) "rrq",
+                           context$packages$attached,
+                           context$packages$loaded,
+                           context$package_sources$packages)),
        repos = c(context$package_sources$repos,
                  didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
 }
