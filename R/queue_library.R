@@ -64,8 +64,7 @@ queue_library <- R6::R6Class(
 
 
 queue_template <- function(cluster) {
-  ## if (cluster == "fi--didemrchnb") "BuildQueue" else "GeneralNodes"
-  "GeneralNodes"
+  if (cluster == "fi--didemrchnb") "BuildQueue" else "GeneralNodes"
 }
 
 
