@@ -50,7 +50,7 @@ queue_library <- R6::R6Class(
       path_batch <- windows_path(file.path(path$path_remote, path$rel))
 
       name <- paste0("conan:", dat$id)
-      job_template <- queue_template(cluster)
+      job_template <- queue_template(self$cluster)
       dide_id <- self$client$submit(path_batch, name, job_template,
                                     self$cluster)
 
