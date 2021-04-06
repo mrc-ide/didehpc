@@ -36,7 +36,7 @@ queue_library <- R6::R6Class(
 
       conan::conan(ret$script, packages, repos = repos, policy = policy,
                    dryrun = dryrun)
-      writeLines(glue_whisker(self$template, list(conan_id = id)),
+      writeLines(glue_whisker(self$data$templates$conan, list(conan_id = id)),
                  batch_local)
       ret
     },

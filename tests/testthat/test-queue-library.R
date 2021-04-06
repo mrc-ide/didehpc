@@ -30,15 +30,16 @@ test_that("Create queue library", {
                list("context", data$paths$local$lib))
 
   ## Really nasty interaction test here:
-  options(error = recover)
   expect_equal(
     obj$provision("context", show_progress = FALSE, show_log = FALSE, poll = 0),
     "COMPLETE")
 
   expect_length(dir(file.path(data$paths$local$conan, "bin")), 1)
   id <- dir(file.path(data$paths$local$conan, "bin"))
-  expect_true(file.exists(
-    file.path(data$paths$local$conan, "batch", paste0(id, ".bat"))))
+  path_batch_local <-
+    file.path(data$paths$local$conan, "batch", paste0(id, ".bat"))
+  expect_true(file.exists(path_batch_local))
+  expect_true(paste0("set CONAN_ID=", id) %in% readLines(path_batch_local))
 
   mockery::expect_called(client$login, 1L)
   mockery::expect_called(client$submit, 1L)
