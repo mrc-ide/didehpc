@@ -259,9 +259,13 @@ as_didehpc_config <- function(config) {
 
 
 ##' @param ... arguments to \code{didehpc_config}
+##'
+##' @param check Logical, inidicating if we should check that the
+##'   configuration object can be created
+##'
 ##' @export
 ##' @rdname didehpc_config
-didehpc_config_global <- function(...) {
+didehpc_config_global <- function(..., check = TRUE) {
   opts <- list(...)
   if (length(opts) > 0L) {
     nms <- names(opts)
@@ -275,7 +279,7 @@ didehpc_config_global <- function(...) {
     names(opts) <- paste0("didehpc.", nms)
     oo <- options(opts)
     on.exit(options(oo))
-    if (!all(vlapply(opts, is.null))) {
+    if (check && !all(vlapply(opts, is.null))) {
       ## check that we're ok, if we actually set anything.
       tmp <- didehpc_config()
     }

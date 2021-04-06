@@ -25,7 +25,7 @@ didehpc_config(
   java_home = NULL
 )
 
-didehpc_config_global(...)
+didehpc_config_global(..., check = TRUE)
 }
 \arguments{
 \item{credentials}{Either a list with elements username, password,
@@ -135,6 +135,9 @@ the use_java logical is true. If left blank, then the
 default cluster Java Runtime Environment will be used.}
 
 \item{...}{arguments to \code{didehpc_config}}
+
+\item{check}{Logical, inidicating if we should check that the
+configuration object can be created}
 }
 \description{
 Collects configuration information.  Unfortunately there's a

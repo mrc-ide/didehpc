@@ -270,3 +270,25 @@ test_that("java options", {
   expect_true(cfg3$use_java)
   expect_equal(cfg3$java_home, "T:/java")
 })
+
+
+test_that("Global options", {
+  opts <- options()
+  on.exit(options(opts))
+  expect_equal(didehpc_config_global(), list())
+  expect_error(didehpc_config_global("user"),
+               "All options must be named")
+  expect_error(didehpc_config_global(credentials = "user", unknown = 2),
+               "Unknown options: unknown")
+  expect_equal(options(), opts)
+
+  withr::with_options(list(didehpc.credentials = "alice"), {
+    res <- didehpc_config_global(credentials = "bob", check = FALSE)
+    expect_equal(res$didehpc.credentials, "alice")
+    expect_equal(getOption("didehpc.credentials"), "bob")
+    expect_error(
+      didehpc_config_global(credentials = "charlie", check = TRUE),
+      "I can't find your home directory!  Please mount it")
+    expect_equal(getOption("didehpc.credentials"), "bob")
+  })
+})

@@ -26,6 +26,7 @@ Client for the DIDE cluster web interface.
 \item \href{#method-status_job}{\code{web_client$status_job()}}
 \item \href{#method-load_node}{\code{web_client$load_node()}}
 \item \href{#method-load_overall}{\code{web_client$load_overall()}}
+\item \href{#method-load_show}{\code{web_client$load_show()}}
 \item \href{#method-headnodes}{\code{web_client$headnodes()}}
 \item \href{#method-r_versions}{\code{web_client$r_versions()}}
 \item \href{#method-api_client}{\code{web_client$api_client()}}
@@ -273,10 +274,33 @@ the value given when creating the client.}
 \subsection{Method \code{load_overall()}}{
 Return an overal measure of cluster use, one
 entry per cluster that you have access to.
+Helper function; wraps around \code{load_overall} and \code{load_node} and
+always shows the output.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{web_client$load_overall()}\if{html}{\out{</div>}}
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-load_show"></a>}}
+\if{latex}{\out{\hypertarget{method-load_show}{}}}
+\subsection{Method \code{load_show()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{web_client$load_show(cluster = NULL, nodes = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{cluster}}{Cluster to show; if \code{TRUE} show the entire cluster
+(via \code{load_overall}), if \code{NULL} defaults to the value given when
+creating the client.defaults to the cluster specified when the queue
+was created.}
+
+\item{\code{nodes}}{Show the nodes when printing}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-headnodes"></a>}}
