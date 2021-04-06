@@ -97,7 +97,9 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       if (complete && policy == "lazy") {
         return()
       }
+      message("Running installation script on cluster")
       private$lib$provision(packages, repos, policy, dryrun)
+      message("Done!")
     }
   ),
 
