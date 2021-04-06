@@ -1,3 +1,4 @@
+## TODO: eliminate this shared path - search for example_root in tests
 example_root <- tempfile()
 for (p in file.path(example_root, c("other", "home", "proj", "temp"), "sub")) {
   dir.create(p, FALSE, TRUE)

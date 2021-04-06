@@ -171,6 +171,24 @@ web_client <- R6::R6Class(
       client_parse_load_overall(dat)
     },
 
+    ##' Helper function; wraps around `load_overall` and `load_node` and
+    ##' always shows the output.
+    ##'
+    ##' @param cluster Cluster to show; if `TRUE` show the entire cluster
+    ##'   (via `load_overall`), if `NULL` defaults to the value given when
+    ##'   creating the client.defaults to the cluster specified when the queue
+    ##'   was created.
+    ##'
+    ##' @param nodes Show the nodes when printing
+    load_show = function(cluster = NULL, nodes = TRUE) {
+      if (isTRUE(cluster)) {
+        print(self$load_overall())
+      } else {
+        print(self$load_node(cluster %||% self$cluster),
+              nodes = nodes)
+      }
+    },
+
     ##' @description Return a vector of known cluster headnodes. Typically
     ##'   [didehpc::valid_clusters()] will be faster. This endpoint can
     ##'   be used as a relativelyly fast "ping" to check that you are

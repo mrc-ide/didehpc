@@ -16,8 +16,7 @@
 ##' @export
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE) {
-  login <- provision <- initialise
-  .R6_queue_didehpc$new(context, config, root, initialise, login, provision)
+  .R6_queue_didehpc$new(context, config, root, initialise)
 }
 
 .R6_queue_didehpc <- R6::R6Class(
@@ -26,31 +25,25 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
   public = list(
     config = NULL,
     client = NULL,
-    data = NULL,
-    workers = NULL,
 
-    initialize = function(context, config, root, initialise, login, provision) {
+    initialize = function(context, config, root, initialise, client = NULL) {
       super$initialize(context, root, initialise)
       self$config <- as_didehpc_config(config)
 
       path_root <- self$context$root$path
-      self$data <- batch_data(path_root, self$context$id, self$config)
+      private$data <- batch_data(path_root, self$context$id, self$config)
 
-      ## These are useful later
-      dir.create(path_batch(path_root), FALSE, TRUE)
-      dir.create(path_logs(path_root), FALSE, TRUE)
-
-      self$client <- web_client$new(self$config$credentials,
-                                    self$config$cluster,
-                                    FALSE)
+      if (is.null(client)) {
+        client <- web_client$new(self$config$credentials,
+                                 self$config$cluster,
+                                 initialise)
+      }
+      self$client <- client
 
       private$lib <- queue_library$new(
-        self$data, self$config$cluster, self$client)
+        private$data, self$config$cluster, self$client)
 
-      if (login) {
-        self$login()
-      }
-      if (provision) {
+      if (initialise) {
         self$provision_context("lazy")
       }
     },
@@ -60,47 +53,40 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     cluster_load = function(cluster = NULL, nodes = TRUE) {
-      if (isTRUE(cluster)) {
-        print(self$client$load_overall())
-      } else {
-        print(self$client$load_node(cluster %||% self$config$cluster),
-              nodes = nodes)
-      }
+      self$client$load_show(cluster, nodes)
     },
 
     task_status_dide = function(task_ids = NULL) {
-      self$login(FALSE)
       task_status_dide(self, task_ids)
     },
 
     submit = function(task_ids, names = NULL) {
       if (!private$provisioned) {
-        self$provision_context("lazy")
+        stop("Queue is not provisioned; run '$provision_library()'")
       }
-      submit_dide(obj, task_ids, names)
+      submit_dide(self, private$data, task_ids, names)
     },
 
-    unsubmit = function(t) {
-      unsubmit_dide(obj, task_ids)
+    unsubmit = function(task_ids) {
+      unsubmit_dide(self, task_ids) # TODO: used to map to id here
     },
 
     dide_id = function(t) {
-      task_ids <- task_get_id(t, self)
-      db <- self$db
-      db$mget(task_ids, "dide_id")
-      setNames(vcapply(task_ids, db$get, "dide_id"), names(task_ids))
+      task_ids <- task_get_id(t)
+      self$db$mget(task_ids, "dide_id")
+      setNames(vcapply(task_ids, self$db$get, "dide_id"), names(task_ids))
     },
 
     dide_log = function(t) {
-      dide_task_id <- self$dide_id(t)
-      assert_scalar_character(dide_task_id, "task_id")
+      dide_id <- self$dide_id(t)
+      assert_scalar_character(dide_id, "task_id")
       cluster <- self$db$get(task_get_id(t), "dide_cluster")
       self$client$log(dide_id, cluster)
     },
 
     provision_context = function(policy = "lazy", dryrun = FALSE) {
-      need_rrq <- self$config$use_rrq || self$config$use_workers
-      dat <- context_packages(self$context, need_rrq)
+      dat <- context_packages(self$context,
+                              self$config$use_rrq || self$config$use_workers)
       self$install_packages(dat$packages, dat$repos, policy, dryrun)
       private$provisioned <- TRUE
     },
@@ -117,17 +103,17 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
   private = list(
     lib = NULL,
-    provisioned = NULL
+    data = NULL,
+    provisioned = FALSE
   ))
 
 
-submit_dide <- function(obj, task_ids, names) {
+submit_dide <- function(obj, data, task_ids, names) {
   db <- obj$db
   root <- obj$context$root$path
   config <- obj$config
   client <- obj$client
-  data <- obj$data
-  batch_template <- obj$data$templates$runner
+  batch_template <- data$templates$runner
 
   if (is.null(names)) {
     names <- setNames(task_ids, task_ids)
@@ -143,13 +129,12 @@ submit_dide <- function(obj, task_ids, names) {
   resource_type <- config$resource$type
   resource_count <- config$resource$count
 
-  browser()
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface as we do not get
   ## access to multiple names via the form.
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
   dir.create(data$paths$local$batch, FALSE, TRUE)
-  dir.create(data$paths$local$logs, FALSE, TRUE)
+  dir.create(data$paths$local$log, FALSE, TRUE)
   for (id in task_ids) {
     base <- paste0(id, ".bat")
     batch <- file.path(data$paths$local$batch, base)
@@ -193,17 +178,13 @@ unsubmit_dide <- function(obj, task_ids) {
 }
 
 
-## A helper function that will probably move into queue_base
-task_get_id <- function(x, obj = NULL) {
+task_get_id <- function(x) {
   if (inherits(x, "queuer_task")) {
     task_ids <- x$id
   } else if (inherits(x, "task_bundle")) {
     task_ids <- x$ids
   } else if (is.character(x)) {
     task_ids <- x
-  } else if (is.null(x) && is.recursive(obj) && is.function(obj$task_list)) {
-    task_ids <- obj$task_list()
-    names(task_ids) <- task_ids
   } else {
     stop("Can't determine task id")
   }
