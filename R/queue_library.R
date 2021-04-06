@@ -43,7 +43,8 @@ queue_library <- R6::R6Class(
     provision = function(packages, repos = NULL, policy = "upgrade",
                          dryrun = FALSE,
                          show_progress = TRUE, show_log = TRUE) {
-      self$client$login()
+      client <- self$client
+      client$login()
       dat <- self$write_batch(packages, repos, policy, dryrun)
 
       path <- prepare_path(dat$batch, self$shares)
@@ -51,8 +52,7 @@ queue_library <- R6::R6Class(
 
       name <- paste0("conan:", dat$id)
       job_template <- queue_template(self$cluster)
-      dide_id <- self$client$submit(path_batch, name, job_template,
-                                    self$cluster)
+      dide_id <- client$submit(path_batch, name, job_template, self$cluster)
 
       conan::conan_watch(
         function() client$status_job(dide_id, cluster),
@@ -63,7 +63,7 @@ queue_library <- R6::R6Class(
 
 
 queue_template <- function(cluster) {
-  ## if (cluster == "fi--didemrchnb") "BuildNodes" else "GeneralNodes"
+  ## if (cluster == "fi--didemrchnb") "BuildQueue" else "GeneralNodes"
   "GeneralNodes"
 }
 
