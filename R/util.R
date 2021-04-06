@@ -155,3 +155,8 @@ glue_whisker <- function(template, data) {
   glue::glue(template, .envir = data, .open = "{{", .close = "}}",
              .trim = FALSE, .transformer = transformer)
 }
+
+
+data_frame <- function(...) {
+  data.frame(..., stringsAsFactors = FALSE)
+}

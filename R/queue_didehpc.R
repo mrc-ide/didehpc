@@ -56,8 +56,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       self$client$load_show(cluster, nodes)
     },
 
-    task_status_dide = function(task_ids = NULL) {
-      task_status_dide(self, task_ids)
+    reconcile = function(task_ids = NULL) {
+      reconcile(self, task_ids)
     },
 
     submit = function(task_ids, names = NULL) {

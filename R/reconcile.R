@@ -6,14 +6,15 @@
 ##  RUNNING  ERROR   -> failure that we can't catch -> update to ERROR
 ##  RUNNING  COMPLETE -> probable failure that has not been caught -> ERROR
 ##  RUNNING  CANCELLED -> was running, manually cancelled -> update to CANCELLED
-task_status_dide <- function(obj, task_ids = NULL) {
-  dat <- task_status_dide_compare(obj, task_ids)
-  task_status_dide_update(obj, dat)
-  task_status_dide_report(dat)
+reconcile <- function(obj, task_ids = NULL) {
+  dat <- reconcile_compare(obj, task_ids)
+  reconcile_update(dat, obj$db)
+  reconcile_report(dat)
   invisible(dat)
 }
 
-task_status_dide_compare <- function(obj, task_ids = NULL) {
+
+reconcile_compare <- function(obj, task_ids = NULL) {
   status_check <- c("PENDING", "RUNNING")
 
   if (is.null(task_ids)) {
@@ -23,9 +24,9 @@ task_status_dide_compare <- function(obj, task_ids = NULL) {
   db <- obj$db
   i <- st_ctx %in% status_check
   if (!any(i)) {
-    return(data.frame(id = character(0), old = character(0), hpc = character(0),
-                      new = character(0), stringsAsFactors = FALSE))
+    return(NULL)
   }
+
   ## Filter these down to interesting ones:
   task_ids <- task_ids[i]
   st_ctx <- st_ctx[i]
@@ -38,16 +39,14 @@ task_status_dide_compare <- function(obj, task_ids = NULL) {
   message("  ...done")
 
   i <- match(task_ids, dat$name)
-  if (any(is.na(i))) {
-    stop("Did not find information on tasks: ",
-         paste(task_ids[is.na(i)], collapse = ", "))
-  }
   st_hpc <- dat$status[i]
-  st_new <- dat$status[i]
+
+  ## Any missing tasks we'll set to missing
+  st_hpc[is.na(i)] <- "MISSING"
 
   ## Need to do one additional check here, in the unlikely chance that
   ## the task completes as we run the (fairly slow) jobstatus command.
-  i <- st_hpc == "COMPLETE" & st_ctx %in% status_check
+  i <- st_hpc == "COMPLETE" & st_hpc != st_ctx
   if (any(i)) {
     check <- obj$task_status(task_ids[i])
     j <- !(check %in% status_check)
@@ -58,19 +57,21 @@ task_status_dide_compare <- function(obj, task_ids = NULL) {
       st_hpc <- st_hpc[-drop]
     }
   }
-  ## These are not graceful exits, though they're hard to do without
-  ## being malicious.
-  st_new[st_hpc == "COMPLETE"] <- "ERROR"
-  data.frame(id = unname(task_ids),
-             old = unname(st_ctx),
-             hpc = unname(st_hpc),
-             new = unname(st_new),
-             stringsAsFactors = FALSE)
 
+  st_new <- st_hpc
+  st_new[st_hpc %in% c("COMPLETE", "MISSING")] <- "ERROR"
+
+  data_frame(id = unname(task_ids), # task id
+             old = unname(st_ctx),  # status known to context
+             hpc = unname(st_hpc),  # status reported by cluster
+             new = unname(st_new))  # status we will update to
 }
 
-task_status_dide_update <- function(obj, dat) {
-  db <- obj$db
+
+reconcile_update <- function(dat, db) {
+  if (NROW(dat) == 0) {
+    return(NULL)
+  }
 
   id_error <- dat$id[dat$new == "ERROR"]
   n_error <- length(id_error)
@@ -91,44 +92,33 @@ task_status_dide_update <- function(obj, dat) {
                     paste(id_cancelled, collapse = ", ")))
     db$mset(id_cancelled, rep("CANCELLED", n_cancelled), "task_status")
   }
+
+  invisible()
 }
 
-task_status_dide_report <- function(dat) {
-  if (nrow(dat) == 0L) {
+reconcile_report <- function(dat) {
+  if (NROW(dat) == 0L) {
     message("All job statuses look accurate")
     return()
   }
 
-  id <- dat$id
-  ctx <- dat$old
-  hpc <- dat$hpc
-
-  i <- hpc == "ERROR" & ctx == "PENDING"
-  if (any(i)) {
-    message("Tasks have failed while context booting:\n",
-            paste(sprintf("\t- %s", id[i]), collapse = "\n"))
+  explain <- function(i, msg) {
+    if (any(i)) {
+      ids <- paste(sprintf("  - %s", dat$id[i]), collapse = "\n")
+      message(sprintf("%s:\n%s", msg, ids))
+    }
   }
 
-  i <- hpc == "ERROR" & ctx == "RUNNING"
-  if (any(i)) {
-    message("Tasks have crashed after starting:\n",
-            paste(sprintf("\t- %s", id[i]), collapse = "\n"))
-  }
-
-  i <- hpc == "COMPLETE"
-  if (any(i)) {
-    message("Tasks have started un cluster, unexpectedly stopped:\n",
-            paste(sprintf("\t- %s", id[i]), collapse = "\n"))
-  }
-
-  i <- hpc == "CANCELLED" & ctx == "PENDING"
-  if (any(i)) {
-    message("Tasks cancelled before starting:\n",
-            paste(sprintf("\t- %s", id[i]), collapse = "\n"))
-  }
-  i <- hpc == "CANCELLED" & ctx == "RUNNING"
-  if (any(i)) {
-    message("Tasks cancelled after starting:\n",
-            paste(sprintf("\t- %s", id[i]), collapse = "\n"))
-  }
+  explain(dat$hpc == "ERROR" & dat$old == "PENDING",
+          "Tasks have failed while context booting")
+  explain(dat$hpc == "ERROR" & dat$old == "RUNNING",
+          "Tasks have crashed after starting")
+  explain(dat$hpc == "MISSING",
+          "Tasks have gone missing on the cluster")
+  explain(dat$hpc == "COMPLETE",
+          "Tasks have started on cluster, unexpectedly stopped")
+  explain(dat$hpc == "CANCELLED" & dat$old == "PENDING",
+          "Tasks cancelled before starting")
+  explain(dat$hpc == "CANCELLED" & dat$old == "RUNNING",
+          "Tasks cancelled after starting")
 }

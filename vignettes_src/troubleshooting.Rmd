@@ -236,7 +236,7 @@ it was wrong!)
 You can also update any incorrect statuses by running:
 
 ```{r}
-obj$task_status_dide()
+obj$reconcile()
 ```
 
 Which will print information about anything that was adjusted.
