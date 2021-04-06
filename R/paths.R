@@ -119,7 +119,7 @@ path_worker_logs <- function(root, id = NULL) {
 
 path_library <- function(root, r_version) {
   version_str <- as.character(r_version[1, 1:2])
-  file.path(root, "lib", "windows", version_str)
+  file_path(root, "lib", "windows", version_str)
 }
 
 

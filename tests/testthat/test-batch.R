@@ -26,6 +26,23 @@ test_that("Create templates", {
 })
 
 
+test_that("Can create path and template data", {
+  config <- example_config()
+  root <- file.path(config$workdir, "context")
+  dir.create(root, FALSE, TRUE)
+  context_id <- ids::random_id()
+  dat <- batch_data(root, context_id, config)
+  expect_setequal(names(dat), c("templates", "paths"))
+  expect_equal(dat$templates,
+               batch_templates(root, context_id, config, config$workdir))
+  expect_setequal(names(dat$paths), c("local", "remote"))
+  expect_equal(names(dat$paths$remote), names(dat$paths$local))
+
+  expect_setequal(names(dat$paths$local),
+                  c("root", "conan", "batch", "lib", "log", "workdir"))
+})
+
+
 test_that("batch data creates entries for share drives", {
   config <- example_config(r_version = numeric_version("4.0.3"))
   root <- file.path(config$workdir, "context")

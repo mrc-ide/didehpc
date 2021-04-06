@@ -34,7 +34,7 @@ task_status_dide_compare <- function(obj, task_ids = NULL) {
   ## possible that by filtering to exclude "Complete" we could do
   ## better here but the logic is really hairy.
   message("Fetching job status from the cluster...")
-  dat <- didehpc_jobstatus(obj$config)
+  dat <- obj$client$status_user(obj$config$cluster)
   message("  ...done")
 
   i <- match(task_ids, dat$name)

@@ -136,6 +136,13 @@
 ##'   by sending the \code{TIMEOUT_SET} message (proper documentation
 ##'   will come for this soon).
 ##'
+##' @param conan_bootstrap Logical, indicating if we should use the
+##'   shared conan "bootstrap" library stored on the temporary
+##'   directory. Setting this to `FALSE` will install all dependencies
+##'   required to install packages first into a temporary location
+##'   (this may take a few minutes) before installation. Generally
+##'   leave this as-is.
+##'
 ##' @param r_version A string, or \code{numeric_version} object,
 ##'   describing the R version required.  Not all R versions are known
 ##'   to be supported, so this will check against a list of installed

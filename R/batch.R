@@ -1,14 +1,3 @@
-write_batch <- function(id, root, template, dat) {
-  filename <- path_batch(root, id)
-  dir.create(dirname(filename), FALSE, TRUE)
-  if (!file.exists(filename)) {
-    ## This is for debugging - allowing me to edit the batch files and
-    ## relaunch without overwriting.
-    writeLines(glue_whisker(template, dat), filename)
-  }
-  filename
-}
-
 read_templates <- function() {
   path <- system.file(package = "didehpc")
   re <- "^template_(.*)\\.bat$"
@@ -99,4 +88,30 @@ batch_templates <- function(context_root, context_id, config, workdir) {
   templates <- read_templates()
   lapply(templates, function(x)
     drop_blank(glue_whisker(x, dat)))
+}
+
+
+## The batch files make reference to many paths, which need to be
+## consistent. We'll try and collect them here.
+batch_data <- function(context_root, context_id, config) {
+  workdir <- config$workdir
+  templates <- batch_templates(context_root, context_id, config, workdir)
+  context_root_remote <- remote_path(context_root, config$shares)
+
+  paths_tail <- list(
+    root = NULL,
+    conan = "conan",
+    batch = "batch",
+    lib = path_library(NULL, config$r_version),
+    log = path_logs(NULL))
+
+  paths <- list(
+    local = lapply(paths_tail, function(x)
+      file_path(context_root, x)),
+    remote = lapply(paths_tail, function(x)
+      windows_path(file_path(context_root_remote, x))))
+  paths$local$workdir <- workdir
+  paths$remote$workdir <- remote_path(workdir, config$shares)
+
+  list(templates = templates, paths = paths)
 }

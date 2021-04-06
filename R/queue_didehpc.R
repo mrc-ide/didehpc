@@ -22,21 +22,19 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
 .R6_queue_didehpc <- R6::R6Class(
   "queue_didehpc",
-  ## TODO: this needs exporting properly at some point.
   inherit = queuer:::R6_queue_base,
   public = list(
     config = NULL,
     client = NULL,
-    templates = NULL,
+    data = NULL,
     workers = NULL,
 
     initialize = function(context, config, root, initialise, login, provision) {
       super$initialize(context, root, initialise)
       self$config <- as_didehpc_config(config)
 
-      ## Will throw if the context is not network accessible.
       path_root <- self$context$root$path
-      prepare_path(path_root, config$shares)
+      self$data <- batch_data(path_root, self$context$id, self$config)
 
       ## These are useful later
       dir.create(path_batch(path_root), FALSE, TRUE)
@@ -46,18 +44,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                                     self$config$cluster,
                                     FALSE)
 
-      workdir <- self$config$workdir %||% self$workdir
-      self$templates <- batch_templates(path_root, self$context$id,
-                                        self$config, workdir)
-
-      ## We may tidy this up as it's quite a long call
       private$lib <- queue_library$new(
-        path_library(self$context$root$path, self$config$r_version),
-        file.path(self$context$root$path, "conan"),
-        self$config$shares,
-        self$templates$conan,
-        self$config$cluster,
-        self$client)
+        self$data, self$config$cluster, self$client)
 
       if (login) {
         self$login()
@@ -138,7 +126,8 @@ submit_dide <- function(obj, task_ids, names) {
   root <- obj$context$root$path
   config <- obj$config
   client <- obj$client
-  batch_template <- obj$templates$runner
+  data <- obj$data
+  batch_template <- obj$data$templates$runner
 
   if (is.null(names)) {
     names <- setNames(task_ids, task_ids)
@@ -149,20 +138,25 @@ submit_dide <- function(obj, task_ids, names) {
   }
 
   ## Will be shared across all jobs submitted
-  template <- config$template
+  job_template <- config$template
   cluster <- config$cluster
   resource_type <- config$resource$type
   resource_count <- config$resource$count
 
+  browser()
   ## TODO: in theory this can be done in bulk on the cluster but it
   ## requires some support on the web interface as we do not get
   ## access to multiple names via the form.
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "submitting ")
+  dir.create(data$paths$local$batch, FALSE, TRUE)
+  dir.create(data$paths$local$logs, FALSE, TRUE)
   for (id in task_ids) {
-    batch <- write_batch(id, root, batch_template, list(task_id = id))
-    path <- remote_path(batch, config$shares)
+    base <- paste0(id, ".bat")
+    batch <- file.path(data$paths$local$batch, base)
+    writeLines(glue_whisker(batch_template, list(task_id = id)), batch)
+    path <- windows_path(file.path(data$paths$remote$batch, base))
     p()
-    dide_id <- client$submit(path, names[[id]], template, cluster,
+    dide_id <- client$submit(path, names[[id]], job_template, cluster,
                              resource_type, resource_count)
     db$set(id, dide_id, "dide_id")
     db$set(id, config$cluster, "dide_cluster")
@@ -214,4 +208,16 @@ task_get_id <- function(x, obj = NULL) {
     stop("Can't determine task id")
   }
   task_ids
+}
+
+
+## What packages do we need?
+context_packages <- function(context, need_rrq = FALSE) {
+  list(packages = c("context",
+                    if (need_rrq) "rrq",
+                    context$packages$attached,
+                    context$packages$loaded,
+                    context$package_sources$packages),
+       repos = c(context$package_sources$repos,
+                 didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
 }
