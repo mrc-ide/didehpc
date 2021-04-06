@@ -94,7 +94,9 @@ batch_templates <- function(context_root, context_id, config, workdir) {
 ## The batch files make reference to many paths, which need to be
 ## consistent. We'll try and collect them here.
 batch_data <- function(context_root, context_id, config) {
-  workdir <- config$workdir
+  ## TODO: We need to get to the bottom of what workdir was originally
+  ## for!
+  workdir <- config$workdir %||% getwd()
   templates <- batch_templates(context_root, context_id, config, workdir)
   context_root_remote <- remote_path(context_root, config$shares)
 
