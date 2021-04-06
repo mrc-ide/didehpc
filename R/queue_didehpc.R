@@ -17,7 +17,7 @@
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE) {
   login <- provision <- initialise
-  .R6_queue_didehpc$new(context, config, root, login, provision)
+  .R6_queue_didehpc$new(context, config, root, initialise, login, provision)
 }
 
 .R6_queue_didehpc <- R6::R6Class(
@@ -30,7 +30,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     templates = NULL,
     workers = NULL,
 
-    initialize = function(context, config, root, login, provision) {
+    initialize = function(context, config, root, initialise, login, provision) {
       super$initialize(context, root, initialise)
       self$config <- as_didehpc_config(config)
 
