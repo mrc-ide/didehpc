@@ -160,31 +160,34 @@ test_that("wmic_call copes with command and parse errors", {
 
 
 test_that("Can auto-detect home", {
-  mounts <- example_mounts()
+  root <- tempfile()
+  mounts <- example_mounts(root)
   res <- dide_detect_mount_home(NULL, mounts, "bob")
   expect_equal(res$name, "home")
-  expect_equal(res$path_local, file.path(example_root, "home"))
+  expect_equal(res$path_local, file.path(root, "home"))
   expect_equal(res$path_remote, "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
   expect_equal(res$drive_remote, "Q:")
 })
 
 
 test_that("Can fall-back onto default drive if requested", {
-  mounts <- example_mounts()
-  home <- file.path(example_root, "home")
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  home <- file.path(root, "home")
   res <- dide_detect_mount_home(home, mounts, "bob")
   expect_equal(res, dide_detect_mount_home(NULL, mounts, "bob"))
 })
 
 
 test_that("Can leave home unmounted", {
-  mounts <- example_mounts()
+  mounts <- example_mounts(tempfile())
   expect_null(dide_detect_mount_home(FALSE, mounts, "bob"))
 })
 
 
 test_that("Fail to auto-detect home if ambiguous or impossible", {
-  mounts <- example_mounts()
+  root <- tempfile()
+  mounts <- example_mounts(root)
   expect_error(
     dide_detect_mount_home(NULL, mounts[1, , drop = FALSE], "bob"),
     "I can't find your home directory!  Please mount it")
@@ -198,25 +201,27 @@ test_that("Fail to auto-detect home if ambiguous or impossible", {
 
 
 test_that("Autodetect temp", {
-  mounts <- example_mounts()
+  root <- tempfile()
+  mounts <- example_mounts(root)
   res <- dide_detect_mount_temp(NULL, mounts)
   expect_equal(res$name, "temp")
-  expect_equal(res$path_local, file.path(example_root, "temp"))
+  expect_equal(res$path_local, file.path(root, "temp"))
   expect_equal(res$path_remote, "\\\\fi--didef3.dide.ic.ac.uk\\tmp")
   expect_equal(res$drive_remote, "T:")
 })
 
 
 test_that("Can fall-back onto default drive if requested", {
-  mounts <- example_mounts()
-  temp <- file.path(example_root, "temp")
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  temp <- file.path(root, "temp")
   res <- dide_detect_mount_temp(temp, mounts)
   expect_equal(res, dide_detect_mount_temp(NULL, mounts))
 })
 
 
 test_that("Fail to auto-detect temp if ambiguous or impossible", {
-  mounts <- example_mounts()
+  mounts <- example_mounts(tempfile())
   expect_null(
     dide_detect_mount_temp(NULL, mounts[1, , drop = FALSE]))
   expect_error(
@@ -229,30 +234,31 @@ test_that("Fail to auto-detect temp if ambiguous or impossible", {
 
 
 test_that("dide_detect_mount", {
-  mounts <- example_mounts()
+  root <- tempfile()
+  mounts <- example_mounts(root)
   expect_message(
     res <- dide_detect_mount(mounts, NULL, NULL, NULL, NULL, NULL, FALSE),
     "Running out of place: .+ is not on a network share")
 
   ## If we've already told it we'll be working within a drive, all is ok
-  workdir <- file.path(example_root, "home", "path")
+  workdir <- file.path(root, "home", "path")
   expect_silent(
     res2 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE))
   expect_equal(res2, res)
 
   ## If we are working within a drive we never explicitly mounted,
   ## let's mount that
-  workdir <- file.path(example_root, "proj", "sub")
+  workdir <- file.path(root, "proj", "sub")
   res3 <- dide_detect_mount(mounts, NULL, NULL, NULL, workdir, NULL, FALSE)
   expect_equal(res3[1:2], res)
   expect_length(res3, 3)
   expect_s3_class(res3$workdir, "path_mapping")
-  expect_equal(res3$workdir$path_local, file.path(example_root, "proj"))
+  expect_equal(res3$workdir$path_local, file.path(root, "proj"))
   expect_equal(res3$workdir$path_remote,
                "\\\\fi--didenas1.dide.ic.ac.uk\\Project")
 
   ## This will only be ambiguous rarely by this point:
-  workdir <- file.path(example_root, "proj", "sub")
+  workdir <- file.path(root, "proj", "sub")
   expect_error(
     dide_detect_mount_find_workdir(res, workdir, mounts[c(1:4, 1:4), ]),
     "Having trouble determining the working directory mount point")
@@ -269,7 +275,7 @@ test_that("Find an available drive", {
 
 
 test_that("Validate additional shares", {
-  mounts <- example_mounts()
+  mounts <- example_mounts(tempfile())
   shares <- Map(path_mapping,
                 c("other", "home", "project", "temp"),
                 mounts[, "local"],
@@ -285,7 +291,7 @@ test_that("Validate additional shares", {
 
 
 test_that("Prevent duplicated drives", {
-  mounts <- example_mounts()
+  mounts <- example_mounts(tempfile())
   shares <- Map(path_mapping,
                 c("other", "project"),
                 mounts[c(1, 3), "local"],
@@ -298,7 +304,7 @@ test_that("Prevent duplicated drives", {
 
 
 test_that("Remap nas", {
-  mounts <- example_mounts()
+  mounts <- example_mounts(tempfile())
   shares <- Map(path_mapping,
                 c("other", "project"),
                 mounts[c(1, 3), "local"],

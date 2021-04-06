@@ -167,8 +167,9 @@ test_that("Select a sensible r version", {
 
 
 test_that("Build config", {
-  mounts <- example_mounts()
-  workdir <- file.path(example_root, "home", "sub")
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  workdir <- file.path(root, "home", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
   cfg <- withr::with_options(
@@ -189,8 +190,9 @@ test_that("Build config", {
 
 
 test_that("Build config", {
-  mounts <- example_mounts()
-  workdir <- file.path(example_root, "home", "sub")
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  workdir <- file.path(root, "home", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
   cfg <- withr::with_options(
@@ -209,8 +211,9 @@ test_that("Build config", {
 
 
 test_that("workdir must exist", {
-  mounts <- example_mounts()
-  workdir <- file.path(example_root, "home", "sub")
+  root <- tempfile()
+  mounts <- example_mounts(root)
+  workdir <- file.path(root, "home", "sub")
   mock_detect_mount <- mockery::mock(mounts)
   mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
   withr::with_options(

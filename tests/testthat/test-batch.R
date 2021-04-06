@@ -92,7 +92,8 @@ test_that("Parallel sets CONTEXT_CORES", {
   context_id <- ids::random_id()
   dat1 <- template_data(root, context_id, config, config$workdir)
 
-  config <- example_config(cores = 10)
+  config <- example_config(cores = 10,
+                           root = dirname(config$shares$home$path_local))
   dat2 <- template_data(root, context_id, config, config$workdir)
 
   expect_null(dat1$parallel)
