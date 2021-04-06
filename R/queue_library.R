@@ -57,7 +57,7 @@ queue_library <- R6::R6Class(
 
       conan::conan_watch(
         function() client$status_job(dide_id, cluster),
-        function() readlines_if_exists(dat$path_log, warn = FALSE),
+        function() readlines_if_exists(dat$log, warn = FALSE),
         show_progress, show_log)
     }
   ))

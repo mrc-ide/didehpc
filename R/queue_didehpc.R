@@ -63,7 +63,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         self$login()
       }
       if (provision) {
-        self$provision_context("skip")
+        self$provision_context("lazy")
       }
     },
 
@@ -87,7 +87,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     submit = function(task_ids, names = NULL) {
       if (!private$provisioned) {
-        self$provision_context("skip")
+        self$provision_context("lazy")
       }
       submit_dide(obj, task_ids, names)
     },
@@ -110,7 +110,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       self$client$log(dide_id, cluster)
     },
 
-    provision_context = function(policy = "skip", dryrun = FALSE) {
+    provision_context = function(policy = "lazy", dryrun = FALSE) {
       need_rrq <- self$config$use_rrq || self$config$use_workers
       dat <- context_packages(self$context, need_rrq)
       self$install_packages(dat$packages, dat$repos, policy, dryrun)
@@ -118,9 +118,9 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     install_packages = function(packages, repos = NULL,
-                                policy = "skip", dryrun = FALSE) {
+                                policy = "lazy", dryrun = FALSE) {
       complete <- private$lib$check(packages)$complete
-      if (complete && policy == "skip") {
+      if (complete && policy == "lazy") {
         return()
       }
       private$lib$provision(packages, repos, policy, dryrun)
