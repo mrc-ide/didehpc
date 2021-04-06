@@ -25,7 +25,6 @@ modify_list <- function(x, val, name = deparse(substitute(val))) {
   if (length(extra) > 0L) {
     stop(sprintf("Unknown elements in %s: %s",
                     name, paste(extra, collapse = ", ")))
-    val <- val[setdiff(names(val), extra)]
   }
   modifyList(x, val)
 }

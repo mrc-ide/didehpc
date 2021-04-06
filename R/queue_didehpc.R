@@ -115,13 +115,7 @@ submit_dide <- function(obj, data, task_ids, names) {
   client <- obj$client
   batch_template <- data$templates$runner
 
-  if (is.null(names)) {
-    names <- setNames(task_ids, task_ids)
-  } else if (length(names) == length(task_ids)) {
-    names <- setNames(sprintf("%s (%s)", names, task_ids), task_ids)
-  } else {
-    stop("incorrect length names")
-  }
+  names <- setNames(task_names(task_ids, names), task_ids)
 
   ## Will be shared across all jobs submitted
   job_template <- config$template
@@ -201,4 +195,16 @@ context_packages <- function(context, need_rrq = FALSE) {
                     context$package_sources$packages),
        repos = c(context$package_sources$repos,
                  didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
+}
+
+
+task_names <- function(task_ids, names) {
+  if (is.null(names)) {
+    names <- task_ids
+  } else if (length(names) == length(task_ids)) {
+    names <- sprintf("%s (%s)", names, task_ids)
+  } else {
+    stop("incorrect length names")
+  }
+  names
 }

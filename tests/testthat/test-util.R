@@ -64,3 +64,51 @@ test_that("assertions work", {
   expect_silent(assert_character("a"))
   expect_error(assert_character(pi), "'pi' must be a character")
 })
+
+
+test_that("system_intern_check copes with R's weirdnesses", {
+  sys <- function(outcome) {
+    if (outcome == "success") {
+      "result"
+    } else if (outcome == "failure1") {
+      warning("failure")
+      structure("result", status = 1)
+    } else if (outcome == "failure2") {
+      stop("failure")
+    }
+  }
+
+  mock_system <- mockery::mock(sys("success"),
+                               sys("failure1"),
+                               sys("failure2"))
+  mockery::stub(system_intern_check, "system", mock_system)
+  expect_equal(system_intern_check("some command"), "result")
+  expect_error(system_intern_check("some command"), "Error running command")
+  expect_error(system_intern_check("some command"), "failure")
+
+  mockery::expect_called(mock_system, 3)
+  expect_equal(mockery::mock_args(mock_system),
+               rep(list(list("some command", intern = TRUE)), 3))
+})
+
+
+test_that("readlines_if_exists returns NULL for missing file", {
+  expect_null(readlines_if_exists(tempfile()))
+})
+
+
+test_that("readlines_if_exists does not warn on incomplete file", {
+  txt <- "line1\nline2"
+  path <- tempfile()
+  writeBin(charToRaw(txt), path)
+  expect_silent(
+    r <- readlines_if_exists(path, warn = FALSE))
+  expect_equal(r, c("line1", "line2"))
+})
+
+
+test_that("Sys_which throws on unknown exe", {
+  expect_error(Sys_which("unknowncommand"),
+               "unknowncommand not found in $PATH",
+               fixed = TRUE)
+})

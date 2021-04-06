@@ -75,7 +75,8 @@ test_that("Submit job and update db", {
   client <- list(
     submit = mockery::mock(dide_id),
     log = mockery::mock(dide_log, cycle = TRUE),
-    cancel = mockery::mock(setNames("OK", dide_id)))
+    cancel = mockery::mock(setNames("OK", dide_id),
+                           setNames("WRONG_STATE", dide_id)))
 
   config <- example_config()
   ctx <- context::context_save(file.path(config$workdir, "context"))
@@ -118,6 +119,8 @@ test_that("Submit job and update db", {
                list(dide_id, config$cluster))
   expect_equal(t$status(), "CANCELLED")
   expect_error(t$result(), "task [[:xdigit:]]+ is unfetchable: CANCELLED")
+
+  expect_equal(obj$unsubmit(t$id), "NOT_RUNNING")
 })
 
 
@@ -130,4 +133,21 @@ test_that("Can submit a group", {
   private <- r6_private(obj)
   private$provisioned <- TRUE
   grp <- obj$lapply(1:4, sin)
+
+  mockery::expect_called(client$submit, 4)
+  expect_s3_class(grp, "task_bundle")
+
+  expect_equal(obj$dide_id(grp), c("1", "2", "3", "4"))
+})
+
+
+## This is currently vesigial, but bound in with features of queuer/context
+test_that("name expansion", {
+  ids <- ids::random_id(4)
+  nms <- c("a", "b", "c", "d")
+  expect_equal(task_names(ids, NULL), ids)
+  expect_equal(task_names(ids, nms),
+               sprintf("%s (%s)", nms, ids))
+  expect_error(task_names(ids, nms[-2]),
+               "incorrect length names")
 })
