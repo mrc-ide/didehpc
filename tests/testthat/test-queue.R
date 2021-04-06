@@ -198,3 +198,38 @@ test_that("Can include sources", {
                list(packages = c("context", "foo", "bar", "user/foo@ref"),
                     repos = repos))
 })
+
+
+test_that("Package provisioning interface logic is correct", {
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc(ctx, config, initialise = FALSE)
+
+  private <- r6_private(obj)
+  private$lib <- list(
+    provision = mockery::mock(),
+    check = mockery::mock(list(complete = FALSE), list(complete = TRUE)))
+  expect_false(private$provisioned)
+
+  expect_message(
+    obj$provision_context(),
+    "Running installation script on cluster")
+  expect_true(private$provisioned)
+
+  mockery::expect_called(private$lib$check, 1L)
+  expect_equal(mockery::mock_args(private$lib$check)[[1]], list("context"))
+
+  mockery::expect_called(private$lib$provision, 1L)
+  repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  expect_equal(mockery::mock_args(private$lib$provision)[[1]],
+               list("context", repos, "lazy", FALSE))
+
+  expect_message(
+    obj$provision_context(),
+    "Nothing to install; try running with policy = 'upgrade'")
+
+  mockery::expect_called(private$lib$check, 2L)
+  expect_equal(mockery::mock_args(private$lib$check)[[2]],
+               mockery::mock_args(private$lib$check)[[1]])
+  mockery::expect_called(private$lib$provision, 1L)
+})

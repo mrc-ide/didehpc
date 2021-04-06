@@ -79,7 +79,7 @@ web_client <- R6::R6Class(
     ##' @param resource_count The number of resources to request
     submit = function(path, name, template, cluster = NULL,
                       resource_type = "Cores", resource_count = 1) {
-      data <- client_submit_body(
+      data <- client_body_submit(
         path, name, template, cluster %||% private$cluster,
         resource_type, resource_count)
       r <- private$client$POST("/submit_1.php", data)
@@ -98,7 +98,7 @@ web_client <- R6::R6Class(
     ##'   and values one of `OK`, `NOT_FOUND`, `WRONG_USER`, `WRONG_STATE`,
     ##'   `ID_ERROR`
     cancel = function(dide_id, cluster = NULL) {
-      data <- client_cancel_body(dide_id, cluster %||% private$cluster)
+      data <- client_body_cancel(dide_id, cluster %||% private$cluster)
       r <- private$client$POST("/cancel.php", data)
       client_parse_cancel(httr_text(r))
     },
@@ -110,10 +110,7 @@ web_client <- R6::R6Class(
     ##' @param cluster The cluster that the task is running on, defaulting to
     ##'   the value given when creating the client.
     log = function(dide_id, cluster = NULL) {
-      assert_scalar_character(dide_id)
-      data <- list(hpcfunc = "showfail",
-                   cluster = encode64(cluster %||% private$cluster),
-                   id = dide_id)
+      data <- client_body_log(dide_id, cluster %||% private$cluster)
       r <- private$client$POST("/showjobfail.php", data)
       client_parse_log(httr_text(r))
     },
@@ -127,12 +124,8 @@ web_client <- R6::R6Class(
     ##' @param cluster The cluster to query, defaulting to the value
     ##'   given when creating the client.
     status_user = function(state = "*", cluster = NULL) {
-      valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
-      state <- match_value(state, valid)
-      data <- list(user = encode64(private$client$username()),
-                   scheduler = encode64(cluster %||% private$cluster),
-                   state = encode64(state),
-                   jobs = encode64(as.character(-1)))
+      data <- client_body_status(state, private$client$username(),
+                                 cluster %||% private$cluster)
       r <- private$client$POST("/_listalljobs.php", data)
       client_parse_status(httr_text(r))
     },
@@ -191,12 +184,18 @@ web_client <- R6::R6Class(
 
     ##' @description Return a vector of known cluster headnodes. Typically
     ##'   [didehpc::valid_clusters()] will be faster. This endpoint can
-    ##'   be used as a relativelyly fast "ping" to check that you are
+    ##'   be used as a relatively fast "ping" to check that you are
     ##'   logged in the client and server are talking properly.
-    headnodes = function() {
-      data <- list(user = encode64(""))
-      r <- private$client$POST("/_listheadnodes.php", data)
-      client_parse_headnodes(httr_text(r))
+    ##'
+    ##' @param forget Logical, indicating we should re-fetch the value from
+    ##'   the server where we have previously fetched it.
+    headnodes = function(forget = FALSE) {
+      if (forget || is.null(private$headnodes_)) {
+        data <- list(user = encode64(""))
+        r <- private$client$POST("/_listheadnodes.php", data)
+        private$headnodes_ <- client_parse_headnodes(httr_text(r))
+      }
+      private$headnodes_
     },
 
     ##' @description Return a vector of all available R versions
@@ -213,7 +212,8 @@ web_client <- R6::R6Class(
 
   private = list(
     client = NULL,
-    cluster = NULL
+    cluster = NULL,
+    headnodes_ = NULL
   ))
 
 
@@ -300,7 +300,7 @@ api_client_login <- function(username, password) {
 }
 
 
-client_submit_body <- function(path, name, template, cluster,
+client_body_submit <- function(path, name, template, cluster,
                                resource_type, resource_count) {
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
@@ -333,7 +333,7 @@ client_submit_body <- function(path, name, template, cluster,
 }
 
 
-client_cancel_body <- function(dide_id, cluster) {
+client_body_cancel <- function(dide_id, cluster) {
   if (length(dide_id) == 0L) {
     stop("Need at least one task to cancel")
   }
@@ -341,6 +341,24 @@ client_cancel_body <- function(dide_id, cluster) {
   c(list(cluster = encode64(cluster),
          hpcfunc = encode64("cancel")),
     jobs)
+}
+
+
+client_body_log <- function(dide_id, cluster) {
+  assert_scalar_character(dide_id)
+  list(hpcfunc = "showfail",
+       cluster = encode64(cluster),
+       id = dide_id)
+}
+
+
+client_body_status <- function(state, username, cluster) {
+  valid <- c("*", "Running", "Finished", "Queued", "Failed", "Cancelled")
+  state <- match_value(state, valid)
+  list(user = encode64(username),
+       scheduler = encode64(cluster),
+       state = encode64(state),
+       jobs = encode64(as.character(-1)))
 }
 
 

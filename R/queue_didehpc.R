@@ -95,6 +95,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                                 policy = "lazy", dryrun = FALSE) {
       complete <- private$lib$check(packages)$complete
       if (complete && policy == "lazy") {
+        message("Nothing to install; try running with policy = 'upgrade'")
         return()
       }
       message("Running installation script on cluster")

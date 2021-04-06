@@ -308,12 +308,20 @@ was created.}
 \subsection{Method \code{headnodes()}}{
 Return a vector of known cluster headnodes. Typically
 \code{\link[=valid_clusters]{valid_clusters()}} will be faster. This endpoint can
-be used as a relativelyly fast "ping" to check that you are
+be used as a relatively fast "ping" to check that you are
 logged in the client and server are talking properly.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{web_client$headnodes()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{web_client$headnodes(forget = FALSE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{forget}}{Logical, indicating we should re-fetch the value from
+the server where we have previously fetched it.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-r_versions"></a>}}

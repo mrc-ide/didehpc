@@ -17,7 +17,7 @@ test_that("Check cluster usage", {
 
 test_that("Construct a submit body", {
   p <- "\\\\fi--host\\\\path"
-  d <- client_submit_body(p, "name", "GeneralNodes", "fi--dideclusthn",
+  d <- client_body_submit(p, "name", "GeneralNodes", "fi--dideclusthn",
                           "Cores", 1)
   expect_setequal(
     names(d),
@@ -39,7 +39,7 @@ test_that("Construct a submit body", {
 test_that("submission body validates path", {
   p <- "\\\\fi--host\\\\path"
   expect_error(
-    client_submit_body(unix_path(p), "name", "GeneralNodes",
+    client_body_submit(unix_path(p), "name", "GeneralNodes",
                        "fi--dideclusthn", "Cores", 1),
     "All paths must be Windows network paths")
 })
@@ -48,17 +48,17 @@ test_that("submission body validates path", {
 test_that("Construct a cancel body", {
   cluster <- "fi--dideclusthn"
   expect_equal(
-    client_cancel_body("123456", cluster),
+    client_body_cancel("123456", cluster),
     list(cluster = encode64(cluster),
          hpcfunc = encode64("cancel"),
          c123456 = "123456"))
   expect_equal(
-    client_cancel_body(c("123456", "234567"), cluster),
+    client_body_cancel(c("123456", "234567"), cluster),
     list(cluster = encode64(cluster),
          hpcfunc = encode64("cancel"),
          c123456 = "123456",
          c234567 = "234567"))
   expect_error(
-    client_cancel_body(character(0), cluster),
+    client_body_cancel(character(0), cluster),
     "Need at least one task to cancel")
 })

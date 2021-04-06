@@ -199,3 +199,147 @@ test_that("client checks access", {
   expect_silent(cl$check_access("fi--dideclusthn"))
   expect_silent(cl$check_access("fi--dideclusthn"))
 })
+
+
+test_that("submit sends correct payload", {
+  dide_id <- "12345"
+  content <- sprintf("Job has been submitted. ID: %s.\n", dide_id)
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  path <- "\\\\host\\path"
+
+  expect_equal(cl$submit(path, "name", "template"), dide_id)
+  mockery::expect_called(mock_client$POST, 1L)
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[1]],
+    list("/submit_1.php",
+         client_body_submit(path, "name", "template", "fi--dideclusthn",
+                            "Cores", 1)))
+
+  expect_equal(cl$submit(path, "name", "template",
+                         "fi--didemrchnb", "Nodes", 2), dide_id)
+  mockery::expect_called(mock_client$POST, 2L)
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[2]],
+    list("/submit_1.php",
+         client_body_submit(path, "name", "template", "fi--didemrchnb",
+                            "Nodes", 2)))
+})
+
+
+test_that("cancel sends correct payload", {
+  dide_id <- "12345"
+  content <- sprintf("%s\tOK\n", dide_id)
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  expect_equal(cl$cancel(dide_id), setNames("OK", dide_id))
+
+  mockery::expect_called(mock_client$POST, 1L)
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[1]],
+    list("/cancel.php",
+         client_body_cancel(dide_id, "fi--dideclusthn")))
+})
+
+
+test_that("status sends correct payload", {
+  content <- read_lines("responses/status.txt")
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r),
+                      username = mockery::mock("bob"))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  expect_equal(cl$status_user(), client_parse_status(content))
+
+  mockery::expect_called(mock_client$username, 1L)
+  expect_equal(mockery::mock_args(mock_client$username)[[1]], list())
+
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[1]],
+    list("/_listalljobs.php",
+         client_body_status("*", "bob", "fi--dideclusthn")))
+})
+
+
+test_that("log sends correct payload", {
+  dide_id <- "12345"
+  content <- read_lines("responses/log.txt")
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  expect_equal(cl$log(dide_id), client_parse_log(content))
+
+  mockery::expect_called(mock_client$POST, 1L)
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[1]],
+    list("/showjobfail.php",
+         client_body_log(dide_id, "fi--dideclusthn")))
+})
+
+
+test_that("status job sends correct payload", {
+  dide_id <- "12345"
+  r <- mock_response(200, content = "Running")
+  mock_client <- list(GET = mockery::mock(r))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  expect_equal(cl$status_job(dide_id, "fi--didemrchnb"),
+               "RUNNING")
+
+  mockery::expect_called(mock_client$GET, 1L)
+  expect_equal(
+    mockery::mock_args(mock_client$GET)[[1]],
+    list("/api/v1/get_job_status/",
+         query = list(scheduler = "fi--didemrchnb",
+                      jobid = dide_id)))
+})
+
+
+test_that("headnodes sends correct payload", {
+  content <- paste0(valid_clusters(), "\n", collapse = "")
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  expect_null(r6_private(cl)$headnodes_)
+
+  expect_equal(cl$headnodes(), valid_clusters())
+  expect_equal(r6_private(cl)$headnodes_, valid_clusters())
+  mockery::expect_called(mock_client$POST, 1L)
+  expect_equal(
+    mockery::mock_args(mock_client$POST)[[1]],
+    list("/_listheadnodes.php", list(user = "")))
+
+  expect_equal(cl$headnodes(), valid_clusters())
+  mockery::expect_called(mock_client$POST, 1L)
+
+  expect_equal(cl$headnodes(TRUE), valid_clusters())
+  mockery::expect_called(mock_client$POST, 2L)
+  expect_equal(mockery::mock_args(mock_client$POST)[[1]],
+               mockery::mock_args(mock_client$POST)[[2]])
+})
+
+
+test_that("load endpoints are correct", {
+  content <- read_lines("responses/load.txt")
+  r <- mock_response(200, content = content)
+  mock_client <- list(POST = mockery::mock(r, cycle = TRUE))
+
+  cl <- web_client$new(login = FALSE, client = mock_client)
+  private <- r6_private(cl)
+  private$headnodes_ <- c("fi--dideclusthn", "fi--didemrchnb")
+
+  cmp1 <- client_parse_load_cluster(content, "fi--dideclusthn")
+  cmp2 <- client_parse_load_overall(
+    lapply(private$headnodes_, client_parse_load_cluster, txt = content))
+  expect_equal(cl$load_node(), cmp1)
+  expect_equal(cl$load_overall(), cmp2)
+
+  expect_output(
+    expect_equal(
+      withVisible(cl$load_show()), list(value = cmp1, visible = FALSE)),
+    "wpia-dideclus35")
+  expect_output(
+    expect_equal(
+      withVisible(cl$load_show(TRUE)), list(value = cmp2, visible = FALSE)),
+    "didehpc")
+})
