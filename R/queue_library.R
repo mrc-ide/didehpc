@@ -44,6 +44,7 @@ queue_library <- R6::R6Class(
                          dryrun = FALSE,
                          show_progress = TRUE, show_log = TRUE) {
       client <- self$client
+      cluster <- self$cluster
       client$login()
       dat <- self$write_batch(packages, repos, policy, dryrun)
 
@@ -52,7 +53,7 @@ queue_library <- R6::R6Class(
 
       name <- paste0("conan:", dat$id)
       job_template <- queue_template(self$cluster)
-      dide_id <- client$submit(path_batch, name, job_template, self$cluster)
+      dide_id <- client$submit(path_batch, name, job_template, cluster)
 
       conan::conan_watch(
         function() client$status_job(dide_id, cluster),
