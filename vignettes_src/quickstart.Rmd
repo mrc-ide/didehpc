@@ -1,0 +1,209 @@
+---
+title: "Quickstart for R and the DIDE cluster"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quickstart for R and the DIDE cluster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = FALSE,
+  comment = "#>"
+)
+r_output <- function(x) {
+  cat(c("```r", x, "```"), sep = "\n")
+}
+```
+
+> Get yourself running R jobs on the cluster in 10 minutes or so.
+
+Assumptions that we make here:
+
+* you are using R
+
+* your task can be represented as running a function on some inputs
+  to create an output (a file based output is OK)
+
+* you are working on a network share and have this mounted on your
+  computer
+
+* you know what packages your code depends on
+
+* your package dependencies are all on CRAN, and are all available
+  in windows binary form.
+
+If any of these do not apply to you, you'll probably need to read
+the full vignette.  In any case the full vignette contains a bunch
+more information anyway.
+
+## Install a lot of packages
+
+Install the packages using [`drat`](https://cran.rstudio.com/package=drat)
+
+```r
+# install.package("drat") # if you don't have it already
+drat:::add("mrc-ide")
+install.packages("didehpc")
+```
+
+## Describe your computer so we can find things
+
+On windows if you are using a domain machine, you should need only
+to select the cluster you want to use
+
+```r
+options(didehpc.cluster = "fi--didemrchnb")
+```
+
+Otherwise, and on any other platform you'll need to provide your username:
+
+```r
+options(didehpc.cluster = "fi--didemrchnb",
+        didehpc.username = "yourusername")
+```
+
+You can see the default configuration with
+
+```{r}
+didehpc::didehpc_config()
+```
+
+If this is the first time you have run this package, best to try
+out the login proceedure with:
+
+```{r}
+didehpc::web_login()
+```
+
+because this unroots a number of problems early on.
+
+## Describe your project dependencies so we can recreate that on the cluster
+
+Make a vector of packages that you use in your project:
+
+```{r}
+packages <- c("dplyr", "tidyr")
+```
+
+And of files that define functions that you ned to run things:
+
+```{r}
+sources <- "mysources.R"
+```
+
+If you had a vector here that would be OK too.
+
+Then save this together to form a "context".
+
+```{r}
+ctx <- context::context_save("contexts", packages = packages, sources = sources)
+```
+
+If you have no packages or no sources, use `NULL` or omit them in
+the call below (which is the default anyway).
+
+The first argument here, `"contexts"` is the name of a directory
+that we will use to hold a lot of information about your jobs.  You
+don't need (or particularly want) to know what is in here.
+
+## Build a queue, based on this context.
+
+This will prompt you for your password, as it will try and log in.
+
+It also installs windows versions of all packages within the
+`contexts` directory -- both packages required to get this whole
+system working and then the packages required for your particular
+jobs.
+
+
+```{r}
+obj <- didehpc::queue_didehpc(ctx)
+```
+
+Once you get to this point we're ready to start running things on
+the cluster.  Let's fire off a test to make sure that everything works OK:
+
+```{r}
+t <- obj$enqueue(sessionInfo())
+```
+
+We can poll the job for a while, which will print a progress bar.
+If the job is returned in time, it will return the result of
+running the function.  Otherwise it will throw an error.
+
+```{r}
+t$wait(120)
+```
+
+You can use `t$result()` to get the result straight away (throwing
+an error if it is not ready) or `t$wait(Inf)` to wait forever.
+
+```{r}
+t$result()
+```
+
+## Running a single task
+
+This is just using the `enqueue` function as above.  But it also
+works with functions defined in files passed in as `sources`; here
+the function `random_walk`.
+
+```{r}
+t <- obj$enqueue(random_walk(0, 10))
+res <- t$wait(120)
+res
+```
+
+The `t` object has a number of other methods you can use:
+
+```{r}
+t
+```
+
+Get the result from running a task
+
+```{r}
+t$result()
+```
+
+Get the status of the task
+
+```{r}
+t$status()
+```
+
+(might also be "PENDING", "RUNNING" or "ERROR"
+
+Get the original expression:
+
+```{r}
+t$expr()
+```
+
+Find out how long everything took
+
+```{r}
+t$times()
+```
+
+You may see negative numbers for "waiting" as the submitted time is
+based on your computer and started/finished are based on the
+cluster.
+
+And get the log from running the task
+
+```{r}
+t$log()
+```
+
+There is also a bit of DIDE specific logging that happens before
+this point; if the job fails inexplicably the answer may be in:
+
+```{r}
+obj$dide_log(t)
+```
+
+Want more information? See `vignette("didehpc")` for more details.

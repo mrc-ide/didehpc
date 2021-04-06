@@ -13,3 +13,4 @@
 ^build_common_lib.R$
 ^porting_guide\.md$
 ^UPDATING\.md$
+^vignettes_src$
