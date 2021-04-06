@@ -140,31 +140,11 @@ dide_time_parse <- function(x) {
 }
 
 
-clear_progress_bar <- function(p) {
-  private <- environment(p$tick)$private
-  if (nchar(private$last_draw) > 0) {
-    str <- paste0(c("\r", rep(" ", private$width)), collapse = "")
-    message(str, appendLF = FALSE)
-  }
-  message("\r", appendLF = FALSE)
-}
-
-
 readlines_if_exists <- function(path, ...) {
   if (!file.exists(path)) {
     return(NULL)
   }
   readLines(path, ...)
-}
-
-
-new_log <- function(curr, prev) {
-  if (length(prev) == 0) {
-    curr
-  } else {
-    ## TODO: could also print any changed lines
-    curr[-seq_along(prev)]
-  }
 }
 
 
@@ -175,18 +155,4 @@ glue_whisker <- function(template, data) {
   }
   glue::glue(template, .envir = data, .open = "{{", .close = "}}",
              .trim = FALSE, .transformer = transformer)
-}
-
-
-throttle <- function(f, interval) {
-  force(f)
-  last <- Sys.time() - interval
-  function(...) {
-    wait <- interval - (Sys.time() - last)
-    if (wait > 0) {
-      Sys.sleep(wait)
-    }
-    last <<- Sys.time()
-    f(...)
-  }
 }
