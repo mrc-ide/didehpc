@@ -16,7 +16,8 @@
 ##' @export
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE) {
-  .R6_queue_didehpc$new(context, config, root, initialise)
+  login <- provision <- initialise
+  .R6_queue_didehpc$new(context, config, root, login, provision)
 }
 
 .R6_queue_didehpc <- R6::R6Class(
@@ -29,7 +30,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     templates = NULL,
     workers = NULL,
 
-    initialize = function(context, config, root, initialise) {
+    initialize = function(context, config, root, login, provision) {
       super$initialize(context, root, initialise)
       self$config <- as_didehpc_config(config)
 
@@ -58,8 +59,11 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         self$config$cluster,
         self$client)
 
-      if (initialise) {
-        private$preflight()
+      if (login) {
+        self$login()
+      }
+      if (provision) {
+        self$provision_context("skip")
       }
     },
 
@@ -68,11 +72,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     cluster_load = function(cluster = NULL, nodes = TRUE) {
-      self$login(FALSE)
       if (isTRUE(cluster)) {
-        print(didehpc_load(self$config))
+        print(self$client$load_overall())
       } else {
-        print(didehpc_shownodes(self$config, cluster %||% self$config$cluster),
+        print(self$client$load_node(cluster %||% self$config$cluster),
               nodes = nodes)
       }
     },
@@ -83,12 +86,13 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     submit = function(task_ids, names = NULL) {
-      private$preflight()
+      if (!private$provisioned) {
+        self$provision_context("skip")
+      }
       submit_dide(obj, task_ids, names)
     },
 
     unsubmit = function(t) {
-      self$login(FALSE)
       unsubmit_dide(obj, task_ids)
     },
 
@@ -100,10 +104,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     },
 
     dide_log = function(t) {
-      self$login(FALSE)
       dide_task_id <- self$dide_id(t)
-      assert_scalar_character(dide_task_id, "task_id") # bit of trickery
-      didehpc_joblog(self$config, dide_task_id)
+      assert_scalar_character(dide_task_id, "task_id")
+      cluster <- self$db$get(task_get_id(t), "dide_cluster")
+      self$client$log(dide_id, cluster)
     },
 
     provision_context = function(policy = "skip", dryrun = FALSE) {
@@ -125,14 +129,7 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
   private = list(
     lib = NULL,
-    provisioned = NULL,
-
-    preflight = function() {
-      self$login(FALSE)
-      if (!private$provisioned) {
-        self$provision_context("skip")
-      }
-    }
+    provisioned = NULL
   ))
 
 
@@ -140,6 +137,7 @@ submit_dide <- function(obj, task_ids, names) {
   db <- obj$db
   root <- obj$context$root$path
   config <- obj$config
+  client <- obj$client
   batch_template <- obj$templates$runner
 
   if (is.null(names)) {
@@ -164,8 +162,8 @@ submit_dide <- function(obj, task_ids, names) {
     batch <- write_batch(id, root, batch_template, list(task_id = id))
     path <- remote_path(batch, config$shares)
     p()
-    dide_id <- obj$client$submit(path, names[[id]], template, cluster,
-                                 resource_type, resource_count)
+    dide_id <- client$submit(path, names[[id]], template, cluster,
+                             resource_type, resource_count)
     db$set(id, dide_id, "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
@@ -175,7 +173,7 @@ submit_dide <- function(obj, task_ids, names) {
 
 unsubmit_dide <- function(obj, task_ids) {
   db <- obj$db
-  config <- obj$config
+  client <- obj$client
 
   p <- queuer::progress_timeout(length(task_ids), Inf, label = "cancelling ")
   ret <- character(length(task_ids))
