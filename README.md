@@ -1,5 +1,9 @@
 # didehpc
 
+<!-- badges: start -->
+[![R build status](https://github.com/mrc-ide/didehpc/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/didehpc/actions)
+<!-- badges: end -->
+
 > DIDE Cluster Support
 
 **NOTICE**: This will only be of use to people at DIDE, as it uses our [cluster web portal](https://mrcdata.dide.ic.ac.uk/hpc), local cluster, and local network file systems.

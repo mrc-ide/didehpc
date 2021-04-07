@@ -14,3 +14,4 @@
 ^porting_guide\.md$
 ^UPDATING\.md$
 ^vignettes_src$
+^\.github$
