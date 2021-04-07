@@ -56,6 +56,7 @@ submit_workers <- function(obj, data, n, timeout = 600, progress = NULL) {
 
   dir.create(data$paths$local$batch, FALSE, TRUE)
   dir.create(data$paths$local$worker_log, FALSE, TRUE)
+  rrq:::write_rrq_worker(file.path(data$paths$local$root, "bin"))
   for (nm in names) {
     dat <- list(rrq_worker_id = nm, rrq_key_alive = rrq_key_alive)
     base <- paste0(nm, ".bat")
@@ -67,6 +68,7 @@ submit_workers <- function(obj, data, n, timeout = 600, progress = NULL) {
                              resource_type, resource_count)
   }
 
+  ## We should also check here that the job is still running
   rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
