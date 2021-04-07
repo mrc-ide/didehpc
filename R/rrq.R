@@ -19,7 +19,7 @@ rrq_context_loader <- function() {
     if (context_root == "" | context_id == "") {
       stop(sprintf(
         "Environment variables incorrect: CONTEXT_ROOT: '%s' CONTEXT_ID: '%s')",
-        CONTEXT_ROOT, CONTEXT_ID))
+        context_root, context_id))
     }
     ctx <- context::context_read(context_id, context_root)
     context::context_load(ctx, envir)

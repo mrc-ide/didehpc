@@ -68,7 +68,11 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       if (!private$provisioned) {
         stop("Queue is not provisioned; run '$provision_library()'")
       }
-      submit_dide(self, private$data, task_ids, names)
+      if (self$config$use_workers) {
+        submit_rrq(self, private$data, task_ids, names)
+      } else {
+        submit_dide(self, private$data, task_ids, names)
+      }
     },
 
     submit_workers = function(n, timeout = 600, progress = NULL) {
@@ -162,6 +166,25 @@ submit_dide <- function(obj, data, task_ids, names) {
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
   }
+}
+
+
+submit_rrq <- function(obj, data, task_ids, names) {
+  ## NOTE: We don't cope with names here
+  rrq <- obj$rrq_controller()
+  root <- obj$context$root$path
+  dat <- data.frame(task_id = task_ids,
+                    path_log = path_logs(root, task_ids),
+                    stringsAsFactors = FALSE)
+  res <- rrq$enqueue_bulk_(dat, quote(context::task_run_external),
+                           root = obj$context$root$path,
+                           identifier = obj$context$root$id)
+  ## TODO: set something in as dide_cluster and dide_id here to
+  ## prevent reconcile() marking these as dead.
+  ##
+  ## TODO: here (and above) we have to use path_logs because the local
+  ## log path includes the context root which we don't want.
+  obj$db$mset(task_ids, path_logs(NULL), "log_path")
 }
 
 

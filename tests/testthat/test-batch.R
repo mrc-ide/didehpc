@@ -38,8 +38,9 @@ test_that("Can create path and template data", {
   expect_setequal(names(dat$paths), c("local", "remote"))
   expect_equal(names(dat$paths$remote), names(dat$paths$local))
 
-  expect_setequal(names(dat$paths$local),
-                  c("root", "conan", "batch", "lib", "log", "workdir"))
+  expect_setequal(
+    names(dat$paths$local),
+    c("root", "conan", "batch", "lib", "log", "worker_log", "workdir"))
 })
 
 
