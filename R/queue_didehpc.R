@@ -81,9 +81,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
     rrq_controller = function() {
       check_rrq_enabled(self$config)
-      ## TODO: check rrq
-      ## The context id becomes the queue id, which means that
-      ## workers won't get confused by changes to the context
       host <- rrq_redis_host(self$config$cluster)
       rrq::rrq_controller(self$context$id, redux::hiredis(host = host))
     },

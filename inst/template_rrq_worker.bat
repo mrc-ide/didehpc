@@ -9,7 +9,7 @@ ECHO logfile: %CONTEXT_LOGFILE%
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript "{{context_root}}\bin\rrq_worker" --name %RRQ_WORKER_ID% --key-alive %RRQ_KEY_ALIVE% %CONTEXT_ID% > "%CONTEXT_LOGFILE%" 2>&1
+Rscript "{{context_root}}\bin\rrq_worker" --config didehpc --name %RRQ_WORKER_ID% --key-alive %RRQ_KEY_ALIVE% %CONTEXT_ID% > "%CONTEXT_LOGFILE%" 2>&1
 
 {{network_shares_delete}}
 
