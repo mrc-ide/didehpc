@@ -76,7 +76,7 @@ rrq_redis_host <- function(cluster) {
 
 
 check_rrq_enabled <- function(config) {
-  if (!(isTRUE(obj$config$use_rrq) || isTRUE(obj$config$use_workers))) {
+  if (!(isTRUE(config$use_rrq) || isTRUE(config$use_workers))) {
     stop("workers not enabled")
   }
 }
