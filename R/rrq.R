@@ -26,6 +26,7 @@ rrq_context_loader <- function() {
     context::context_load(ctx, envir)
   }
   environment(create) <- create_env
+  create
 }
 
 
