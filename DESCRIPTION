@@ -22,7 +22,7 @@ Imports:
     httr (>= 1.0.0),
     ids,
     jsonlite (>= 1.6),
-    queuer (>= 0.2.0),
+    queuer (>= 0.3.0),
     rematch,
     storr (>= 1.1.1),
     xml2 (>= 1.0.0)
