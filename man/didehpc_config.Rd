@@ -29,8 +29,8 @@ didehpc_config_global(..., check = TRUE)
 }
 \arguments{
 \item{credentials}{Either a list with elements username, password,
-or a path to a file containing lines \code{username=<username>}
-and \code{password=<password>} or your username (in which case
+or a path to a file containing lines \verb{username=<username>}
+and \verb{password=<password>} or your username (in which case
 you will be prompted graphically for your password).}
 
 \item{home}{Path to network home directory, on local system}
@@ -38,11 +38,11 @@ you will be prompted graphically for your password).}
 \item{temp}{Path to network temp directory, on local system}
 
 \item{cluster}{Name of the cluster to use; one of
-\code{\link{valid_clusters}()} or one of the aliases
+\code{\link[=valid_clusters]{valid_clusters()}} or one of the aliases
 (small/little/dide/ide; big/mrc).}
 
 \item{shares}{Optional additional share mappings.  Can either be a
-single path mapping (as returned by \code{\link{path_mapping}}
+single path mapping (as returned by \code{\link[=path_mapping]{path_mapping()}}
 or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
@@ -117,14 +117,13 @@ required to install packages first into a temporary location
 (this may take a few minutes) before installation. Generally
 leave this as-is.}
 
-\item{r_version}{A string, or \code{numeric_version} object,
-describing the R version required.  Not all R versions are known
-to be supported, so this will check against a list of installed
-R versions for the cluster you are using (see
-\code{r_versions}).  If omitted then: if your R version matches
-a version on the cluster that will be used, or the oldest
-cluster version that is newer than yours, or the most recent
-cluster version.}
+\item{r_version}{A string, or \code{numeric_version} object, describing
+the R version required.  Not all R versions are known to be
+supported, so this will check against a list of installed R
+versions for the cluster you are using.  If omitted then: if
+your R version matches a version on the cluster that will be
+used, or the oldest cluster version that is newer than yours, or
+the most recent cluster version.}
 
 \item{use_java}{Logical, indicating if the script is going to
 require Java, for example via the rJava package.}

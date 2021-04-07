@@ -5,47 +5,47 @@
 ##' @section Resources and parallel computing:
 ##'
 ##' If you need more than one core per task (i.e., you want the each
-##'   task to do some parallel processing \emph{in addition} to the
+##'   task to do some parallel processing *in addition* to the
 ##'   parallelism between tasks) you can do that through the
 ##'   configuration options here.
 ##'
-##' The \code{template} option choses among templates defined on the
+##' The `template` option choses among templates defined on the
 ##'   cluster.  If you select one of these then we will reserve an
-##'   entire node \emph{unless} you also specify \code{cores}.
-##'   Alternatively if \code{wholenode} is specified this overrides
+##'   entire node *unless* you also specify `cores`.
+##'   Alternatively if `wholenode` is specified this overrides
 ##'   the logic here.
 ##'
-##' If you specify \code{cores}, the HPC will queue your job until an
+##' If you specify `cores`, the HPC will queue your job until an
 ##'   appropriate number of cores appears for the selected template.
 ##'   This can leave your job queing forever (e.g., selecting 20 cores
-##'   on a 16Core template) so be careful.  The \code{cores} option is
-##'   most useful with the \code{GeneralNodes} template.
+##'   on a 16Core template) so be careful.  The `cores` option is
+##'   most useful with the `GeneralNodes` template.
 ##'
 ##' In either case, if more than 1 core is implied (either by using
-##'   any template other than \code{GeneralNodes} or by specifying a
-##'   \code{cores} value greater than 1) on startup, a \code{parallel}
-##'   cluster will be started, using \code{parallel::makePSOCKcluster}
+##'   any template other than `GeneralNodes` or by specifying a
+##'   `cores` value greater than 1) on startup, a `parallel`
+##'   cluster will be started, using `parallel::makePSOCKcluster`
 ##'   and this will be registered as the default cluster.  The nodes
 ##'   will all have the appropriate context loaded and you can
-##'   immediately use them with \code{parallel::clusterApply} and
-##'   related functions by passing \code{NULL} as the first argument.
+##'   immediately use them with `parallel::clusterApply` and
+##'   related functions by passing `NULL` as the first argument.
 ##'   The cluster will be shut down politely on exit, and logs will be
 ##'   output to the "workers" directory below your context root.
 ##'
 ##' @section Workers and rrq:
 ##'
-##' The options \code{use_workers} and \code{use_rrq} interact, share
+##' The options `use_workers` and `use_rrq` interact, share
 ##' some functionality, but are quite different.
 ##'
-##' With \code{use_workers}, jobs are never submitted when you run
-##' \code{enqueue} or one of the bulk submission commands in
-##' \code{queuer}.  Instead you submit workers using
-##' \code{submit_workers} and then the submission commands push task
+##' With `use_workers`, jobs are never submitted when you run
+##' `enqueue` or one of the bulk submission commands in
+##' `queuer`.  Instead you submit workers using
+##' `submit_workers` and then the submission commands push task
 ##' ids onto a Redis queue that the workers monitor.
 ##'
-##' With \code{use_rrq}, \code{enqueue} etc still work as before, plus
-##' you \emph{must} submit workers with \code{submit_workers}.  The
-##' difference is that any job may access the \code{rrq_controller}
+##' With `use_rrq`, `enqueue` etc still work as before, plus
+##' you *must* submit workers with `submit_workers`.  The
+##' difference is that any job may access the `rrq_controller`
 ##' and push jobs onto a central pool of tasks.
 ##'
 ##' I'm not sure at this point if it makes any sense for the two
@@ -55,8 +55,8 @@
 ##' @title Configuration
 ##'
 ##' @param credentials Either a list with elements username, password,
-##'   or a path to a file containing lines \code{username=<username>}
-##'   and \code{password=<password>} or your username (in which case
+##'   or a path to a file containing lines `username=<username>`
+##'   and `password=<password>` or your username (in which case
 ##'   you will be prompted graphically for your password).
 ##'
 ##' @param home Path to network home directory, on local system
@@ -64,11 +64,11 @@
 ##' @param temp Path to network temp directory, on local system
 ##'
 ##' @param cluster Name of the cluster to use; one of
-##'   \code{\link{valid_clusters}()} or one of the aliases
+##'   [didehpc::valid_clusters()] or one of the aliases
 ##'   (small/little/dide/ide; big/mrc).
 ##'
 ##' @param shares Optional additional share mappings.  Can either be a
-##'   single path mapping (as returned by \code{\link{path_mapping}}
+##'   single path mapping (as returned by [didehpc::path_mapping()]
 ##'   or a list of such calls.
 ##'
 ##' @param template A job template.  On fi--dideclusthn this can be
@@ -82,24 +82,24 @@
 ##'   instructed to.
 ##'
 ##' @param cores The number of cores to request.  This is mostly
-##'   useful when using the \code{GeneralNodes} template.  If
+##'   useful when using the `GeneralNodes` template.  If
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
 ##'   forever!  24 is the largest this should be on fi--dideclusthn
 ##'   and 64 on fi--didemrchnb (assuming you have access to those
 ##'   nodes).  If omitted then a single core is selected for the
-##'   GeneralNodes template or the \emph{entire machine} for the other
-##'   templates (unless modified by \code{wholenode}).
+##'   GeneralNodes template or the *entire machine* for the other
+##'   templates (unless modified by `wholenode`).
 ##'
 ##' @param wholenode Request the whole node?  This will default to
-##'   \code{TRUE} if any template other than \code{GeneralNodes} is
+##'   `TRUE` if any template other than `GeneralNodes` is
 ##'   selected.
 ##'
 ##' @param parallel Should we set up the parallel cluster?  Normally
-##'   if more than one core is implied (via the \code{cores} argument,
-##'   by picking a template other than \code{GeneralNodes} or by using
-##'   \code{wholenode}) then a parallel cluster will be set up (see
-##'   Details).  If \code{parallel} is set to \code{FALSE} then this
+##'   if more than one core is implied (via the `cores` argument,
+##'   by picking a template other than `GeneralNodes` or by using
+##'   `wholenode`) then a parallel cluster will be set up (see
+##'   Details).  If `parallel` is set to `FALSE` then this
 ##'   will not occur.  This might be useful in cases where you want to
 ##'   manage your own job level parallelism (e.g. using OpenMP) or if
 ##'   you're just after the whole node for the memory).
@@ -107,23 +107,23 @@
 ##' @param workdir The path to work in on the cluster, if running out of place.
 ##'
 ##' @param use_workers Submit jobs to an internal queue, and run them
-##'   on a set of workers submitted separately?  If \code{TRUE}, then
-##'   \code{enqueue} and the bulk submission commands no longer submit
-##'   to the DIDE queue.  Instead they create an \emph{internal} queue
+##'   on a set of workers submitted separately?  If `TRUE`, then
+##'   `enqueue` and the bulk submission commands no longer submit
+##'   to the DIDE queue.  Instead they create an *internal* queue
 ##'   that workers can poll.  After queuing tasks, use
-##'   \code{submit_workers} to submit workers that will process these
+##'   `submit_workers` to submit workers that will process these
 ##'   tasks, terminating when they are done.  You can use this
 ##'   approach to throttle the resources you need.
 ##'
-##' @param use_rrq Use \code{rrq} to run a set of workers on the
+##' @param use_rrq Use `rrq` to run a set of workers on the
 ##'   cluster.  This is an experimental option, and the interface here
 ##'   may change.  For now all this does is ensure a few additional
 ##'   packages are installed, and tweaks some environment variables in
 ##'   the generated batch files.  Actual rrq workers are submitted
-##'   with the \code{submit_workers} method of the object.
+##'   with the `submit_workers` method of the object.
 ##'
-##' @param worker_timeout When using workers (via \code{use_workers}
-##'   or \code{use_rrq}, the length of time (in seconds) that workers
+##' @param worker_timeout When using workers (via `use_workers`
+##'   or `use_rrq`, the length of time (in seconds) that workers
 ##'   should be willing to set idle before exiting.  If set to zero
 ##'   then workers will be added to the queue, run jobs, and
 ##'   immediatly exit.  If greater than zero, then the workers will
@@ -133,7 +133,7 @@
 ##'   worker up in this case!).  The default is 600s (10 minutes)
 ##'   should be more than enough to get your jobs up and running.
 ##'   Once workers are established you can extend or reset the timeout
-##'   by sending the \code{TIMEOUT_SET} message (proper documentation
+##'   by sending the `TIMEOUT_SET` message (proper documentation
 ##'   will come for this soon).
 ##'
 ##' @param conan_bootstrap Logical, indicating if we should use the
@@ -143,14 +143,13 @@
 ##'   (this may take a few minutes) before installation. Generally
 ##'   leave this as-is.
 ##'
-##' @param r_version A string, or \code{numeric_version} object,
-##'   describing the R version required.  Not all R versions are known
-##'   to be supported, so this will check against a list of installed
-##'   R versions for the cluster you are using (see
-##'   \code{r_versions}).  If omitted then: if your R version matches
-##'   a version on the cluster that will be used, or the oldest
-##'   cluster version that is newer than yours, or the most recent
-##'   cluster version.
+##' @param r_version A string, or `numeric_version` object, describing
+##'   the R version required.  Not all R versions are known to be
+##'   supported, so this will check against a list of installed R
+##'   versions for the cluster you are using.  If omitted then: if
+##'   your R version matches a version on the cluster that will be
+##'   used, or the oldest cluster version that is newer than yours, or
+##'   the most recent cluster version.
 ##'
 ##' @param use_java Logical, indicating if the script is going to
 ##'   require Java, for example via the rJava package.
@@ -258,7 +257,7 @@ as_didehpc_config <- function(config) {
 }
 
 
-##' @param ... arguments to \code{didehpc_config}
+##' @param ... arguments to `didehpc_config`
 ##'
 ##' @param check Logical, inidicating if we should check that the
 ##'   configuration object can be created
