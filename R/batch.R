@@ -105,7 +105,9 @@ batch_data <- function(context_root, context_id, config) {
     conan = "conan",
     batch = "batch",
     lib = path_library(NULL, config$r_version),
-    log = path_logs(NULL))
+    ## TODO: log => logs
+    log = path_logs(NULL),
+    worker_log = path_worker_logs(NULL))
 
   paths <- list(
     local = lapply(paths_tail, function(x)

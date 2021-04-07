@@ -43,6 +43,10 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       private$lib <- queue_library$new(
         private$data, self$config$cluster, self$client)
 
+      if (self$config$use_workers || self$config$use_rrq) {
+        rrq_init(self$rrq_controller(), self$config)
+      }
+
       if (initialise) {
         self$provision_context("lazy")
       }
@@ -65,6 +69,23 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         stop("Queue is not provisioned; run '$provision_library()'")
       }
       submit_dide(self, private$data, task_ids, names)
+    },
+
+    submit_workers = function(n, timeout = 600, progress = NULL) {
+      submit_workers(self, private$data, n, timeout, progress)
+    },
+
+    stop_workers = function(worker_ids = NULL) {
+      self$rrq_controller()$worker_stop(worker_ids)
+    },
+
+    rrq_controller = function() {
+      check_rrq_enabled(self$config)
+      ## TODO: check rrq
+      ## The context id becomes the queue id, which means that
+      ## workers won't get confused by changes to the context
+      host <- rrq_redis_host(self$config$cluster)
+      rrq::rrq_controller(self$context$id, redux::hiredis(host = host))
     },
 
     unsubmit = function(task_ids) {
