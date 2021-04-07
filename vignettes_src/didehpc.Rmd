@@ -238,7 +238,7 @@ need to be deleted. Don't treat these as archival storage - more as long-lived t
 If you list packages as a character vector then all packages will
 be installed for you, and they will also be *attached*; this is
 what happens when you use the function `library()` So for example
-if you need to depend on the `rstan` and `ape` packages you could
+if you need to depend on the `rstan` and `dplyr` packages you could
 write:
 
 ```r
@@ -504,7 +504,7 @@ The second approach is more general and `$lapply` is implemented
 using it.
 
 Suppose we want to make a bunch of trees of different sizes.  This
-would involve mapping our `make_tree` function over a vector of
+would involve mapping our `random_walk` function over a vector of
 sizes:
 
 ```{r}

@@ -27,7 +27,7 @@ Imports:
     storr (>= 1.1.1),
     xml2 (>= 1.0.0)
 Suggests:
-    ape,
+    R6,
     callr,
     knitr,
     mockery,
