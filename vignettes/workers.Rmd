@@ -44,28 +44,12 @@ Then construct the context as before
 
 
 ```r
-root <- "context"
+root <- "contexts"
 ctx <- context::context_save(root, sources = "mysources.R")
 ```
 
 ```
-## [ init:id   ]  423be27b1aff9ac9200b46ff2510219c
-```
-
-```
-## [ init:db   ]  rds
-```
-
-```
-## [ init:path ]  context
-```
-
-```
-## [ save:id   ]  88f88ed6d573805f0d83f24164609ccc
-```
-
-```
-## [ save:name ]  groundable_goldfish
+## [ open:db   ]  rds
 ```
 
 There are two ways we can proceed from here; the first - "workers"
@@ -90,11 +74,11 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
 ```
-## Loading context 88f88ed6d573805f0d83f24164609ccc
+## Loading context cfa81fb852e25cd6fbaf59490bd2ebc0
 ```
 
 ```
-## [ context   ]  88f88ed6d573805f0d83f24164609ccc
+## [ context   ]  cfa81fb852e25cd6fbaf59490bd2ebc0
 ```
 
 ```
@@ -114,13 +98,13 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
 ```
-## [-]  0s ...[\]  0s RUNNING                                                                              CONAN THE LIBRARIAN I: the bootstrappening
+## [-]  0s ...[\]  0s RUNNING[|]  1s RUNNING                                                                              CONAN THE LIBRARIAN I: the bootstrappening
 ## Installing bootstrap library into 'T:\conan\bootstrap\4.0'
 ## Success!
 ## CONAN THE LIBRARIAN
-## Library:   Q:\cluster_testing\20210408-173139\context\lib\windows\4.0
+## Library:   Q:\didehpc\20210408-182648\contexts\lib\windows\4.0
 ## Bootstrap: T:\conan\bootstrap\4.0
-## Cache:     Q:\cluster_testing\20210408-173139\context\conan\cache/pkg
+## Cache:     Q:\didehpc\20210408-182648\contexts\conan\cache/pkg
 ## Policy:    lazy
 ## Repos:
 ##  * https://mrc-ide.github.io/didehpc-pkgs
@@ -129,65 +113,31 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 ##  * context
 ##  * rrq
 ##  * callr
-## [|]  1s RUNNING[/]  2s RUNNING                                                                              i Loading metadata database
+## [/]  2s RUNNING                                                                              i Loading metadata database
 ## [-]  3s RUNNING[\]  4s RUNNING                                                                              v Loading metadata database ... done
 ##
-## [|]  5s RUNNING                                                                              i Getting 23 pkgs (10.80 MB) and 2 pkgs with unknown sizes
-## [/]  6s RUNNING[-]  7s RUNNING[\]  8s RUNNING[|]  9s RUNNING                                                                              v Got context 0.3.0 (source) (45.34 kB)
-## v Got R6 2.5.0 (windows) (84.11 kB)
-## v Got askpass 1.1 (windows) (243.58 kB)
-## v Got crayon 1.4.1 (windows) (141.83 kB)
-## v Got rrq 0.2.18 (source) (63.15 kB)
-## v Got digest 0.6.27 (windows) (268.66 kB)
-## v Got ids 1.0.1 (windows) (123.93 kB)
-## v Got sys 3.4 (windows) (59.90 kB)
-## v Got uuid 0.1-4 (windows) (33.77 kB)
-## [/] 10s RUNNING                                                                              v Got pkgconfig 2.0.3 (windows) (22.34 kB)
-## v Got lifecycle 1.0.0 (windows) (111.19 kB)
-## v Got docopt 0.7.1 (windows) (245.71 kB)
-## v Got glue 1.4.2 (windows) (155.51 kB)
-## v Got hms 1.0.0 (windows) (103.58 kB)
-## v Got prettyunits 1.1.1 (windows) (37.71 kB)
-## [-] 11s RUNNING                                                                              v Got progress 1.2.2 (windows) (85.86 kB)
-## v Got redux 1.1.0 (windows) (287.94 kB)
-## v Got vctrs 0.3.7 (windows) (1.25 MB)
+## [|]  5s RUNNING[/]  6s RUNNING                                                                              i Getting 8 pkgs (2.78 MB), 1 cached
+## [-]  7s RUNNING                                                                              v Got rrq 0.2.18 (source) (63.15 kB)
+## [\]  8s RUNNING                                                                              v Got prettyunits 1.1.1 (windows) (37.71 kB)
+## v Got progress 1.2.2 (windows) (85.86 kB)
 ## v Got callr 3.6.0 (windows) (432.79 kB)
-## v Got openssl 1.4.3 (windows) (3.99 MB)
-## v Got rlang 0.4.10 (windows) (1.20 MB)
-## v Got ellipsis 0.3.1 (windows) (46.12 kB)
+## v Got docopt 0.7.1 (windows) (245.71 kB)
+## v Got redux 1.1.0 (windows) (287.94 kB)
+## v Got hms 1.0.0 (windows) (103.58 kB)
 ## v Got processx 3.5.1 (windows) (1.24 MB)
-## v Got storr 1.2.5 (windows) (401.14 kB)
 ## v Got ps 1.6.0 (windows) (775.96 kB)
-## [\] 12s RUNNING[|] 13s RUNNING                                                                              v Installed R6 2.5.0  (1.4s)
-## v Installed crayon 1.4.1  (1.4s)
-## v Installed ids 1.0.1  (1.5s)
-## v Installed askpass 1.1  (1.7s)
-## v Installed sys 3.4  (1.8s)
-## v Installed uuid 0.1-4  (1.9s)
-## [/] 14s RUNNING                                                                              v Installed docopt 0.7.1  (2s)
-## v Installed storr 1.2.5  (2.5s)
-## v Installed ellipsis 0.3.1  (2.4s)
-## v Installed glue 1.4.2  (2.6s)
-## [-] 15s RUNNING                                                                              v Installed digest 0.6.27  (3.3s)
-## v Installed openssl 1.4.3  (3.5s)
-## i Building context 0.3.0
-## [\] 19s RUNNING[|] 20s RUNNING                                                                              v Installed hms 1.0.0  (7s)
-## [/] 21s RUNNING                                                                              v Installed lifecycle 1.0.0  (7.1s)
-## v Installed pkgconfig 2.0.3  (7.4s)
-## v Installed prettyunits 1.1.1  (7.6s)
-## [-] 22s RUNNING                                                                              v Installed progress 1.2.2  (7.6s)
-## v Installed redux 1.1.0  (7.7s)
-## v Installed rlang 0.4.10  (7.6s)
-## v Installed vctrs 0.3.7  (7.8s)
-## [\] 23s RUNNING                                                                              v Installed callr 3.6.0  (7.8s)
-## v Installed processx 3.5.1  (7.7s)
-## [|] 24s RUNNING                                                                              v Installed ps 1.6.0  (8.3s)
+## [|]  9s RUNNING                                                                              v Installed docopt 0.7.1  (907ms)
+## v Installed prettyunits 1.1.1  (829ms)
+## [/] 10s RUNNING                                                                              v Installed hms 1.0.0  (1s)
+## v Installed progress 1.2.2  (1.1s)
+## v Installed callr 3.6.0  (1.1s)
+## v Installed redux 1.1.0  (1.3s)
 ## i Building rrq 0.2.18
-## [/] 25s RUNNING                                                                              v Built context 0.3.0 (5s)
-## [-] 26s RUNNING                                                                              v Installed context 0.3.0  (657ms)
-## [\] 27s RUNNING[|] 28s RUNNING[/] 29s RUNNING[-] 30s RUNNING[\] 31s RUNNING                                                                              v Built rrq 0.2.18 (7.1s)
-## [|] 32s RUNNING                                                                              v Installed rrq 0.2.18  (282ms)
-## v Summary:   25 new  in 2m 2.5s
+## [-] 11s RUNNING[\] 12s RUNNING[|] 13s RUNNING[/] 14s RUNNING[-] 15s RUNNING                                                                              v Installed processx 3.5.1  (6s)
+## v Installed ps 1.6.0  (6.5s)
+## [\] 16s RUNNING[|] 17s RUNNING[/] 18s RUNNING[-] 19s RUNNING[\] 20s RUNNING[|] 21s RUNNING                                                                              v Built rrq 0.2.18 (6.8s)
+## [/] 22s RUNNING                                                                              v Installed rrq 0.2.18  (297ms)
+## v Summary:   9 new   16 kept  in 25.8s
 ##                                                                               Done!
 ```
 
@@ -215,9 +165,9 @@ t$times()
 
 ```
 ##                            task_id           submitted started finished
-## 1 6203e8be1f233385b30f99f1c27548b1 2021-04-08 17:34:56    <NA>     <NA>
-##    waiting running idle
-## 1 0.263576      NA   NA
+## 1 3545d9a27a03fea8b5ccc5520f04f056 2021-04-08 18:28:37    <NA>     <NA>
+##     waiting running idle
+## 1 0.2042577      NA   NA
 ```
 
 You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!
@@ -230,11 +180,11 @@ workers <- obj$submit_workers(2)
 ```
 
 ```
-## Submitting 2 workers with base name 'pompous_vulpesvulpes'
+## Submitting 2 workers with base name 'sandpapery_blobfish'
 ```
 
 ```
-## submitting (-) [===================================] 100% | giving up in 600 s
+## submitting (-) [===================================] 100% | giving up in 599 s
 ```
 
 ```r
@@ -242,7 +192,7 @@ workers
 ```
 
 ```
-## [1] "pompous_vulpesvulpes_1" "pompous_vulpesvulpes_2"
+## [1] "sandpapery_blobfish_1" "sandpapery_blobfish_2"
 ```
 
 All workers get names in the form `<adjective>_<animal>_<integer>`
@@ -252,7 +202,7 @@ with the `worker_timeout` argument to `didehpc_config` or by
 sending a `TIMEOUT_SET` message).
 
 One advantage over the usual queuing approach here is that you will
-not wait for anyone elses jobs to complete once you have reserved
+not wait for anyone else's jobs to complete once you have reserved
 your workers.
 
 
@@ -261,13 +211,13 @@ t$wait(10)
 ```
 
 ```
-## (-) waiting for 6203e8b...8b1, giving up in 9.5 s (\) waiting for 6203e8b...8b1,
+## (-) waiting for 3545d9a...056, giving up in 9.5 s (\) waiting for 3545d9a...056,
 ## giving up in 9.0 s
 ```
 
 ```
-##  [1] 1.1387376 1.9015383 1.4091530 1.1044008 0.1655079 1.0692514 1.2235822
-##  [8] 1.8781213 1.0132392 0.7237403
+##  [1] 1.257798 1.396757 2.256467 2.274947 4.030520 4.525673 4.920123 5.487352
+##  [9] 6.089862 5.105239
 ```
 
 We're going to interact with the rrq object a bit
@@ -300,7 +250,7 @@ rrq
 ##     message_response_ids: function (worker_id)
 ##     message_send: function (command, args = NULL, worker_ids = NULL)
 ##     message_send_and_wait: function (command, args = NULL, worker_ids = NULL, named = TRUE,
-##     queue_id: 88f88ed6d573805f0d83f24164609ccc
+##     queue_id: cfa81fb852e25cd6fbaf59490bd2ebc0
 ##     queue_length: function (queue = NULL)
 ##     queue_list: function (queue = NULL)
 ##     queue_remove: function (task_ids, queue = NULL)
@@ -346,16 +296,16 @@ rrq$worker_log_tail(n = Inf)
 ```
 
 ```
-##                worker_id       time       command
-## 1 pompous_vulpesvulpes_1 1617899698         ALIVE
-## 2 pompous_vulpesvulpes_1 1617899698    TASK_START
-## 3 pompous_vulpesvulpes_2 1617899699         ALIVE
-## 4 pompous_vulpesvulpes_1 1617899699 TASK_COMPLETE
+##               worker_id       time       command
+## 1 sandpapery_blobfish_1 1617902920         ALIVE
+## 2 sandpapery_blobfish_1 1617902920    TASK_START
+## 3 sandpapery_blobfish_2 1617902920         ALIVE
+## 4 sandpapery_blobfish_1 1617902921 TASK_COMPLETE
 ##                            message
 ## 1
-## 2 d56a50551efb9ddd54753781761437d4
+## 2 79da0082a01ea8ac122c23ef5fe99e6d
 ## 3
-## 4 d56a50551efb9ddd54753781761437d4
+## 4 79da0082a01ea8ac122c23ef5fe99e6d
 ```
 
 The `time` column represents seconds - relative seconds should still be useful here.
@@ -368,17 +318,17 @@ t$log()
 
 ```
 ## [ open:db   ]  rds
-## [ context   ]  88f88ed6d573805f0d83f24164609ccc
+## [ context   ]  cfa81fb852e25cd6fbaf59490bd2ebc0
 ## [ library   ]
 ## [ namespace ]
 ## [ source    ]  mysources.R
-## [ root      ]  context
-## [ context   ]  88f88ed6d573805f0d83f24164609ccc
-## [ task      ]  6203e8be1f233385b30f99f1c27548b1
+## [ root      ]  contexts
+## [ context   ]  cfa81fb852e25cd6fbaf59490bd2ebc0
+## [ task      ]  3545d9a27a03fea8b5ccc5520f04f056
 ## [ expr      ]  random_walk(0, 10)
-## [ start     ]  2021-04-08 17:34:59.126
+## [ start     ]  2021-04-08 18:28:41.141
 ## [ ok        ]
-## [ end       ]  2021-04-08 17:34:59.282
+## [ end       ]  2021-04-08 18:28:41.344
 ```
 
 Find out how long your workers will persist for:
@@ -389,13 +339,13 @@ rrq$message_send_and_wait("TIMEOUT_GET", worker_ids = workers)
 ```
 
 ```
-## $pompous_vulpesvulpes_1
+## $sandpapery_blobfish_1
 ##   timeout remaining
 ##       600       600
 ##
-## $pompous_vulpesvulpes_2
+## $sandpapery_blobfish_2
 ##   timeout remaining
-##   600.000   598.875
+##  600.0000  598.9062
 ```
 
 Other than that, hopefully everything else continues as normal.  We
@@ -408,7 +358,7 @@ grp <- obj$lapply(sizes, random_walk, x = 0)
 ```
 
 ```
-## Creating bundle: 'botanic_cob'
+## Creating bundle: 'gymnastic_hyena'
 ```
 
 ```
@@ -426,11 +376,11 @@ grp$status()
 ```
 
 ```
-## b19179d1f60ebe93c9f5bd5509a0482f fecc9838bb082293fdf9d35886216dc6
-##                        "RUNNING"                        "PENDING"
-## a937220398738b507a9974e37d1a6d39 5c55905b0bcd247db5690e20e1e340f1
+## 1ce55c2ec82ac7dda000c7a03c2be35f 92adab275d3b3b6a2b3e37f17f92c8b5
 ##                        "PENDING"                        "PENDING"
-## e005d389423fdfdacbd78b498eebdac6 d29fde3a160f89bb9bf6960fc83ad81f
+## 55d3d959dc82eb8009e58723f8e7b820 a45bf36e55339af3d6c3fdefaf88e906
+##                        "PENDING"                        "PENDING"
+## 5c5d5dd9928820f8fc26809c04025330 0b10c965eb171bada756aeba0b700d41
 ##                        "PENDING"                        "PENDING"
 ```
 
@@ -441,8 +391,8 @@ res <- grp$wait(5)
 ```
 
 ```
-## (-) [===============================>----------------] 67% | giving up in 4 s
-## (\) [===============================>----------------] 67% | giving up in 4 s
+## (-) [=======================>------------------------] 50% | giving up in 4 s
+## (\) [=======================>------------------------] 50% | giving up in 4 s
 ## (|) [================================================] 100% | giving up in 3 s
 ```
 
@@ -452,24 +402,23 @@ res
 
 ```
 ## [[1]]
-## [1]  0.4740505 -0.0885686  0.4877967
+## [1] 0.5575338 1.3748785 2.3758934
 ##
 ## [[2]]
-## [1] 0.836734 2.066275 3.236791 3.486007
+## [1]  0.3845755 -2.2066436 -1.5387230 -2.6487082
 ##
 ## [[3]]
-## [1] 1.366285 1.384638 1.884508 2.284558 1.965855
+## [1]  0.1913856 -1.7634068 -1.4919630 -1.0660215 -1.3452155
 ##
 ## [[4]]
-## [1] -1.51424319 -0.23091026 -0.07363942 -1.46119456 -2.44535905 -2.51154256
+## [1]  0.68730668  0.15525724 -0.25867677  0.15545994  0.09368811 -0.23241926
 ##
 ## [[5]]
-## [1]  0.41197442 -1.26692996 -0.70134926  0.09532039 -1.26262647 -0.95169576
-## [7] -1.14892325
+## [1] -0.1886955 -1.5254553 -1.9013086 -2.1118695 -1.3018889  0.3276978  0.9707227
 ##
 ## [[6]]
-## [1]  0.50682975  0.50097494 -0.27726381 -2.85940363 -3.81332453 -2.68499675
-## [7] -2.55390563 -0.05998136
+## [1] -0.45658675 -0.84289281 -1.35537310 -0.02303611 -0.50684778 -2.01788759
+## [7] -1.47044765 -0.27612253
 ```
 
 While workers will turn off automatically, it's polite to turn them
@@ -482,7 +431,7 @@ rrq$message_send("TIMEOUT_SET", 0)
 ```
 
 which will mean that the workers will stop immediately after not
-recieving a task (so after they finish processing all your jobs
+receiving a task (so after they finish processing all your jobs
 they'll stop one by one).  Practically this still takes one minute
 because that's the polling timeout time (I may be able to improve
 this later).
@@ -495,54 +444,54 @@ rrq$worker_log_tail(workers, n = Inf)
 ```
 
 ```
-##                 worker_id       time       command
-## 1  pompous_vulpesvulpes_1 1617899698         ALIVE
-## 2  pompous_vulpesvulpes_1 1617899698    TASK_START
-## 3  pompous_vulpesvulpes_2 1617899699         ALIVE
-## 4  pompous_vulpesvulpes_1 1617899699 TASK_COMPLETE
-## 5  pompous_vulpesvulpes_1 1617899700       MESSAGE
-## 6  pompous_vulpesvulpes_1 1617899700      RESPONSE
-## 7  pompous_vulpesvulpes_2 1617899700       MESSAGE
-## 8  pompous_vulpesvulpes_2 1617899700      RESPONSE
-## 9  pompous_vulpesvulpes_1 1617899701    TASK_START
-## 10 pompous_vulpesvulpes_2 1617899701    TASK_START
-## 11 pompous_vulpesvulpes_1 1617899702 TASK_COMPLETE
-## 12 pompous_vulpesvulpes_1 1617899702    TASK_START
-## 13 pompous_vulpesvulpes_2 1617899702 TASK_COMPLETE
-## 14 pompous_vulpesvulpes_2 1617899702    TASK_START
-## 15 pompous_vulpesvulpes_1 1617899702 TASK_COMPLETE
-## 16 pompous_vulpesvulpes_1 1617899702    TASK_START
-## 17 pompous_vulpesvulpes_2 1617899703 TASK_COMPLETE
-## 18 pompous_vulpesvulpes_2 1617899703    TASK_START
-## 19 pompous_vulpesvulpes_1 1617899703 TASK_COMPLETE
-## 20 pompous_vulpesvulpes_2 1617899703 TASK_COMPLETE
-## 21 pompous_vulpesvulpes_1 1617899704       MESSAGE
-## 22 pompous_vulpesvulpes_1 1617899704      RESPONSE
-## 23 pompous_vulpesvulpes_1 1617899704          STOP
-## 24 pompous_vulpesvulpes_2 1617899704       MESSAGE
-## 25 pompous_vulpesvulpes_2 1617899704      RESPONSE
-## 26 pompous_vulpesvulpes_2 1617899704          STOP
+##                worker_id       time       command
+## 1  sandpapery_blobfish_1 1617902920         ALIVE
+## 2  sandpapery_blobfish_1 1617902920    TASK_START
+## 3  sandpapery_blobfish_2 1617902920         ALIVE
+## 4  sandpapery_blobfish_1 1617902921 TASK_COMPLETE
+## 5  sandpapery_blobfish_1 1617902922       MESSAGE
+## 6  sandpapery_blobfish_1 1617902922      RESPONSE
+## 7  sandpapery_blobfish_2 1617902922       MESSAGE
+## 8  sandpapery_blobfish_2 1617902922      RESPONSE
+## 9  sandpapery_blobfish_1 1617902923    TASK_START
+## 10 sandpapery_blobfish_2 1617902923    TASK_START
+## 11 sandpapery_blobfish_1 1617902924 TASK_COMPLETE
+## 12 sandpapery_blobfish_1 1617902924    TASK_START
+## 13 sandpapery_blobfish_2 1617902924 TASK_COMPLETE
+## 14 sandpapery_blobfish_2 1617902924    TASK_START
+## 15 sandpapery_blobfish_1 1617902924 TASK_COMPLETE
+## 16 sandpapery_blobfish_1 1617902924    TASK_START
+## 17 sandpapery_blobfish_2 1617902924 TASK_COMPLETE
+## 18 sandpapery_blobfish_2 1617902924    TASK_START
+## 19 sandpapery_blobfish_1 1617902925 TASK_COMPLETE
+## 20 sandpapery_blobfish_2 1617902925 TASK_COMPLETE
+## 21 sandpapery_blobfish_1 1617902925       MESSAGE
+## 22 sandpapery_blobfish_1 1617902925      RESPONSE
+## 23 sandpapery_blobfish_1 1617902925          STOP
+## 24 sandpapery_blobfish_2 1617902925       MESSAGE
+## 25 sandpapery_blobfish_2 1617902925      RESPONSE
+## 26 sandpapery_blobfish_2 1617902925          STOP
 ##                             message
 ## 1
-## 2  d56a50551efb9ddd54753781761437d4
+## 2  79da0082a01ea8ac122c23ef5fe99e6d
 ## 3
-## 4  d56a50551efb9ddd54753781761437d4
+## 4  79da0082a01ea8ac122c23ef5fe99e6d
 ## 5                       TIMEOUT_GET
 ## 6                       TIMEOUT_GET
 ## 7                       TIMEOUT_GET
 ## 8                       TIMEOUT_GET
-## 9  02ff04b1c68645314acfcecba59332c4
-## 10 16ff5912fee6220bf67e784b3174f05a
-## 11 02ff04b1c68645314acfcecba59332c4
-## 12 d00dea56ad655845fce9a3b950ffcfc3
-## 13 16ff5912fee6220bf67e784b3174f05a
-## 14 52eabc1766b7c7e269bdc4037e4677cd
-## 15 d00dea56ad655845fce9a3b950ffcfc3
-## 16 935c66c69ece8f1940f399c56dcff9b0
-## 17 52eabc1766b7c7e269bdc4037e4677cd
-## 18 ba09de85b769d0bcbaf81d5c59ff132b
-## 19 935c66c69ece8f1940f399c56dcff9b0
-## 20 ba09de85b769d0bcbaf81d5c59ff132b
+## 9  12e57d3e784901f9fc67d0fbc6eabc69
+## 10 3cc6351879a877a64a2bb993289c646c
+## 11 12e57d3e784901f9fc67d0fbc6eabc69
+## 12 341b6bbfbf447baf11691ee612af0b8a
+## 13 3cc6351879a877a64a2bb993289c646c
+## 14 4f2a60e3a0b2bf753912e2336c3161d8
+## 15 341b6bbfbf447baf11691ee612af0b8a
+## 16 963073bd8594fd1fa70ed838d243056d
+## 17 4f2a60e3a0b2bf753912e2336c3161d8
+## 18 5042ebabb27ec96643e06cea8a0a4958
+## 19 963073bd8594fd1fa70ed838d243056d
+## 20 5042ebabb27ec96643e06cea8a0a4958
 ## 21                             STOP
 ## 22                             STOP
 ## 23                         OK (BYE)
@@ -572,11 +521,11 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
 ```
-## Loading context 88f88ed6d573805f0d83f24164609ccc
+## Loading context cfa81fb852e25cd6fbaf59490bd2ebc0
 ```
 
 ```
-## [ context   ]  88f88ed6d573805f0d83f24164609ccc
+## [ context   ]  cfa81fb852e25cd6fbaf59490bd2ebc0
 ```
 
 ```
@@ -599,7 +548,7 @@ workers <- obj$submit_workers(10)
 ```
 
 ```
-## Submitting 10 workers with base name 'socialistic_rabidsquirrel'
+## Submitting 10 workers with base name 'archaeological_coqui'
 ```
 
 ```
@@ -609,9 +558,9 @@ workers <- obj$submit_workers(10)
 ## submitting (/) [=================>-----------------] 50% | giving up in 598 s
 ## submitting (-) [====================>--------------] 60% | giving up in 597 s
 ## submitting (\) [=======================>-----------] 70% | giving up in 597 s
-## submitting (|) [===========================>-------] 80% | giving up in 597 s
+## submitting (|) [===========================>-------] 80% | giving up in 596 s
 ## submitting (/) [===============================>---] 90% | giving up in 596 s
-## submitting (-) [===================================] 100% | giving up in 595 s
+## submitting (-) [===================================] 100% | giving up in 596 s
 ```
 
 ```r
@@ -619,11 +568,11 @@ workers
 ```
 
 ```
-##  [1] "socialistic_rabidsquirrel_1"  "socialistic_rabidsquirrel_2"
-##  [3] "socialistic_rabidsquirrel_3"  "socialistic_rabidsquirrel_4"
-##  [5] "socialistic_rabidsquirrel_5"  "socialistic_rabidsquirrel_6"
-##  [7] "socialistic_rabidsquirrel_7"  "socialistic_rabidsquirrel_8"
-##  [9] "socialistic_rabidsquirrel_9"  "socialistic_rabidsquirrel_10"
+##  [1] "archaeological_coqui_1"  "archaeological_coqui_2"
+##  [3] "archaeological_coqui_3"  "archaeological_coqui_4"
+##  [5] "archaeological_coqui_5"  "archaeological_coqui_6"
+##  [7] "archaeological_coqui_7"  "archaeological_coqui_8"
+##  [9] "archaeological_coqui_9"  "archaeological_coqui_10"
 ```
 
 To send tasks to these workers we directly use the `rrq_controller` object - we'll not use the `queue_didehpc` object from this point.
@@ -633,7 +582,7 @@ To send tasks to these workers we directly use the `rrq_controller` object - we'
 rrq <- obj$rrq_controller()
 ```
 
-This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistant record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
+This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistent record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
 
 
 ```r
@@ -654,7 +603,7 @@ system.time(res <- rrq$lapply(1:50, sin))
 
 ```
 ##    user  system elapsed
-##   0.004   0.007   0.049
+##   0.006   0.004   0.049
 ```
 
 or 500 tasks:
@@ -666,7 +615,7 @@ system.time(res <- rrq$lapply(1:500, sin))
 
 ```
 ##    user  system elapsed
-##   0.061   0.016   0.466
+##   0.072   0.016   0.485
 ```
 
 Across the network, the latency here is ~1/600 s per task.  On fi--didemrchnb it will hopefully be a bit faster because of the infiniband network.
@@ -691,4 +640,4 @@ within your sources, then you can use it in place of running (say) a `lapply()` 
 
 ## Cleaning up
 
-Above we use `rrq$destroy()` to clean up every trace of the queue. Peridically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.
+Above we use `rrq$destroy()` to clean up every trace of the queue. Periodically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.
