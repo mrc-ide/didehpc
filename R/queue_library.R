@@ -67,3 +67,11 @@ queue_template <- function(cluster) {
     "GeneralNodes"
   }
 }
+
+
+provision_policy <- function(policy, name = deparse(substitute(name))) {
+  if (isFALSE(policy)) {
+    policy <- "later"
+  }
+  match_value(policy, c("lazy", "upgrade", "later", "fake"), name)
+}

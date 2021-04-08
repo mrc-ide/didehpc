@@ -57,3 +57,11 @@ r6_private <- function(x) {
 password <- function(x) {
   structure(x, class = "password")
 }
+
+
+skip_if_no_redis <- function() {
+  tryCatch(
+    redux::hiredis()$PING(),
+    error = function(e) testthat::skip("redis not available"))
+  invisible(NULL)
+}

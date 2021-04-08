@@ -8,7 +8,9 @@ queue_didehpc(
   context,
   config = didehpc_config(),
   root = NULL,
-  initialise = TRUE
+  initialise = TRUE,
+  provision = NULL,
+  login = NULL
 )
 }
 \arguments{
@@ -18,9 +20,30 @@ queue_didehpc(
 
 \item{root}{A root directory, not usually needed}
 
-\item{initialise}{initialise context and log in to the cluster on
-queue creation (recommended on initial creation, but not
-required if you want to check on jobs).}
+\item{initialise}{Passed through to the base queue. If you set
+this to \code{FALSE} you will not be able to submit jobs. By default
+if \code{FALSE} this also sets \code{provision} to \code{later} and \code{login} to
+\code{FALSE}.}
+
+\item{provision}{A provisioning strategy to use. Options are
+\itemize{
+\item \code{lazy}: (the default) which installs packages if they are not
+present (note that this differs slightly to the interpretation
+of "lazy" used by \code{pkgdepends} as we try and be even lazier by
+not calling \code{pkgdepends} if it looks like your packages might be
+ok - this avoids fetching package metadata - you might want to
+run \verb{$provision_context("lazy")} later.
+\item \code{upgrade}: which tells \code{pkgdepends} to always try and upgrade
+\item \code{later}: don't do anything on creation
+\item \code{fake}: don't do anything but mark the queue as being already
+provisioned (this option can come in useful if you really don't
+want to risk any accidental package installation)
+}}
+
+\item{login}{Logical, indicating if we should immediately
+login. If \code{TRUE}, then you will be prompted to login
+immediately, rather than when a request to the web portal is
+made.}
 }
 \description{
 Create a queue object

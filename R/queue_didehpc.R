@@ -7,16 +7,37 @@
 ##'
 ##' @param config Optional dide configuration information.
 ##'
-##' @param initialise initialise context and log in to the cluster on
-##'   queue creation (recommended on initial creation, but not
-##'   required if you want to check on jobs).
-##'
 ##' @param root A root directory, not usually needed
+##'
+##' @param initialise Passed through to the base queue. If you set
+##'   this to `FALSE` you will not be able to submit jobs. By default
+##'   if `FALSE` this also sets `provision` to `later` and `login` to
+##'   `FALSE`.
+##'
+##' @param provision A provisioning strategy to use. Options are
+##' * `lazy`: (the default) which installs packages if they are not
+##'   present (note that this differs slightly to the interpretation
+##'   of "lazy" used by `pkgdepends` as we try and be even lazier by
+##'   not calling `pkgdepends` if it looks like your packages might be
+##'   ok - this avoids fetching package metadata - you might want to
+##'   run `$provision_context("lazy")` later.
+##' * `upgrade`: which tells `pkgdepends` to always try and upgrade
+##' * `later`: don't do anything on creation
+##' * `fake`: don't do anything but mark the queue as being already
+##'   provisioned (this option can come in useful if you really don't
+##'   want to risk any accidental package installation)
+##'
+##' @param login Logical, indicating if we should immediately
+##'   login. If `TRUE`, then you will be prompted to login
+##'   immediately, rather than when a request to the web portal is
+##'   made.
 ##'
 ##' @export
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
-                          initialise = TRUE) {
-  .R6_queue_didehpc$new(context, config, root, initialise)
+                          initialise = TRUE, provision = NULL,
+                          login = NULL) {
+  .R6_queue_didehpc$new(context, config, root, initialise,
+                        provision %||% initialise , login %||% initialise)
 }
 
 .R6_queue_didehpc <- R6::R6Class(
@@ -26,7 +47,8 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
     config = NULL,
     client = NULL,
 
-    initialize = function(context, config, root, initialise, client = NULL) {
+    initialize = function(context, config, root, initialise, provision, login,
+                          client = NULL) {
       super$initialize(context, root, initialise)
       self$config <- as_didehpc_config(config)
 
@@ -36,20 +58,14 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       if (is.null(client)) {
         client <- web_client$new(self$config$credentials,
                                  self$config$cluster,
-                                 initialise)
+                                 login)
       }
       self$client <- client
 
+      provision <- provision_policy(provision)
       private$lib <- queue_library$new(
         private$data, self$config$cluster, self$client)
-
-      if (self$config$use_workers || self$config$use_rrq) {
-        rrq_init(self$rrq_controller(), self$config)
-      }
-
-      if (initialise) {
-        self$provision_context("lazy")
-      }
+      self$provision_context(provision, quiet = TRUE)
     },
 
     login = function(refresh = TRUE) {
@@ -69,24 +85,22 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
         stop("Queue is not provisioned; run '$provision_library()'")
       }
       if (self$config$use_workers) {
-        submit_rrq(self, private$data, task_ids, names)
+        rrq_submit_context_tasks(self$config, self$context, task_ids, names)
       } else {
         submit_dide(self, private$data, task_ids, names)
       }
     },
 
     submit_workers = function(n, timeout = 600, progress = NULL) {
-      submit_workers(self, private$data, n, timeout, progress)
+      rrq_submit_workers(self, private$data, n, timeout, progress)
     },
 
     stop_workers = function(worker_ids = NULL) {
-      self$rrq_controller()$worker_stop(worker_ids)
+      rrq_stop_workers(self$config, self$context$id, worker_ids)
     },
 
     rrq_controller = function() {
-      check_rrq_enabled(self$config)
-      host <- rrq_redis_host(self$config$cluster)
-      rrq::rrq_controller(self$context$id, redux::hiredis(host = host))
+      rrq_controller(self$config, self$context$id)
     },
 
     unsubmit = function(task_ids) {
@@ -106,18 +120,28 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
       self$client$log(dide_id, cluster)
     },
 
-    provision_context = function(policy = "lazy", dryrun = FALSE) {
-      dat <- context_packages(self$context,
-                              self$config$use_rrq || self$config$use_workers)
-      self$install_packages(dat$packages, dat$repos, policy, dryrun)
+    provision_context = function(policy = "lazy", dryrun = FALSE,
+                                 quiet = FALSE) {
+      policy <- provision_policy(policy)
+      if (policy == "later") {
+        return()
+      }
+      if (policy != "fake") {
+        dat <- context_packages(self$context,
+                                self$config$use_rrq || self$config$use_workers)
+        self$install_packages(dat$packages, dat$repos, policy, dryrun, quiet)
+      }
       private$provisioned <- TRUE
     },
 
     install_packages = function(packages, repos = NULL,
-                                policy = "lazy", dryrun = FALSE) {
+                                policy = "lazy", dryrun = FALSE,
+                                quiet = FALSE) {
       complete <- private$lib$check(packages)$complete
       if (complete && policy == "lazy") {
-        message("Nothing to install; try running with policy = 'upgrade'")
+        if (!quiet) {
+          message("Nothing to install; try running with policy = 'upgrade'")
+        }
         return()
       }
       message("Running installation script on cluster")
@@ -166,30 +190,6 @@ submit_dide <- function(obj, data, task_ids, names) {
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
   }
-}
-
-
-submit_rrq <- function(obj, data, task_ids, names) {
-  ## NOTE: We don't cope with names here
-  rrq <- obj$rrq_controller()
-  root <- obj$context$root$path
-  dat <- data.frame(task_id = task_ids,
-                    path_log = path_logs(root, task_ids),
-                    stringsAsFactors = FALSE)
-  res <- rrq$enqueue_bulk_(dat, quote(context::task_run_external),
-                           root = root,
-                           identifier = obj$context$id,
-                           timeout = 0)
-  ## TODO: set something in as dide_cluster and dide_id here to
-  ## prevent reconcile() marking these as dead. Given that things can
-  ## end up on multiple clusters, I think that we might be better off
-  ## marking the cluster as "rrq" rather than either of the fi-- names
-  ## and later in reconcile we can check for that.
-  ##
-  ## TODO: here (and above) we have to use path_logs because the local
-  ## log path includes the context root which we don't want.
-  obj$db$mset(task_ids, path_logs(NULL), "log_path")
-  obj$db$mset(task_ids, "rrq", "dide_cluster")
 }
 
 

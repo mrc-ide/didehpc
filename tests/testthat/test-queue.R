@@ -13,7 +13,7 @@ test_that("login calls login on the client", {
   ctx <- context::context_save(file.path(config$workdir, "context"))
   client <- list(
     login = mockery::mock())
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, client)
+  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   obj$login()
   mockery::expect_called(client$login, 1)
@@ -30,7 +30,7 @@ test_that("cluster_load passes through to the client", {
   ctx <- context::context_save(file.path(config$workdir, "context"))
   client <- list(
     load_show = mockery::mock())
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, client)
+  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   obj$cluster_load()
   mockery::expect_called(client$load_show, 1)
@@ -69,6 +69,18 @@ test_that("submission requires provisioning", {
 })
 
 
+test_that("can tell the object to skip provisioning", {
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc(ctx, config, initialise = FALSE)
+  expect_false(r6_private(obj)$provisioned)
+  obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "later")
+  expect_false(r6_private(obj)$provisioned)
+  obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
+  expect_true(r6_private(obj)$provisioned)
+})
+
+
 test_that("Submit job and update db", {
   dide_id <- "462460"
   dide_log <- "The\nlog"
@@ -80,7 +92,7 @@ test_that("Submit job and update db", {
 
   config <- example_config()
   ctx <- context::context_save(file.path(config$workdir, "context"))
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, client)
+  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   private <- r6_private(obj)
   private$provisioned <- TRUE
@@ -129,7 +141,7 @@ test_that("Can submit a group", {
     submit = mockery::mock("1", "2", "3", "4"))
   config <- example_config()
   ctx <- context::context_save(file.path(config$workdir, "context"))
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, client)
+  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
   private <- r6_private(obj)
   private$provisioned <- TRUE
   grp <- obj$lapply(1:4, sin)
@@ -171,7 +183,8 @@ test_that("Can get all context packages", {
   expect_equal(context_packages(ctx),
                list(packages = c("context", "foo"), repos = repos))
   expect_equal(context_packages(ctx, TRUE),
-               list(packages = c("context", "rrq", "foo"), repos = repos))
+               list(packages = c("context", "rrq", "callr", "foo"),
+                    repos = repos))
 })
 
 
@@ -208,7 +221,9 @@ test_that("Package provisioning interface logic is correct", {
   private <- r6_private(obj)
   private$lib <- list(
     provision = mockery::mock(),
-    check = mockery::mock(list(complete = FALSE), list(complete = TRUE)))
+    check = mockery::mock(list(complete = FALSE),
+                          list(complete = TRUE),
+                          list(complete = TRUE)))
   expect_false(private$provisioned)
 
   expect_message(
@@ -227,9 +242,13 @@ test_that("Package provisioning interface logic is correct", {
   expect_message(
     obj$provision_context(),
     "Nothing to install; try running with policy = 'upgrade'")
+  expect_silent(
+    obj$provision_context(quiet = TRUE))
 
-  mockery::expect_called(private$lib$check, 2L)
+  mockery::expect_called(private$lib$check, 3L)
   expect_equal(mockery::mock_args(private$lib$check)[[2]],
+               mockery::mock_args(private$lib$check)[[1]])
+  expect_equal(mockery::mock_args(private$lib$check)[[3]],
                mockery::mock_args(private$lib$check)[[1]])
   mockery::expect_called(private$lib$provision, 1L)
 })

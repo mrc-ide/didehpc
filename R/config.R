@@ -238,7 +238,9 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               conan_bootstrap = dat$conan_bootstrap,
               r_version = dat$r_version,
               use_java = dat$use_java,
-              java_home = dat$java_home)
+              java_home = dat$java_home,
+              ## derived values
+              redis_host = paste0(cluster, ".dide.ic.ac.uk"))
 
   class(ret) <- "didehpc_config"
   ret
