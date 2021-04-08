@@ -177,14 +177,19 @@ submit_rrq <- function(obj, data, task_ids, names) {
                     path_log = path_logs(root, task_ids),
                     stringsAsFactors = FALSE)
   res <- rrq$enqueue_bulk_(dat, quote(context::task_run_external),
-                           root = obj$context$root$path,
-                           identifier = obj$context$root$id)
+                           root = root,
+                           identifier = obj$context$id,
+                           timeout = 0)
   ## TODO: set something in as dide_cluster and dide_id here to
-  ## prevent reconcile() marking these as dead.
+  ## prevent reconcile() marking these as dead. Given that things can
+  ## end up on multiple clusters, I think that we might be better off
+  ## marking the cluster as "rrq" rather than either of the fi-- names
+  ## and later in reconcile we can check for that.
   ##
   ## TODO: here (and above) we have to use path_logs because the local
   ## log path includes the context root which we don't want.
   obj$db$mset(task_ids, path_logs(NULL), "log_path")
+  obj$db$mset(task_ids, "rrq", "dide_cluster")
 }
 
 
@@ -232,8 +237,11 @@ task_get_id <- function(x) {
 
 ## What packages do we need?
 context_packages <- function(context, need_rrq = FALSE) {
+  ## 'callr' is needed if using 'rrq' because the rrq/context queue
+  ## runs things in separate processes using callr, but this is only
+  ## an optional dependency.
   list(packages = unique(c("context",
-                           if (need_rrq) "rrq",
+                           if (need_rrq) c("rrq", "callr"),
                            context$packages$attached,
                            context$packages$loaded,
                            context$package_sources$packages)),
