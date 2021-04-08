@@ -13,7 +13,7 @@ test_that("login calls login on the client", {
   ctx <- context::context_save(file.path(config$workdir, "context"))
   client <- list(
     login = mockery::mock())
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   obj$login()
   mockery::expect_called(client$login, 1)
@@ -30,7 +30,7 @@ test_that("cluster_load passes through to the client", {
   ctx <- context::context_save(file.path(config$workdir, "context"))
   client <- list(
     load_show = mockery::mock())
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   obj$cluster_load()
   mockery::expect_called(client$load_show, 1)
@@ -92,7 +92,7 @@ test_that("Submit job and update db", {
 
   config <- example_config()
   ctx <- context::context_save(file.path(config$workdir, "context"))
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
 
   private <- r6_private(obj)
   private$provisioned <- TRUE
@@ -141,7 +141,7 @@ test_that("Can submit a group", {
     submit = mockery::mock("1", "2", "3", "4"))
   config <- example_config()
   ctx <- context::context_save(file.path(config$workdir, "context"))
-  obj <- .R6_queue_didehpc$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
   private <- r6_private(obj)
   private$provisioned <- TRUE
   grp <- obj$lapply(1:4, sin)

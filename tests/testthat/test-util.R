@@ -63,6 +63,11 @@ test_that("assertions work", {
 
   expect_silent(assert_character("a"))
   expect_error(assert_character(pi), "'pi' must be a character")
+
+  expect_silent(assert_scalar_integer(1L))
+  expect_silent(assert_scalar_integer(1))
+  expect_error(assert_scalar_integer(1.1),
+               "must be an integer")
 })
 
 
@@ -107,8 +112,8 @@ test_that("readlines_if_exists does not warn on incomplete file", {
 })
 
 
-test_that("Sys_which throws on unknown exe", {
-  expect_error(Sys_which("unknowncommand"),
+test_that("sys_which throws on unknown exe", {
+  expect_error(sys_which("unknowncommand"),
                "unknowncommand not found in $PATH",
                fixed = TRUE)
 })

@@ -50,17 +50,17 @@ drop_blank <- function(x) {
 }
 
 
-vcapply <- function(X, FUN, ...) {
+vcapply <- function(X, FUN, ...) { # nolint
   vapply(X, FUN, character(1), ...)
 }
 
 
-vlapply <- function(X, FUN, ...) {
+vlapply <- function(X, FUN, ...) { # nolint
   vapply(X, FUN, logical(1), ...)
 }
 
 
-`%||%` <- function(a, b) {
+`%||%` <- function(a, b) { # nolint
   if (is.null(a)) b else a
 }
 
@@ -108,7 +108,7 @@ from_json <- function(x) {
 }
 
 
-Sys_which <- function(name) {
+sys_which <- function(name) {
   ret <- Sys.which(name)
   if (ret == "") {
     stop(sprintf("%s not found in $PATH", name))

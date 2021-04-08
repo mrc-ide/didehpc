@@ -27,10 +27,12 @@ detect_mount_windows <- function() {
 ## TODO: No idea what spaces in the filenames will do here.  Nothing
 ## pretty, that's for sure.
 detect_mount_unix <- function() {
-  mount <- Sys_which("mount")
+  mount <- sys_which("mount")
   type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
 
-  re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
+  re <- paste(
+    "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?)",
+    "(?<extra>.+)$")
   dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
 
   i <- grepl(re, dat, perl = TRUE)
@@ -224,7 +226,7 @@ dide_detect_mount_find_workdir <- function(mapping, workdir, mounts) {
       mapping <- c(mapping, list(workdir = workdir_map))
     } else if (sum(i) > 1L) {
       stop("Having trouble determining the working directory mount point")
-    } else { # sum(i) == 0
+    } else {
       ## NOTE: This needs to be checked later when firing up the
       ## queue, but I believe that it is.
       message(sprintf("Running out of place: %s is not on a network share",

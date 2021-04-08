@@ -14,11 +14,11 @@ format.dide_clusterload <- function(x, ..., nodes = TRUE) {
   mh <- vcapply(m[1, ], crayon::bold)
 
   ## Divider:
-  md <- vcapply(nchar(m[1,]), strrep, x = "-")
+  md <- vcapply(nchar(m[1, ]), strrep, x = "-")
 
   ## Summary
   if (nodes) {
-    ms <- m[-(1:2), , drop = FALSE]
+    ms <- m[-seq_len(2), , drop = FALSE]
     col <- cluster_load_cols(x$summary$used / x$summary$total)
     ms[, 1] <- crayon::blue(ms[, 1])
     ms[, -1] <- t(vapply(seq_along(col),

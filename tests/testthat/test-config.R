@@ -146,7 +146,7 @@ test_that("Can get a reasonable rtools version", {
 
 
 test_that("fetch r versions", {
-  ## testthat::skip_if_offline()
+  testthat::skip_if_offline()
   dat <- r_versions()
   expect_is(dat, "numeric_version")
   expect_true(numeric_version("4.0.3") %in% dat)
@@ -155,7 +155,7 @@ test_that("fetch r versions", {
 
 
 test_that("Select a sensible r version", {
-  ## testthat::skip_if_offline()
+  testthat::skip_if_offline()
   v <- r_versions()
   vmax <- max(v)
   vmid <- v[length(v) - 3]

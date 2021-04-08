@@ -275,7 +275,7 @@ didehpc_config_global <- function(..., check = TRUE) {
     on.exit(options(oo))
     if (check && !all(vlapply(opts, is.null))) {
       ## check that we're ok, if we actually set anything.
-      tmp <- didehpc_config()
+      didehpc_config()
     }
     on.exit()
     invisible(oo)
@@ -382,7 +382,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     if (isTRUE(wholenode)) {
       stop("Cannot specify both wholenode and cores")
     }
-    ## assert_scalar_integer(cores)
+    assert_scalar_integer(cores)
     max_cores <- if (cluster == "fi--didemrchnb") 64 else 24
     if (cores > max_cores) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))

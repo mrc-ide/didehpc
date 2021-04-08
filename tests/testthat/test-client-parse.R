@@ -13,7 +13,7 @@ test_that("can parse cancel return payloads", {
 test_that("can parse load return payloads", {
   txt <- read_lines("responses/load.txt")
   res <- client_parse_load_cluster(txt, "fi--dideclusthn")
-  ## saveRDS(res, "responses/load.rds", version = 2L)
+  ## > saveRDS(res, "responses/load.rds", version = 2L)
   expect_equal(res, readRDS("responses/load.rds"))
 })
 
@@ -55,7 +55,7 @@ test_that("can parse R versions", {
     '  {"name": "R", "version": "3.6.3"},',
     '  {"name": "R", "version": "4.0.2"},',
     '  {"name": "R", "version": "4.0.3"}',
-    ']}', collapse = "\n")
+    "]}", collapse = "\n")
   expect_equal(
     client_parse_r_versions(txt),
     numeric_version(c("3.6.0", "3.6.1", "3.6.3", "4.0.2", "4.0.3")))

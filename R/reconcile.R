@@ -21,7 +21,6 @@ reconcile_compare <- function(obj, task_ids = NULL) {
     task_ids <- obj$task_list()
   }
   st_ctx <- obj$task_status(task_ids)
-  db <- obj$db
   i <- st_ctx %in% status_check
   if (!any(i)) {
     return(NULL)

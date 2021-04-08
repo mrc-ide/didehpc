@@ -36,11 +36,11 @@
 queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
                           initialise = TRUE, provision = NULL,
                           login = NULL) {
-  .R6_queue_didehpc$new(context, config, root, initialise,
-                        provision %||% initialise , login %||% initialise)
+  queue_didehpc_$new(context, config, root, initialise,
+                     provision %||% initialise, login %||% initialise)
 }
 
-.R6_queue_didehpc <- R6::R6Class(
+queue_didehpc_ <- R6::R6Class(
   "queue_didehpc",
   inherit = queuer:::R6_queue_base,
   public = list(
@@ -159,7 +159,6 @@ queue_didehpc <- function(context, config = didehpc_config(), root = NULL,
 
 submit_dide <- function(obj, data, task_ids, names) {
   db <- obj$db
-  root <- obj$context$root$path
   config <- obj$config
   client <- obj$client
   batch_template <- data$templates$runner

@@ -451,7 +451,7 @@ client_parse_load_cluster <- function(txt, cluster) {
   cluster <- tolower(cluster)
   txt <- strsplit(txt, "\n", fixed = TRUE)[[1]]
   re <- "^([^ ]+) +- +([0-9]+) +([^ ]+) *(.*)$"
-  d <- txt[-(1:2)]
+  d <- txt[-seq_len(2)]
   d <- d[nzchar(d)]
   node <- sub(re, "\\1", d)
   core <- as.integer(sub(re, "\\2", d)) + 1L

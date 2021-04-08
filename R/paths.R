@@ -156,12 +156,12 @@ clean_path_remote <- function(path) {
   ## Remove .dide.local if we find it.
 
   if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
-    bits[3] <- sub(".dide.local","", bits[3], ignore.case = TRUE)
+    bits[3] <- sub(".dide.local", "", bits[3], ignore.case = TRUE)
   }
 
   ## Add .dide.ic.ac.uk if it's not there.
   if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
-    bits[3] <- paste0(bits[3],".dide.ic.ac.uk")
+    bits[3] <- paste0(bits[3], ".dide.ic.ac.uk")
   }
 
   ## re_assemble

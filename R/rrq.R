@@ -71,9 +71,7 @@ rrq_context_loader <- function() {
 
 rrq_submit_workers <- function(obj, data, n, timeout = 600,
                                progress = NULL) {
-  root <- obj$root$path
   config <- obj$config
-  template <- obj$templates$rrq_worker
   client <- obj$client
   batch_template <- data$templates$rrq_worker
 
