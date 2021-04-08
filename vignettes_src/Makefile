@@ -1,7 +1,4 @@
-RSCRIPT = Rscript --no-init-file
-UPSTREAM = $(cat upstream)
-
-all: quickstart.md didehpc.md troubleshooting.md
+all: didehpc.md quickstart.md troubleshooting.md workers.md
 
 %.md: %.Rmd
 	rm -f $@
