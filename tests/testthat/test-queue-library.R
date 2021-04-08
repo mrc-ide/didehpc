@@ -61,3 +61,12 @@ test_that("provisioning selects appropriate queue", {
   expect_equal(queue_template("fi--didemrchnb"), "BuildQueue")
   expect_equal(queue_template("fi--dideclusthn"), "GeneralNodes")
 })
+
+
+test_that("provisioning policy logic", {
+  expect_equal(provision_policy(TRUE), "lazy")
+  expect_equal(provision_policy(FALSE), "later")
+  expect_equal(provision_policy("lazy"), "lazy")
+  expect_error(provision_policy("other", "policy"),
+               "'policy' must be one of 'lazy', 'upgrade', 'later', 'fake")
+})

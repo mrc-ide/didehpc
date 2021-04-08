@@ -70,8 +70,8 @@ queue_template <- function(cluster) {
 
 
 provision_policy <- function(policy, name = deparse(substitute(name))) {
-  if (isFALSE(policy)) {
-    policy <- "later"
+  if (is.logical(policy)) {
+    policy <- if (policy) "lazy" else "later"
   }
   match_value(policy, c("lazy", "upgrade", "later", "fake"), name)
 }
