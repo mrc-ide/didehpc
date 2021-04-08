@@ -103,7 +103,7 @@ test_that("detect_mount_windows tries different methods in turn", {
   expect_equal(
     mockery::mock_args(mock_wmic_call),
     list(list("csv"),
-         list("C:\\windows\\System32\\wbem\\en-US\\csv")))
+         list("C:\\Windows\\System32\\wbem\\en-US\\csv")))
 })
 
 
@@ -118,8 +118,8 @@ test_that("detect_mount_windows errors if no method found", {
   expect_equal(
     mockery::mock_args(mock_wmic_call),
     list(list("csv"),
-         list("C:\\windows\\System32\\wbem\\en-US\\csv"),
-         list("C:\\windows\\System32\\wbem\\en-GB\\csv")))
+         list("C:\\Windows\\System32\\wbem\\en-US\\csv"),
+         list("C:\\Windows\\System32\\wbem\\en-GB\\csv")))
 })
 
 
@@ -236,6 +236,10 @@ test_that("Fail to auto-detect temp if ambiguous or impossible", {
 
 
 test_that("dide_detect_mount", {
+  ## This is not too hard but currently expoits the fact that paths
+  ## can be mounted anywhere on unix. We will need a windows-specific
+  ## set of tests here.
+  skip_on_os("windows")
   root <- tempfile()
   dir.create(root, FALSE, TRUE)
   root <- normalizePath(root, mustWork = TRUE)

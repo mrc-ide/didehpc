@@ -6,11 +6,12 @@ test_that("defaults are sensible", {
     didehpc_config_defaults())
   non_null <- c("cluster", "use_workers", "use_rrq", "worker_timeout",
                 "use_java", "conan_bootstrap")
-  null <- c("credentials", "home", "temp", "shares", "template", "cores",
+  null <- c("home", "temp", "shares", "template", "cores",
             "wholenode", "parallel", "workdir", "r_version", "java_home")
   i <- vlapply(res, is.null)
-  expect_setequal(names(res)[i], null)
-  expect_setequal(names(res)[!i], non_null)
+  expect_true("credentials" %in% names(res)) # might be here or not
+  expect_setequal(setdiff(names(res)[i], "credentials"), null)
+  expect_setequal(setdiff(names(res)[!i], "credentials"), non_null)
   expect_equal(res$cluster, "fi--dideclusthn") # old cluster
   expect_false(res$use_workers)
   expect_false(res$use_rrq)
@@ -275,13 +276,19 @@ test_that("Global options", {
                "Unknown options: unknown")
   expect_equal(options(), opts)
 
+  mock_config <- mockery::mock(stop("Some error"))
+  mockery::stub(didehpc_config_global, "didehpc_config", mock_config)
+
   withr::with_options(list(didehpc.credentials = "alice"), {
     res <- didehpc_config_global(credentials = "bob", check = FALSE)
     expect_equal(res$didehpc.credentials, "alice")
     expect_equal(getOption("didehpc.credentials"), "bob")
+    mockery::expect_called(mock_config, 0)
     expect_error(
       didehpc_config_global(credentials = "charlie", check = TRUE),
-      "I can't find your home directory!  Please mount it")
+      "Some error")
+    mockery::expect_called(mock_config, 1)
+    expect_equal(mockery::mock_args(mock_config)[[1]], list())
     expect_equal(getOption("didehpc.credentials"), "bob")
   })
 })

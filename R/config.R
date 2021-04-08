@@ -266,7 +266,7 @@ didehpc_config_global <- function(..., check = TRUE) {
     if (is.null(nms) || any(nms == "")) {
       stop("All options must be named")
     }
-    extra <- setdiff(nms, names(formals(didehpc_config)))
+    extra <- setdiff(nms, names(didehpc_config_defaults()))
     if (length(extra)) {
       stop("Unknown options: ", paste(extra, collapse = ", "))
     }

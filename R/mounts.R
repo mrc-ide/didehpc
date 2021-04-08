@@ -8,7 +8,7 @@ detect_mount <- function() {
 
 
 detect_mount_windows <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
+  windir <- Sys.getenv("WINDIR", "C:\\Windows")
   methods <- c("csv",
                paste0(windir, "\\System32\\wbem\\en-US\\csv"),
                paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
