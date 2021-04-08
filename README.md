@@ -1,7 +1,12 @@
 # didehpc
 
 <!-- badges: start -->
+[![Project Status: WIP – Initial development is in progress, but there has not y
+et been a stable, usable release suitable for the public.](https://www.repostatu
+s.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![R build status](https://github.com/mrc-ide/didehpc/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/didehpc/actions)
+[![codecov.io](https://codecov.io/github/mrc-ide/didehpc/coverage.svg?branch=master
+)](https://codecov.io/github/mrc-ide/didehpc?branch=master)
 <!-- badges: end -->
 
 > DIDE Cluster Support
@@ -25,14 +30,15 @@ The steps below are described in more detail in the [vignettes](https://mrc-ide.
 
 ## Documentation
 
-Documentation is a work in progress, but largely contained in two vignettes:
+* New to this? [The main vignette](https://mrc-ide.github.io/didehpc/vignettes/didehpc.html) contains full instructions and explanations about why some bits are needed.
+* Need a reminder? There is a [quickstart guide](https://mrc-ide.github.io/didehpc/vignettes/quickstart.html) which is much shorter and will be quicker to glance through.
+* Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/didehpc/vignettes/troubleshooting.html)
+* Lots of small jobs to run? Consider using [workers](https://mrc-ide.github.io/didehpc/vignettes/workers.html)
 
-* [The main vignette](https://mrc-ide.github.io/didehpc/vignettes/didehpc.html) contains full instructions and explanations about why some bits are needed.
-* There is a [quickstart guide](https://mrc-ide.github.io/didehpc/vignettes/quickstart.html) which is much shorter and will be quicker to glance through.
+## Issues
 
-## Known issues
-
-Issues are spread across a number of repositories so there is a waffle board to keep track of them here: https://waffle.io/mrc-ide/didehpc
+* Check the [issue tracker](https://github.com/mrc-ide/didehpc/issues) for known problems, or to create a new one
+* Use the "Cluster" channel on Teams, which Rich and Wes keep an eye on
 
 ## Installation
 
@@ -44,8 +50,6 @@ drat:::add("mrc-ide")
 install.packages("didehpc")
 ```
 
-or try the slightly experimental:
+## License
 
-```r
-source("https://mrc-ide.github.io/didehpc/install")
-```
+MIT © Imperial College of Science, Technology and Medicine
