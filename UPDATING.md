@@ -48,12 +48,28 @@ r_versions <- function() {
 * Update the minor version in `DESCRIPTION`, and add an entry in `NEWS.md`.
 * Commit changes on the branch - but wait for last step before PR / merging.
 
-## Update the Build Server
+## Update the bootstrap
 
-Follow [the instructions on `buildr` itself](https://github.com/mrc-ide/buildr/blob/master/setup.md) to install and configure the new version on the build server.
+Log into a remote desktop
+
+```
+remotes::install_github("mrc-ide/conan@prototype", upgrade = FALSE)
+```
+
+```
+r_version <- paste(getRversion()[1, 1:2], collapse = ".")
+path <- file.path("T:/conan", r_version)
+dir.create(file.path(path, "bootstrap"), FALSE, TRUE)
+dir.create(file.path(path, "cache"), FALSE, TRUE)
+conan::conan_bootstrap(file.path(path, "bootstrap"))
+```
+
+Run this from both 4.0 and 3.6; we'll want to do this periodically.
+
+The [`didehpc-pkgs`](https://github.com/mrc-ide/didehpc-pkgs) should also be updated as that is where provisioning comes from (here to avoid conflicting package versions)
 
 ## Finalising
 
 * Make a pull Request for the new version of didehpc, request a review, and await merging.
-* After merging, `drat` will need updating. 
-* Inform `#cluster` channel on slack.
+* After merging, `drat` will need updating.
+* Inform `Cluster` channel on Teams
