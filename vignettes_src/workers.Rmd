@@ -96,7 +96,7 @@ with the `worker_timeout` argument to `didehpc_config` or by
 sending a `TIMEOUT_SET` message).
 
 One advantage over the usual queuing approach here is that you will
-not wait for anyone elses jobs to complete once you have reserved
+not wait for anyone else's jobs to complete once you have reserved
 your workers.
 
 ```{r}
@@ -161,7 +161,7 @@ rrq$message_send("TIMEOUT_SET", 0)
 ```
 
 which will mean that the workers will stop immediately after not
-recieving a task (so after they finish processing all your jobs
+receiving a task (so after they finish processing all your jobs
 they'll stop one by one).  Practically this still takes one minute
 because that's the polling timeout time (I may be able to improve
 this later).
@@ -201,7 +201,7 @@ To send tasks to these workers we directly use the `rrq_controller` object - we'
 rrq <- obj$rrq_controller()
 ```
 
-This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistant record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
+This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistent record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
 
 ```{r}
 t <- rrq$enqueue(sin(1))
@@ -241,4 +241,4 @@ within your sources, then you can use it in place of running (say) a `lapply()` 
 
 ## Cleaning up
 
-Above we use `rrq$destroy()` to clean up every trace of the queue. Peridically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.
+Above we use `rrq$destroy()` to clean up every trace of the queue. Periodically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.

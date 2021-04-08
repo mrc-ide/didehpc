@@ -19,7 +19,7 @@ web_client <- R6::R6Class(
     ##'
     ##' @param login Logical, indicating if we should immediately login
     ##'
-    ##' @param client Optional api client object - if given then we prefer
+    ##' @param client Optional API client object - if given then we prefer
     ##'   this object rather than trying to create a new client with the
     ##'   given credentials.
     initialize = function(credentials = NULL,
@@ -61,7 +61,7 @@ web_client <- R6::R6Class(
 
     ##' @description Submit a job to the cluster
     ##'
-    ##' @param path The pathto the job to submit. This must be a windows (UNC)
+    ##' @param path The path to the job to submit. This must be a windows (UNC)
     ##'   network path, starting with two backslashes, and must be somewhere
     ##'   that the cluster can see.
     ##'
@@ -157,7 +157,7 @@ web_client <- R6::R6Class(
       client_parse_load_cluster(httr_text(r), cluster)
     },
 
-    ##' @description Return an overal measure of cluster use, one
+    ##' @description Return an overall measure of cluster use, one
     ##' entry per cluster that you have access to.
     load_overall = function() {
       dat <- lapply(self$headnodes(), self$load_node)
@@ -204,7 +204,7 @@ web_client <- R6::R6Class(
       client_parse_r_versions(httr_text(r))
     },
 
-    ##' @description Returns the low-level api client for debugging
+    ##' @description Returns the low-level API client for debugging
     api_client = function() {
       private$client
     }

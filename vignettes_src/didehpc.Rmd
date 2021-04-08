@@ -31,7 +31,7 @@ it's more difficult to get information on why things failed.
 Much of the difficulty of getting things running involves working
 out what your code depends on, and getting that installed in the
 right place on a computer that you can't physically poke at.  The
-next set of problems is dealing with the balloning set of files
+next set of problems is dealing with the ballooning set of files
 that end up being created - templates, scripts, output files, etc.
 
 This set of packages
@@ -64,7 +64,7 @@ They depend on untold files and packages which they load wherever.
 The produce any number of objects.  That's fine, but it becomes
 hard to reason about them to plan deploying them elsewhere, to
 capture the outputs appropriately, or to orchestrate looping over a
-bunch of paramter values.  If you've found yourself writing a
+bunch of parameter values.  If you've found yourself writing a
 number of script files changing values with text substitution you
 have run into this.
 
@@ -191,7 +191,7 @@ data, you'll need to map these too.  To do that, pass them as the
 To describe each share, use the `didehpc::path_mapping` function
 which takes arguments:
 
-* name: a desctiptive name for the share
+* name: a descriptive name for the share
 * `path_local`: the point where the share is mounted on your computer
 * `path_remote`: the network path that the share refers to (forward
   slashes are much easier to enter here than backward slashes)
@@ -301,7 +301,7 @@ If you depend on packages that are not on CRAN (e.g., your personal
 research code) you'll need to tell `context` where to find them
 with its `package_sources` argument.
 
-If the packages are on GitHub and public you can pass the github
+If the packages are on GitHub and public you can pass the GitHub
 username/repo pair, in `devtools` style:
 
 ```r
@@ -349,7 +349,7 @@ obj$cluster_load(TRUE)
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
-technicolour).
+Technicolor).
 
 ## Testing that the queue works correctly
 
@@ -388,7 +388,7 @@ which is running Linux.  If we had added packages to the context they would be s
 Let's run something more interesting now by running the `random_walk`
 function defined in the `mysources.R` file.
 
-As above, jobs are queueed by running:
+As above, jobs are queued by running:
 
 ```{r}
 t <- obj$enqueue(random_walk(0, 10))
@@ -523,7 +523,7 @@ tasks and collecting the results is done asynchronously) but if you
 pass a `timeout` argument to `$lapply` then it will poll until the
 jobs are done, in the same way as `wait()`, below.
 
-Get the startus of all the jobs
+Get the status of all the jobs
 
 ```{r}
 grp$status()
@@ -617,7 +617,7 @@ of task ids as an argument.
 
 If you are running tasks that can use more than one core, you can
 request more resources for your task and use process level
-parallism with the `parallel` package.  To request 8 cores, you
+parallelism with the `parallel` package.  To request 8 cores, you
 could run:
 
 ```r
@@ -660,7 +660,7 @@ didehpc::didehpc_config(template = "16Core")
 ```
 
 which will reserve you the entire node.  Again, a cluster will be
-started with all availabe cores unless you also specify
+started with all available cores unless you also specify
 `parallel = FALSE`.
 
 ## Running heaps of jobs without annoying your colleagues
@@ -712,7 +712,7 @@ username and password, but I can't remember what that looks like.
 These directories will be mounted at `/Volumes/<username>` and
 `/Volumes/tmp` (so the last bit of the filename will be used as the
 mountpoint within `Volumes`).  There may be a better way of doing
-this, and the connection will not be restablished automatically so
+this, and the connection will not be reestablished automatically so
 if anyone has a better way let me know.
 
 ## Linux

@@ -9,7 +9,7 @@
 ##'   parallelism between tasks) you can do that through the
 ##'   configuration options here.
 ##'
-##' The `template` option choses among templates defined on the
+##' The `template` option chooses among templates defined on the
 ##'   cluster.  If you select one of these then we will reserve an
 ##'   entire node *unless* you also specify `cores`.
 ##'   Alternatively if `wholenode` is specified this overrides
@@ -17,7 +17,7 @@
 ##'
 ##' If you specify `cores`, the HPC will queue your job until an
 ##'   appropriate number of cores appears for the selected template.
-##'   This can leave your job queing forever (e.g., selecting 20 cores
+##'   This can leave your job queuing forever (e.g., selecting 20 cores
 ##'   on a 16Core template) so be careful.  The `cores` option is
 ##'   most useful with the `GeneralNodes` template.
 ##'
@@ -126,9 +126,9 @@
 ##'   or `use_rrq`, the length of time (in seconds) that workers
 ##'   should be willing to set idle before exiting.  If set to zero
 ##'   then workers will be added to the queue, run jobs, and
-##'   immediatly exit.  If greater than zero, then the workers will
+##'   immediately exit.  If greater than zero, then the workers will
 ##'   wait at least this many seconds after running the last task
-##'   before quitting.  The number provoided can be `Inf`, in which
+##'   before quitting.  The number provided can be `Inf`, in which
 ##'   case the worker will never exit (but be careful to clean the
 ##'   worker up in this case!).  The default is 600s (10 minutes)
 ##'   should be more than enough to get your jobs up and running.
@@ -254,7 +254,7 @@ as_didehpc_config <- function(config) {
 
 ##' @param ... arguments to `didehpc_config`
 ##'
-##' @param check Logical, inidicating if we should check that the
+##' @param check Logical, indicating if we should check that the
 ##'   configuration object can be created
 ##'
 ##' @export

@@ -74,13 +74,13 @@ didehpc::didehpc_config()
 ```
 
 If this is the first time you have run this package, best to try
-out the login proceedure with:
+out the login procedure with:
 
 ```{r}
 didehpc::web_login()
 ```
 
-because this unroots a number of problems early on.
+because this exposes a number of problems early on.
 
 ## Describe your project dependencies so we can recreate that on the cluster
 

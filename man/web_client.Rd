@@ -58,7 +58,7 @@ overridden in any command.}
 
 \item{\code{login}}{Logical, indicating if we should immediately login}
 
-\item{\code{client}}{Optional api client object - if given then we prefer
+\item{\code{client}}{Optional API client object - if given then we prefer
 this object rather than trying to create a new client with the
 given credentials.}
 }
@@ -141,7 +141,7 @@ Submit a job to the cluster
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{path}}{The pathto the job to submit. This must be a windows (UNC)
+\item{\code{path}}{The path to the job to submit. This must be a windows (UNC)
 network path, starting with two backslashes, and must be somewhere
 that the cluster can see.}
 
@@ -272,7 +272,7 @@ the value given when creating the client.}
 \if{html}{\out{<a id="method-load_overall"></a>}}
 \if{latex}{\out{\hypertarget{method-load_overall}{}}}
 \subsection{Method \code{load_overall()}}{
-Return an overal measure of cluster use, one
+Return an overall measure of cluster use, one
 entry per cluster that you have access to.
 Helper function; wraps around \code{load_overall} and \code{load_node} and
 always shows the output.
@@ -337,7 +337,7 @@ Return a vector of all available R versions
 \if{html}{\out{<a id="method-api_client"></a>}}
 \if{latex}{\out{\hypertarget{method-api_client}{}}}
 \subsection{Method \code{api_client()}}{
-Returns the low-level api client for debugging
+Returns the low-level API client for debugging
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{web_client$api_client()}\if{html}{\out{</div>}}
 }

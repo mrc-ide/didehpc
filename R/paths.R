@@ -2,7 +2,7 @@
 ##' @title Describe a path mapping
 ##'
 ##' @param name Name of this map.  Can be anything at all, and is used
-##'   for information purpopses only.
+##'   for information purposes only.
 ##'
 ##' @param path_local The point where the drive is attached locally.
 ##'   On Windows this will be something like "Q:/", on Mac something

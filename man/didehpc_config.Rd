@@ -100,9 +100,9 @@ with the \code{submit_workers} method of the object.}
 or \code{use_rrq}, the length of time (in seconds) that workers
 should be willing to set idle before exiting.  If set to zero
 then workers will be added to the queue, run jobs, and
-immediatly exit.  If greater than zero, then the workers will
+immediately exit.  If greater than zero, then the workers will
 wait at least this many seconds after running the last task
-before quitting.  The number provoided can be \code{Inf}, in which
+before quitting.  The number provided can be \code{Inf}, in which
 case the worker will never exit (but be careful to clean the
 worker up in this case!).  The default is 600s (10 minutes)
 should be more than enough to get your jobs up and running.
@@ -135,7 +135,7 @@ default cluster Java Runtime Environment will be used.}
 
 \item{...}{arguments to \code{didehpc_config}}
 
-\item{check}{Logical, inidicating if we should check that the
+\item{check}{Logical, indicating if we should check that the
 configuration object can be created}
 }
 \description{
@@ -151,7 +151,7 @@ task to do some parallel processing \emph{in addition} to the
 parallelism between tasks) you can do that through the
 configuration options here.
 
-The \code{template} option choses among templates defined on the
+The \code{template} option chooses among templates defined on the
 cluster.  If you select one of these then we will reserve an
 entire node \emph{unless} you also specify \code{cores}.
 Alternatively if \code{wholenode} is specified this overrides
@@ -159,7 +159,7 @@ the logic here.
 
 If you specify \code{cores}, the HPC will queue your job until an
 appropriate number of cores appears for the selected template.
-This can leave your job queing forever (e.g., selecting 20 cores
+This can leave your job queuing forever (e.g., selecting 20 cores
 on a 16Core template) so be careful.  The \code{cores} option is
 most useful with the \code{GeneralNodes} template.
 

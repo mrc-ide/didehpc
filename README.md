@@ -2,8 +2,7 @@
 
 <!-- badges: start -->
 [![Project Status: WIP – Initial development is in progress, but there has not y
-et been a stable, usable release suitable for the public.](https://www.repostatu
-s.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+et been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![R build status](https://github.com/mrc-ide/didehpc/workflows/R-CMD-check/badge.svg)](https://github.com/mrc-ide/didehpc/actions)
 [![codecov.io](https://codecov.io/github/mrc-ide/didehpc/coverage.svg?branch=master
 )](https://codecov.io/github/mrc-ide/didehpc?branch=master)
