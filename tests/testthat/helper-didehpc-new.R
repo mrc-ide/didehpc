@@ -65,3 +65,8 @@ skip_if_no_redis <- function() {
     error = function(e) testthat::skip("redis not available"))
   invisible(NULL)
 }
+
+
+same_path <- function(a, b) {
+  normalizePath(a, "/", TRUE) == normalizePath(b, "/", TRUE)
+}

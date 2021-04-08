@@ -161,6 +161,8 @@ test_that("wmic_call copes with command and parse errors", {
 
 test_that("Can auto-detect home", {
   root <- tempfile()
+  dir.create(root, FALSE, TRUE)
+  root <- normalizePath(root, mustWork = TRUE)
   mounts <- example_mounts(root)
   res <- dide_detect_mount_home(NULL, mounts, "bob")
   expect_equal(res$name, "home")
@@ -205,7 +207,7 @@ test_that("Autodetect temp", {
   mounts <- example_mounts(root)
   res <- dide_detect_mount_temp(NULL, mounts)
   expect_equal(res$name, "temp")
-  expect_equal(res$path_local, file.path(root, "temp"))
+  expect_true(same_path(res$path_local, file.path(root, "temp")))
   expect_equal(res$path_remote, "\\\\fi--didef3.dide.ic.ac.uk\\tmp")
   expect_equal(res$drive_remote, "T:")
 })
@@ -235,6 +237,8 @@ test_that("Fail to auto-detect temp if ambiguous or impossible", {
 
 test_that("dide_detect_mount", {
   root <- tempfile()
+  dir.create(root, FALSE, TRUE)
+  root <- normalizePath(root, mustWork = TRUE)
   mounts <- example_mounts(root)
   expect_message(
     res <- dide_detect_mount(mounts, NULL, NULL, NULL, NULL, NULL, FALSE),
@@ -253,7 +257,7 @@ test_that("dide_detect_mount", {
   expect_equal(res3[1:2], res)
   expect_length(res3, 3)
   expect_s3_class(res3$workdir, "path_mapping")
-  expect_equal(res3$workdir$path_local, file.path(root, "proj"))
+  expect_true(same_path(res3$workdir$path_local, file.path(root, "proj")))
   expect_equal(res3$workdir$path_remote,
                "\\\\fi--didenas1.dide.ic.ac.uk\\Project")
 
