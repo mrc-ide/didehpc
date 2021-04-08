@@ -248,13 +248,6 @@ test_that("config getter tries to construct options", {
 })
 
 
-test_that("Can't use both rrq types", {
-  expect_error(
-    example_config(use_workers = TRUE, use_rrq = TRUE),
-    "You can't specify both use_workers and use_rrq")
-})
-
-
 test_that("java options", {
   root <- tempfile()
   cfg1 <- example_config(root = tempfile())

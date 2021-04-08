@@ -200,13 +200,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     workdir <- normalizePath(dat$workdir)
   }
 
-  ## TODO: I'm not certain why this is the case.  Probably it can be
-  ## got around with a couple of tweaks to rrq so that the same
-  ## workers can be used for both approaches.
-  if (isTRUE(use_workers) && isTRUE(use_rrq)) {
-    stop("You can't specify both use_workers and use_rrq")
-  }
-
   cluster <- cluster_name(dat$cluster)
   if (is.null(dat$template)) {
     dat$template <- valid_templates()[[cluster]][[1L]]
