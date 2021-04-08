@@ -10,6 +10,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+<!-- HEADER -->
+
 # Running heaps of jobs without annoying your colleagues
 
 If you have thousands and thousands of jobs to submit at once you
@@ -41,7 +43,7 @@ install.packages("rrq")
 Then construct the context as before
 
 ```{r}
-root <- "context"
+root <- "contexts"
 ctx <- context::context_save(root, sources = "mysources.R")
 ```
 
