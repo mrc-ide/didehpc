@@ -1,83 +1,3 @@
-PROGRESS <- FALSE
-COMMON <- FALSE
-
-options("didehpc.cluster" = "fi--didemrchnb",
-        ## this suppresses all submission progress; better would be to
-        ## scope this within the test blocks?  It's necessary,
-        ## otherwise "delete to end of line" bit in the progress bar
-        ## will delete all the test output!
-        "queuer.progress_suppress" = TRUE)
-
-prepare_didehpc_root <- function() {
-  test_path <- Sys.getenv("DIDEHPC_TEST_PATH", NA_character_)
-  if (is.na(test_path)) {
-    testthat::skip("DIDEHPC_TEST_PATH not set")
-  }
-  file.path(test_path, gsub("-", "", as.character(Sys.Date())))
-}
-
-prepare_didehpc_dir <- function(name) {
-  root <- prepare_didehpc_root()
-  path <- tempfile(paste0(name, "_"), root)
-  dir.create(path, FALSE, TRUE)
-  path
-}
-
-prepare_didehpc <- function(name, ..., files = c(...)) {
-  path <- prepare_didehpc_dir(name)
-  file.copy(files, path, recursive = TRUE)
-  context::context_log_start()
-  owd <- setwd(path)
-}
-
-wait_pending <- function(t, timeout = 20) {
-  times_up <- queuer:::time_checker(timeout)
-  while (!times_up()) {
-    if (all(t$status() != "PENDING")) {
-      return()
-    }
-    message(".")
-    Sys.sleep(0.5)
-  }
-  stop("Did not start in time")
-}
-
-## This comes from provisionr's helper functions;
-alter_package_version <- function(path, increase) {
-  desc <- file.path(path, "DESCRIPTION")
-  d <- read.dcf(desc)
-  v <- alter_version(d[, "Version"], increase)
-  d[, "Version"] <- v
-  write.dcf(d, desc)
-  invisible(numeric_version(v))
-}
-
-alter_version <- function(v, increase) {
-  if (inherits(v, "numeric_version")) {
-    as_version <- TRUE
-  } else {
-    v <- numeric_version(v)
-    as_version <- FALSE
-  }
-  if (increase) {
-    i <- length(unclass(v)[[1L]])
-    v[[1L, i]] <- v[[1L, i]] + 1L
-  } else {
-    for (i in rev(seq_along(unclass(v)[[1L]]))) {
-      if (v[[1L, i]] > 0L) {
-        v[[1L, i]] <- v[[1L, i]] - 1L
-        break
-      }
-    }
-  }
-  if (as_version) v else as.character(v)
-}
-
-read_version <- function(path) {
-  numeric_version(read.dcf(file.path(path, "DESCRIPTION"), "Version")[[1]])
-}
-
-
 tmp_options_didehpc <- function(...) {
   opts <- options()
   i <- grepl("^didehpc\\.", names(opts))
@@ -88,4 +8,78 @@ tmp_options_didehpc <- function(...) {
     base <- list()
   }
   c(base, ...)
+}
+
+
+example_mounts <- function(root) {
+  remote <- c("\\\\fi--didef3\\other",
+              "\\\\fi--san03\\homes\\bob",
+              "\\\\fi--didenas1\\Project",
+              "\\\\fi--didef3\\tmp")
+  local <- file.path(root, c("other", "home", "proj", "temp"))
+  for (p in file.path(local, "sub")) {
+    dir.create(p, FALSE, TRUE)
+  }
+  cbind(remote = remote, local = local)
+}
+
+
+example_config <- function(..., root = tempfile()) {
+  mounts <- example_mounts(root)
+  workdir <- file.path(root, "home", "sub")
+  mock_detect_mount <- mockery::mock(mounts)
+  mockery::stub(didehpc_config, "detect_mount", mock_detect_mount)
+  withr::with_options(
+    tmp_options_didehpc(),
+    didehpc_config(credentials = "bob", workdir = workdir, ...))
+}
+
+
+example_credentials <- function(online = FALSE) {
+  if (online) {
+    path <- "~/.smbcredentials"
+    if (!file.exists(path)) {
+      testthat::skip("credential file not found")
+    }
+    dide_credentials(path, TRUE)
+  } else {
+    dide_credentials(list(username = "bob", password = "secret"), TRUE)
+  }
+}
+
+
+mock_response <- function(code, ..., url = NULL, content = NULL) {
+  dat <- list(status_code = code,
+              url = url %||% "http://example.com/",
+              ...)
+  if (is.character(content)) {
+    dat$content <- charToRaw(paste(content, collapse = "\n"))
+  } else {
+    dat$content <- content
+  }
+  class(dat) <- "response"
+  dat
+}
+
+
+r6_private <- function(x) {
+  x[[".__enclos_env__"]]$private
+}
+
+
+password <- function(x) {
+  structure(x, class = "password")
+}
+
+
+skip_if_no_redis <- function() {
+  tryCatch(
+    redux::hiredis()$PING(),
+    error = function(e) testthat::skip("redis not available"))
+  invisible(NULL)
+}
+
+
+same_path <- function(a, b) {
+  normalizePath(a, "/", TRUE) == normalizePath(b, "/", TRUE)
 }
