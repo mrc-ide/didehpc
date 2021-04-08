@@ -61,7 +61,7 @@ Then configure and create the queue; the `use_workers` argument is important her
 However, everything else will appear the same.
 
 ```{r}
-config <- didehpc::didehpc_config(use_workers = TRUE, cluster = "small")
+config <- didehpc::didehpc_config(use_workers = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
@@ -182,7 +182,7 @@ through the disk, everything goes via the redis server.
 The first part here looks very similar, except that we use `use_rrq = TRUE` rather than `use_workers`
 
 ```{r}
-config <- didehpc::didehpc_config(use_rrq = TRUE, cluster = "small")
+config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
