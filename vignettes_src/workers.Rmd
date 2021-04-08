@@ -12,6 +12,17 @@ vignette: >
 
 <!-- HEADER -->
 
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = FALSE,
+  comment = "#>"
+)
+r_output <- function(x) {
+  cat(c("```r", x, "```"), sep = "\n")
+}
+```
+
 # Running heaps of jobs without annoying your colleagues
 
 If you have thousands and thousands of jobs to submit at once you
