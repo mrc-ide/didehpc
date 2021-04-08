@@ -166,7 +166,7 @@ test_that("Can auto-detect home", {
   mounts <- example_mounts(root)
   res <- dide_detect_mount_home(NULL, mounts, "bob")
   expect_equal(res$name, "home")
-  expect_equal(res$path_local, file.path(root, "home"))
+  expect_true(same_path(res$path_local, file.path(root, "home")))
   expect_equal(res$path_remote, "\\\\fi--san03.dide.ic.ac.uk\\homes\\bob")
   expect_equal(res$drive_remote, "Q:")
 })
