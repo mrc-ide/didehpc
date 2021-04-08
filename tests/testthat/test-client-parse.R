@@ -71,7 +71,7 @@ test_that("can parse headnodes payload", {
 
 
 test_that("Can parse empty status payload", {
-  empty_time <- Sys.time()[0]
+  empty_time <- dide_time_parse(character())
   res <- client_parse_status("")
   expect_equal(res,
                data.frame(dide_id = character(0),
