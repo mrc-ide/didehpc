@@ -17,11 +17,11 @@ Base queue object:
 ```r
 ctx <- context::context_save("contexts")
 #> [ open:db   ]  rds
-#> [ save:id   ]  7ed473f2e7dc9450784fe98be4ffa712
-#> [ save:name ]  authorial_borzoi
+#> [ save:id   ]  2179d3e2c816fd395548ba091f955cf8
+#> [ save:name ]  bare_saltwatercrocodile
 obj <- didehpc::queue_didehpc(ctx)
-#> Loading context 7ed473f2e7dc9450784fe98be4ffa712
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
+#> Loading context 2179d3e2c816fd395548ba091f955cf8
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]
@@ -44,7 +44,7 @@ t <- obj$enqueue(mysimulation(10))
 
 
 ```
-#> (-) waiting for 1740f46...5a9, giving up in 9.5 s (\) waiting for 1740f46...5a9,
+#> (-) waiting for 26a20b3...6a4, giving up in 9.5 s (\) waiting for 26a20b3...6a4,
 #> giving up in 8.9 s
 ```
 
@@ -73,26 +73,26 @@ The other place worth looking is the job log
 
 ```r
 t$log()
-#> [ hello     ]  2021-04-09 16:12:58
-#> [ wd        ]  Q:/didehpc/20210409-160948
-#> [ init      ]  2021-04-09 16:12:58.582
+#> [ hello     ]  2021-04-09 16:29:18
+#> [ wd        ]  Q:/didehpc/20210409-162624
+#> [ init      ]  2021-04-09 16:29:18.184
 #> [ hostname  ]  FI--DIDECLUST25
-#> [ process   ]  5468
+#> [ process   ]  5872
 #> [ version   ]  0.3.0
 #> [ open:db   ]  rds
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]
 #> [ parallel  ]  running as single core job
-#> [ root      ]  Q:\didehpc\20210409-160948\contexts
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
-#> [ task      ]  1740f463449067b72610304973d395a9
+#> [ root      ]  Q:\didehpc\20210409-162624\contexts
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
+#> [ task      ]  26a20b39a438a8dba1aced709eafa6a4
 #> [ expr      ]  mysimulation(10)
-#> [ start     ]  2021-04-09 16:12:58.738
+#> [ start     ]  2021-04-09 16:29:18.356
 #> [ error     ]
 #>     Error in mysimulation(10): could not find function "mysimulation"
-#> [ end       ]  2021-04-09 16:12:58.816
+#> [ end       ]  2021-04-09 16:29:18.434
 #>     Error in context:::main_task_run() : Error while running task:
 #>     Execution halted
 ```
@@ -108,7 +108,7 @@ t <- obj$enqueue(read.csv("c:/myfile.csv"))
 
 
 ```
-#> (-) waiting for 24fd4e4...f1a, giving up in 9.5 s (\) waiting for 24fd4e4...f1a,
+#> (-) waiting for bc596b6...300, giving up in 9.5 s (\) waiting for bc596b6...300,
 #> giving up in 9.0 s
 ```
 
@@ -134,26 +134,26 @@ cluster; using relative paths is much preferred to absolute paths)
 
 ```r
 t$log()
-#> [ hello     ]  2021-04-09 16:13:00
-#> [ wd        ]  Q:/didehpc/20210409-160948
-#> [ init      ]  2021-04-09 16:13:00.145
+#> [ hello     ]  2021-04-09 16:29:19
+#> [ wd        ]  Q:/didehpc/20210409-162624
+#> [ init      ]  2021-04-09 16:29:19.840
 #> [ hostname  ]  FI--DIDECLUST25
-#> [ process   ]  4300
+#> [ process   ]  5784
 #> [ version   ]  0.3.0
 #> [ open:db   ]  rds
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]
 #> [ parallel  ]  running as single core job
-#> [ root      ]  Q:\didehpc\20210409-160948\contexts
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
-#> [ task      ]  24fd4e489862ef77ee5d5ee15b8b9f1a
+#> [ root      ]  Q:\didehpc\20210409-162624\contexts
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
+#> [ task      ]  bc596b630c41fce6026d09765ad16300
 #> [ expr      ]  read.csv("c:/myfile.csv")
-#> [ start     ]  2021-04-09 16:13:00.316
+#> [ start     ]  2021-04-09 16:29:19.996
 #> [ error     ]
 #>     Error in file(file, "rt"): cannot open the connection
-#> [ end       ]  2021-04-09 16:13:00.379
+#> [ end       ]  2021-04-09 16:29:20.059
 #>     Error in context:::main_task_run() : Error while running task:
 #>     In addition: Warning message:
 #>     In file(file, "rt") :
@@ -216,11 +216,11 @@ You create a connection to the cluster:
 ```r
 ctx <- context::context_save("contexts", sources = "mycode.R")
 #> [ open:db   ]  rds
-#> [ save:id   ]  84f66778c2754e73986a9d4d5dcaf86e
-#> [ save:name ]  unprophetic_mantid
+#> [ save:id   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb
+#> [ save:name ]  disintegrative_cow
 obj <- didehpc::queue_didehpc(ctx)
-#> Loading context 84f66778c2754e73986a9d4d5dcaf86e
-#> [ context   ]  84f66778c2754e73986a9d4d5dcaf86e
+#> Loading context f754fcf9ea94fe4780d5b0b5f5e2f4eb
+#> [ context   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mycode.R
@@ -232,7 +232,7 @@ Everything seems to work fine:
 ```r
 t <- obj$enqueue(times2(10))
 t$wait(10)
-#> (-) waiting for 4402f37...eb1, giving up in 9.5 s (\) waiting for 4402f37...eb1,
+#> (-) waiting for f677de0...bbc, giving up in 9.5 s (\) waiting for f677de0...bbc,
 #> giving up in 9.0 s
 #> [1] 20
 ```
@@ -256,7 +256,7 @@ submit it if the cluster is busy).
 ```r
 t <- obj$enqueue(times2(10))
 t$wait(10)
-#> (-) waiting for 00e0714...40c, giving up in 9.5 s (\) waiting for 00e0714...40c,
+#> (-) waiting for ca86b03...383, giving up in 9.5 s (\) waiting for ca86b03...383,
 #> giving up in 9.0 s
 #> <context_task_error in source(s, envir): mycode.R:5:0: unexpected end of input
 #> 3: }
@@ -273,14 +273,14 @@ a bit clearer:
 
 ```r
 t$log()
-#> [ hello     ]  2021-04-09 16:13:03
-#> [ wd        ]  Q:/didehpc/20210409-160948
-#> [ init      ]  2021-04-09 16:13:03.551
+#> [ hello     ]  2021-04-09 16:29:23
+#> [ wd        ]  Q:/didehpc/20210409-162624
+#> [ init      ]  2021-04-09 16:29:23.340
 #> [ hostname  ]  FI--DIDECLUST25
-#> [ process   ]  1676
+#> [ process   ]  2980
 #> [ version   ]  0.3.0
 #> [ open:db   ]  rds
-#> [ context   ]  84f66778c2754e73986a9d4d5dcaf86e
+#> [ context   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mycode.R
@@ -329,8 +329,8 @@ config <- didehpc::didehpc_config(home = home)
 ctx <- context::context_save("contexts")
 #> [ open:db   ]  rds
 obj <- didehpc::queue_didehpc(ctx, config)
-#> Loading context 7ed473f2e7dc9450784fe98be4ffa712
-#> [ context   ]  7ed473f2e7dc9450784fe98be4ffa712
+#> Loading context 2179d3e2c816fd395548ba091f955cf8
+#> [ context   ]  2179d3e2c816fd395548ba091f955cf8
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]
@@ -347,19 +347,19 @@ And wait...
 
 ```r
 t$wait(10)
-#> (-) waiting for 27941e2...3f0, giving up in 9.5 s (\) waiting for 27941e2...3f0,
-#> giving up in 9.0 s (|) waiting for 27941e2...3f0, giving up in 8.5 s (/) waiting
-#> for 27941e2...3f0, giving up in 8.0 s (-) waiting for 27941e2...3f0, giving
-#> up in 7.5 s (\) waiting for 27941e2...3f0, giving up in 6.9 s (|) waiting for
-#> 27941e2...3f0, giving up in 6.4 s (/) waiting for 27941e2...3f0, giving up
-#> in 5.9 s (-) waiting for 27941e2...3f0, giving up in 5.4 s (\) waiting for
-#> 27941e2...3f0, giving up in 4.9 s (|) waiting for 27941e2...3f0, giving up
-#> in 4.4 s (/) waiting for 27941e2...3f0, giving up in 3.9 s (-) waiting for
-#> 27941e2...3f0, giving up in 3.4 s (\) waiting for 27941e2...3f0, giving up
-#> in 2.9 s (|) waiting for 27941e2...3f0, giving up in 2.4 s (/) waiting for
-#> 27941e2...3f0, giving up in 1.9 s (-) waiting for 27941e2...3f0, giving up
-#> in 1.4 s (\) waiting for 27941e2...3f0, giving up in 0.8 s (|) waiting for
-#> 27941e2...3f0, giving up in 0.3 s (/) waiting for 27941e2...3f0, giving up in
+#> (-) waiting for 790d6f9...c6c, giving up in 9.5 s (\) waiting for 790d6f9...c6c,
+#> giving up in 9.0 s (|) waiting for 790d6f9...c6c, giving up in 8.5 s (/) waiting
+#> for 790d6f9...c6c, giving up in 8.0 s (-) waiting for 790d6f9...c6c, giving
+#> up in 7.5 s (\) waiting for 790d6f9...c6c, giving up in 6.9 s (|) waiting for
+#> 790d6f9...c6c, giving up in 6.4 s (/) waiting for 790d6f9...c6c, giving up
+#> in 5.9 s (-) waiting for 790d6f9...c6c, giving up in 5.4 s (\) waiting for
+#> 790d6f9...c6c, giving up in 4.9 s (|) waiting for 790d6f9...c6c, giving up
+#> in 4.4 s (/) waiting for 790d6f9...c6c, giving up in 3.9 s (-) waiting for
+#> 790d6f9...c6c, giving up in 3.4 s (\) waiting for 790d6f9...c6c, giving up
+#> in 2.9 s (|) waiting for 790d6f9...c6c, giving up in 2.4 s (/) waiting for
+#> 790d6f9...c6c, giving up in 1.9 s (-) waiting for 790d6f9...c6c, giving up
+#> in 1.3 s (\) waiting for 790d6f9...c6c, giving up in 0.8 s (|) waiting for
+#> 790d6f9...c6c, giving up in 0.3 s (/) waiting for 790d6f9...c6c, giving up in
 #> 0.0 s
 #> Error in task_wait(self$root$db, self$id, timeout, time_poll, progress): task not returned in time
 ```
@@ -391,9 +391,9 @@ You can also update any incorrect statuses by running:
 obj$reconcile()
 #> Fetching job status from the cluster...
 #>   ...done
-#> manually erroring task 27941e2620eea7f8bbb23a3b952823f0
+#> manually erroring task 790d6f98e0ec1581c8e048610f9f1c6c
 #> Tasks have failed while context booting:
-#>   - 27941e2620eea7f8bbb23a3b952823f0
+#>   - 790d6f98e0ec1581c8e048610f9f1c6c
 ```
 
 Which will print information about anything that was adjusted.

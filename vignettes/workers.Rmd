@@ -70,8 +70,8 @@ However, everything else will appear the same.
 ```r
 config <- didehpc::didehpc_config(use_workers = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
-#> Loading context d631ced3301ef01641939aaaad897527
-#> [ context   ]  d631ced3301ef01641939aaaad897527
+#> Loading context a1590dd8b37b4f181f1048afc0fe0443
+#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
@@ -79,9 +79,9 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 #>   ,:\      /:.
 #>  //  \_()_/  \\
 #> ||   |    |   ||  CONAN THE LIBRARIAN
-#> ||   |    |   ||  Library:   Q:\didehpc\20210409-160948\contexts\lib\windows\4.0
+#> ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\contexts\lib\windows\4.0
 #> ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0
-#>  \\  / || \  //   Cache:     Q:\didehpc\20210409-160948\contexts\conan\cache/pkg
+#>  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\contexts\conan\cache/pkg
 #>   `:/  ||  \;'    Policy:    lazy
 #>        ||         Repos:
 #>        ||           * https://mrc-ide.github.io/didehpc-pkgs
@@ -94,27 +94,27 @@ obj <- didehpc::queue_didehpc(ctx, config = config)
 #> i Loading metadata database
 #> v Loading metadata database ... done
 #> i Getting 8 pkgs (2.78 MB), 1 cached
-#> v Got progress 1.2.2 (windows) (85.86 kB)
 #> v Got prettyunits 1.1.1 (windows) (37.71 kB)
-#> v Got docopt 0.7.1 (windows) (245.71 kB)
-#> v Got rrq 0.2.19 (source) (63.25 kB)
-#> v Got callr 3.6.0 (windows) (432.79 kB)
-#> v Got redux 1.1.0 (windows) (287.94 kB)
 #> v Got hms 1.0.0 (windows) (103.58 kB)
+#> v Got redux 1.1.0 (windows) (287.94 kB)
+#> v Got docopt 0.7.1 (windows) (245.71 kB)
+#> v Got callr 3.6.0 (windows) (432.79 kB)
+#> v Got rrq 0.2.19 (source) (63.25 kB)
+#> v Got progress 1.2.2 (windows) (85.86 kB)
 #> v Got processx 3.5.1 (windows) (1.24 MB)
 #> v Got ps 1.6.0 (windows) (775.96 kB)
-#> v Installed docopt 0.7.1  (813ms)
-#> v Installed prettyunits 1.1.1  (782ms)
-#> v Installed hms 1.0.0  (907ms)
-#> v Installed redux 1.1.0  (1s)
+#> v Installed docopt 0.7.1  (922ms)
+#> v Installed prettyunits 1.1.1  (751ms)
+#> v Installed hms 1.0.0  (1s)
+#> v Installed callr 3.6.0  (938ms)
 #> v Installed progress 1.2.2  (1.2s)
+#> v Installed redux 1.1.0  (1.3s)
 #> i Building rrq 0.2.19
-#> v Installed callr 3.6.0  (5.7s)
-#> v Installed processx 3.5.1  (6.3s)
-#> v Installed ps 1.6.0  (6.7s)
-#> v Built rrq 0.2.19 (7.3s)
-#> v Installed rrq 0.2.19  (297ms)
-#> v Summary:   9 new   16 kept  in 30.9s
+#> v Installed processx 3.5.1  (6s)
+#> v Installed ps 1.6.0  (6.5s)
+#> v Built rrq 0.2.19 (6.8s)
+#> v Installed rrq 0.2.19  (282ms)
+#> v Summary:   9 new   16 kept  in 25.7s
 #> Done!
 ```
 
@@ -133,9 +133,9 @@ t$status()
 #> [1] "PENDING"
 t$times()
 #>                            task_id           submitted started finished
-#> 1 2db4d582491fc0ae4f7b9f4870e819d3 2021-04-09 16:13:41    <NA>     <NA>
-#>     waiting running idle
-#> 1 0.2131753      NA   NA
+#> 1 bae6c67cff519596292760b6c9a09393 2021-04-09 16:30:00    <NA>     <NA>
+#>    waiting running idle
+#> 1 0.226712      NA   NA
 ```
 
 You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!
@@ -145,10 +145,10 @@ The argument is the number of workers to submit. Each worker is equivalent to a 
 
 ```r
 workers <- obj$submit_workers(2)
-#> Submitting 2 workers with base name 'contumelious_nettlefish'
+#> Submitting 2 workers with base name 'productive_howlermonkey'
 #> submitting (-) [===================================] 100% | giving up in 600 s
 workers
-#> [1] "contumelious_nettlefish_1" "contumelious_nettlefish_2"
+#> [1] "productive_howlermonkey_1" "productive_howlermonkey_2"
 ```
 
 All workers get names in the form `<adjective>_<animal>_<integer>`
@@ -164,10 +164,9 @@ your workers.
 
 ```r
 t$wait(10)
-#> (-) waiting for 2db4d58...9d3, giving up in 9.5 s (\) waiting for 2db4d58...9d3,
-#> giving up in 9.0 s
-#>  [1]  0.4831992 -1.8950903 -1.8603502 -2.9295990 -3.7952139 -5.0266930
-#>  [7] -3.6609780 -3.9588074 -4.6869556 -3.8042834
+#> (-) waiting for bae6c67...393, giving up in 9.5 s
+#>  [1]  0.09779148  0.84671583  0.27974311  0.08104207 -0.35843423 -2.19675942
+#>  [7] -4.22286493 -3.65819002 -3.60735001 -2.23040477
 ```
 
 We're going to interact with the rrq object a bit
@@ -197,7 +196,7 @@ rrq
 #>     message_response_ids: function (worker_id)
 #>     message_send: function (command, args = NULL, worker_ids = NULL)
 #>     message_send_and_wait: function (command, args = NULL, worker_ids = NULL, named = TRUE,
-#>     queue_id: d631ced3301ef01641939aaaad897527
+#>     queue_id: a1590dd8b37b4f181f1048afc0fe0443
 #>     queue_length: function (queue = NULL)
 #>     queue_list: function (queue = NULL)
 #>     queue_remove: function (task_ids, queue = NULL)
@@ -241,15 +240,15 @@ You can see what your workers have been up to with the
 ```r
 rrq$worker_log_tail(n = Inf)
 #>                   worker_id       time       command
-#> 1 contumelious_nettlefish_1 1617981224         ALIVE
-#> 2 contumelious_nettlefish_2 1617981224         ALIVE
-#> 3 contumelious_nettlefish_1 1617981224    TASK_START
-#> 4 contumelious_nettlefish_1 1617981225 TASK_COMPLETE
+#> 1 productive_howlermonkey_1 1617982202         ALIVE
+#> 2 productive_howlermonkey_1 1617982202    TASK_START
+#> 3 productive_howlermonkey_2 1617982203         ALIVE
+#> 4 productive_howlermonkey_1 1617982203 TASK_COMPLETE
 #>                            message
 #> 1
-#> 2
-#> 3 6784f9e0f434d9c308b22700d4037c13
-#> 4 6784f9e0f434d9c308b22700d4037c13
+#> 2 2e731137b72b951aa9236ce5e74af284
+#> 3
+#> 4 2e731137b72b951aa9236ce5e74af284
 ```
 
 The `time` column represents seconds - relative seconds should still be useful here.
@@ -259,17 +258,17 @@ As before, logging works on a per-task basis:
 ```r
 t$log()
 #> [ open:db   ]  rds
-#> [ context   ]  d631ced3301ef01641939aaaad897527
+#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
 #> [ root      ]  contexts
-#> [ context   ]  d631ced3301ef01641939aaaad897527
-#> [ task      ]  2db4d582491fc0ae4f7b9f4870e819d3
+#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
+#> [ task      ]  bae6c67cff519596292760b6c9a09393
 #> [ expr      ]  random_walk(0, 10)
-#> [ start     ]  2021-04-09 16:13:44.693
+#> [ start     ]  2021-04-09 16:30:03.169
 #> [ ok        ]
-#> [ end       ]  2021-04-09 16:13:44.818
+#> [ end       ]  2021-04-09 16:30:03.372
 ```
 
 Find out how long your workers will persist for:
@@ -277,13 +276,13 @@ Find out how long your workers will persist for:
 
 ```r
 rrq$message_send_and_wait("TIMEOUT_GET", worker_ids = workers)
-#> $contumelious_nettlefish_1
+#> $productive_howlermonkey_1
 #>   timeout remaining
 #>       600       600
 #>
-#> $contumelious_nettlefish_2
+#> $productive_howlermonkey_2
 #>   timeout remaining
-#>  600.0000  598.8906
+#>  600.0000  599.4062
 ```
 
 Other than that, hopefully everything else continues as normal.  We
@@ -293,7 +292,7 @@ can submit a bunch of jobs and run them using `$lapply`:
 ```r
 sizes <- 3:8
 grp <- obj$lapply(sizes, random_walk, x = 0)
-#> Creating bundle: 'fogged_limpkin'
+#> Creating bundle: 'generic_centipede'
 #> [ bulk      ]  Creating 6 tasks
 #> submitting 6 tasks
 ```
@@ -302,11 +301,11 @@ Task status:
 
 ```r
 grp$status()
-#> 7c7db60713842335a8cab10d9743569f 622214be36f7f26a272a6ffb95aab3eb
+#> d5e5b2c8bca08c3e86fff883303045a2 9c50fe2449d9349f2643bc8e905995c0
 #>                        "PENDING"                        "PENDING"
-#> cf71d8002487cbbaf63d734f8f03656d c0184ad1496e36bda49a942f4a8491fd
+#> b789621311455b0123c6d6bac0402e0b 16bb5e2cb5128366077e08d099cdc3f0
 #>                        "PENDING"                        "PENDING"
-#> ca8a10569b28158e8628b9791eee101c 196186325153285d2677bfe891fb1503
+#> 899f49f68a28fa79095796b00549bcd5 140859ca304b2ef81ff70e0d9a1639f2
 #>                        "PENDING"                        "PENDING"
 ```
 
@@ -314,29 +313,28 @@ Collect the results:
 
 ```r
 res <- grp$wait(5)
-#> (-) [===============>--------------------------------] 33% | giving up in 4 s
-#> (\) [===============>--------------------------------] 33% | giving up in 4 s
+#> (-) [=======================>------------------------] 50% | giving up in 4 s
+#> (\) [=======================>------------------------] 50% | giving up in 4 s
 #> (|) [================================================] 100% | giving up in 3 s
 res
 #> [[1]]
-#> [1] 1.7981482 1.7239276 0.7290612
+#> [1] 0.1945096 1.6043196 2.0674439
 #>
 #> [[2]]
-#> [1] 0.1661211 1.1997118 0.1548141 2.2205991
+#> [1]  0.28648426  0.71153306  0.57097059 -0.07021351
 #>
 #> [[3]]
-#> [1] -1.190306 -1.515812 -1.802732 -2.835741 -3.625470
+#> [1] 0.5684845 0.4023611 1.1826306 1.9730176 1.1584465
 #>
 #> [[4]]
-#> [1] -0.41240741 -0.61096610  0.01967077  1.60922469  0.22531870  0.28581047
+#> [1] -0.862783 -1.690197 -1.792089 -1.063012 -0.648449 -1.718101
 #>
 #> [[5]]
-#> [1]  0.93765205  1.61135360 -0.36580320 -1.62569620 -3.13605025 -0.37971354
-#> [7] -0.02775468
+#> [1] -1.7890075 -0.5330845  1.2488899  1.3586201  0.2010967  1.1742997  0.2347974
 #>
 #> [[6]]
-#> [1]  0.1909055  1.1966431  0.7832947  1.7694775  0.8666090  0.5939456 -0.6522191
-#> [8]  0.2280651
+#> [1] -0.19868331  0.50090255  0.19222369  0.18023779 -0.01204727  0.95169811
+#> [7] -0.92250390 -1.77291099
 ```
 
 While workers will turn off automatically, it's polite to turn them
@@ -360,53 +358,53 @@ obj$stop_workers()
 Sys.sleep(1)
 rrq$worker_log_tail(workers, n = Inf)
 #>                    worker_id       time       command
-#> 1  contumelious_nettlefish_1 1617981224         ALIVE
-#> 2  contumelious_nettlefish_2 1617981224         ALIVE
-#> 3  contumelious_nettlefish_1 1617981224    TASK_START
-#> 4  contumelious_nettlefish_1 1617981225 TASK_COMPLETE
-#> 5  contumelious_nettlefish_1 1617981225       MESSAGE
-#> 6  contumelious_nettlefish_1 1617981225      RESPONSE
-#> 7  contumelious_nettlefish_2 1617981225       MESSAGE
-#> 8  contumelious_nettlefish_2 1617981225      RESPONSE
-#> 9  contumelious_nettlefish_1 1617981226    TASK_START
-#> 10 contumelious_nettlefish_2 1617981226    TASK_START
-#> 11 contumelious_nettlefish_1 1617981227 TASK_COMPLETE
-#> 12 contumelious_nettlefish_1 1617981227    TASK_START
-#> 13 contumelious_nettlefish_2 1617981227 TASK_COMPLETE
-#> 14 contumelious_nettlefish_2 1617981227    TASK_START
-#> 15 contumelious_nettlefish_1 1617981228 TASK_COMPLETE
-#> 16 contumelious_nettlefish_1 1617981228    TASK_START
-#> 17 contumelious_nettlefish_2 1617981228 TASK_COMPLETE
-#> 18 contumelious_nettlefish_2 1617981228    TASK_START
-#> 19 contumelious_nettlefish_1 1617981228 TASK_COMPLETE
-#> 20 contumelious_nettlefish_2 1617981229 TASK_COMPLETE
-#> 21 contumelious_nettlefish_1 1617981229       MESSAGE
-#> 22 contumelious_nettlefish_1 1617981229      RESPONSE
-#> 23 contumelious_nettlefish_2 1617981229       MESSAGE
-#> 24 contumelious_nettlefish_2 1617981229      RESPONSE
-#> 25 contumelious_nettlefish_1 1617981229          STOP
-#> 26 contumelious_nettlefish_2 1617981229          STOP
+#> 1  productive_howlermonkey_1 1617982202         ALIVE
+#> 2  productive_howlermonkey_1 1617982202    TASK_START
+#> 3  productive_howlermonkey_2 1617982203         ALIVE
+#> 4  productive_howlermonkey_1 1617982203 TASK_COMPLETE
+#> 5  productive_howlermonkey_1 1617982204       MESSAGE
+#> 6  productive_howlermonkey_1 1617982204      RESPONSE
+#> 7  productive_howlermonkey_2 1617982204       MESSAGE
+#> 8  productive_howlermonkey_2 1617982204      RESPONSE
+#> 9  productive_howlermonkey_1 1617982205    TASK_START
+#> 10 productive_howlermonkey_2 1617982205    TASK_START
+#> 11 productive_howlermonkey_1 1617982206 TASK_COMPLETE
+#> 12 productive_howlermonkey_1 1617982206    TASK_START
+#> 13 productive_howlermonkey_2 1617982206 TASK_COMPLETE
+#> 14 productive_howlermonkey_2 1617982206    TASK_START
+#> 15 productive_howlermonkey_1 1617982206 TASK_COMPLETE
+#> 16 productive_howlermonkey_1 1617982206    TASK_START
+#> 17 productive_howlermonkey_2 1617982207 TASK_COMPLETE
+#> 18 productive_howlermonkey_2 1617982207    TASK_START
+#> 19 productive_howlermonkey_1 1617982207 TASK_COMPLETE
+#> 20 productive_howlermonkey_2 1617982207 TASK_COMPLETE
+#> 21 productive_howlermonkey_1 1617982207       MESSAGE
+#> 22 productive_howlermonkey_2 1617982207       MESSAGE
+#> 23 productive_howlermonkey_2 1617982207      RESPONSE
+#> 24 productive_howlermonkey_1 1617982207      RESPONSE
+#> 25 productive_howlermonkey_1 1617982207          STOP
+#> 26 productive_howlermonkey_2 1617982207          STOP
 #>                             message
 #> 1
-#> 2
-#> 3  6784f9e0f434d9c308b22700d4037c13
-#> 4  6784f9e0f434d9c308b22700d4037c13
+#> 2  2e731137b72b951aa9236ce5e74af284
+#> 3
+#> 4  2e731137b72b951aa9236ce5e74af284
 #> 5                       TIMEOUT_GET
 #> 6                       TIMEOUT_GET
 #> 7                       TIMEOUT_GET
 #> 8                       TIMEOUT_GET
-#> 9  29c422a2b7da89b52949e861cf0ae6ee
-#> 10 994b9028c8c3b93caac44baa469e1842
-#> 11 29c422a2b7da89b52949e861cf0ae6ee
-#> 12 49ac434097d864af7068691962778f60
-#> 13 994b9028c8c3b93caac44baa469e1842
-#> 14 bc1c4a969a02fd08db4bfe3df7f3fc28
-#> 15 49ac434097d864af7068691962778f60
-#> 16 524f33370dac1ad9045ae0bc5f1bd48b
-#> 17 bc1c4a969a02fd08db4bfe3df7f3fc28
-#> 18 64bce0fe0a56e69af952fedf51339477
-#> 19 524f33370dac1ad9045ae0bc5f1bd48b
-#> 20 64bce0fe0a56e69af952fedf51339477
+#> 9  7095a131d4f32806f2b171db71f56e8b
+#> 10 30d415c27a7ff9eae15e4de1330f3f94
+#> 11 7095a131d4f32806f2b171db71f56e8b
+#> 12 d6f9c039b1879b4524ff8ae6cc07699c
+#> 13 30d415c27a7ff9eae15e4de1330f3f94
+#> 14 a1c0d9bfaf6e1d12f0883426143c461a
+#> 15 d6f9c039b1879b4524ff8ae6cc07699c
+#> 16 5003b13d4bce25875adb2d385cfa3ce9
+#> 17 a1c0d9bfaf6e1d12f0883426143c461a
+#> 18 809ab0362abc9aa96ed43f1fd7a042fb
+#> 19 5003b13d4bce25875adb2d385cfa3ce9
+#> 20 809ab0362abc9aa96ed43f1fd7a042fb
 #> 21                             STOP
 #> 22                             STOP
 #> 23                             STOP
@@ -430,8 +428,8 @@ The first part here looks very similar, except that we use `use_rrq = TRUE` rath
 ```r
 config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
-#> Loading context d631ced3301ef01641939aaaad897527
-#> [ context   ]  d631ced3301ef01641939aaaad897527
+#> Loading context a1590dd8b37b4f181f1048afc0fe0443
+#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
@@ -442,22 +440,21 @@ We still submit workers
 
 ```r
 workers <- obj$submit_workers(10)
-#> Submitting 10 workers with base name 'unhistoried_australiancurlew'
+#> Submitting 10 workers with base name 'subdermic_chameleon'
 #> submitting (-) [======>----------------------------] 20% | giving up in 600 s
 #> submitting (\) [=========>-------------------------] 30% | giving up in 599 s
-#> submitting (|) [=============>---------------------] 40% | giving up in 598 s
+#> submitting (|) [=============>---------------------] 40% | giving up in 599 s
 #> submitting (/) [=================>-----------------] 50% | giving up in 598 s
-#> submitting (-) [====================>--------------] 60% | giving up in 597 s
+#> submitting (-) [====================>--------------] 60% | giving up in 598 s
 #> submitting (\) [=======================>-----------] 70% | giving up in 597 s
-#> submitting (|) [===========================>-------] 80% | giving up in 596 s
+#> submitting (|) [===========================>-------] 80% | giving up in 597 s
 #> submitting (/) [===============================>---] 90% | giving up in 596 s
 #> submitting (-) [===================================] 100% | giving up in 596 s
 workers
-#>  [1] "unhistoried_australiancurlew_1"  "unhistoried_australiancurlew_2"
-#>  [3] "unhistoried_australiancurlew_3"  "unhistoried_australiancurlew_4"
-#>  [5] "unhistoried_australiancurlew_5"  "unhistoried_australiancurlew_6"
-#>  [7] "unhistoried_australiancurlew_7"  "unhistoried_australiancurlew_8"
-#>  [9] "unhistoried_australiancurlew_9"  "unhistoried_australiancurlew_10"
+#>  [1] "subdermic_chameleon_1"  "subdermic_chameleon_2"  "subdermic_chameleon_3"
+#>  [4] "subdermic_chameleon_4"  "subdermic_chameleon_5"  "subdermic_chameleon_6"
+#>  [7] "subdermic_chameleon_7"  "subdermic_chameleon_8"  "subdermic_chameleon_9"
+#> [10] "subdermic_chameleon_10"
 ```
 
 To send tasks to these workers we directly use the `rrq_controller` object - we'll not use the `queue_didehpc` object from this point.
@@ -482,7 +479,7 @@ For example; submitting 50 trivial tasks to our pool of workers and retrieving t
 ```r
 system.time(res <- rrq$lapply(1:50, sin))
 #>    user  system elapsed
-#>   0.011   0.000   0.050
+#>   0.009   0.001   0.048
 ```
 
 or 500 tasks:
@@ -491,7 +488,7 @@ or 500 tasks:
 ```r
 system.time(res <- rrq$lapply(1:500, sin, progress = FALSE))
 #>    user  system elapsed
-#>   0.085   0.014   0.533
+#>   0.060   0.010   0.459
 ```
 
 Across the network, the latency here is ~1/600 s per task.  On fi--didemrchnb it will hopefully be a bit faster because of the infiniband network.
