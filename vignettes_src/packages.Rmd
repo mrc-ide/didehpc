@@ -12,6 +12,17 @@ vignette: >
 
 <!-- HEADER -->
 
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = FALSE,
+  comment = "#>"
+)
+r_output <- function(x) {
+  cat(c("```r", x, "```"), sep = "\n")
+}
+```
+
 Often the most difficult part of configuring your cluster jobs is sorting out all the packages that you need and making sure that they are present on the cluster. There are several levels of difficulty here and this document will walk through them in turn.
 
 ## Everything is on CRAN
@@ -24,7 +35,7 @@ ctx <- context::context_save(root, packages = c("dplyr", "ggplot2"))
 obj <- didehpc::queue_didehpc(ctx)
 ```
 
-What happened above was when the queue started up it looiked looked to see what packages were available (none were) and then installed everything needed to run your jobs. That includes the two packages listed above but also all their dependencies and [`context`](https://mrc-ide.github.io/context/) which `didehpc` uses to send the jobs back and forth.
+What happened above was when the queue started up it looked to see what packages were available (none were) and then installed everything needed to run your jobs. That includes the two packages listed above but also all their dependencies and [`context`](https://mrc-ide.github.io/context/) which `didehpc` uses to send the jobs back and forth.
 
 All these packages are installed into a special directory within the context root:
 
@@ -55,7 +66,7 @@ If you want to add your packages to one of these repositories, please talk to Ri
 
 ## Install packages directly from GitHub (or similar)
 
-We use [`pkgdepends`](https://r-lib.github.io/pkgdepends/) as the engine for installing packages from exotic locations. This is a problem that is slightly more complicated than it seems because the resolution of the dependencies are not always unamgiguous, particularly with networks of dependent packages.
+We use [`pkgdepends`](https://r-lib.github.io/pkgdepends/) as the engine for installing packages from exotic locations. This is a problem that is slightly more complicated than it seems because the resolution of the dependencies are not always unambiguous, particularly with networks of dependent packages.
 
 The basic idea is this. Suppose we want to install the [`rfiglet`](https://github.com/richfitz/rfiglet) package, which is not on CRAN. We use the "Remotes"-style reference `richfitz/rfiglet` as an entry to `conan_sources` so that `didehpc` knows where to install `rfiglet` from:
 
@@ -135,7 +146,7 @@ If you pass `provision = "fake"` it will leave your library alone no matter what
 
 If you want to add additional things into the library without running the full provisioning (which might upgrade all sorts of things) you can use the `install_packages()` method on the object. This ignores the contents of your `conan_sources` and you pass directly in the `pkgdepends`-style references; see [the `pkgdepends` documentation](https://r-lib.github.io/pkgdepends/reference/pkg_refs.html) for the myriad options here. Examples of usage include:
 
-Install the latest version of a cran package
+Install the latest version of a CRAN package
 
 ```r
 obj$install_packages("data.table")

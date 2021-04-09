@@ -332,7 +332,7 @@ When you first run `queue_didehpc` it will install windows versions of all requi
 `obj` is a weird sort of object called an `R6` class.  It's a bit
 like a Python or Java class if you've come from those languages.
 The thing you need to know is that the object is like a list and
-contains a number of functions that can be run by runing
+contains a number of functions that can be run by running
 `obj$functionname()`.  These functions all act by *side effect*;
 they interact with a little database stored in the context root
 directory or by communicating with the cluster using the web

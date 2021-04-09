@@ -33,7 +33,7 @@ The steps below are described in more detail in the [vignettes](https://mrc-ide.
 * Need a reminder? There is a [quickstart guide](https://mrc-ide.github.io/didehpc/vignettes/quickstart.html) which is much shorter and will be quicker to glance through.
 * Trying to install packages on the cluster? Check the [packages vignette](https://mrc-ide.github.io/didehpc/vignettes/packages.html) for ways of controlling this.
 * Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/didehpc/vignettes/troubleshooting.html).
-* Lots of small jobs to run? Consider using. [workers](https://mrc-ide.github.io/didehpc/vignettes/workers.html)
+* Lots of small jobs to run? Consider using [workers](https://mrc-ide.github.io/didehpc/vignettes/workers.html) for a fast queue over several cluster nodes.
 
 ## Issues
 
@@ -44,7 +44,7 @@ The steps below are described in more detail in the [vignettes](https://mrc-ide.
 
 The simplest approach is to run:
 
-```
+```r
 # install.packages("drat") # if needed
 drat:::add("mrc-ide")
 install.packages("didehpc")
