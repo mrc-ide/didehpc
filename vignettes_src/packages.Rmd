@@ -5,7 +5,7 @@ output:
     toc: true
     toc_depth: 2
 vignette: >
-  %\VignetteIndexEntry{Packages installation}
+  %\VignetteIndexEntry{Package installation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
