@@ -31,7 +31,7 @@ Suggests:
     callr,
     knitr,
     mockery,
-    pkgdepends (>= 1.0.0),
+    pkgdepends (>= 0.1.0),
     redux,
     rmarkdown,
     rrq (>= 0.2.18),
