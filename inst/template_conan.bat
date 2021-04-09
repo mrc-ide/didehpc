@@ -21,6 +21,10 @@ set CONAN_ID={{{{conan_id}}}}
 set CONAN_LOGFILE={{context_root}}\conan\log\%CONAN_ID%
 ECHO logfile: %CONAN_LOGFILE%
 
+{{context_workdrive}}
+cd \{{context_workdir}}
+ECHO working directory: %CD%
+
 ECHO on
 Rscript "{{context_root}}\conan\bin\%CONAN_ID%" "{{r_libs_user}}" > "%CONAN_LOGFILE%" 2>&1
 
