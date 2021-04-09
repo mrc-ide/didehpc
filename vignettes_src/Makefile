@@ -1,4 +1,4 @@
-all: didehpc.md quickstart.md troubleshooting.md workers.md
+all: didehpc.md packages.md quickstart.md troubleshooting.md workers.md
 
 %.md: %.Rmd
 	rm -f $@

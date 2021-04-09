@@ -1,11 +1,11 @@
 ---
-title: "didehpc"
+title: "Using didehpc to run cluster jobs"
 output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 2
 vignette: >
-  %\VignetteIndexEntry{didehpc}
+  %\VignetteIndexEntry{Using didehpc to run cluster jobs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

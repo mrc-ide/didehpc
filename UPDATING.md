@@ -58,10 +58,8 @@ remotes::install_github("mrc-ide/conan@prototype", upgrade = FALSE)
 
 ```
 r_version <- paste(getRversion()[1, 1:2], collapse = ".")
-path <- file.path("T:/conan", r_version)
-dir.create(file.path(path, "bootstrap"), FALSE, TRUE)
-dir.create(file.path(path, "cache"), FALSE, TRUE)
-conan::conan_bootstrap(file.path(path, "bootstrap"))
+path <- file.path("T:/conan/bootstrap", r_version)
+conan::conan_bootstrap(path, TRUE)
 ```
 
 Run this from both 4.0 and 3.6; we'll want to do this periodically.

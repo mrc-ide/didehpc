@@ -228,7 +228,7 @@ system.time(res <- rrq$lapply(1:50, sin))
 or 500 tasks:
 
 ```{r}
-system.time(res <- rrq$lapply(1:500, sin))
+system.time(res <- rrq$lapply(1:500, sin, progress = FALSE))
 ```
 
 Across the network, the latency here is ~1/600 s per task.  On fi--didemrchnb it will hopefully be a bit faster because of the infiniband network.

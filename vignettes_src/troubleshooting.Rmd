@@ -1,8 +1,8 @@
 ---
-title: "troubleshooting"
+title: "Troubleshooting"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{troubleshooting}
+  %\VignetteIndexEntry{Troubleshooting}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
