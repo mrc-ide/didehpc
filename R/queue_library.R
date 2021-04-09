@@ -42,8 +42,8 @@ queue_library <- R6::R6Class(
     },
 
     provision = function(packages, repos = NULL, policy = "upgrade",
-                         dryrun = FALSE,
-                         show_progress = TRUE, show_log = TRUE, poll = 1) {
+                         dryrun = FALSE, show_progress = TRUE,
+                         show_log = TRUE, poll = 1) {
       cluster <- self$cluster
       client <- self$client
       client$login()

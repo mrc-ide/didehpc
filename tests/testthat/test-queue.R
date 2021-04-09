@@ -227,7 +227,7 @@ test_that("Package provisioning interface logic is correct", {
   expect_false(private$provisioned)
 
   expect_message(
-    obj$provision_context(),
+    obj$provision_context(show_log = FALSE, show_progress = FALSE),
     "Running installation script on cluster")
   expect_true(private$provisioned)
 
@@ -237,7 +237,7 @@ test_that("Package provisioning interface logic is correct", {
   mockery::expect_called(private$lib$provision, 1L)
   repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
   expect_equal(mockery::mock_args(private$lib$provision)[[1]],
-               list("context", repos, "lazy", FALSE))
+               list("context", repos, "lazy", FALSE, FALSE, FALSE))
 
   expect_message(
     obj$provision_context(),

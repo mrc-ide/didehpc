@@ -121,7 +121,8 @@ queue_didehpc_ <- R6::R6Class(
     },
 
     provision_context = function(policy = "lazy", dryrun = FALSE,
-                                 quiet = FALSE) {
+                                 quiet = FALSE, show_progress = NULL,
+                                show_log = TRUE) {
       policy <- provision_policy(policy)
       if (policy == "later") {
         return()
@@ -129,14 +130,16 @@ queue_didehpc_ <- R6::R6Class(
       if (policy != "fake") {
         dat <- context_packages(self$context,
                                 self$config$use_rrq || self$config$use_workers)
-        self$install_packages(dat$packages, dat$repos, policy, dryrun, quiet)
+        self$install_packages(dat$packages, dat$repos, policy, dryrun, quiet,
+                              show_progress, show_log)
       }
       private$provisioned <- TRUE
     },
 
     install_packages = function(packages, repos = NULL,
                                 policy = "lazy", dryrun = FALSE,
-                                quiet = FALSE) {
+                                quiet = FALSE, show_progress = NULL,
+                                show_log = TRUE) {
       complete <- private$lib$check(packages)$complete
       if (complete && policy == "lazy") {
         if (!quiet) {
@@ -145,7 +148,8 @@ queue_didehpc_ <- R6::R6Class(
         return()
       }
       message("Running installation script on cluster")
-      private$lib$provision(packages, repos, policy, dryrun)
+      private$lib$provision(packages, repos, policy, dryrun,
+                            show_progress %||% interactive(), show_log)
       message("Done!")
     }
   ),
