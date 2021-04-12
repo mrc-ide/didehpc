@@ -168,9 +168,8 @@ web_client <- R6::R6Class(
     ##' always shows the output.
     ##'
     ##' @param cluster Cluster to show; if `TRUE` show the entire cluster
-    ##'   (via `load_overall`), if `NULL` defaults to the value given when
-    ##'   creating the client.defaults to the cluster specified when the queue
-    ##'   was created.
+    ##'   (via `load_overall`), if `NULL` defaults to the value given when the
+    ##'   client was created.
     ##'
     ##' @param nodes Show the nodes when printing
     load_show = function(cluster = NULL, nodes = TRUE) {

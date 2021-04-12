@@ -8,7 +8,7 @@
 ##  RUNNING  CANCELLED -> was running, manually cancelled -> update to CANCELLED
 reconcile <- function(obj, task_ids = NULL) {
   dat <- reconcile_compare(obj, task_ids)
-  reconcile_update(dat, obj$db)
+  reconcile_update(dat, obj$context$db)
   reconcile_report(dat)
   invisible(dat)
 }

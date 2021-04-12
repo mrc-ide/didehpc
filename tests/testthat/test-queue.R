@@ -109,9 +109,9 @@ test_that("Submit job and update db", {
     list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1))
 
   ## These are the database changes made:
-  expect_equal(obj$db$get(t$id, "dide_id"), dide_id)
-  expect_equal(obj$db$get(t$id, "dide_cluster"), config$cluster)
-  expect_equal(obj$db$get(t$id, "log_path"), "logs")
+  expect_equal(obj$context$db$get(t$id, "dide_id"), dide_id)
+  expect_equal(obj$context$db$get(t$id, "dide_cluster"), config$cluster)
+  expect_equal(obj$context$db$get(t$id, "log_path"), "logs")
 
   ## The higher-level interface
   expect_equal(obj$dide_id(t), dide_id)

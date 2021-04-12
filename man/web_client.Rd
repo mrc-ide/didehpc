@@ -293,9 +293,8 @@ always shows the output.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{cluster}}{Cluster to show; if \code{TRUE} show the entire cluster
-(via \code{load_overall}), if \code{NULL} defaults to the value given when
-creating the client.defaults to the cluster specified when the queue
-was created.}
+(via \code{load_overall}), if \code{NULL} defaults to the value given when the
+client was created.}
 
 \item{\code{nodes}}{Show the nodes when printing}
 }
