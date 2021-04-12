@@ -34,7 +34,7 @@ Suggests:
     pkgdepends (>= 0.1.0),
     redux,
     rmarkdown,
-    rrq (>= 0.2.18),
+    rrq (>= 0.2.19),
     testthat,
     withr
 RoxygenNote: 7.1.1
@@ -44,6 +44,6 @@ Remotes:
     mrc-ide/conan@prototype,
     mrc-ide/context@mrc-2273,
     mrc-ide/queuer@mrc-2280,
-    mrc-ide/rrq@mrc-2261
+    mrc-ide/rrq
 Encoding: UTF-8
 Language: en-GB
