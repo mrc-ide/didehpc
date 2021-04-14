@@ -41,7 +41,7 @@ RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Remotes:
-    mrc-ide/conan@prototype,
+    mrc-ide/conan,
     mrc-ide/context@mrc-2273,
     mrc-ide/queuer@mrc-2280,
     mrc-ide/rrq
