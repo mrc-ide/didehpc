@@ -1,0 +1,11 @@
+pandoc: 2.7.3
+pkgdown: 1.6.1
+pkgdown_sha: ~
+articles:
+  didehpc: didehpc.html
+  packages: packages.html
+  quickstart: quickstart.html
+  troubleshooting: troubleshooting.html
+  workers: workers.html
+last_built: 2021-04-19T10:42Z
+
