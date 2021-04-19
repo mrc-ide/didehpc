@@ -11,6 +11,10 @@ ECHO logfile: %CONTEXT_LOGFILE%
 ECHO on
 Rscript "{{context_root}}\bin\rrq_worker" --config didehpc --name %RRQ_WORKER_ID% --key-alive %RRQ_KEY_ALIVE% %CONTEXT_ID% > "%CONTEXT_LOGFILE%" 2>&1
 
+@ECHO off
+%SystemDrive%
+set ErrorCode=%ERRORLEVEL%
+
 {{network_shares_delete}}
 
 @ECHO off
