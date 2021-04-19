@@ -17,12 +17,16 @@
 ##'   `FALSE`.
 ##'
 ##' @param provision A provisioning strategy to use. Options are
-##' * `lazy`: (the default) which installs packages if they are not
-##'   present (note that this differs slightly to the interpretation
-##'   of "lazy" used by `pkgdepends` as we try and be even lazier by
-##'   not calling `pkgdepends` if it looks like your packages might be
-##'   ok - this avoids fetching package metadata - you might want to
-##'   run `$provision_context("lazy")` later.
+##' * `verylazy` (the default) which installs packages if any declared
+##'   package is not present, or if the remote library has already
+##'   been provisioned. This is lazier than the `lazy` policy and
+##'   faster as it avoids fetching package metadata, which may take a
+##'   few seconds. If you have manually adjusted your library
+##'   (especially by removing packages) you will probably want to use
+##'   `lazy` or `upgrade` to account for dependencies of your declared
+##'   packages.
+##' * `lazy`: which tells `pkgdepends` to be "lazy" - this prefers to
+##'   minimise installation time and does not upgrade packages unless required.
 ##' * `upgrade`: which tells `pkgdepends` to always try and upgrade
 ##' * `later`: don't do anything on creation
 ##' * `fake`: don't do anything but mark the queue as being already
@@ -214,7 +218,7 @@ queue_didehpc_ <- R6::R6Class(
     ##'   See `vignette("packages")` for more information.
     ##'
     ##' @param policy The installation policy to use, as interpreted by
-    ##'   `pkgdepends::pkg_solution` - so this should be `lazy`
+    ##'   `pkgdepends::pkg_solution` - so this should be `verylazy`/`lazy`
     ##'   (install missing packages but don't upgrade unless needed) or
     ##'   `upgrade` (upgrade packages as possible). In addition you can
     ##'   also use `later` which does nothing, or `fake` which pretends
@@ -231,27 +235,40 @@ queue_didehpc_ <- R6::R6Class(
     ##'   bar
     ##'
     ##' @param show_log Logical, controls printing of the log from the cluster
-    provision_context = function(policy = "lazy", dryrun = FALSE,
+    provision_context = function(policy = "verylazy", dryrun = FALSE,
                                  quiet = FALSE, show_progress = NULL,
                                  show_log = TRUE) {
       policy <- provision_policy(policy)
       if (policy == "later") {
+        ## Does not update the value of "provisioned", but any other
+        ## successful exit will.
         return()
       }
-      if (policy != "fake") {
-        dat <- context_packages(self$context,
-                                self$config$use_rrq || self$config$use_workers)
+
+      if (policy == "fake") {
+        if (!quiet) {
+          message("Assuming that everything is ok (policy = 'fake')")
+        }
+        run_provision <- FALSE
+      } else {
+        needs_rrq <- self$config$use_rrq || self$config$use_workers
+        dat <- context_packages(self$context, needs_rrq)
         complete <- private$lib$check(dat$packages)$complete
-        if (complete && policy == "lazy") {
-          if (!quiet) {
+        run_provision <- TRUE
+        if (policy == "verylazy") {
+          policy <- "lazy"
+          run_provision <- !complete
+          if (complete && !quiet) {
             message("Nothing to install; try running with policy = 'upgrade'")
           }
-          private$provisioned <- TRUE
-          return()
         }
+      }
+
+      if (run_provision) {
         self$install_packages(dat$packages, dat$repos, policy, dryrun,
                               show_progress, show_log)
       }
+
       private$provisioned <- TRUE
     },
 

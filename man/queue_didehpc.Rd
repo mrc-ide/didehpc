@@ -28,12 +28,16 @@ if \code{FALSE} this also sets \code{provision} to \code{later} and \code{login}
 
 \item{provision}{A provisioning strategy to use. Options are
 \itemize{
-\item \code{lazy}: (the default) which installs packages if they are not
-present (note that this differs slightly to the interpretation
-of "lazy" used by \code{pkgdepends} as we try and be even lazier by
-not calling \code{pkgdepends} if it looks like your packages might be
-ok - this avoids fetching package metadata - you might want to
-run \verb{$provision_context("lazy")} later.
+\item \code{verylazy} (the default) which installs packages if any declared
+package is not present, or if the remote library has already
+been provisioned. This is lazier than the \code{lazy} policy and
+faster as it avoids fetching package metadata, which may take a
+few seconds. If you have manually adjusted your library
+(especially by removing packages) you will probably want to use
+\code{lazy} or \code{upgrade} to account for dependencies of your declared
+packages.
+\item \code{lazy}: which tells \code{pkgdepends} to be "lazy" - this prefers to
+minimise installation time and does not upgrade packages unless required.
 \item \code{upgrade}: which tells \code{pkgdepends} to always try and upgrade
 \item \code{later}: don't do anything on creation
 \item \code{fake}: don't do anything but mark the queue as being already
@@ -350,7 +354,7 @@ This sets up the remote set of packages that your tasks will use.
 See \code{vignette("packages")} for more information.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{queue_didehpc_$provision_context(
-  policy = "lazy",
+  policy = "verylazy",
   dryrun = FALSE,
   quiet = FALSE,
   show_progress = NULL,
@@ -362,7 +366,7 @@ See \code{vignette("packages")} for more information.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{policy}}{The installation policy to use, as interpreted by
-\code{pkgdepends::pkg_solution} - so this should be \code{lazy}
+\code{pkgdepends::pkg_solution} - so this should be \code{verylazy}/\code{lazy}
 (install missing packages but don't upgrade unless needed) or
 \code{upgrade} (upgrade packages as possible). In addition you can
 also use \code{later} which does nothing, or \code{fake} which pretends

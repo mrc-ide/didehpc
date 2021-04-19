@@ -64,9 +64,13 @@ test_that("provisioning selects appropriate queue", {
 
 
 test_that("provisioning policy logic", {
-  expect_equal(provision_policy(TRUE), "lazy")
+  expect_equal(provision_policy(TRUE), "verylazy")
   expect_equal(provision_policy(FALSE), "later")
   expect_equal(provision_policy("lazy"), "lazy")
-  expect_error(provision_policy("other", "policy"),
-               "'policy' must be one of 'lazy', 'upgrade', 'later', 'fake")
+  expect_equal(provision_policy("verylazy"), "verylazy")
+  expect_equal(provision_policy("upgrade"), "upgrade")
+  expect_equal(provision_policy("fake"), "fake")
+  expect_error(
+    provision_policy("other", "policy"),
+    "'policy' must be one of 'verylazy', 'lazy', 'upgrade', 'later', 'fake")
 })
