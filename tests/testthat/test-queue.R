@@ -252,3 +252,21 @@ test_that("Package provisioning interface logic is correct", {
                mockery::mock_args(private$lib$check)[[1]])
   mockery::expect_called(private$lib$provision, 1L)
 })
+
+
+test_that("Package provisioning interface logic is correct", {
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc(ctx, config, initialise = FALSE)
+
+  private <- r6_private(obj)
+  private$lib <- list(
+    provision = mockery::mock(),
+    check = mockery::mock(list(complete = TRUE), cycle = TRUE))
+  expect_false(private$provisioned)
+
+  expect_message(
+    obj$provision_context(),
+    "Nothing to install; try running with policy = 'upgrade'")
+  expect_true(private$provisioned)
+})

@@ -246,6 +246,7 @@ queue_didehpc_ <- R6::R6Class(
           if (!quiet) {
             message("Nothing to install; try running with policy = 'upgrade'")
           }
+          private$provisioned <- TRUE
           return()
         }
         self$install_packages(dat$packages, dat$repos, policy, dryrun,
