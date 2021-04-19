@@ -1,49 +1,23 @@
-prepare_path <- function(path, mappings, error = TRUE) {
-  if (!file.exists(path)) {
-    stop("path does not exist: ", path)
-  }
-  path <- clean_path(normalizePath(path, mustWork = TRUE))
-  ## TODO: currently assume that mappings does not end in a trailing slash.
-  ## TODO: not sure about slash direction disagreements.
-  ## TODO: 'rel' is not relative to *our* working directory
-  for (m in mappings) {
-    if (string_starts_with(tolower(path), tolower(m$path_local))) {
-      m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
-      return(m)
-    }
-  }
-  if (error) {
-    stop("did not find network mapping for path ", path)
-  } else {
-    NULL
-  }
-}
-
-## It may be possible on many systems to infer the path_remote from
-## the local path, which would be useful;
-##   `mount` on linux
-##   `net use` or the easier to parse variant on Windows
-
 ##' Describe a path mapping for use when setting up jobs on the cluster.
 ##' @title Describe a path mapping
 ##'
 ##' @param name Name of this map.  Can be anything at all, and is used
-##'   for information purpopses only.
+##'   for information purposes only.
 ##'
 ##' @param path_local The point where the drive is attached locally.
 ##'   On Windows this will be something like "Q:/", on Mac something
 ##'   like "/Volumes/mountname", and on Linux it could be anything at
 ##'   all, depending on what you used when you mounted it (or what is
-##'   written in \code{/etc/fstab})
+##'   written in `/etc/fstab`)
 ##'
-##' @param path_remote The \emph{network path} for this drive.  It
-##'   will look something like \code{\\\\fi--didef3.dide.ic.ac.uk\\tmp\\}.
+##' @param path_remote The network path for this drive.  It
+##'   will look something like `\\\\fi--didef3.dide.ic.ac.uk\\tmp\\`.
 ##'   Unfortunately backslashes are really hard to get right here and
-##'   you will need to use twice as many as you expect (so \emph{four}
-##'   backslashes at the beginning and then two for each separator.
+##'   you will need to use twice as many as you expect (so *four*
+##'   backslashes at the beginning and then two for each separator).
 ##'   If this makes you feel bad know that you are not alone:
 ##'   https://xkcd.com/1638 -- alternatively you may use forward
-##'   slashes in place of backslashes (e.g. //fi--didef3.dide.ic.ac.uk/tmp)
+##'   slashes in place of backslashes (e.g. `//fi--didef3.dide.ic.ac.uk/tmp`)
 ##'
 ##' @param drive_remote The place to mount the drive on the cluster.
 ##'   We're probably going to mount things at Q: and T: already so
@@ -66,39 +40,18 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   if (!file.exists(path_local)) {
     stop("Local mount point does not exist: ", path_local)
   }
-  clean_path <- function(x) {
-    sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
-  }
-  
-  # Make FQDN
-  
-  bits <- strsplit(clean_path(path_remote), "/")[[1]]
-  
-  # This contains... empty, empty, server-name, share, dir ...  
-  # So server_name should always be index 3.
-  # Remove .dide.local if we find it.
-  
-  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
-    bits[3] <- sub(".dide.local","", bits[3], ignore.case = TRUE)
-  }
-  
-  # Add .dide.ic.ac.uk if it's not there.
-  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
-    bits[3] <- paste0(bits[3],".dide.ic.ac.uk")
-  }
-  
-  # re_assemble
-  
-  path_remote <- paste0(bits, collapse = "\\")
-  
-  ret <-
-    list(name = name,
-         path_remote = clean_path(path_remote),
-         path_local  = clean_path(normalizePath(path_local, mustWork = TRUE)),
-         drive_remote = drive_remote)
+  clean_path_remote(path_remote)
+
+  ret <- list(
+    name = name,
+    path_remote = clean_path_remote(path_remote),
+    path_local = clean_path_local(path_local),
+    drive_remote = drive_remote)
   class(ret) <- "path_mapping"
+
   ret
 }
+
 
 ##' @export
 as.character.path_mapping <- function(x, ...) {
@@ -111,144 +64,129 @@ as.character.path_mapping <- function(x, ...) {
   }
 }
 
+
+##' @export
 print.path_mapping <- function(x, ...) {
   cat(paste0("<path mapping>: ", as.character(x), "\n"))
   invisible(x)
 }
 
+
 clean_path <- function(x) {
   sub("/+$", "", gsub("\\", "/", x, fixed = TRUE))
 }
+
+
 windows_path <- function(x) {
   gsub("/", "\\", x, fixed = TRUE)
 }
+
+
 unix_path <- function(x) {
   gsub("\\", "/", x, fixed = TRUE)
 }
 
-remote_path <- function(x) {
+
+remote_path <- function(x, shares) {
+  x <- prepare_path(x, shares)
   windows_path(file.path(x$path_remote, x$rel, fsep = "/"))
 }
+
 
 file_path <- function(...) {
   paths <- list(...)
   paths <- paths[!vapply(paths, is.null, logical(1))]
   do.call("file.path", paths, quote = TRUE)
 }
-path_batch <- function(root, id = NULL, linux = FALSE) {
+
+
+path_batch <- function(root, id = NULL) {
   if (!is.null(id)) {
-    ext <- if (linux) ".sh" else ".bat"
-    id <- paste0(id, ext)
+    id <- paste0(id, ".bat")
   }
   file_path(root, "batch", id)
 }
+
 path_logs <- function(root, id = NULL) {
   file_path(root, "logs", id)
 }
+
 
 path_worker_logs <- function(root, id = NULL) {
   file_path(root, "workers", id)
 }
 
-## These will change.
-dide_home <- function(path, username) {
-  assert_scalar_character(username)
-  assert_character(path)
-  paste0("\\\\fi--san03.dide.ic.ac.uk\\homes\\", username, "\\", gsub("/", "\\\\", path))
+
+path_library <- function(root, r_version) {
+  version_str <- as.character(r_version[1, 1:2])
+  file_path(root, "lib", "windows", version_str)
 }
+
+
+path_conan_bootstrap <- function(root, r_version) {
+  version_str <- as.character(r_version[1, 1:2])
+  file.path(root, "conan", "bootstrap", version_str)
+}
+
+
+dide_home <- function(username) {
+  assert_scalar_character(username)
+  file.path("\\\\fi--san03.dide.ic.ac.uk\\homes", username, fsep = "\\")
+}
+
+
 dide_temp <- function(path) {
   assert_character(path)
-  paste0("\\\\fi--didef3.dide.ic.ac.uk\\tmp\\", "\\", gsub("/", "\\\\", path))
+  file.path("\\\\fi--didef3.dide.ic.ac.uk\\tmp", windows_path(path),
+            fsep = "\\")
 }
 
-detect_mount_fail <- function() {
-  cbind(host = character(), path = character(), local = character(),
-        remote = character())
+
+clean_path_local <- function(path) {
+  clean_path(normalizePath(path, mustWork = TRUE))
 }
 
-## TODO: No idea what spaces in the filenames will do here.  Nothing
-## pretty, that's for sure.
-detect_mount_unix <- function() {
-  mount <- Sys.which("mount")
-  if (mount == "") {
-    return(detect_mount_fail())
+
+clean_path_remote <- function(path) {
+  ## Make FQDN
+  bits <- strsplit(clean_path(path), "/")[[1]]
+
+  ## This contains... empty, empty, server-name, share, dir ...
+  ## So server_name should always be index 3.
+  ## Remove .dide.local if we find it.
+
+  if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
+    bits[3] <- sub(".dide.local", "", bits[3], ignore.case = TRUE)
   }
 
-  type <- if (Sys.info()[["sysname"]] == "Darwin") "smbfs" else "cifs"
-  ## consider
-  ##   mount -t cifs  # (linux)
-  ##   mount -t smbfs # (osx)
-  re <- "//(?<user>[^@]*@)?(?<host>[^/]*)/(?<path>.*?)\\s+on\\s+(?<local>.+?) (?<extra>.+)$"
-  dat <- system2(mount, c("-t", type), stdout = TRUE, stderr = FALSE)
-  i <- grepl(re, dat, perl = TRUE)
-  if (!all(i)) {
-    ## This will be useful to see until I get this correct.
-    warning("Ignoring mounts:\n", paste(re[!i], collapse = "\n"))
-  }
-  dat <- dat[i]
-
-  if (length(dat) == 0L) {
-    return(detect_mount_fail())
+  ## Add .dide.ic.ac.uk if it's not there.
+  if (!grepl(".dide.ic.ac.uk", bits[3], ignore.case = TRUE)) {
+    bits[3] <- paste0(bits[3], ".dide.ic.ac.uk")
   }
 
-  ## There are a couple of formats here.  On the VPN and with OSX
-  ## (currently correlated) I see a //username@host/path format while
-  ## on on the wired network and Linux I see //shorthost/path
-  ##
-  ## //(user@)?(host)(.dide.ic.ac.uk)?/(path)
-  m <- rematch::re_match(re, dat)[, c("host", "path", "local"), drop = FALSE]
-
-  host <- sub("\\.dide\\.ic\\.ac\\.uk$", "", m[, "host"])
-  remote <- sprintf("\\\\%s\\%s", host, gsub("/", "\\\\", m[, "path"]))
-  cbind(remote = remote, local = m[, "local"])
+  ## re_assemble
+  paste0(bits, collapse = "\\")
 }
 
-detect_mount_windows2 <- function(formatstr) {
-  format_csv <- sprintf('/format:"%s"', formatstr)
-  path <- tempfile()
-  res <- try(
 
-    ## Using stdout = path does not work here, yielding a file that has
-    ## embedded NULs and failing to be read.
-
-    suppressWarnings(
-      system2("wmic", c("netuse", "list", "brief", format_csv), stdout = TRUE)),
-    silent = TRUE)
-
-  status <- attr(res, "status")
-
-  if (inherits(res, "try-error") || (!is.null(status) && status != 0L)) {
-    list(success = FALSE, result = res)
-  } else {
-    list(success = TRUE, result = res)
+prepare_path <- function(path, mappings, error = TRUE) {
+  if (!file.exists(path)) {
+    stop("path does not exist: ", path)
   }
-}
-
-detect_mount_windows <- function() {
-  res <- wmic()
-  path <- tempfile()
-  writeLines(res, path)
-  on.exit(file.remove(path))
-  dat <- read.csv(path, stringsAsFactors = FALSE)
-  cbind(remote = dat$RemoteName, local = dat$LocalName)
-}
-
-wmic <- function() {
-  windir <- Sys.getenv("WINDIR", "C:\\windows")
-
-  methods <- c("csv",
-               paste0(windir, "\\System32\\wbem\\en-US\\csv"),
-               paste0(windir, "\\System32\\wbem\\en-GB\\csv"))
-
-  for (meth in methods) {
-    res <- detect_mount_windows2(meth)
-    if (res$success) {
-      return(res$result)
+  path <- clean_path(normalizePath(path, mustWork = TRUE))
+  ## NOTE: The following TODO's date from 2015-16
+  ## TODO: currently assume that mappings does not end in a trailing slash.
+  ## TODO: not sure about slash direction disagreements.
+  ## TODO: 'rel' is not relative to *our* working directory
+  for (m in mappings) {
+    if (string_starts_with(tolower(path), tolower(m$path_local))) {
+      m$rel <- substr(path, nchar(m$path_local) + 2L, nchar(path))
+      return(m)
     }
   }
-  stop(sprintf("Error: Could not determine windows mounts using wmic\n%s", res$result))
-}
-
-detect_mount <- function() {
-  if (is_windows()) detect_mount_windows() else detect_mount_unix()
+  if (error) {
+    stop("did not find network mapping for path ", path)
+  } else {
+    NULL
+  }
 }

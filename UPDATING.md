@@ -39,26 +39,35 @@ right version of R. Verify this is the correct version of Rtools [here](https://
                 stop("Get Rich to upgrade Rtools"))
 ```
 * Locate the `r_versions` function and update the list of valid versions with the new one. This should match the 
-filenames of the new `setr32` and `setr64` batch files created earlier. (The instructions here relate to the 
-windows (non-linux) case)
+filenames of the new `setr32` and `setr64` batch files created earlier.
 ```r
-r_versions <- function(cluster) {
-  if (linux_cluster(cluster)) {
-    v <- c("3.2.4", "3.3.0", "3.3.1")
-  } else {
-    v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
-           "3.5.0", "3.6.0")
-  }
+r_versions <- function() {
+  v <- c("3.2.2", "3.2.4", "3.3.1", "3.3.2", "3.4.0", "3.4.2", "3.4.4",
+         "3.5.0", "3.6.0")
 ```
 * Update the minor version in `DESCRIPTION`, and add an entry in `NEWS.md`.
 * Commit changes on the branch - but wait for last step before PR / merging.
 
-## Update the Build Server
+## Update the bootstrap
 
-Follow [the instructions on `buildr` itself](https://github.com/mrc-ide/buildr/blob/master/setup.md) to install and configure the new version on the build server.
+Log into a remote desktop
+
+```
+remotes::install_github("mrc-ide/conan@prototype", upgrade = FALSE)
+```
+
+```
+r_version <- paste(getRversion()[1, 1:2], collapse = ".")
+path <- file.path("T:/conan/bootstrap", r_version)
+conan::conan_bootstrap(path, TRUE)
+```
+
+Run this from both 4.0 and 3.6; we'll want to do this periodically.
+
+The [`didehpc-pkgs`](https://github.com/mrc-ide/didehpc-pkgs) should also be updated as that is where provisioning comes from (here to avoid conflicting package versions)
 
 ## Finalising
 
 * Make a pull Request for the new version of didehpc, request a review, and await merging.
-* After merging, `drat` will need updating. 
-* Inform `#cluster` channel on slack.
+* After merging, `drat` will need updating.
+* Inform `Cluster` channel on Teams

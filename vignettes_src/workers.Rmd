@@ -1,0 +1,255 @@
+---
+title: "Workers"
+author: "Rich FitzJohn"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Workers}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- HEADER -->
+
+```{r include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = FALSE,
+  comment = "#>"
+)
+r_output <- function(x) {
+  cat(c("```r", x, "```"), sep = "\n")
+}
+```
+
+# Running heaps of jobs without annoying your colleagues
+
+If you have thousands and thousands of jobs to submit at once you
+may not want to flood the cluster with them all at once.  Each job
+submission is relatively slow (the HPC tools that the web interface
+has to use are relatively slow).  The actual queue that the cluster
+uses doesn't seem to like processing tens of thousands of job, and
+can slow down.  And if you take up the whole cluster someone may
+come and knock on your office and complain at you.  At the same
+time, batching your jobs up into little bits and manually sending
+them off is a pain and work better done by a computer.
+
+An alternative is to submit a set of "workers" to the cluster, and
+then submit jobs to them.  This is done with the
+[`rrq`](https://github.com/mrc-ide/rrq) package, along with a
+[`redis`](https://redis.io) server running on the cluster.
+
+## Overview
+
+## Getting started
+
+To get started you will need to install the `rrq` package locally.
+
+```r
+drat::add("mrc-ide")
+install.packages("rrq")
+```
+
+Then construct the context as before
+
+```{r}
+root <- "contexts"
+ctx <- context::context_save(root, sources = "mysources.R")
+```
+
+There are two ways we can proceed from here; the first - "workers"
+- is very similar to the non-worker workflow and is described
+first.  The second - "rrq" - is a bit more involved and is
+described second.
+
+## Workers
+
+Then configure and create the queue; the `use_workers` argument is important here as it:
+
+* ensures that the `rrq` package is available on the cluster, where your workers will run
+* changes the behaviour of the `$enqueue` method so that jobs are not sent to the HPC scheduler but to the `rrq` scheduler
+* enables the `$submit_workers` method which you will use to create workers on the cluster
+
+However, everything else will appear the same.
+
+```{r}
+config <- didehpc::didehpc_config(use_workers = TRUE)
+obj <- didehpc::queue_didehpc(ctx, config = config)
+```
+
+You can now submit
+
+```{r}
+t <- obj$enqueue(random_walk(0, 10))
+```
+
+This job will stay pending forever as the HPC scheduler will never run it
+
+```{r}
+t$status()
+t$times()
+```
+
+You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!
+
+The argument is the number of workers to submit. Each worker is equivalent to a job that your configuration would otherwise create (in terms of cores selected).
+
+```{r}
+workers <- obj$submit_workers(2)
+workers
+```
+
+All workers get names in the form `<adjective>_<animal>_<integer>`
+so that you can remember which workers you set off.  They will turn
+off after 10 minutes of inactivity by default (you can tweak this
+with the `worker_timeout` argument to `didehpc_config` or by
+sending a `TIMEOUT_SET` message).
+
+One advantage over the usual queuing approach here is that you will
+not wait for anyone else's jobs to complete once you have reserved
+your workers.
+
+```{r}
+t$wait(10)
+```
+
+We're going to interact with the rrq object a bit
+
+```{r}
+rrq <- obj$rrq_controller()
+rrq
+```
+
+This is another R6 object, though this one at least has decent documentation - see the `rrq::rrq_controller` for details of each method
+
+You can see what your workers have been up to with the
+`workers_log_tail` command:
+
+```{r}
+rrq$worker_log_tail(n = Inf)
+```
+
+The `time` column represents seconds - relative seconds should still be useful here.
+
+As before, logging works on a per-task basis:
+```{r}
+t$log()
+```
+
+Find out how long your workers will persist for:
+
+```{r}
+rrq$message_send_and_wait("TIMEOUT_GET", worker_ids = workers)
+```
+
+Other than that, hopefully everything else continues as normal.  We
+can submit a bunch of jobs and run them using `$lapply`:
+
+```{r}
+sizes <- 3:8
+grp <- obj$lapply(sizes, random_walk, x = 0)
+```
+
+Task status:
+```{r}
+grp$status()
+```
+
+Collect the results:
+```{r}
+res <- grp$wait(5)
+res
+```
+
+While workers will turn off automatically, it's polite to turn them
+off as soon as you're done using `obj$stop_workers()`
+
+Alternatively, after submitting a bunch of jobs you can run
+
+```r
+rrq$message_send("TIMEOUT_SET", 0)
+```
+
+which will mean that the workers will stop immediately after not
+receiving a task (so after they finish processing all your jobs
+they'll stop one by one).  Practically this still takes one minute
+because that's the polling timeout time (I may be able to improve
+this later).
+
+```{r}
+obj$stop_workers()
+Sys.sleep(1)
+rrq$worker_log_tail(workers, n = Inf)
+rrq$destroy()
+```
+
+## rrq
+
+In this model, we create a very lightweight queue which in turn
+creates very lightweight tasks.  This avoids even more overhead
+than the approach above, though it can be more difficult to debug
+because less information is saved.  Rather than round-tripping data
+through the disk, everything goes via the redis server.
+
+The first part here looks very similar, except that we use `use_rrq = TRUE` rather than `use_workers`
+
+```{r}
+config <- didehpc::didehpc_config(use_rrq = TRUE)
+obj <- didehpc::queue_didehpc(ctx, config = config)
+```
+
+We still submit workers
+
+```{r}
+workers <- obj$submit_workers(10)
+workers
+```
+
+To send tasks to these workers we directly use the `rrq_controller` object - we'll not use the `queue_didehpc` object from this point.
+
+```{r}
+rrq <- obj$rrq_controller()
+```
+
+This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistent record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
+
+```{r}
+t <- rrq$enqueue(sin(1))
+rrq$task_wait(t, 10)
+```
+
+For example; submitting 50 trivial tasks to our pool of workers and retrieving the results:
+
+```{r}
+system.time(res <- rrq$lapply(1:50, sin))
+```
+
+or 500 tasks:
+
+```{r}
+system.time(res <- rrq$lapply(1:500, sin, progress = FALSE))
+```
+
+Across the network, the latency here is ~1/600 s per task.  On fi--didemrchnb it will hopefully be a bit faster because of the infiniband network.
+
+```{r}
+rrq$worker_stop()
+rrq$destroy()
+```
+
+It is theoretically possible to submit a cluster job that creates an `rrq_controller` and controls the second queue. To do that you need to write function like:
+
+```
+get_rrq_controller <- function(x, ...) {
+  queue_id <- Sys.getenv("CONTEXT_ID", "")
+  stopifnot(queue_id != "")
+  rrq::rrq_controller(queue_id)
+}
+```
+
+within your sources, then you can use it in place of running (say) a `lapply()` call in your code. This approach allows a relatively simple form of inter-process communication. Talk to Rich if this is something you might have a use for, if you have simulation needs that are larger than a single node.
+
+## Cleaning up
+
+Above we use `rrq$destroy()` to clean up every trace of the queue. Periodically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.

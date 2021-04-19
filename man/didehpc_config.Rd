@@ -10,31 +10,27 @@ didehpc_config(
   home = NULL,
   temp = NULL,
   cluster = NULL,
-  build_server_host = NULL,
-  build_server_port = NULL,
   shares = NULL,
   template = NULL,
   cores = NULL,
   wholenode = NULL,
   parallel = NULL,
-  hpctools = NULL,
   workdir = NULL,
   use_workers = NULL,
   use_rrq = NULL,
   worker_timeout = NULL,
-  rtools = NULL,
+  conan_bootstrap = NULL,
   r_version = NULL,
-  use_common_lib = NULL,
   use_java = NULL,
   java_home = NULL
 )
 
-didehpc_config_global(...)
+didehpc_config_global(..., check = TRUE)
 }
 \arguments{
 \item{credentials}{Either a list with elements username, password,
-or a path to a file containing lines \code{username=<username>}
-and \code{password=<password>} or your username (in which case
+or a path to a file containing lines \verb{username=<username>}
+and \verb{password=<password>} or your username (in which case
 you will be prompted graphically for your password).}
 
 \item{home}{Path to network home directory, on local system}
@@ -42,22 +38,17 @@ you will be prompted graphically for your password).}
 \item{temp}{Path to network temp directory, on local system}
 
 \item{cluster}{Name of the cluster to use; one of
-\code{\link{valid_clusters}()} or one of the aliases
-(small/little/dide/ide; big/mrc; linux).}
-
-\item{build_server_host, build_server_port}{Host and port for a
-\code{buildr} server for custom binary packages.  The defaults
-should generally work.}
+\code{\link[=valid_clusters]{valid_clusters()}} or one of the aliases
+(small/little/dide/ide; big/mrc).}
 
 \item{shares}{Optional additional share mappings.  Can either be a
-single path mapping (as returned by \code{\link{path_mapping}}
+single path mapping (as returned by \code{\link[=path_mapping]{path_mapping()}}
 or a list of such calls.}
 
 \item{template}{A job template.  On fi--dideclusthn this can be
-"GeneralNodes" or "8Core", while on "fi--didemrchnb"
-this can be "GeneralNodes", "12Core", "16Core", "12and16Core",
-"20Core", "24Core" or "32Core". For fi--didelxhn the only valid template
-is "LinuxNodes".  See the main cluster documentation if you
+"GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+"GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
+"24Core" or "32Core". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
 for the job will fail).  For training purposes there is also a
@@ -65,15 +56,14 @@ for the job will fail).  For training purposes there is also a
 instructed to.}
 
 \item{cores}{The number of cores to request.  This is mostly
-useful when using the \code{GeneralNodes} or \code{LinuxNodes}
-template.  If specified, then we will request this many cores
-from the windows queuer.  If you request too many cores then
-your task will queue forever!  24 is the largest this should be
-on fi--dideclusthn and 64 on fi--didemrchnb (assuming you have access
-to those nodes).  If omitted then a
-single core is selected for the GeneralNodes template or the
-\emph{entire machine} for the other templates (unless modified
-by \code{wholenode}).}
+useful when using the \code{GeneralNodes} template.  If
+specified, then we will request this many cores from the windows
+queuer.  If you request too many cores then your task will queue
+forever!  24 is the largest this should be on fi--dideclusthn
+and 64 on fi--didemrchnb (assuming you have access to those
+nodes).  If omitted then a single core is selected for the
+GeneralNodes template or the \emph{entire machine} for the other
+templates (unless modified by \code{wholenode}).}
 
 \item{wholenode}{Request the whole node?  This will default to
 \code{TRUE} if any template other than \code{GeneralNodes} is
@@ -87,8 +77,6 @@ Details).  If \code{parallel} is set to \code{FALSE} then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
 you're just after the whole node for the memory).}
-
-\item{hpctools}{Use HPC tools if available?}
 
 \item{workdir}{The path to work in on the cluster, if running out of place.}
 
@@ -112,9 +100,9 @@ with the \code{submit_workers} method of the object.}
 or \code{use_rrq}, the length of time (in seconds) that workers
 should be willing to set idle before exiting.  If set to zero
 then workers will be added to the queue, run jobs, and
-immediatly exit.  If greater than zero, then the workers will
+immediately exit.  If greater than zero, then the workers will
 wait at least this many seconds after running the last task
-before quitting.  The number provoided can be `Inf`, in which
+before quitting.  The number provided can be \code{Inf}, in which
 case the worker will never exit (but be careful to clean the
 worker up in this case!).  The default is 600s (10 minutes)
 should be more than enough to get your jobs up and running.
@@ -122,30 +110,20 @@ Once workers are established you can extend or reset the timeout
 by sending the \code{TIMEOUT_SET} message (proper documentation
 will come for this soon).}
 
-\item{rtools}{Make sure that rtools are installed (even if they
-aren't implicitly required by one of the required packages).  If
-\code{TRUE}, then network paths will be set up appropriately
-such that R on the cluster should find the appropriate version
-of rtools so that packages such as \code{rstan} and
-\code{Rcpp}'s inline functionality work correctly.}
+\item{conan_bootstrap}{Logical, indicating if we should use the
+shared conan "bootstrap" library stored on the temporary
+directory. Setting this to \code{FALSE} will install all dependencies
+required to install packages first into a temporary location
+(this may take a few minutes) before installation. Generally
+leave this as-is.}
 
-\item{r_version}{A string, or \code{numeric_version} object,
-describing the R version required.  Not all R versions are known
-to be supported, so this will check against a list of installed
-R versions for the cluster you are using (see
-\code{r_versions}).  If omitted then: if your R version matches
-a version on the cluster that will be used, or the oldest
-cluster version that is newer than yours, or the most recent
-cluster version.}
-
-\item{use_common_lib}{Logical, indicating if a common library of
-packages should be used.  This will reduce the overal startup
-time of your queue object (on the first running) and reduce the
-total disk space footprint by a few tens of megabytes.  This is
-particularly useful if using the \code{BH} package as unpacking
-that on the network drive can take a few minutes.  The common
-library can only be used if the temporary drive is mounted on
-your computer.}
+\item{r_version}{A string, or \code{numeric_version} object, describing
+the R version required.  Not all R versions are known to be
+supported, so this will check against a list of installed R
+versions for the cluster you are using.  If omitted then: if
+your R version matches a version on the cluster that will be
+used, or the oldest cluster version that is newer than yours, or
+the most recent cluster version.}
 
 \item{use_java}{Logical, indicating if the script is going to
 require Java, for example via the rJava package.}
@@ -156,6 +134,9 @@ the use_java logical is true. If left blank, then the
 default cluster Java Runtime Environment will be used.}
 
 \item{...}{arguments to \code{didehpc_config}}
+
+\item{check}{Logical, indicating if we should check that the
+configuration object can be created}
 }
 \description{
 Collects configuration information.  Unfortunately there's a
@@ -166,33 +147,32 @@ documentation coming later.
 
 
 If you need more than one core per task (i.e., you want the each
-  task to do some parallel processing \emph{in addition} to the
-  parallelism between tasks) you can do that through the
-  configuration options here.
+task to do some parallel processing \emph{in addition} to the
+parallelism between tasks) you can do that through the
+configuration options here.
 
-The \code{template} option choses among templates defined on the
-  cluster.  If you select one of these then we will reserve an
-  entire node \emph{unless} you also specify \code{cores}.
-  Alternatively if \code{wholenode} is specified this overrides
-  the logic here.
+The \code{template} option chooses among templates defined on the
+cluster.  If you select one of these then we will reserve an
+entire node \emph{unless} you also specify \code{cores}.
+Alternatively if \code{wholenode} is specified this overrides
+the logic here.
 
 If you specify \code{cores}, the HPC will queue your job until an
-  appropriate number of cores appears for the selected template.
-  This can leave your job queing forever (e.g., selecting 20 cores
-  on a 16Core template) so be careful.  The \code{cores} option is
-  most useful with the \code{GeneralNodes} template, which is the
-  default (\code{LinuxNodes} on \code{fi--didelxhn}).
+appropriate number of cores appears for the selected template.
+This can leave your job queuing forever (e.g., selecting 20 cores
+on a 16Core template) so be careful.  The \code{cores} option is
+most useful with the \code{GeneralNodes} template.
 
 In either case, if more than 1 core is implied (either by using
-  any template other than \code{GeneralNodes} or by specifying a
-  \code{cores} value greater than 1) on startup, a \code{parallel}
-  cluster will be started, using \code{parallel::makePSOCKcluster}
-  and this will be registered as the default cluster.  The nodes
-  will all have the appropriate context loaded and you can
-  immediately use them with \code{parallel::clusterApply} and
-  related functions by passing \code{NULL} as the first argument.
-  The cluster will be shut down politely on exit, and logs will be
-  output to the "workers" directory below your context root.
+any template other than \code{GeneralNodes} or by specifying a
+\code{cores} value greater than 1) on startup, a \code{parallel}
+cluster will be started, using \code{parallel::makePSOCKcluster}
+and this will be registered as the default cluster.  The nodes
+will all have the appropriate context loaded and you can
+immediately use them with \code{parallel::clusterApply} and
+related functions by passing \code{NULL} as the first argument.
+The cluster will be shut down politely on exit, and logs will be
+output to the "workers" directory below your context root.
 }
 
 \section{Workers and rrq}{

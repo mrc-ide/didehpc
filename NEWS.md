@@ -1,3 +1,12 @@
+# didehpc 0.3.0
+
+* Complete overhaul. Key breaking changes:
+  - handling of nonstandard dependency locations has changed as we now use conan
+  - some details of workers have changed as rrq has significantly changed
+  - "out of place" running currently not supported
+  - hpctools support has been removed (believed unused)
+  - linux cluster formally removed
+
 # didehpc 0.2.11
 
 * Refresh available job templates, and core limits, particularly adding 32Core.

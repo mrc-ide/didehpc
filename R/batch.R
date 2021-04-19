@@ -1,96 +1,121 @@
-## TODO: I'd prefer it if the paths in the generated templates were
-## *relative* paths, not absolute paths.  This is an issue for the
-## task runner, the context root and the log
-write_batch <- function(id, root, template, dat, linux = FALSE) {
-  filename <- path_batch(root, id, linux)
-  dir.create(dirname(filename), FALSE, TRUE)
-  if (!file.exists(filename)) {
-    ## This is for debugging - allowing me to edit the batch files
-    writeLines(whisker::whisker.render(template, dat), filename)
-  }
-  filename
-}
-
-read_templates <- function(ext) {
+read_templates <- function() {
   path <- system.file(package = "didehpc")
-  re <- sprintf("^template_(.*)\\.%s$", ext)
+  re <- "^template_(.*)\\.bat$"
   files <- dir(path, re)
-  ret <- setNames(vcapply(file.path(path, files), read_lines),
+  dat <- setNames(lapply(file.path(path, files), read_lines),
                   sub(re, "\\1", files))
-  v <- setdiff(names(ret), "shared")
-  setNames(paste(ret[["shared"]], ret[v], sep = "\n"), v)
+  list(
+    conan = dat$conan,
+    runner = paste(dat$shared, dat$runner, sep = "\n"),
+    rrq_worker = paste(dat$shared, dat$rrq_worker, sep = "\n"))
 }
 
-batch_templates <- function(context, config, workdir) {
-  linux <- linux_cluster(config$cluster)
-  root <- context$root$path
+template_data <- function(context_root, context_id, config, workdir) {
+  ## Work out both of our paths on the remote machine; the context
+  ## root and the workdir
+  context_root <- prepare_path(context_root, config$shares)
+  workdir <- prepare_path(workdir, config$shares)
 
-  ## Build the absolute path to the context on the remote, even if it
-  ## differs in drive from the workdir (which really probably is not a
-  ## clever idea).
-  root <- normalizePath(root, mustWork = TRUE)
-  context_root <- prepare_path(root, config$shares)
-  if (linux) {
-    context_root_abs <- unix_path(file.path(context_root$drive_remote,
-                                            context_root$rel))
+  ## Same path, absolute, that will be used remotely
+  context_root_abs <- windows_path(
+    file.path(context_root$drive_remote, context_root$rel))
+
+  r_version_str <- paste(unclass(config$r_version)[[1]], collapse = "_")
+  r_libs_user <- windows_path(path_library(context_root_abs, config$r_version))
+
+  network_shares_data <- list(
+    drive = lapply(config$shares, "[[", "drive_remote"),
+    path = lapply(config$shares, "[[", "path_remote"))
+  temp_drive <- remote_drive_temp(config$shares)
+  if (is.null(temp_drive)) {
+    temp_drive <- available_drive(config$shares, "", "T")
+    network_shares_data$drive <- c(network_shares_data$drive, temp_drive)
+    network_shares_data$path <- c(network_shares_data$path,
+                                  "\\\\fi--didef3.dide.ic.ac.uk\\tmp")
+  }
+  network_shares_create <- glue_whisker(
+    "ECHO mapping {{drive}} -^> {{path}}\nnet use {{drive}} {{path}} /y",
+    network_shares_data)
+  network_shares_delete <- glue_whisker(
+    "ECHO Removing mapping {{drive}}\nnet use {{drive}} /delete /y",
+    network_shares_data)
+
+  if (config$resource$parallel) {
+    parallel <- paste("ECHO This is a parallel job: will use %CPP_NUMCPUS%",
+                      "set CONTEXT_CORES=%CCP_NUMCPUS%",
+                      sep = "\n")
   } else {
-    context_root_abs <- windows_path(file.path(context_root$drive_remote,
-                                               context_root$rel))
+    parallel <- NULL
   }
-  context_id <- context$id
 
-  wd <- prepare_path(workdir, config$shares)
-
-  ## In theory we could shorten context_root here if it lies within
-  ## the workdir.
-  ##
-  ## TODO: Date might be wrong, because this is cached.
-  if (linux) {
-    r_version <- as.character(config$r_version)
-    context_workdir <- unix_path(file.path(wd$drive_remote, wd$rel))
+  if (config$conan_bootstrap) {
+    conan_path_bootstrap <-
+      windows_path(path_conan_bootstrap(temp_drive, config$r_version))
   } else {
-    r_version <- sprintf("%d_%s", R_BITS,
-                         paste(unclass(config$r_version)[[1]], collapse = "_"))
-    context_workdir <- windows_path(wd$rel)
+    conan_path_bootstrap <- NULL
   }
 
-  dat <- list(hostname = hostname(),
-              date = as.character(Sys.Date()),
-              didehpc_version = as.character(packageVersion("didehpc")),
-              context_version = as.character(packageVersion("context")),
-              r_version = r_version,
-              context_workdrive = wd$drive_remote,
-              context_workdir = context_workdir,
-              context_root = context_root_abs,
-              context_id = context_id,
-              parallel = config$resource$parallel,
-              redis_host = redis_host(config$cluster),
-              rrq_key_alive = config$rrq_key_alive,
-              worker_timeout = config$worker_timeout,
-              rrq_worker_log_path = path_worker_logs(NULL),
-              log_path = path_logs(NULL),
-              cluster_name = config$cluster,
-              use_java = config$use_java,
-              java_home = config$java_home)
+  rtools <- rtools_versions(temp_drive, config$r_version)
 
-  if (!linux) {
-    ## NOTE: don't forget the unname()
-    dat$network_shares <-
-      unname(lapply(config$shares, function(x)
-        list(drive = x$drive_remote, path = windows_path(x$path_remote))))
-    ## NOTE: this does not strictly need to run through needs_rtools,
-    ## but it's harmless.
-    if (needs_rtools(config, context)) {
-      dat$rtools <- rtools_info(config)
-    }
-  }
+  list(hostname = hostname(),
+       date = as.character(Sys.Date()),
+       didehpc_version = as.character(packageVersion("didehpc")),
+       context_version = as.character(packageVersion("context")),
+       conan_version = as.character(packageVersion("conan")),
+       r_version = r_version_str,
+       network_shares_create = paste(network_shares_create, collapse = "\n"),
+       network_shares_delete = paste(network_shares_delete, collapse = "\n"),
+       context_workdrive = workdir$drive_remote,
+       context_workdir = windows_path(workdir$rel),
+       context_root = context_root_abs,
+       context_id = context_id,
+       conan_path_bootstrap = conan_path_bootstrap,
+       r_libs_user = r_libs_user,
+       rtools = rtools,
+       parallel = parallel,
+       redis_host = redis_host(config$cluster),
+       rrq_key_alive = config$rrq_key_alive,
+       worker_timeout = config$worker_timeout,
+       rrq_worker_log_path = path_worker_logs(NULL),
+       log_path = path_logs(NULL),
+       cluster_name = config$cluster,
+       use_java = config$use_java,
+       java_home = config$java_home)
+}
 
-  if (!is.null(config$common_lib)) {
-    dat$common_lib <- unix_path(file.path(config$common_lib$drive_remote,
-                                          config$common_lib$rel))
-  }
-
-  templates <- read_templates(if (linux) "sh" else "bat")
+batch_templates <- function(context_root, context_id, config, workdir) {
+  dat <- template_data(context_root, context_id, config, workdir)
+  templates <- read_templates()
   lapply(templates, function(x)
-    drop_blank(whisker::whisker.render(x, dat)))
+    drop_blank(glue_whisker(x, dat)))
+}
+
+
+## The batch files make reference to many paths, which need to be
+## consistent. We'll try and collect them here.
+batch_data <- function(context_root, context_id, config) {
+  ## TODO: We need to get to the bottom of what workdir was originally
+  ## for!
+  workdir <- config$workdir %||% getwd()
+  templates <- batch_templates(context_root, context_id, config, workdir)
+  context_root_remote <- remote_path(context_root, config$shares)
+
+  paths_tail <- list(
+    root = NULL,
+    conan = "conan",
+    batch = "batch",
+    lib = path_library(NULL, config$r_version),
+    ## TODO: log => logs
+    log = path_logs(NULL),
+    worker_log = path_worker_logs(NULL))
+
+  paths <- list(
+    local = lapply(paths_tail, function(x)
+      file_path(context_root, x)),
+    remote = lapply(paths_tail, function(x)
+      windows_path(file_path(context_root_remote, x))))
+  paths$local$workdir <- workdir
+  paths$remote$workdir <- remote_path(workdir, config$shares)
+
+  list(templates = templates, paths = paths)
 }
