@@ -208,13 +208,57 @@ test_that("Can plausibly submit workers", {
   expect_equal(
     args[[1]],
     list(paste0(data$paths$remote$batch, "\\", base, "_1.bat"),
-         paste0(base, "_1"), config$template, config$cluster,
+         paste0(base, "_1"), config$resource$template, config$cluster,
          config$resource$type, config$resource$count))
   expect_equal(
     args[[5]],
     list(paste0(data$paths$remote$batch, "\\", base, "_5.bat"),
-         paste0(base, "_5"), config$template, config$cluster,
+         paste0(base, "_5"), config$resource$template, config$cluster,
          config$resource$type, config$resource$count))
+
+  mockery::expect_called(mock_wait, 1)
+  args <- mockery::mock_args(mock_wait)[[1]]
+  expect_s3_class(args[[1]], "rrq_controller")
+  expect_match(args[[2]], sprintf("^%s:worker:alive:.+", ctx$id))
+  expect_equal(args[3:4], list(timeout = 100, progress = FALSE))
+})
+
+
+test_that("Can plausibly submit workers with different configuration", {
+  skip_if_no_redis()
+  w <- worker_resource(template = "8Core", cores = 8, parallel = FALSE)
+  config <- example_config(use_rrq = TRUE, worker_resource = w)
+  config$redis_host <- NULL
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
+  obj$client <- list(submit = mockery::mock())
+  mock_wait <- mockery::mock()
+  mockery::stub(rrq_submit_workers, "rrq::worker_wait", mock_wait)
+  data <- r6_private(obj)$data
+
+  expect_message(
+    rrq_submit_workers(obj, data, 5, 100, FALSE),
+    "Submitting 5 workers with base name '.+'")
+
+  expect_true(file.exists(data$paths$local$batch))
+  expect_true(file.exists(data$paths$local$worker_log))
+  mockery::expect_called(obj$client$submit, 5)
+
+  batch <- dir(data$paths$local$batch)
+  expect_length(batch, 5)
+  base <- sub("_[0-9]\\.bat", "", batch[[1]])
+
+  args <- mockery::mock_args(obj$client$submit)
+  expect_equal(
+    args[[1]],
+    list(paste0(data$paths$remote$batch, "\\", base, "_1.bat"),
+         paste0(base, "_1"), config$worker_resource$template, config$cluster,
+         config$worker_resource$type, config$worker_resource$count))
+  expect_equal(
+    args[[5]],
+    list(paste0(data$paths$remote$batch, "\\", base, "_5.bat"),
+         paste0(base, "_5"), config$worker_resource$template, config$cluster,
+         config$worker_resource$type, config$worker_resource$count))
 
   mockery::expect_called(mock_wait, 1)
   args <- mockery::mock_args(mock_wait)[[1]]

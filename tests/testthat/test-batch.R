@@ -101,3 +101,17 @@ test_that("Parallel sets CONTEXT_CORES", {
   expect_match(dat2$parallel, "CONTEXT_CORES=%CCP_NUMCPUS%")
   expect_equal(dat1[names(dat1) != "parallel"], dat2[names(dat2) != "parallel"])
 })
+
+
+test_that("Configure different workers and controllers", {
+  w <- worker_resource(cores = 8, parallel = FALSE, template = "8Core")
+  config <- example_config(cores = 4, parallel = TRUE, worker_resource = w,
+                           use_rrq = TRUE)
+  root <- file.path(config$workdir, "context")
+  dir.create(root, FALSE, TRUE)
+  context_id <- ids::random_id()
+  res <- batch_templates(root, context_id, config, config$workdir)
+
+  expect_length(grep("set CONTEXT_CORES=%CCP_NUMCPUS%", res$runner), 1)
+  expect_length(grep("set CONTEXT_CORES=%CCP_NUMCPUS%", res$rrq_worker), 0)
+})

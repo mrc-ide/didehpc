@@ -84,10 +84,26 @@ template_data <- function(context_root, context_id, config, workdir) {
 }
 
 batch_templates <- function(context_root, context_id, config, workdir) {
-  dat <- template_data(context_root, context_id, config, workdir)
   templates <- read_templates()
-  lapply(templates, function(x)
-    drop_blank(glue_whisker(x, dat)))
+
+  dat <- template_data(context_root, context_id, config, workdir)
+
+  if (is.null(config$worker_resource)) {
+    dat_worker <- dat
+  } else {
+    ## Apply overrides for runners, if present (they won't be most of
+    ## the time).
+    config$resource <- config$worker_resource
+    dat_worker <- template_data(context_root, context_id, config, workdir)
+  }
+
+  render <- function(x, dat) {
+    drop_blank(glue_whisker(x, dat))
+  }
+
+  list(conan = render(templates$conan, dat),
+       runner = render(templates$runner, dat),
+       rrq_worker = render(templates$rrq_worker, dat_worker))
 }
 
 

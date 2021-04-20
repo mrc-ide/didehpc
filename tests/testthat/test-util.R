@@ -68,6 +68,10 @@ test_that("assertions work", {
   expect_silent(assert_scalar_integer(1))
   expect_error(assert_scalar_integer(1.1),
                "must be an integer")
+
+  expect_silent(assert_is(structure(1, class = "foo")), "foo")
+  expect_error(assert_is(1, "foo"),
+               "must be a foo")
 })
 
 

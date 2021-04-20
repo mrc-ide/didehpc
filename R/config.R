@@ -136,6 +136,12 @@
 ##'   by sending the `TIMEOUT_SET` message (proper documentation
 ##'   will come for this soon).
 ##'
+##' @param worker_resource Optionally, an object created by
+##'   [didehpc::worker_resource()] which controls the resources used
+##'   by workers where these are different to jobs directly submitted
+##'   by `$enqueue()`. This is only meaningful if you are using
+##'   `use_rrq = TRUE`.
+##'
 ##' @param conan_bootstrap Logical, indicating if we should use the
 ##'   shared conan "bootstrap" library stored on the temporary
 ##'   directory. Setting this to `FALSE` will install all dependencies
@@ -166,9 +172,9 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
                            shares = NULL, template = NULL, cores = NULL,
                            wholenode = NULL, parallel = NULL,
                            workdir = NULL, use_workers = NULL, use_rrq = NULL,
-                           worker_timeout = NULL, conan_bootstrap = NULL,
-                           r_version = NULL, use_java = NULL,
-                           java_home = NULL) {
+                           worker_timeout = NULL, worker_resource = NULL,
+                           conan_bootstrap = NULL, r_version = NULL,
+                           use_java = NULL, java_home = NULL) {
   defaults <- didehpc_config_defaults()
   given <- list(credentials = credentials,
                 home = home,
@@ -220,7 +226,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   ret <- list(cluster = cluster,
               credentials = credentials,
               username = credentials$username,
-              template = dat$template,
               wholenode = dat$wholenode,
               resource = resource,
               shares = shares,
@@ -235,7 +240,37 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               ## derived values
               redis_host = paste0(cluster, ".dide.ic.ac.uk"))
 
+  if (!is.null(worker_resource)) {
+    if (!ret$use_rrq) {
+      stop("'worker_resource' provided but 'use_rrq' is FALSE")
+    }
+    ret$worker_resource <-
+      check_worker_resource(worker_resource, cluster, dat$template,
+                            dat$cores, dat$wholenode, dat$parallel)
+  }
+
   class(ret) <- "didehpc_config"
+  ret
+}
+
+
+##' Specify resources for worker processes. If given, the values here
+##' will override those in [didehpc::didehpc_config()]. See
+##' `vignette("workers")` for more details.
+##'
+##' @title Specify worker resources
+##'
+##' @inheritParams didehpc_config
+##'
+##' @return A list with class `worker_resource` which can be passed
+##'   into [`didehpc_config`]
+##'
+##' @export
+worker_resource <- function(template = NULL, cores = NULL,
+                            wholenode = NULL, parallel = NULL) {
+  ret <- list(template = template, cores = cores, wholenode = wholenode,
+              parallel = parallel)
+  class(ret) <- "worker_resource"
   ret
 }
 
@@ -388,13 +423,30 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
     }
     parallel <- parallel %||% (cores > 1) # be careful of precendence
-    ret <- list(parallel = parallel, count = cores, type = "Cores")
+    ret <- list(template = template, parallel = parallel,
+                count = cores, type = "Cores")
   } else if (!general || isTRUE(wholenode)) {
-    ret <- list(parallel = parallel %||% TRUE, count = 1L, type = "Nodes")
+    ret <- list(template = template, parallel = parallel %||% TRUE,
+                count = 1L, type = "Nodes")
   } else {
-    ret <- list(parallel = parallel %||% FALSE, count = 1L, type = "Cores")
+    ret <- list(template = template, parallel = parallel %||% FALSE,
+                count = 1L, type = "Cores")
   }
   ret
+}
+
+
+check_worker_resource <- function(worker_resource, cluster, template,
+                                  cores, wholenode, parallel) {
+  assert_is(worker_resource, "worker_resource")
+  tryCatch(
+    check_resources(cluster,
+                    worker_resource$template %||% template,
+                    worker_resource$cores %||% cores,
+                    worker_resource$wholenode %||% wholenode,
+                    worker_resource$parallel %||% parallel),
+    error = function(e) stop("Invalid worker resource request: ", e$message,
+                             call. = FALSE))
 }
 
 
@@ -409,12 +461,12 @@ rtools_versions <- function(path, r_version) {
   }
 
   ret <- switch(r_version_2,
-    "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
-    "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
-    "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
-    "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
-    "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
-    stop(sprintf("No RTools version found for R %s", r_version)))
+                "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
+                "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
+                "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
+                "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
+                "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
+                stop(sprintf("No RTools version found for R %s", r_version)))
 
   ret$binpref <-
     unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))

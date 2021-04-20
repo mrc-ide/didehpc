@@ -83,22 +83,28 @@ test_that("Can transform cluster names", {
 test_that("Check that resources are acceptable", {
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", 1, FALSE, FALSE),
-    list(parallel = FALSE, count = 1L, type = "Cores"))
+    list(template = "GeneralNodes", parallel = FALSE, count = 1L,
+         type = "Cores"))
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", NULL, NULL, NULL),
-    list(parallel = FALSE, count = 1L, type = "Cores"))
+    list(template = "GeneralNodes", parallel = FALSE, count = 1L,
+         type = "Cores"))
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", NULL, TRUE, FALSE),
-    list(parallel = FALSE, count = 1L, type = "Nodes"))
+    list(template = "GeneralNodes", parallel = FALSE, count = 1L,
+         type = "Nodes"))
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", NULL, TRUE, TRUE),
-    list(parallel = TRUE, count = 1L, type = "Nodes"))
+    list(template = "GeneralNodes", parallel = TRUE, count = 1L,
+         type = "Nodes"))
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", 8, FALSE, FALSE),
-    list(parallel = FALSE, count = 8L, type = "Cores"))
+    list(template = "GeneralNodes", parallel = FALSE, count = 8L,
+         type = "Cores"))
   expect_equal(
     check_resources("fi--dideclusthn", "GeneralNodes", 8, FALSE, NULL),
-    list(parallel = TRUE, count = 8L, type = "Cores"))
+    list(template = "GeneralNodes", parallel = TRUE, count = 8L,
+         type = "Cores"))
   expect_error(
     check_resources("fi--dideclusthn", "GeneralNodes", 9001, FALSE, FALSE),
     "Maximum number of cores for fi--dideclusthn is 24")
@@ -291,4 +297,32 @@ test_that("Global options", {
     expect_equal(mockery::mock_args(mock_config)[[1]], list())
     expect_equal(getOption("didehpc.credentials"), "bob")
   })
+})
+
+
+test_that("different worker configuration", {
+  w <- worker_resource(wholenode = TRUE, template = "8Core",
+                       parallel = FALSE)
+  expect_is(w, "worker_resource")
+  cfg <- example_config(worker_resource = w, use_rrq = TRUE)
+  expect_equal(cfg$worker_resource,
+               list(template = "8Core", parallel = FALSE, count = 1,
+                    type = "Nodes"))
+})
+
+
+test_that("different worker configuration requires use_rrq", {
+  w <- worker_resource(wholenode = TRUE, template = "8Core",
+                       parallel = FALSE)
+  expect_error(
+    example_config(worker_resource = w),
+    "'worker_resource' provided but 'use_rrq' is FALSE")
+})
+
+
+test_that("error in worker configuration raises informatively", {
+  expect_error(
+    example_config(worker_resource = worker_resource(cores = 9001),
+                   use_rrq = TRUE),
+    "Invalid worker resource request: Maximum number of cores for")
 })
