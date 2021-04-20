@@ -74,7 +74,7 @@ documentation coming later." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -162,6 +162,7 @@ documentation coming later.</p>
   use_workers <span class='op'>=</span> <span class='cn'>NULL</span>,
   use_rrq <span class='op'>=</span> <span class='cn'>NULL</span>,
   worker_timeout <span class='op'>=</span> <span class='cn'>NULL</span>,
+  worker_resource <span class='op'>=</span> <span class='cn'>NULL</span>,
   conan_bootstrap <span class='op'>=</span> <span class='cn'>NULL</span>,
   r_version <span class='op'>=</span> <span class='cn'>NULL</span>,
   use_java <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -280,6 +281,14 @@ should be more than enough to get your jobs up and running.
 Once workers are established you can extend or reset the timeout
 by sending the <code>TIMEOUT_SET</code> message (proper documentation
 will come for this soon).</p></td>
+    </tr>
+    <tr>
+      <th>worker_resource</th>
+      <td><p>Optionally, an object created by
+<code><a href='worker_resource.html'>worker_resource()</a></code> which controls the resources used
+by workers where these are different to jobs directly submitted
+by <code>$enqueue()</code>. This is only meaningful if you are using
+<code>use_rrq = TRUE</code>.</p></td>
     </tr>
     <tr>
       <th>conan_bootstrap</th>

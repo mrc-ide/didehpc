@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -145,8 +145,8 @@
 <span class="co">#&gt;     - username: rfitzjoh</span>
 <span class="co">#&gt;     - password: *******************</span>
 <span class="co">#&gt;  - username: rfitzjoh</span>
-<span class="co">#&gt;  - template: GeneralNodes</span>
 <span class="co">#&gt;  - resource:</span>
+<span class="co">#&gt;     - template: GeneralNodes</span>
 <span class="co">#&gt;     - parallel: FALSE</span>
 <span class="co">#&gt;     - count: 1</span>
 <span class="co">#&gt;     - type: Cores</span>
@@ -179,8 +179,8 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span>, packages <span class="op">=</span> <span class="va">packages</span>, sources <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  51c32720e31a2411ea2e9fe85f0a5488</span>
-<span class="co">#&gt; [ save:name ]  euhedral_fluke</span></code></pre></div>
+<span class="co">#&gt; [ save:id   ]  c09243465471f09beed2bdc2168db3f6</span>
+<span class="co">#&gt; [ save:name ]  wistful_groundhog</span></code></pre></div>
 <p>If you have no packages or no sources, use <code>NULL</code> or omit them in the call below (which is the default anyway).</p>
 <p>The first argument here, <code>"contexts"</code> is the name of a directory that we will use to hold a lot of information about your jobs. You don’t need (or particularly want) to know what is in here.</p>
 </div>
@@ -191,8 +191,8 @@
 <p>It also installs windows versions of all packages within the <code>contexts</code> directory – both packages required to get this whole system working and then the packages required for your particular jobs.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context 51c32720e31a2411ea2e9fe85f0a5488</span>
-<span class="co">#&gt; [ context   ]  51c32720e31a2411ea2e9fe85f0a5488</span>
+<span class="co">#&gt; Loading context c09243465471f09beed2bdc2168db3f6</span>
+<span class="co">#&gt; [ context   ]  c09243465471f09beed2bdc2168db3f6</span>
 <span class="co">#&gt; [ library   ]  dplyr, tidyr</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
@@ -208,9 +208,9 @@
 <span class="co">#&gt;   ,:\      /:.</span>
 <span class="co">#&gt;  //  \_()_/  \\</span>
 <span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\contexts\lib\windows\4.0</span>
+<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\contexts\lib\windows\4.0</span>
 <span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\contexts\conan\cache/pkg</span>
+<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\contexts\conan\cache/pkg</span>
 <span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
 <span class="co">#&gt;        ||         Repos:</span>
 <span class="co">#&gt;        ||           * https://mrc-ide.github.io/didehpc-pkgs</span>
@@ -222,44 +222,42 @@
 <span class="co">#&gt;        `'</span>
 <span class="co">#&gt; i Loading metadata database</span>
 <span class="co">#&gt; v Loading metadata database ... done</span>
-<span class="co">#&gt; i Getting 18 pkgs (9.34 MB)</span>
-<span class="co">#&gt; v Got assertthat 0.2.1 (windows) (55.09 kB)</span>
-<span class="co">#&gt; v Got fansi 0.4.2 (windows) (224.26 kB)</span>
-<span class="co">#&gt; v Got cli 2.3.1 (windows) (474.17 kB)</span>
-<span class="co">#&gt; v Got ellipsis 0.3.1 (windows) (46.12 kB)</span>
-<span class="co">#&gt; v Got generics 0.1.0 (windows) (71.29 kB)</span>
-<span class="co">#&gt; v Got glue 1.4.2 (windows) (155.51 kB)</span>
-<span class="co">#&gt; v Got lifecycle 1.0.0 (windows) (111.19 kB)</span>
-<span class="co">#&gt; v Got dplyr 1.0.5 (windows) (1.34 MB)</span>
-<span class="co">#&gt; v Got magrittr 2.0.1 (windows) (235.61 kB)</span>
-<span class="co">#&gt; v Got pkgconfig 2.0.3 (windows) (22.34 kB)</span>
-<span class="co">#&gt; v Got pillar 1.5.1 (windows) (962.07 kB)</span>
+<span class="co">#&gt; i Getting 17 pkgs (9.37 MB)</span>
+<span class="co">#&gt; v Got ellipsis 0.3.1 (windows) (46.15 kB)</span>
+<span class="co">#&gt; v Got fansi 0.4.2 (windows) (224.19 kB)</span>
+<span class="co">#&gt; v Got generics 0.1.0 (windows) (70.84 kB)</span>
+<span class="co">#&gt; v Got cli 2.4.0 (windows) (504.14 kB)</span>
+<span class="co">#&gt; v Got magrittr 2.0.1 (windows) (235.68 kB)</span>
+<span class="co">#&gt; v Got pkgconfig 2.0.3 (windows) (22.08 kB)</span>
+<span class="co">#&gt; v Got lifecycle 1.0.0 (windows) (111.22 kB)</span>
+<span class="co">#&gt; v Got glue 1.4.2 (windows) (155.42 kB)</span>
+<span class="co">#&gt; v Got pillar 1.6.0 (windows) (1.02 MB)</span>
+<span class="co">#&gt; v Got tidyselect 1.1.0 (windows) (203.17 kB)</span>
+<span class="co">#&gt; v Got utf8 1.2.1 (windows) (209.84 kB)</span>
+<span class="co">#&gt; v Got tibble 3.1.0 (windows) (825.59 kB)</span>
+<span class="co">#&gt; v Got purrr 0.3.4 (windows) (426.90 kB)</span>
 <span class="co">#&gt; v Got rlang 0.4.10 (windows) (1.20 MB)</span>
-<span class="co">#&gt; v Got tidyselect 1.1.0 (windows) (203.20 kB)</span>
-<span class="co">#&gt; v Got purrr 0.3.4 (windows) (430.05 kB)</span>
-<span class="co">#&gt; v Got tibble 3.1.0 (windows) (825.66 kB)</span>
-<span class="co">#&gt; v Got vctrs 0.3.7 (windows) (1.25 MB)</span>
-<span class="co">#&gt; v Got utf8 1.2.1 (windows) (209.89 kB)</span>
 <span class="co">#&gt; v Got tidyr 1.1.3 (windows) (1.06 MB)</span>
-<span class="co">#&gt; v Installed assertthat 0.2.1  (1.3s)</span>
-<span class="co">#&gt; v Installed cli 2.3.1  (1.4s)</span>
-<span class="co">#&gt; v Installed generics 0.1.0  (1.5s)</span>
-<span class="co">#&gt; v Installed ellipsis 0.3.1  (1.8s)</span>
-<span class="co">#&gt; v Installed glue 1.4.2  (1.9s)</span>
-<span class="co">#&gt; v Installed fansi 0.4.2  (2.2s)</span>
-<span class="co">#&gt; v Installed pkgconfig 2.0.3  (2.1s)</span>
-<span class="co">#&gt; v Installed pillar 1.5.1  (2.3s)</span>
-<span class="co">#&gt; v Installed magrittr 2.0.1  (2.6s)</span>
-<span class="co">#&gt; v Installed purrr 0.3.4  (2.6s)</span>
-<span class="co">#&gt; v Installed lifecycle 1.0.0  (3s)</span>
-<span class="co">#&gt; v Installed dplyr 1.0.5  (3.3s)</span>
-<span class="co">#&gt; v Installed rlang 0.4.10  (2.2s)</span>
-<span class="co">#&gt; v Installed tibble 3.1.0  (2.2s)</span>
-<span class="co">#&gt; v Installed tidyselect 1.1.0  (2.1s)</span>
-<span class="co">#&gt; v Installed utf8 1.2.1  (2.1s)</span>
-<span class="co">#&gt; v Installed vctrs 0.3.7  (2s)</span>
-<span class="co">#&gt; v Installed tidyr 1.1.3  (2s)</span>
-<span class="co">#&gt; v Summary:   18 new   10 kept  in 38.5s</span>
+<span class="co">#&gt; v Got dplyr 1.0.5 (windows) (1.33 MB)</span>
+<span class="co">#&gt; v Got vctrs 0.3.7 (windows) (1.25 MB)</span>
+<span class="co">#&gt; v Installed cli 2.4.0  (766ms)</span>
+<span class="co">#&gt; v Installed generics 0.1.0  (797ms)</span>
+<span class="co">#&gt; v Installed ellipsis 0.3.1  (1.2s)</span>
+<span class="co">#&gt; v Installed fansi 0.4.2  (1.4s)</span>
+<span class="co">#&gt; v Installed glue 1.4.2  (1.5s)</span>
+<span class="co">#&gt; v Installed magrittr 2.0.1  (1.8s)</span>
+<span class="co">#&gt; v Installed lifecycle 1.0.0  (2.1s)</span>
+<span class="co">#&gt; v Installed dplyr 1.0.5  (2.6s)</span>
+<span class="co">#&gt; v Installed pkgconfig 2.0.3  (1.9s)</span>
+<span class="co">#&gt; v Installed pillar 1.6.0  (2.5s)</span>
+<span class="co">#&gt; v Installed purrr 0.3.4  (2s)</span>
+<span class="co">#&gt; v Installed rlang 0.4.10  (2s)</span>
+<span class="co">#&gt; v Installed tidyselect 1.1.0  (1.6s)</span>
+<span class="co">#&gt; v Installed tibble 3.1.0  (2.1s)</span>
+<span class="co">#&gt; v Installed utf8 1.2.1  (1.7s)</span>
+<span class="co">#&gt; v Installed vctrs 0.3.7  (1.6s)</span>
+<span class="co">#&gt; v Installed tidyr 1.1.3  (1.5s)</span>
+<span class="co">#&gt; v Summary:   17 new   10 kept  in 29.1s</span>
 <span class="co">#&gt; Done!</span></code></pre></div>
 <p>Once you get to this point we’re ready to start running things on the cluster. Let’s fire off a test to make sure that everything works OK:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -267,9 +265,9 @@
 <p>We can poll the job for a while, which will print a progress bar. If the job is returned in time, it will return the result of running the function. Otherwise it will throw an error.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for e95f350...439, giving up in 119.5 s (\) waiting for</span>
-<span class="co">#&gt; e95f350...439, giving up in 119.0 s (|) waiting for e95f350...439, giving up in</span>
-<span class="co">#&gt; 118.5 s (/) waiting for e95f350...439, giving up in 117.9 s</span>
+<span class="co">#&gt; (-) waiting for 4ca2fe5...8aa, giving up in 119.5 s (\) waiting for</span>
+<span class="co">#&gt; 4ca2fe5...8aa, giving up in 119.0 s (|) waiting for 4ca2fe5...8aa, giving up in</span>
+<span class="co">#&gt; 118.4 s (/) waiting for 4ca2fe5...8aa, giving up in 117.9 s</span>
 <span class="co">#&gt; R version 4.0.3 (2020-10-10)</span>
 <span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
 <span class="co">#&gt; Running under: Windows Server 2012 R2 x64 (build 9600)</span>
@@ -292,7 +290,7 @@
 <span class="co">#&gt; loaded via a namespace (and not attached):</span>
 <span class="co">#&gt;  [1] fansi_0.4.2      crayon_1.4.1     digest_0.6.27    utf8_1.2.1</span>
 <span class="co">#&gt;  [5] context_0.3.0    R6_2.5.0         lifecycle_1.0.0  storr_1.2.5</span>
-<span class="co">#&gt;  [9] magrittr_2.0.1   pillar_1.5.1     rlang_0.4.10     vctrs_0.3.7</span>
+<span class="co">#&gt;  [9] magrittr_2.0.1   pillar_1.6.0     rlang_0.4.10     vctrs_0.3.7</span>
 <span class="co">#&gt; [13] generics_0.1.0   ellipsis_0.3.1   glue_1.4.2       purrr_0.3.4</span>
 <span class="co">#&gt; [17] compiler_4.0.3   pkgconfig_2.0.3  tidyselect_1.1.0 tibble_3.1.0</span></code></pre></div>
 <p>You can use <code>t$result()</code> to get the result straight away (throwing an error if it is not ready) or <code>t$wait(Inf)</code> to wait forever.</p>
@@ -320,7 +318,7 @@
 <span class="co">#&gt; loaded via a namespace (and not attached):</span>
 <span class="co">#&gt;  [1] fansi_0.4.2      crayon_1.4.1     digest_0.6.27    utf8_1.2.1</span>
 <span class="co">#&gt;  [5] context_0.3.0    R6_2.5.0         lifecycle_1.0.0  storr_1.2.5</span>
-<span class="co">#&gt;  [9] magrittr_2.0.1   pillar_1.5.1     rlang_0.4.10     vctrs_0.3.7</span>
+<span class="co">#&gt;  [9] magrittr_2.0.1   pillar_1.6.0     rlang_0.4.10     vctrs_0.3.7</span>
 <span class="co">#&gt; [13] generics_0.1.0   ellipsis_0.3.1   glue_1.4.2       purrr_0.3.4</span>
 <span class="co">#&gt; [17] compiler_4.0.3   pkgconfig_2.0.3  tidyselect_1.1.0 tibble_3.1.0</span></code></pre></div>
 </div>
@@ -331,12 +329,12 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="va">res</span> <span class="op">&lt;-</span> <span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for ce3bb67...6bd, giving up in 119.5 s (\) waiting for</span>
-<span class="co">#&gt; ce3bb67...6bd, giving up in 119.0 s (|) waiting for ce3bb67...6bd, giving up in</span>
-<span class="co">#&gt; 118.5 s (/) waiting for ce3bb67...6bd, giving up in 118.0 s</span>
+<span class="co">#&gt; (-) waiting for f39b69f...6b2, giving up in 119.5 s (\) waiting for f39b69f...</span>
+<span class="co">#&gt; 6b2, giving up in 119.0 s (|) waiting for f39b69f...6b2, giving up in 118.5 s</span>
+<span class="co">#&gt; (/) waiting for f39b69f...6b2, giving up in 117.9 s</span>
 <span class="va">res</span>
-<span class="co">#&gt;  [1]  0.79595262  0.06749001  0.57074786  1.83615530  0.58195408  0.45859492</span>
-<span class="co">#&gt;  [7] -0.12357467 -0.76396828 -1.57312402 -2.93615422</span></code></pre></div>
+<span class="co">#&gt;  [1] 1.771693 1.370885 1.672578 3.179195 4.286129 3.464411 2.391140 1.003582</span>
+<span class="co">#&gt;  [9] 1.806466 2.620871</span></code></pre></div>
 <p>The <code>t</code> object has a number of other methods you can use:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span>
@@ -345,7 +343,7 @@
 <span class="co">#&gt;     clone: function (deep = FALSE)</span>
 <span class="co">#&gt;     context_id: function ()</span>
 <span class="co">#&gt;     expr: function (locals = FALSE)</span>
-<span class="co">#&gt;     id: ce3bb6764b04ee2d9b2cb7efef64b6bd</span>
+<span class="co">#&gt;     id: f39b69ffff0c1283ab8e492e031366b2</span>
 <span class="co">#&gt;     initialize: function (id, root, check_exists = TRUE)</span>
 <span class="co">#&gt;     log: function (parse = TRUE)</span>
 <span class="co">#&gt;     result: function (allow_incomplete = FALSE)</span>
@@ -356,8 +354,8 @@
 <p>Get the result from running a task</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;  [1]  0.79595262  0.06749001  0.57074786  1.83615530  0.58195408  0.45859492</span>
-<span class="co">#&gt;  [7] -0.12357467 -0.76396828 -1.57312402 -2.93615422</span></code></pre></div>
+<span class="co">#&gt;  [1] 1.771693 1.370885 1.672578 3.179195 4.286129 3.464411 2.391140 1.003582</span>
+<span class="co">#&gt;  [9] 1.806466 2.620871</span></code></pre></div>
 <p>Get the status of the task</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span>
@@ -371,21 +369,21 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">times</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt;                            task_id           submitted             started</span>
-<span class="co">#&gt; 1 ce3bb6764b04ee2d9b2cb7efef64b6bd 2021-04-09 16:29:13 2021-04-09 16:29:15</span>
-<span class="co">#&gt;              finished  waiting running      idle</span>
-<span class="co">#&gt; 1 2021-04-09 16:29:15 2.187085 0.03125 0.4121306</span></code></pre></div>
+<span class="co">#&gt; 1 f39b69ffff0c1283ab8e492e031366b2 2021-04-20 10:32:34 2021-04-20 10:32:36</span>
+<span class="co">#&gt;              finished  waiting    running      idle</span>
+<span class="co">#&gt; 1 2021-04-20 10:32:36 2.069958 0.06250095 0.5105689</span></code></pre></div>
 <p>You may see negative numbers for “waiting” as the submitted time is based on your computer and started/finished are based on the cluster.</p>
 <p>And get the log from running the task</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [ hello     ]  2021-04-09 16:29:14</span>
-<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210409-162624</span>
-<span class="co">#&gt; [ init      ]  2021-04-09 16:29:14.152</span>
-<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST25</span>
-<span class="co">#&gt; [ process   ]  4124</span>
+<span class="co">#&gt; [ hello     ]  2021-04-20 10:32:34</span>
+<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210420-102851</span>
+<span class="co">#&gt; [ init      ]  2021-04-20 10:32:34.800</span>
+<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST29</span>
+<span class="co">#&gt; [ process   ]  4272</span>
 <span class="co">#&gt; [ version   ]  0.3.0</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  51c32720e31a2411ea2e9fe85f0a5488</span>
+<span class="co">#&gt; [ context   ]  c09243465471f09beed2bdc2168db3f6</span>
 <span class="co">#&gt; [ library   ]  dplyr, tidyr</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt;     Attaching package: 'dplyr'</span>
@@ -401,13 +399,13 @@
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]  mysources.R</span>
 <span class="co">#&gt; [ parallel  ]  running as single core job</span>
-<span class="co">#&gt; [ root      ]  Q:\didehpc\20210409-162624\contexts</span>
-<span class="co">#&gt; [ context   ]  51c32720e31a2411ea2e9fe85f0a5488</span>
-<span class="co">#&gt; [ task      ]  ce3bb6764b04ee2d9b2cb7efef64b6bd</span>
+<span class="co">#&gt; [ root      ]  Q:\didehpc\20210420-102851\contexts</span>
+<span class="co">#&gt; [ context   ]  c09243465471f09beed2bdc2168db3f6</span>
+<span class="co">#&gt; [ task      ]  f39b69ffff0c1283ab8e492e031366b2</span>
 <span class="co">#&gt; [ expr      ]  random_walk(0, 10)</span>
-<span class="co">#&gt; [ start     ]  2021-04-09 16:29:15.340</span>
+<span class="co">#&gt; [ start     ]  2021-04-20 10:32:36.175</span>
 <span class="co">#&gt; [ ok        ]</span>
-<span class="co">#&gt; [ end       ]  2021-04-09 16:29:15.418</span>
+<span class="co">#&gt; [ end       ]  2021-04-20 10:32:36.285</span>
 <span class="co">#&gt;     Warning messages:</span>
 <span class="co">#&gt;     1: package 'tidyr' was built under R version 4.0.5</span>
 <span class="co">#&gt;     2: package 'dplyr' was built under R version 4.0.5</span></code></pre></div>
@@ -415,10 +413,10 @@
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">dide_log</span><span class="op">(</span><span class="va">t</span><span class="op">)</span>
 <span class="co">#&gt;  [1] "generated on host: kea"</span>
-<span class="co">#&gt;  [2] "generated on date: 2021-04-09"</span>
-<span class="co">#&gt;  [3] "didehpc version: 0.3.0"</span>
+<span class="co">#&gt;  [2] "generated on date: 2021-04-20"</span>
+<span class="co">#&gt;  [3] "didehpc version: 0.3.1"</span>
 <span class="co">#&gt;  [4] "context version: 0.3.0"</span>
-<span class="co">#&gt;  [5] "running on: FI--DIDECLUST25"</span>
+<span class="co">#&gt;  [5] "running on: FI--DIDECLUST29"</span>
 <span class="co">#&gt;  [6] "mapping Q: -&gt; \\\\fi--san03.dide.ic.ac.uk\\homes\\rfitzjoh"</span>
 <span class="co">#&gt;  [7] "The command completed successfully."</span>
 <span class="co">#&gt;  [8] ""</span>
@@ -426,20 +424,18 @@
 <span class="co">#&gt; [10] "The command completed successfully."</span>
 <span class="co">#&gt; [11] ""</span>
 <span class="co">#&gt; [12] "Using Rtools at T:\\Rtools\\Rtools40"</span>
-<span class="co">#&gt; [13] "working directory: Q:\\didehpc\\20210409-162624"</span>
+<span class="co">#&gt; [13] "working directory: Q:\\didehpc\\20210420-102851"</span>
 <span class="co">#&gt; [14] "this is a single task"</span>
-<span class="co">#&gt; [15] "logfile: Q:\\didehpc\\20210409-162624\\contexts\\logs\\ce3bb6764b04ee2d9b2cb7efef64b6bd"</span>
+<span class="co">#&gt; [15] "logfile: Q:\\didehpc\\20210420-102851\\contexts\\logs\\f39b69ffff0c1283ab8e492e031366b2"</span>
 <span class="co">#&gt; [16] ""</span>
-<span class="co">#&gt; [17] "Q:\\didehpc\\20210409-162624&gt;Rscript \"Q:\\didehpc\\20210409-162624\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210409-162624\\contexts\" ce3bb6764b04ee2d9b2cb7efef64b6bd  1&gt;\"Q:\\didehpc\\20210409-162624\\contexts\\logs\\ce3bb6764b04ee2d9b2cb7efef64b6bd\" 2&gt;&amp;1"</span>
+<span class="co">#&gt; [17] "Q:\\didehpc\\20210420-102851&gt;Rscript \"Q:\\didehpc\\20210420-102851\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210420-102851\\contexts\" f39b69ffff0c1283ab8e492e031366b2  1&gt;\"Q:\\didehpc\\20210420-102851\\contexts\\logs\\f39b69ffff0c1283ab8e492e031366b2\" 2&gt;&amp;1"</span>
 <span class="co">#&gt; [18] "Removing mapping Q:"</span>
-<span class="co">#&gt; [19] "There are open files and/or incomplete directory searches pending on the connection to Q:."</span>
+<span class="co">#&gt; [19] "Q: was deleted successfully."</span>
 <span class="co">#&gt; [20] ""</span>
-<span class="co">#&gt; [21] "Q: was deleted successfully."</span>
-<span class="co">#&gt; [22] ""</span>
-<span class="co">#&gt; [23] "Removing mapping T:"</span>
-<span class="co">#&gt; [24] "T: was deleted successfully."</span>
-<span class="co">#&gt; [25] ""</span>
-<span class="co">#&gt; [26] "Quitting"</span></code></pre></div>
+<span class="co">#&gt; [21] "Removing mapping T:"</span>
+<span class="co">#&gt; [22] "T: was deleted successfully."</span>
+<span class="co">#&gt; [23] ""</span>
+<span class="co">#&gt; [24] "Quitting"</span></code></pre></div>
 <p>Want more information? See <code><a href="../articles/didehpc.html">vignette("didehpc")</a></code> for more details.</p>
 </div>
   </div>

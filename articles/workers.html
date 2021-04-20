@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@
       <h1 data-toc-skip>Workers</h1>
                         <h4 class="author">Rich FitzJohn</h4>
             
-            <h4 class="date">2021-04-09</h4>
+            <h4 class="date">2021-04-20</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mrc-ide/didehpc/blob/master/vignettes/workers.Rmd"><code>vignettes/workers.Rmd</code></a></small>
       <div class="hidden name"><code>workers.Rmd</code></div>
@@ -143,52 +143,11 @@
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>use_workers <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, config <span class="op">=</span> <span class="va">config</span><span class="op">)</span>
-<span class="co">#&gt; Loading context a1590dd8b37b4f181f1048afc0fe0443</span>
-<span class="co">#&gt; [ context   ]  a1590dd8b37b4f181f1048afc0fe0443</span>
+<span class="co">#&gt; Loading context 3840f3707c2ecf1d05678da71a470cb2</span>
+<span class="co">#&gt; [ context   ]  3840f3707c2ecf1d05678da71a470cb2</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
-<span class="co">#&gt; [ source    ]  mysources.R</span>
-<span class="co">#&gt; Running installation script on cluster</span>
-<span class="co">#&gt;   ,:\      /:.</span>
-<span class="co">#&gt;  //  \_()_/  \\</span>
-<span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\contexts\lib\windows\4.0</span>
-<span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\contexts\conan\cache/pkg</span>
-<span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
-<span class="co">#&gt;        ||         Repos:</span>
-<span class="co">#&gt;        ||           * https://mrc-ide.github.io/didehpc-pkgs</span>
-<span class="co">#&gt;        XX           * https://cloud.r-project.org</span>
-<span class="co">#&gt;        XX         Packages:</span>
-<span class="co">#&gt;        XX           * context</span>
-<span class="co">#&gt;        XX           * rrq</span>
-<span class="co">#&gt;        OO           * callr</span>
-<span class="co">#&gt;        `'</span>
-<span class="co">#&gt; i Loading metadata database</span>
-<span class="co">#&gt; v Loading metadata database ... done</span>
-<span class="co">#&gt; i Getting 8 pkgs (2.78 MB), 1 cached</span>
-<span class="co">#&gt; v Got prettyunits 1.1.1 (windows) (37.71 kB)</span>
-<span class="co">#&gt; v Got hms 1.0.0 (windows) (103.58 kB)</span>
-<span class="co">#&gt; v Got redux 1.1.0 (windows) (287.94 kB)</span>
-<span class="co">#&gt; v Got docopt 0.7.1 (windows) (245.71 kB)</span>
-<span class="co">#&gt; v Got callr 3.6.0 (windows) (432.79 kB)</span>
-<span class="co">#&gt; v Got rrq 0.2.19 (source) (63.25 kB)</span>
-<span class="co">#&gt; v Got progress 1.2.2 (windows) (85.86 kB)</span>
-<span class="co">#&gt; v Got processx 3.5.1 (windows) (1.24 MB)</span>
-<span class="co">#&gt; v Got ps 1.6.0 (windows) (775.96 kB)</span>
-<span class="co">#&gt; v Installed docopt 0.7.1  (922ms)</span>
-<span class="co">#&gt; v Installed prettyunits 1.1.1  (751ms)</span>
-<span class="co">#&gt; v Installed hms 1.0.0  (1s)</span>
-<span class="co">#&gt; v Installed callr 3.6.0  (938ms)</span>
-<span class="co">#&gt; v Installed progress 1.2.2  (1.2s)</span>
-<span class="co">#&gt; v Installed redux 1.1.0  (1.3s)</span>
-<span class="co">#&gt; i Building rrq 0.2.19</span>
-<span class="co">#&gt; v Installed processx 3.5.1  (6s)</span>
-<span class="co">#&gt; v Installed ps 1.6.0  (6.5s)</span>
-<span class="co">#&gt; v Built rrq 0.2.19 (6.8s)</span>
-<span class="co">#&gt; v Installed rrq 0.2.19  (282ms)</span>
-<span class="co">#&gt; v Summary:   9 new   16 kept  in 25.7s</span>
-<span class="co">#&gt; Done!</span></code></pre></div>
+<span class="co">#&gt; [ source    ]  mysources.R</span></code></pre></div>
 <p>You can now submit</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
@@ -198,24 +157,23 @@
 <span class="co">#&gt; [1] "PENDING"</span>
 <span class="va">t</span><span class="op">$</span><span class="fu">times</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt;                            task_id           submitted started finished</span>
-<span class="co">#&gt; 1 bae6c67cff519596292760b6c9a09393 2021-04-09 16:30:00    &lt;NA&gt;     &lt;NA&gt;</span>
-<span class="co">#&gt;    waiting running idle</span>
-<span class="co">#&gt; 1 0.226712      NA   NA</span></code></pre></div>
+<span class="co">#&gt; 1 3701d72d24bb52ad7536f172f4fb0926 2021-04-20 10:48:22    &lt;NA&gt;     &lt;NA&gt;</span>
+<span class="co">#&gt;     waiting running idle</span>
+<span class="co">#&gt; 1 0.2081549      NA   NA</span></code></pre></div>
 <p>You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!</p>
 <p>The argument is the number of workers to submit. Each worker is equivalent to a job that your configuration would otherwise create (in terms of cores selected).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">workers</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">submit_workers</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt; Submitting 2 workers with base name 'productive_howlermonkey'</span>
+<span class="co">#&gt; Submitting 2 workers with base name 'unapproachable_mayfly'</span>
 <span class="co">#&gt; submitting (-) [===================================] 100% | giving up in 600 s</span>
 <span class="va">workers</span>
-<span class="co">#&gt; [1] "productive_howlermonkey_1" "productive_howlermonkey_2"</span></code></pre></div>
+<span class="co">#&gt; [1] "unapproachable_mayfly_1" "unapproachable_mayfly_2"</span></code></pre></div>
 <p>All workers get names in the form <code>&lt;adjective&gt;_&lt;animal&gt;_&lt;integer&gt;</code> so that you can remember which workers you set off. They will turn off after 10 minutes of inactivity by default (you can tweak this with the <code>worker_timeout</code> argument to <code>didehpc_config</code> or by sending a <code>TIMEOUT_SET</code> message).</p>
 <p>One advantage over the usual queuing approach here is that you will not wait for anyone else’s jobs to complete once you have reserved your workers.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for bae6c67...393, giving up in 9.5 s</span>
-<span class="co">#&gt;  [1]  0.09779148  0.84671583  0.27974311  0.08104207 -0.35843423 -2.19675942</span>
-<span class="co">#&gt;  [7] -4.22286493 -3.65819002 -3.60735001 -2.23040477</span></code></pre></div>
+<span class="co">#&gt;  [1] -0.2069151 -0.9241325 -3.6362525 -3.5992137 -4.6334960 -4.4937703</span>
+<span class="co">#&gt;  [7] -4.3445653 -5.9121364 -5.8205341 -6.0177895</span></code></pre></div>
 <p>We’re going to interact with the rrq object a bit</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rrq</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">rrq_controller</span><span class="op">(</span><span class="op">)</span>
@@ -241,7 +199,7 @@
 <span class="co">#&gt;     message_response_ids: function (worker_id)</span>
 <span class="co">#&gt;     message_send: function (command, args = NULL, worker_ids = NULL)</span>
 <span class="co">#&gt;     message_send_and_wait: function (command, args = NULL, worker_ids = NULL, named = TRUE,</span>
-<span class="co">#&gt;     queue_id: a1590dd8b37b4f181f1048afc0fe0443</span>
+<span class="co">#&gt;     queue_id: 3840f3707c2ecf1d05678da71a470cb2</span>
 <span class="co">#&gt;     queue_length: function (queue = NULL)</span>
 <span class="co">#&gt;     queue_list: function (queue = NULL)</span>
 <span class="co">#&gt;     queue_remove: function (task_ids, queue = NULL)</span>
@@ -278,83 +236,85 @@
 <p>You can see what your workers have been up to with the <code>workers_log_tail</code> command:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rrq</span><span class="op">$</span><span class="fu">worker_log_tail</span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span>
-<span class="co">#&gt;                   worker_id       time       command</span>
-<span class="co">#&gt; 1 productive_howlermonkey_1 1617982202         ALIVE</span>
-<span class="co">#&gt; 2 productive_howlermonkey_1 1617982202    TASK_START</span>
-<span class="co">#&gt; 3 productive_howlermonkey_2 1617982203         ALIVE</span>
-<span class="co">#&gt; 4 productive_howlermonkey_1 1617982203 TASK_COMPLETE</span>
+<span class="co">#&gt;                 worker_id       time       command</span>
+<span class="co">#&gt; 1 unapproachable_mayfly_2 1618912105         ALIVE</span>
+<span class="co">#&gt; 2 unapproachable_mayfly_2 1618912105    TASK_START</span>
+<span class="co">#&gt; 3 unapproachable_mayfly_2 1618912106 TASK_COMPLETE</span>
+<span class="co">#&gt; 4 unapproachable_mayfly_1 1618912108         ALIVE</span>
 <span class="co">#&gt;                            message</span>
 <span class="co">#&gt; 1</span>
-<span class="co">#&gt; 2 2e731137b72b951aa9236ce5e74af284</span>
-<span class="co">#&gt; 3</span>
-<span class="co">#&gt; 4 2e731137b72b951aa9236ce5e74af284</span></code></pre></div>
+<span class="co">#&gt; 2 27f179d32f72c72342be99e44f0598cf</span>
+<span class="co">#&gt; 3 27f179d32f72c72342be99e44f0598cf</span>
+<span class="co">#&gt; 4</span></code></pre></div>
 <p>The <code>time</code> column represents seconds - relative seconds should still be useful here.</p>
 <p>As before, logging works on a per-task basis:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  a1590dd8b37b4f181f1048afc0fe0443</span>
+<span class="co">#&gt; [ context   ]  3840f3707c2ecf1d05678da71a470cb2</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]  mysources.R</span>
 <span class="co">#&gt; [ root      ]  contexts</span>
-<span class="co">#&gt; [ context   ]  a1590dd8b37b4f181f1048afc0fe0443</span>
-<span class="co">#&gt; [ task      ]  bae6c67cff519596292760b6c9a09393</span>
+<span class="co">#&gt; [ context   ]  3840f3707c2ecf1d05678da71a470cb2</span>
+<span class="co">#&gt; [ task      ]  3701d72d24bb52ad7536f172f4fb0926</span>
 <span class="co">#&gt; [ expr      ]  random_walk(0, 10)</span>
-<span class="co">#&gt; [ start     ]  2021-04-09 16:30:03.169</span>
+<span class="co">#&gt; [ start     ]  2021-04-20 10:48:25.614</span>
 <span class="co">#&gt; [ ok        ]</span>
-<span class="co">#&gt; [ end       ]  2021-04-09 16:30:03.372</span></code></pre></div>
+<span class="co">#&gt; [ end       ]  2021-04-20 10:48:25.786</span></code></pre></div>
 <p>Find out how long your workers will persist for:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rrq</span><span class="op">$</span><span class="fu">message_send_and_wait</span><span class="op">(</span><span class="st">"TIMEOUT_GET"</span>, worker_ids <span class="op">=</span> <span class="va">workers</span><span class="op">)</span>
-<span class="co">#&gt; $productive_howlermonkey_1</span>
+<span class="co">#&gt; $unapproachable_mayfly_1</span>
 <span class="co">#&gt;   timeout remaining</span>
-<span class="co">#&gt;       600       600</span>
+<span class="co">#&gt;  600.0000  599.9219</span>
 <span class="co">#&gt;</span>
-<span class="co">#&gt; $productive_howlermonkey_2</span>
+<span class="co">#&gt; $unapproachable_mayfly_2</span>
 <span class="co">#&gt;   timeout remaining</span>
-<span class="co">#&gt;  600.0000  599.4062</span></code></pre></div>
+<span class="co">#&gt;       600       600</span></code></pre></div>
 <p>Other than that, hopefully everything else continues as normal. We can submit a bunch of jobs and run them using <code>$lapply</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sizes</span> <span class="op">&lt;-</span> <span class="fl">3</span><span class="op">:</span><span class="fl">8</span>
 <span class="va">grp</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">sizes</span>, <span class="va">random_walk</span>, x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt; Creating bundle: 'generic_centipede'</span>
+<span class="co">#&gt; Creating bundle: 'pseudohexagonal_iberianchiffchaff'</span>
 <span class="co">#&gt; [ bulk      ]  Creating 6 tasks</span>
 <span class="co">#&gt; submitting 6 tasks</span></code></pre></div>
 <p>Task status:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">grp</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; d5e5b2c8bca08c3e86fff883303045a2 9c50fe2449d9349f2643bc8e905995c0</span>
+<span class="co">#&gt; 164940688f27df66ecf18f62c5235845 b3045a0ac5dcfb9cba3cb5a5eb73c877</span>
 <span class="co">#&gt;                        "PENDING"                        "PENDING"</span>
-<span class="co">#&gt; b789621311455b0123c6d6bac0402e0b 16bb5e2cb5128366077e08d099cdc3f0</span>
+<span class="co">#&gt; 0cf524df98f3334a616b7fe9de4c5d97 74b1db0e659f9c2b140dd23d49df548b</span>
 <span class="co">#&gt;                        "PENDING"                        "PENDING"</span>
-<span class="co">#&gt; 899f49f68a28fa79095796b00549bcd5 140859ca304b2ef81ff70e0d9a1639f2</span>
+<span class="co">#&gt; 58b92c111f9230edfa67d9837ba615dc 6becb2b2cdbefb0ad52f6299e06770a6</span>
 <span class="co">#&gt;                        "PENDING"                        "PENDING"</span></code></pre></div>
 <p>Collect the results:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">grp</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; (-) [=======================&gt;------------------------] 50% | giving up in 4 s</span>
-<span class="co">#&gt; (\) [=======================&gt;------------------------] 50% | giving up in 4 s</span>
-<span class="co">#&gt; (|) [================================================] 100% | giving up in 3 s</span>
+<span class="co">#&gt; (-) [===============&gt;--------------------------------] 33% | giving up in 4 s</span>
+<span class="co">#&gt; (\) [===============&gt;--------------------------------] 33% | giving up in 4 s</span>
+<span class="co">#&gt; (|) [=======================================&gt;--------] 83% | giving up in 3 s</span>
+<span class="co">#&gt; (/) [=======================================&gt;--------] 83% | giving up in 3 s</span>
+<span class="co">#&gt; (-) [================================================] 100% | giving up in 2 s</span>
 <span class="va">res</span>
 <span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; [1] 0.1945096 1.6043196 2.0674439</span>
+<span class="co">#&gt; [1] -0.6410135 -0.8148416 -1.2799312</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; [1]  0.28648426  0.71153306  0.57097059 -0.07021351</span>
+<span class="co">#&gt; [1]  0.60351536  0.44735373  0.07373803 -0.14527828</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; [[3]]</span>
-<span class="co">#&gt; [1] 0.5684845 0.4023611 1.1826306 1.9730176 1.1584465</span>
+<span class="co">#&gt; [1] 1.5714724 0.8157822 2.3258290 2.4910652 2.7054504</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; [[4]]</span>
-<span class="co">#&gt; [1] -0.862783 -1.690197 -1.792089 -1.063012 -0.648449 -1.718101</span>
+<span class="co">#&gt; [1] 2.288792 2.659858 2.708952 2.656517 1.198739 1.279239</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; [[5]]</span>
-<span class="co">#&gt; [1] -1.7890075 -0.5330845  1.2488899  1.3586201  0.2010967  1.1742997  0.2347974</span>
+<span class="co">#&gt; [1] 0.3072271 0.7467542 0.9659910 2.3922600 3.6485857 5.2322454 3.6711208</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; [[6]]</span>
-<span class="co">#&gt; [1] -0.19868331  0.50090255  0.19222369  0.18023779 -0.01204727  0.95169811</span>
-<span class="co">#&gt; [7] -0.92250390 -1.77291099</span></code></pre></div>
+<span class="co">#&gt; [1] -0.03592958  0.46240236 -0.33126826 -1.49274113 -1.28328967 -2.03531791</span>
+<span class="co">#&gt; [7] -1.98302860 -2.67444963</span></code></pre></div>
 <p>While workers will turn off automatically, it’s polite to turn them off as soon as you’re done using <code>obj$stop_workers()</code></p>
 <p>Alternatively, after submitting a bunch of jobs you can run</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -364,59 +324,59 @@
 <code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">stop_workers</span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>
 <span class="va">rrq</span><span class="op">$</span><span class="fu">worker_log_tail</span><span class="op">(</span><span class="va">workers</span>, n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span>
-<span class="co">#&gt;                    worker_id       time       command</span>
-<span class="co">#&gt; 1  productive_howlermonkey_1 1617982202         ALIVE</span>
-<span class="co">#&gt; 2  productive_howlermonkey_1 1617982202    TASK_START</span>
-<span class="co">#&gt; 3  productive_howlermonkey_2 1617982203         ALIVE</span>
-<span class="co">#&gt; 4  productive_howlermonkey_1 1617982203 TASK_COMPLETE</span>
-<span class="co">#&gt; 5  productive_howlermonkey_1 1617982204       MESSAGE</span>
-<span class="co">#&gt; 6  productive_howlermonkey_1 1617982204      RESPONSE</span>
-<span class="co">#&gt; 7  productive_howlermonkey_2 1617982204       MESSAGE</span>
-<span class="co">#&gt; 8  productive_howlermonkey_2 1617982204      RESPONSE</span>
-<span class="co">#&gt; 9  productive_howlermonkey_1 1617982205    TASK_START</span>
-<span class="co">#&gt; 10 productive_howlermonkey_2 1617982205    TASK_START</span>
-<span class="co">#&gt; 11 productive_howlermonkey_1 1617982206 TASK_COMPLETE</span>
-<span class="co">#&gt; 12 productive_howlermonkey_1 1617982206    TASK_START</span>
-<span class="co">#&gt; 13 productive_howlermonkey_2 1617982206 TASK_COMPLETE</span>
-<span class="co">#&gt; 14 productive_howlermonkey_2 1617982206    TASK_START</span>
-<span class="co">#&gt; 15 productive_howlermonkey_1 1617982206 TASK_COMPLETE</span>
-<span class="co">#&gt; 16 productive_howlermonkey_1 1617982206    TASK_START</span>
-<span class="co">#&gt; 17 productive_howlermonkey_2 1617982207 TASK_COMPLETE</span>
-<span class="co">#&gt; 18 productive_howlermonkey_2 1617982207    TASK_START</span>
-<span class="co">#&gt; 19 productive_howlermonkey_1 1617982207 TASK_COMPLETE</span>
-<span class="co">#&gt; 20 productive_howlermonkey_2 1617982207 TASK_COMPLETE</span>
-<span class="co">#&gt; 21 productive_howlermonkey_1 1617982207       MESSAGE</span>
-<span class="co">#&gt; 22 productive_howlermonkey_2 1617982207       MESSAGE</span>
-<span class="co">#&gt; 23 productive_howlermonkey_2 1617982207      RESPONSE</span>
-<span class="co">#&gt; 24 productive_howlermonkey_1 1617982207      RESPONSE</span>
-<span class="co">#&gt; 25 productive_howlermonkey_1 1617982207          STOP</span>
-<span class="co">#&gt; 26 productive_howlermonkey_2 1617982207          STOP</span>
+<span class="co">#&gt;                  worker_id       time       command</span>
+<span class="co">#&gt; 1  unapproachable_mayfly_2 1618912105         ALIVE</span>
+<span class="co">#&gt; 2  unapproachable_mayfly_2 1618912105    TASK_START</span>
+<span class="co">#&gt; 3  unapproachable_mayfly_2 1618912106 TASK_COMPLETE</span>
+<span class="co">#&gt; 4  unapproachable_mayfly_2 1618912108       MESSAGE</span>
+<span class="co">#&gt; 5  unapproachable_mayfly_2 1618912108      RESPONSE</span>
+<span class="co">#&gt; 6  unapproachable_mayfly_1 1618912108         ALIVE</span>
+<span class="co">#&gt; 7  unapproachable_mayfly_1 1618912108       MESSAGE</span>
+<span class="co">#&gt; 8  unapproachable_mayfly_1 1618912108      RESPONSE</span>
+<span class="co">#&gt; 9  unapproachable_mayfly_2 1618912109    TASK_START</span>
+<span class="co">#&gt; 10 unapproachable_mayfly_1 1618912109    TASK_START</span>
+<span class="co">#&gt; 11 unapproachable_mayfly_2 1618912110 TASK_COMPLETE</span>
+<span class="co">#&gt; 12 unapproachable_mayfly_2 1618912110    TASK_START</span>
+<span class="co">#&gt; 13 unapproachable_mayfly_2 1618912110 TASK_COMPLETE</span>
+<span class="co">#&gt; 14 unapproachable_mayfly_2 1618912110    TASK_START</span>
+<span class="co">#&gt; 15 unapproachable_mayfly_1 1618912111 TASK_COMPLETE</span>
+<span class="co">#&gt; 16 unapproachable_mayfly_1 1618912111    TASK_START</span>
+<span class="co">#&gt; 17 unapproachable_mayfly_2 1618912111 TASK_COMPLETE</span>
+<span class="co">#&gt; 18 unapproachable_mayfly_2 1618912111    TASK_START</span>
+<span class="co">#&gt; 19 unapproachable_mayfly_2 1618912112 TASK_COMPLETE</span>
+<span class="co">#&gt; 20 unapproachable_mayfly_1 1618912112 TASK_COMPLETE</span>
+<span class="co">#&gt; 21 unapproachable_mayfly_2 1618912113       MESSAGE</span>
+<span class="co">#&gt; 22 unapproachable_mayfly_2 1618912113      RESPONSE</span>
+<span class="co">#&gt; 23 unapproachable_mayfly_2 1618912113          STOP</span>
+<span class="co">#&gt; 24 unapproachable_mayfly_1 1618912113       MESSAGE</span>
+<span class="co">#&gt; 25 unapproachable_mayfly_1 1618912113      RESPONSE</span>
+<span class="co">#&gt; 26 unapproachable_mayfly_1 1618912113          STOP</span>
 <span class="co">#&gt;                             message</span>
 <span class="co">#&gt; 1</span>
-<span class="co">#&gt; 2  2e731137b72b951aa9236ce5e74af284</span>
-<span class="co">#&gt; 3</span>
-<span class="co">#&gt; 4  2e731137b72b951aa9236ce5e74af284</span>
+<span class="co">#&gt; 2  27f179d32f72c72342be99e44f0598cf</span>
+<span class="co">#&gt; 3  27f179d32f72c72342be99e44f0598cf</span>
+<span class="co">#&gt; 4                       TIMEOUT_GET</span>
 <span class="co">#&gt; 5                       TIMEOUT_GET</span>
-<span class="co">#&gt; 6                       TIMEOUT_GET</span>
+<span class="co">#&gt; 6</span>
 <span class="co">#&gt; 7                       TIMEOUT_GET</span>
 <span class="co">#&gt; 8                       TIMEOUT_GET</span>
-<span class="co">#&gt; 9  7095a131d4f32806f2b171db71f56e8b</span>
-<span class="co">#&gt; 10 30d415c27a7ff9eae15e4de1330f3f94</span>
-<span class="co">#&gt; 11 7095a131d4f32806f2b171db71f56e8b</span>
-<span class="co">#&gt; 12 d6f9c039b1879b4524ff8ae6cc07699c</span>
-<span class="co">#&gt; 13 30d415c27a7ff9eae15e4de1330f3f94</span>
-<span class="co">#&gt; 14 a1c0d9bfaf6e1d12f0883426143c461a</span>
-<span class="co">#&gt; 15 d6f9c039b1879b4524ff8ae6cc07699c</span>
-<span class="co">#&gt; 16 5003b13d4bce25875adb2d385cfa3ce9</span>
-<span class="co">#&gt; 17 a1c0d9bfaf6e1d12f0883426143c461a</span>
-<span class="co">#&gt; 18 809ab0362abc9aa96ed43f1fd7a042fb</span>
-<span class="co">#&gt; 19 5003b13d4bce25875adb2d385cfa3ce9</span>
-<span class="co">#&gt; 20 809ab0362abc9aa96ed43f1fd7a042fb</span>
+<span class="co">#&gt; 9  dc100d55d3a78a7f4f61b3d89526831d</span>
+<span class="co">#&gt; 10 3406fcdd78641204d11a322298f8abc6</span>
+<span class="co">#&gt; 11 dc100d55d3a78a7f4f61b3d89526831d</span>
+<span class="co">#&gt; 12 e1dfa33d74de4d0952c934ddfac1104d</span>
+<span class="co">#&gt; 13 e1dfa33d74de4d0952c934ddfac1104d</span>
+<span class="co">#&gt; 14 036cbee5117ab3392a19a89db9595f8c</span>
+<span class="co">#&gt; 15 3406fcdd78641204d11a322298f8abc6</span>
+<span class="co">#&gt; 16 05ebf1c0fd731afcb6a882844bb333fe</span>
+<span class="co">#&gt; 17 036cbee5117ab3392a19a89db9595f8c</span>
+<span class="co">#&gt; 18 23e8a16400d38c7602e9d080242da6f3</span>
+<span class="co">#&gt; 19 23e8a16400d38c7602e9d080242da6f3</span>
+<span class="co">#&gt; 20 05ebf1c0fd731afcb6a882844bb333fe</span>
 <span class="co">#&gt; 21                             STOP</span>
 <span class="co">#&gt; 22                             STOP</span>
-<span class="co">#&gt; 23                             STOP</span>
+<span class="co">#&gt; 23                         OK (BYE)</span>
 <span class="co">#&gt; 24                             STOP</span>
-<span class="co">#&gt; 25                         OK (BYE)</span>
+<span class="co">#&gt; 25                             STOP</span>
 <span class="co">#&gt; 26                         OK (BYE)</span>
 <span class="va">rrq</span><span class="op">$</span><span class="fu">destroy</span><span class="op">(</span><span class="op">)</span></code></pre></div>
 </div>
@@ -428,29 +388,29 @@
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>use_rrq <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, config <span class="op">=</span> <span class="va">config</span><span class="op">)</span>
-<span class="co">#&gt; Loading context a1590dd8b37b4f181f1048afc0fe0443</span>
-<span class="co">#&gt; [ context   ]  a1590dd8b37b4f181f1048afc0fe0443</span>
+<span class="co">#&gt; Loading context 3840f3707c2ecf1d05678da71a470cb2</span>
+<span class="co">#&gt; [ context   ]  3840f3707c2ecf1d05678da71a470cb2</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]  mysources.R</span></code></pre></div>
 <p>We still submit workers</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">workers</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">submit_workers</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; Submitting 10 workers with base name 'subdermic_chameleon'</span>
-<span class="co">#&gt; submitting (-) [======&gt;----------------------------] 20% | giving up in 600 s</span>
+<span class="co">#&gt; Submitting 10 workers with base name 'contusioned_barb'</span>
+<span class="co">#&gt; submitting (-) [======&gt;----------------------------] 20% | giving up in 599 s</span>
 <span class="co">#&gt; submitting (\) [=========&gt;-------------------------] 30% | giving up in 599 s</span>
-<span class="co">#&gt; submitting (|) [=============&gt;---------------------] 40% | giving up in 599 s</span>
+<span class="co">#&gt; submitting (|) [=============&gt;---------------------] 40% | giving up in 598 s</span>
 <span class="co">#&gt; submitting (/) [=================&gt;-----------------] 50% | giving up in 598 s</span>
-<span class="co">#&gt; submitting (-) [====================&gt;--------------] 60% | giving up in 598 s</span>
+<span class="co">#&gt; submitting (-) [====================&gt;--------------] 60% | giving up in 597 s</span>
 <span class="co">#&gt; submitting (\) [=======================&gt;-----------] 70% | giving up in 597 s</span>
-<span class="co">#&gt; submitting (|) [===========================&gt;-------] 80% | giving up in 597 s</span>
-<span class="co">#&gt; submitting (/) [===============================&gt;---] 90% | giving up in 596 s</span>
-<span class="co">#&gt; submitting (-) [===================================] 100% | giving up in 596 s</span>
+<span class="co">#&gt; submitting (|) [===========================&gt;-------] 80% | giving up in 596 s</span>
+<span class="co">#&gt; submitting (/) [===============================&gt;---] 90% | giving up in 595 s</span>
+<span class="co">#&gt; submitting (-) [===================================] 100% | giving up in 594 s</span>
 <span class="va">workers</span>
-<span class="co">#&gt;  [1] "subdermic_chameleon_1"  "subdermic_chameleon_2"  "subdermic_chameleon_3"</span>
-<span class="co">#&gt;  [4] "subdermic_chameleon_4"  "subdermic_chameleon_5"  "subdermic_chameleon_6"</span>
-<span class="co">#&gt;  [7] "subdermic_chameleon_7"  "subdermic_chameleon_8"  "subdermic_chameleon_9"</span>
-<span class="co">#&gt; [10] "subdermic_chameleon_10"</span></code></pre></div>
+<span class="co">#&gt;  [1] "contusioned_barb_1"  "contusioned_barb_2"  "contusioned_barb_3"</span>
+<span class="co">#&gt;  [4] "contusioned_barb_4"  "contusioned_barb_5"  "contusioned_barb_6"</span>
+<span class="co">#&gt;  [7] "contusioned_barb_7"  "contusioned_barb_8"  "contusioned_barb_9"</span>
+<span class="co">#&gt; [10] "contusioned_barb_10"</span></code></pre></div>
 <p>To send tasks to these workers we directly use the <code>rrq_controller</code> object - we’ll not use the <code>queue_didehpc</code> object from this point.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rrq</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">rrq_controller</span><span class="op">(</span><span class="op">)</span></code></pre></div>
@@ -463,12 +423,12 @@
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">rrq</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, <span class="va">sin</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   0.009   0.001   0.048</span></code></pre></div>
+<span class="co">#&gt;   0.013   0.002   0.054</span></code></pre></div>
 <p>or 500 tasks:</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">rrq</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="va">sin</span>, progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;    user  system elapsed</span>
-<span class="co">#&gt;   0.060   0.010   0.459</span></code></pre></div>
+<span class="co">#&gt;   0.094   0.031   0.531</span></code></pre></div>
 <p>Across the network, the latency here is ~1/600 s per task. On fi–didemrchnb it will hopefully be a bit faster because of the infiniband network.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">rrq</span><span class="op">$</span><span class="fu">worker_stop</span><span class="op">(</span><span class="op">)</span>
@@ -480,6 +440,45 @@
   rrq::rrq_controller(queue_id)
 }</code></pre>
 <p>within your sources, then you can use it in place of running (say) a <code><a href="https://rdrr.io/r/base/lapply.html">lapply()</a></code> call in your code. This approach allows a relatively simple form of inter-process communication. Talk to Rich if this is something you might have a use for, if you have simulation needs that are larger than a single node.</p>
+</div>
+<div id="advanced-use-different-worker-and-task-resources" class="section level2">
+<h2 class="hasAnchor">
+<a href="#advanced-use-different-worker-and-task-resources" class="anchor"></a>Advanced use: different worker and task resources</h2>
+<p>Suppose that we want to submit a job where we have a single process which orchestrates a group of workers each of which takes up an entire node. We used this pattern in the covid response where we wanted to run different MCMC chains on different nodes, each using 32 cores, but we also needed a single “controlling” process to organise collecting results from these nodes.</p>
+<p>What we want to do do is specify a different set of resources to be used by the workers than by tasks submitted by <code>$enqueue()</code>. Note that this only makes sense when using <code>use_rrq = TRUE</code>. For example, to submit a controlling process that uses the <code>GeneralNodes</code> template and one core (the default) but worker processes that can use 8 cores, we might write</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>
+  use_rrq <span class="op">=</span> <span class="cn">TRUE</span>,
+  worker_resource <span class="op">=</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/worker_resource.html">worker_resource</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span>
+<span class="va">config</span>
+<span class="co">#&gt; &lt;didehpc_config&gt;</span>
+<span class="co">#&gt;  - cluster: fi--dideclusthn</span>
+<span class="co">#&gt;  - credentials:</span>
+<span class="co">#&gt;     - username: rfitzjoh</span>
+<span class="co">#&gt;     - password: *******************</span>
+<span class="co">#&gt;  - username: rfitzjoh</span>
+<span class="co">#&gt;  - resource:</span>
+<span class="co">#&gt;     - template: GeneralNodes</span>
+<span class="co">#&gt;     - parallel: FALSE</span>
+<span class="co">#&gt;     - count: 1</span>
+<span class="co">#&gt;     - type: Cores</span>
+<span class="co">#&gt;  - shares:</span>
+<span class="co">#&gt;     - home: (local) /home/rich/net/home =&gt; \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh =&gt; Q: (remote)</span>
+<span class="co">#&gt;     - temp: (local) /home/rich/net/temp =&gt; \\fi--didef3.dide.ic.ac.uk\tmp =&gt; T: (remote)</span>
+<span class="co">#&gt;  - use_workers: FALSE</span>
+<span class="co">#&gt;  - use_rrq: TRUE</span>
+<span class="co">#&gt;  - worker_timeout: 600</span>
+<span class="co">#&gt;  - conan_bootstrap: TRUE</span>
+<span class="co">#&gt;  - r_version: 4.0.3</span>
+<span class="co">#&gt;  - use_java: FALSE</span>
+<span class="co">#&gt;  - redis_host: fi--dideclusthn.dide.ic.ac.uk</span>
+<span class="co">#&gt;  - worker_resource:</span>
+<span class="co">#&gt;     - template: GeneralNodes</span>
+<span class="co">#&gt;     - parallel: TRUE</span>
+<span class="co">#&gt;     - count: 8</span>
+<span class="co">#&gt;     - type: Cores</span></code></pre></div>
+<p>See the <code>worker_resource</code> section here indicates different resources to the <code>resource</code> section.</p>
+<p>Now, when submitting workers with <code>obj$submit_workers</code> each worker will be able to use 8 cores, but a task submitted by <code>$enqueue()</code> will only be able to use one. You might then submit a task that uses the <code>get_rrq_controller</code> trick above as part of your single core job, which can then farm out work to your workers using the <code>rrq</code> queue object.</p>
 </div>
 <div id="cleaning-up" class="section level2">
 <h2 class="hasAnchor">

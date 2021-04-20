@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • didehpc</title>
+<title>Specify worker resources — worker_resource • didehpc</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,10 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Specify worker resources — worker_resource" />
+<meta property="og:description" content="Specify resources for worker processes. If given, the values here
+will override those in didehpc_config(). See
+vignette(&quot;workers&quot;) for more details." />
 
 
 
@@ -58,7 +61,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -134,26 +137,80 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Specify worker resources</h1>
+    <small class="dont-index">Source: <a href='https://github.com/mrc-ide/didehpc/blob/master/R/config.R'><code>R/config.R</code></a></small>
+    <div class="hidden name"><code>worker_resource.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="didehpc.html">Using didehpc to run cluster jobs</a></dt>
-        <dd></dt>
-        <dt><a href="packages.html">Package installation</a></dt>
-        <dd></dt>
-        <dt><a href="quickstart.html">Quickstart for R and the DIDE cluster</a></dt>
-        <dd></dt>
-        <dt><a href="troubleshooting.html">Troubleshooting</a></dt>
-        <dd></dt>
-        <dt><a href="workers.html">Workers</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>Specify resources for worker processes. If given, the values here
+will override those in <code><a href='didehpc_config.html'>didehpc_config()</a></code>. See
+<code><a href='../articles/workers.html'>vignette("workers")</a></code> for more details.</p>
     </div>
+
+    <pre class="usage"><span class='fu'>worker_resource</span><span class='op'>(</span>
+  template <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cores <span class='op'>=</span> <span class='cn'>NULL</span>,
+  wholenode <span class='op'>=</span> <span class='cn'>NULL</span>,
+  parallel <span class='op'>=</span> <span class='cn'>NULL</span>
+<span class='op'>)</span></pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>template</th>
+      <td><p>A job template.  On fi--dideclusthn this can be
+"GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+"GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
+"24Core" or "32Core". See the main cluster documentation if you
+tweak these parameters, as you may not have permission to use
+all templates (and if you use one that you don't have permission
+for the job will fail).  For training purposes there is also a
+"Training" template, but you will only need to use this when
+instructed to.</p></td>
+    </tr>
+    <tr>
+      <th>cores</th>
+      <td><p>The number of cores to request.  This is mostly
+useful when using the <code>GeneralNodes</code> template.  If
+specified, then we will request this many cores from the windows
+queuer.  If you request too many cores then your task will queue
+forever!  24 is the largest this should be on fi--dideclusthn
+and 64 on fi--didemrchnb (assuming you have access to those
+nodes).  If omitted then a single core is selected for the
+GeneralNodes template or the <em>entire machine</em> for the other
+templates (unless modified by <code>wholenode</code>).</p></td>
+    </tr>
+    <tr>
+      <th>wholenode</th>
+      <td><p>Request the whole node?  This will default to
+<code>TRUE</code> if any template other than <code>GeneralNodes</code> is
+selected.</p></td>
+    </tr>
+    <tr>
+      <th>parallel</th>
+      <td><p>Should we set up the parallel cluster?  Normally
+if more than one core is implied (via the <code>cores</code> argument,
+by picking a template other than <code>GeneralNodes</code> or by using
+<code>wholenode</code>) then a parallel cluster will be set up (see
+Details).  If <code>parallel</code> is set to <code>FALSE</code> then this
+will not occur.  This might be useful in cases where you want to
+manage your own job level parallelism (e.g. using OpenMP) or if
+you're just after the whole node for the memory).</p></td>
+    </tr>
+    </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A list with class <code>worker_resource</code> which can be passed
+into <code><a href='didehpc_config.html'>didehpc_config</a></code></p>
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

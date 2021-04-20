@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -113,14 +113,14 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"pkgs"</span>
 <span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"ggplot2"</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt; [ init:id   ]  f695ce7974f3e28a21c132f920442c5f</span>
+<span class="co">#&gt; [ init:id   ]  56d34997c3c968cfaa337d18c74c552c</span>
 <span class="co">#&gt; [ init:db   ]  rds</span>
 <span class="co">#&gt; [ init:path ]  pkgs</span>
-<span class="co">#&gt; [ save:id   ]  b38a37fc3fce7f50eedc34d489c5b6ce</span>
-<span class="co">#&gt; [ save:name ]  banal_auk</span>
+<span class="co">#&gt; [ save:id   ]  38f5f51a1f561e2d730e50b7268301a4</span>
+<span class="co">#&gt; [ save:name ]  unexistential_billygoat</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context b38a37fc3fce7f50eedc34d489c5b6ce</span>
-<span class="co">#&gt; [ context   ]  b38a37fc3fce7f50eedc34d489c5b6ce</span>
+<span class="co">#&gt; Loading context 38f5f51a1f561e2d730e50b7268301a4</span>
+<span class="co">#&gt; [ context   ]  38f5f51a1f561e2d730e50b7268301a4</span>
 <span class="co">#&gt; [ library   ]  dplyr, ggplot2</span>
 <span class="co">#&gt;</span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
@@ -136,9 +136,9 @@
 <span class="co">#&gt;   ,:\      /:.</span>
 <span class="co">#&gt;  //  \_()_/  \\</span>
 <span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\pkgs\lib\windows\4.0</span>
+<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\pkgs\lib\windows\4.0</span>
 <span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\pkgs\conan\cache/pkg</span>
+<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\pkgs\conan\cache/pkg</span>
 <span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
 <span class="co">#&gt;        ||         Repos:</span>
 <span class="co">#&gt;        ||           * https://mrc-ide.github.io/didehpc-pkgs</span>
@@ -150,99 +150,97 @@
 <span class="co">#&gt;        `'</span>
 <span class="co">#&gt; i Loading metadata database</span>
 <span class="co">#&gt; v Loading metadata database ... done</span>
-<span class="co">#&gt; i Getting 37 pkgs (26.43 MB) and 1 pkg with unknown size</span>
-<span class="co">#&gt; v Got context 0.3.0 (source) (45.34 kB)</span>
-<span class="co">#&gt; v Got crayon 1.4.1 (windows) (141.83 kB)</span>
-<span class="co">#&gt; v Got askpass 1.1 (windows) (243.58 kB)</span>
-<span class="co">#&gt; v Got R6 2.5.0 (windows) (84.11 kB)</span>
-<span class="co">#&gt; v Got ids 1.0.1 (windows) (123.93 kB)</span>
-<span class="co">#&gt; v Got sys 3.4 (windows) (59.90 kB)</span>
+<span class="co">#&gt; i Getting 36 pkgs (27.70 MB) and 1 pkg with unknown size</span>
+<span class="co">#&gt; v Got askpass 1.1 (windows) (243.57 kB)</span>
+<span class="co">#&gt; v Got crayon 1.4.1 (windows) (141.72 kB)</span>
+<span class="co">#&gt; v Got R6 2.5.0 (windows) (84.10 kB)</span>
+<span class="co">#&gt; v Got digest 0.6.27 (windows) (268.60 kB)</span>
+<span class="co">#&gt; v Got context 0.3.0 (source) (37.72 kB)</span>
+<span class="co">#&gt; v Got ids 1.0.1 (windows) (123.91 kB)</span>
+<span class="co">#&gt; v Got sys 3.4 (windows) (59.68 kB)</span>
 <span class="co">#&gt; v Got uuid 0.1-4 (windows) (33.77 kB)</span>
-<span class="co">#&gt; v Got assertthat 0.2.1 (windows) (55.09 kB)</span>
-<span class="co">#&gt; v Got cli 2.3.1 (windows) (474.17 kB)</span>
-<span class="co">#&gt; v Got ellipsis 0.3.1 (windows) (46.12 kB)</span>
-<span class="co">#&gt; v Got generics 0.1.0 (windows) (71.29 kB)</span>
-<span class="co">#&gt; v Got glue 1.4.2 (windows) (155.51 kB)</span>
-<span class="co">#&gt; v Got dplyr 1.0.5 (windows) (1.34 MB)</span>
-<span class="co">#&gt; v Got fansi 0.4.2 (windows) (224.26 kB)</span>
-<span class="co">#&gt; v Got lifecycle 1.0.0 (windows) (111.19 kB)</span>
-<span class="co">#&gt; v Got magrittr 2.0.1 (windows) (235.61 kB)</span>
+<span class="co">#&gt; v Got ellipsis 0.3.1 (windows) (46.15 kB)</span>
+<span class="co">#&gt; v Got generics 0.1.0 (windows) (70.84 kB)</span>
+<span class="co">#&gt; v Got lifecycle 1.0.0 (windows) (111.22 kB)</span>
 <span class="co">#&gt; v Got openssl 1.4.3 (windows) (3.99 MB)</span>
-<span class="co">#&gt; v Got pkgconfig 2.0.3 (windows) (22.34 kB)</span>
-<span class="co">#&gt; v Got purrr 0.3.4 (windows) (430.05 kB)</span>
-<span class="co">#&gt; v Got tidyselect 1.1.0 (windows) (203.20 kB)</span>
-<span class="co">#&gt; v Got pillar 1.5.1 (windows) (962.07 kB)</span>
-<span class="co">#&gt; v Got digest 0.6.27 (windows) (268.66 kB)</span>
-<span class="co">#&gt; v Got tibble 3.1.0 (windows) (825.66 kB)</span>
+<span class="co">#&gt; v Got glue 1.4.2 (windows) (155.42 kB)</span>
+<span class="co">#&gt; v Got cli 2.4.0 (windows) (504.14 kB)</span>
+<span class="co">#&gt; v Got pkgconfig 2.0.3 (windows) (22.08 kB)</span>
+<span class="co">#&gt; v Got magrittr 2.0.1 (windows) (235.68 kB)</span>
+<span class="co">#&gt; v Got storr 1.2.5 (windows) (401.10 kB)</span>
+<span class="co">#&gt; v Got dplyr 1.0.5 (windows) (1.33 MB)</span>
+<span class="co">#&gt; v Got tibble 3.1.0 (windows) (825.59 kB)</span>
+<span class="co">#&gt; v Got tidyselect 1.1.0 (windows) (203.17 kB)</span>
+<span class="co">#&gt; v Got utf8 1.2.1 (windows) (209.84 kB)</span>
 <span class="co">#&gt; v Got RColorBrewer 1.1-2 (windows) (55.55 kB)</span>
+<span class="co">#&gt; v Got purrr 0.3.4 (windows) (426.90 kB)</span>
 <span class="co">#&gt; v Got rlang 0.4.10 (windows) (1.20 MB)</span>
-<span class="co">#&gt; v Got utf8 1.2.1 (windows) (209.89 kB)</span>
-<span class="co">#&gt; v Got gtable 0.3.0 (windows) (434.14 kB)</span>
-<span class="co">#&gt; v Got vctrs 0.3.7 (windows) (1.25 MB)</span>
-<span class="co">#&gt; v Got labeling 0.4.2 (windows) (62.73 kB)</span>
-<span class="co">#&gt; v Got farver 2.1.0 (windows) (1.75 MB)</span>
-<span class="co">#&gt; v Got munsell 0.5.0 (windows) (245.26 kB)</span>
-<span class="co">#&gt; v Got viridisLite 0.3.0 (windows) (60.61 kB)</span>
-<span class="co">#&gt; v Got withr 2.4.1 (windows) (208.60 kB)</span>
-<span class="co">#&gt; v Got storr 1.2.5 (windows) (401.14 kB)</span>
-<span class="co">#&gt; v Got scales 1.1.1 (windows) (558.28 kB)</span>
-<span class="co">#&gt; v Got colorspace 2.0-0 (windows) (2.65 MB)</span>
-<span class="co">#&gt; v Got isoband 0.2.4 (windows) (3.06 MB)</span>
+<span class="co">#&gt; v Got pillar 1.6.0 (windows) (1.02 MB)</span>
 <span class="co">#&gt; v Got ggplot2 3.3.3 (windows) (4.07 MB)</span>
-<span class="co">#&gt; v Installed R6 2.5.0  (1.2s)</span>
-<span class="co">#&gt; v Installed crayon 1.4.1  (1.2s)</span>
-<span class="co">#&gt; v Installed askpass 1.1  (1.5s)</span>
-<span class="co">#&gt; v Installed ids 1.0.1  (1.5s)</span>
-<span class="co">#&gt; v Installed uuid 0.1-4  (1.6s)</span>
-<span class="co">#&gt; v Installed assertthat 0.2.1  (1.8s)</span>
-<span class="co">#&gt; v Installed sys 3.4  (2.1s)</span>
-<span class="co">#&gt; v Installed digest 0.6.27  (2.5s)</span>
-<span class="co">#&gt; v Installed storr 1.2.5  (2.6s)</span>
-<span class="co">#&gt; v Installed cli 2.3.1  (2.6s)</span>
-<span class="co">#&gt; v Installed openssl 1.4.3  (3.1s)</span>
+<span class="co">#&gt; v Got labeling 0.4.2 (windows) (62.73 kB)</span>
+<span class="co">#&gt; v Got gtable 0.3.0 (windows) (434.20 kB)</span>
+<span class="co">#&gt; v Got farver 2.1.0 (windows) (1.75 MB)</span>
+<span class="co">#&gt; v Got vctrs 0.3.7 (windows) (1.25 MB)</span>
+<span class="co">#&gt; v Got munsell 0.5.0 (windows) (244.85 kB)</span>
+<span class="co">#&gt; v Got scales 1.1.1 (windows) (557.57 kB)</span>
+<span class="co">#&gt; v Got withr 2.4.1 (windows) (209.25 kB)</span>
+<span class="co">#&gt; v Got fansi 0.4.2 (windows) (224.19 kB)</span>
+<span class="co">#&gt; v Got isoband 0.2.4 (windows) (3.06 MB)</span>
+<span class="co">#&gt; v Got colorspace 2.0-0 (windows) (2.65 MB)</span>
+<span class="co">#&gt; v Got viridisLite 0.4.0 (windows) (1.30 MB)</span>
+<span class="co">#&gt; v Installed crayon 1.4.1  (969ms)</span>
+<span class="co">#&gt; v Installed askpass 1.1  (1.3s)</span>
+<span class="co">#&gt; v Installed R6 2.5.0  (2s)</span>
+<span class="co">#&gt; v Installed ids 1.0.1  (1.7s)</span>
+<span class="co">#&gt; v Installed sys 3.4  (1.8s)</span>
+<span class="co">#&gt; v Installed storr 1.2.5  (2.2s)</span>
+<span class="co">#&gt; v Installed digest 0.6.27  (2.6s)</span>
+<span class="co">#&gt; v Installed openssl 1.4.3  (2.9s)</span>
+<span class="co">#&gt; v Installed uuid 0.1-4  (2.2s)</span>
 <span class="co">#&gt; i Building context 0.3.0</span>
-<span class="co">#&gt; v Installed dplyr 1.0.5  (7.8s)</span>
-<span class="co">#&gt; v Installed ellipsis 0.3.1  (7.5s)</span>
-<span class="co">#&gt; v Installed fansi 0.4.2  (7.8s)</span>
-<span class="co">#&gt; v Installed generics 0.1.0  (7.9s)</span>
-<span class="co">#&gt; v Installed glue 1.4.2  (7.9s)</span>
-<span class="co">#&gt; v Installed lifecycle 1.0.0  (8s)</span>
-<span class="co">#&gt; v Installed magrittr 2.0.1  (8.1s)</span>
-<span class="co">#&gt; v Installed pillar 1.5.1  (8.2s)</span>
-<span class="co">#&gt; v Installed pkgconfig 2.0.3  (8.7s)</span>
-<span class="co">#&gt; v Installed purrr 0.3.4  (9.3s)</span>
-<span class="co">#&gt; v Built context 0.3.0 (4.7s)</span>
-<span class="co">#&gt; v Installed rlang 0.4.10  (579ms)</span>
-<span class="co">#&gt; v Installed context 0.3.0  (704ms)</span>
-<span class="co">#&gt; v Installed tibble 3.1.0  (891ms)</span>
-<span class="co">#&gt; v Installed tidyselect 1.1.0  (797ms)</span>
-<span class="co">#&gt; v Installed utf8 1.2.1  (1.1s)</span>
-<span class="co">#&gt; v Installed RColorBrewer 1.1-2  (1.2s)</span>
-<span class="co">#&gt; v Installed vctrs 0.3.7  (1.6s)</span>
-<span class="co">#&gt; v Installed farver 2.1.0  (1.6s)</span>
-<span class="co">#&gt; v Installed gtable 0.3.0  (1.5s)</span>
-<span class="co">#&gt; v Installed labeling 0.4.2  (1.4s)</span>
-<span class="co">#&gt; v Installed ggplot2 3.3.3  (1.9s)</span>
+<span class="co">#&gt; v Installed cli 2.4.0  (9.3s)</span>
+<span class="co">#&gt; v Installed dplyr 1.0.5  (9.4s)</span>
+<span class="co">#&gt; v Installed ellipsis 0.3.1  (9.4s)</span>
+<span class="co">#&gt; v Installed fansi 0.4.2  (9.4s)</span>
+<span class="co">#&gt; v Installed generics 0.1.0  (9.4s)</span>
+<span class="co">#&gt; v Installed glue 1.4.2  (9.2s)</span>
+<span class="co">#&gt; v Installed lifecycle 1.0.0  (9.1s)</span>
+<span class="co">#&gt; v Installed pkgconfig 2.0.3  (1.4s)</span>
+<span class="co">#&gt; v Installed magrittr 2.0.1  (2.2s)</span>
+<span class="co">#&gt; v Installed purrr 0.3.4  (2.5s)</span>
+<span class="co">#&gt; v Installed rlang 0.4.10  (2.6s)</span>
+<span class="co">#&gt; v Installed pillar 1.6.0  (3.2s)</span>
+<span class="co">#&gt; v Built context 0.3.0 (5.7s)</span>
+<span class="co">#&gt; v Installed tibble 3.1.0  (2.9s)</span>
+<span class="co">#&gt; v Installed tidyselect 1.1.0  (2.3s)</span>
+<span class="co">#&gt; v Installed utf8 1.2.1  (2.4s)</span>
+<span class="co">#&gt; v Installed vctrs 0.3.7  (1.9s)</span>
+<span class="co">#&gt; v Installed RColorBrewer 1.1-2  (1.6s)</span>
+<span class="co">#&gt; v Installed farver 2.1.0  (1.4s)</span>
+<span class="co">#&gt; v Installed context 0.3.0  (1.6s)</span>
+<span class="co">#&gt; v Installed gtable 0.3.0  (922ms)</span>
+<span class="co">#&gt; v Installed labeling 0.4.2  (938ms)</span>
+<span class="co">#&gt; v Installed ggplot2 3.3.3  (1.8s)</span>
 <span class="co">#&gt; v Installed munsell 0.5.0  (1.3s)</span>
-<span class="co">#&gt; v Installed scales 1.1.1  (1.5s)</span>
-<span class="co">#&gt; v Installed isoband 0.2.4  (2s)</span>
-<span class="co">#&gt; v Installed withr 2.4.1  (1.4s)</span>
-<span class="co">#&gt; v Installed viridisLite 0.3.0  (1.6s)</span>
-<span class="co">#&gt; v Installed colorspace 2.0-0  (3.2s)</span>
-<span class="co">#&gt; v Summary:   38 new   5 kept  in 2m 11.5s</span>
+<span class="co">#&gt; v Installed colorspace 2.0-0  (3.7s)</span>
+<span class="co">#&gt; v Installed scales 1.1.1  (1.6s)</span>
+<span class="co">#&gt; v Installed isoband 0.2.4  (2.2s)</span>
+<span class="co">#&gt; v Installed withr 2.4.1  (1.3s)</span>
+<span class="co">#&gt; v Installed viridisLite 0.4.0  (1.5s)</span>
+<span class="co">#&gt; v Summary:   37 new   5 kept  in 2m 9.9s</span>
 <span class="co">#&gt; Done!</span></code></pre></div>
 <p>What happened above was when the queue started up it looked to see what packages were available (none were) and then installed everything needed to run your jobs. That includes the two packages listed above but also all their dependencies and <a href="https://mrc-ide.github.io/context/"><code>context</code></a> which <code>didehpc</code> uses to send the jobs back and forth.</p>
 <p>All these packages are installed into a special directory within the context root:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">dir</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">root</span>, <span class="st">"lib/windows"</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;  [1] "R6"           "RColorBrewer" "_cache"       "askpass"      "assertthat"</span>
-<span class="co">#&gt;  [6] "cli"          "colorspace"   "context"      "crayon"       "digest"</span>
-<span class="co">#&gt; [11] "dplyr"        "ellipsis"     "fansi"        "farver"       "generics"</span>
-<span class="co">#&gt; [16] "ggplot2"      "glue"         "gtable"       "ids"          "isoband"</span>
-<span class="co">#&gt; [21] "labeling"     "lifecycle"    "magrittr"     "munsell"      "openssl"</span>
-<span class="co">#&gt; [26] "pillar"       "pkgconfig"    "purrr"        "rlang"        "scales"</span>
-<span class="co">#&gt; [31] "storr"        "sys"          "tibble"       "tidyselect"   "utf8"</span>
-<span class="co">#&gt; [36] "uuid"         "vctrs"        "viridisLite"  "withr"</span></code></pre></div>
+<span class="co">#&gt;  [1] "R6"           "RColorBrewer" "_cache"       "askpass"      "cli"</span>
+<span class="co">#&gt;  [6] "colorspace"   "context"      "crayon"       "digest"       "dplyr"</span>
+<span class="co">#&gt; [11] "ellipsis"     "fansi"        "farver"       "generics"     "ggplot2"</span>
+<span class="co">#&gt; [16] "glue"         "gtable"       "ids"          "isoband"      "labeling"</span>
+<span class="co">#&gt; [21] "lifecycle"    "magrittr"     "munsell"      "openssl"      "pillar"</span>
+<span class="co">#&gt; [26] "pkgconfig"    "purrr"        "rlang"        "scales"       "storr"</span>
+<span class="co">#&gt; [31] "sys"          "tibble"       "tidyselect"   "utf8"         "uuid"</span>
+<span class="co">#&gt; [36] "vctrs"        "viridisLite"  "withr"</span></code></pre></div>
 <p>Everything in this library will be available to your R jobs when they run.</p>
 </div>
 <div id="everything-is-available-in-a-cran-like-repo" class="section level2">
@@ -254,13 +252,13 @@
 <code class="sourceCode R"><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_sources.html">conan_sources</a></span><span class="op">(</span><span class="cn">NULL</span>, repos <span class="op">=</span> <span class="st">"https://mrc-ide.github.io/drat/"</span><span class="op">)</span>
 <span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="st">"dde"</span>, package_sources <span class="op">=</span> <span class="va">src</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  8de820ace0e82eeb57e85ac9f572bc76</span>
-<span class="co">#&gt; [ save:name ]  paranormal_electriceel</span></code></pre></div>
+<span class="co">#&gt; [ save:id   ]  4dec7a1d5434eb725305ad4e3da5cbc1</span>
+<span class="co">#&gt; [ save:name ]  unfair_whoopingcrane</span></code></pre></div>
 <p>Create the library as before, and <code>dde</code> will be installed</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context 8de820ace0e82eeb57e85ac9f572bc76</span>
-<span class="co">#&gt; [ context   ]  8de820ace0e82eeb57e85ac9f572bc76</span>
+<span class="co">#&gt; Loading context 4dec7a1d5434eb725305ad4e3da5cbc1</span>
+<span class="co">#&gt; [ context   ]  4dec7a1d5434eb725305ad4e3da5cbc1</span>
 <span class="co">#&gt; [ library   ]  dde</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span>
@@ -268,9 +266,9 @@
 <span class="co">#&gt;   ,:\      /:.</span>
 <span class="co">#&gt;  //  \_()_/  \\</span>
 <span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\pkgs\lib\windows\4.0</span>
+<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\pkgs\lib\windows\4.0</span>
 <span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\pkgs\conan\cache/pkg</span>
+<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\pkgs\conan\cache/pkg</span>
 <span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
 <span class="co">#&gt;        ||         Repos:</span>
 <span class="co">#&gt;        ||           * https://mrc-ide.github.io/drat/</span>
@@ -280,16 +278,19 @@
 <span class="co">#&gt;        XX           * context</span>
 <span class="co">#&gt;        OO           * dde</span>
 <span class="co">#&gt;        `'</span>
-<span class="co">#&gt; i Loading metadata database</span>
-<span class="co">#&gt; v Loading metadata database ... done</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; v Updated metadata database: 5.45 kB in 2 files.</span>
+<span class="co">#&gt;</span>
+<span class="co">#&gt; i Updating metadata database</span>
+<span class="co">#&gt; v Updating metadata database ... done</span>
 <span class="co">#&gt; i Getting 1 pkg (481.50 kB), 1 cached</span>
-<span class="co">#&gt; v Got ring 1.0.0 (windows) (479.48 kB)</span>
 <span class="co">#&gt; v Got dde 1.0.3 (source) (180.79 kB)</span>
-<span class="co">#&gt; v Installed ring 1.0.0  (438ms)</span>
+<span class="co">#&gt; v Got ring 1.0.0 (windows) (479.48 kB)</span>
+<span class="co">#&gt; v Installed ring 1.0.0  (641ms)</span>
 <span class="co">#&gt; i Building dde 1.0.3</span>
-<span class="co">#&gt; v Built dde 1.0.3 (24.8s)</span>
-<span class="co">#&gt; v Installed dde 1.0.3  (344ms)</span>
-<span class="co">#&gt; v Summary:   2 new   10 kept  in 25.6s</span>
+<span class="co">#&gt; v Built dde 1.0.3 (36.1s)</span>
+<span class="co">#&gt; v Installed dde 1.0.3  (516ms)</span>
+<span class="co">#&gt; v Summary:   2 new   10 kept  in 37.2s</span>
 <span class="co">#&gt; Done!</span></code></pre></div>
 <p>If you want to add your packages to one of these repositories, please talk to Rich. You will need to increase your version number at each change (typically each merge into main/master) for the installation to notice that you have made changes.</p>
 </div>
@@ -302,14 +303,14 @@
 <code class="sourceCode R"><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_sources.html">conan_sources</a></span><span class="op">(</span><span class="st">"richfitz/rfiglet"</span><span class="op">)</span>
 <span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="st">"rfiglet"</span>, package_sources <span class="op">=</span> <span class="va">src</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  cb4e0534ff48fc1b01c57af60282d766</span>
-<span class="co">#&gt; [ save:name ]  paleopsychological_americanquarterhorse</span></code></pre></div>
+<span class="co">#&gt; [ save:id   ]  64b4b09d2a42166d9c814f8b6f3bd0c0</span>
+<span class="co">#&gt; [ save:name ]  juvenal_roebuck</span></code></pre></div>
 <p>Note that we still list <code>rfiglet</code> within the <code>packages</code> section of <code><a href="https://rdrr.io/pkg/context/man/context_save.html">context::context_save</a></code> as that is what is used to load the package.</p>
 <p>If you want to be even more explicit you can use <code>github::richfitz/rfiglet</code> as the reference, and you can add references such as <code>richfitz/rfiglet@d713c1b8</code> to point at a particular commit, branch or tag.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context cb4e0534ff48fc1b01c57af60282d766</span>
-<span class="co">#&gt; [ context   ]  cb4e0534ff48fc1b01c57af60282d766</span>
+<span class="co">#&gt; Loading context 64b4b09d2a42166d9c814f8b6f3bd0c0</span>
+<span class="co">#&gt; [ context   ]  64b4b09d2a42166d9c814f8b6f3bd0c0</span>
 <span class="co">#&gt; [ library   ]  rfiglet</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span>
@@ -317,9 +318,9 @@
 <span class="co">#&gt;   ,:\      /:.</span>
 <span class="co">#&gt;  //  \_()_/  \\</span>
 <span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\pkgs\lib\windows\4.0</span>
+<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\pkgs\lib\windows\4.0</span>
 <span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\pkgs\conan\cache/pkg</span>
+<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\pkgs\conan\cache/pkg</span>
 <span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
 <span class="co">#&gt;        ||         Repos:</span>
 <span class="co">#&gt;        ||           * https://cloud.r-project.org</span>
@@ -336,11 +337,11 @@
 <span class="co">#&gt; i No downloads are needed, 1 pkg is cached</span>
 <span class="co">#&gt; v Got rfiglet 0.2.0 (source) (144.05 kB)</span>
 <span class="co">#&gt; i Packaging rfiglet 0.2.0</span>
-<span class="co">#&gt; v Packaged rfiglet 0.2.0 (3.4s)</span>
+<span class="co">#&gt; v Packaged rfiglet 0.2.0 (3.9s)</span>
 <span class="co">#&gt; i Building rfiglet 0.2.0</span>
 <span class="co">#&gt; v Built rfiglet 0.2.0 (2.9s)</span>
-<span class="co">#&gt; v Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (391ms)</span>
-<span class="co">#&gt; v Summary:   1 new   10 kept  in 3.3s</span>
+<span class="co">#&gt; v Installed rfiglet 0.2.0 (github::richfitz/rfiglet@d713c1b) (594ms)</span>
+<span class="co">#&gt; v Summary:   1 new   10 kept  in 3.5s</span>
 <span class="co">#&gt; Done!</span></code></pre></div>
 </div>
 <div id="install-private-packages" class="section level2">
@@ -374,21 +375,21 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/file.info.html">file.info</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>
 <span class="co">#&gt;                      size isdir mode               mtime               ctime</span>
-<span class="co">#&gt; ./defer_0.1.0.tar.gz 3809 FALSE  755 2021-04-09 16:28:37 2021-04-09 16:28:37</span>
+<span class="co">#&gt; ./defer_0.1.0.tar.gz 3810 FALSE  755 2021-04-20 10:31:56 2021-04-20 10:31:56</span>
 <span class="co">#&gt;                                    atime  uid  gid uname grname</span>
-<span class="co">#&gt; ./defer_0.1.0.tar.gz 2021-04-09 16:28:37 1000 1000  rich   rich</span></code></pre></div>
+<span class="co">#&gt; ./defer_0.1.0.tar.gz 2021-04-20 10:31:56 1000 1000  rich   rich</span></code></pre></div>
 <p>Then construct your package sources passing in the <strong>relative</strong> path to your package. We can use the <code>path</code> variable here, or you could write ./defer_0.1.0.tar.gz directly, or something like local::defer_0.1.0.tar.gz. If you have multiple packages you can pass a vector in.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">src</span> <span class="op">&lt;-</span> <span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_sources.html">conan_sources</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>
 <span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="st">"defer"</span>, package_sources <span class="op">=</span> <span class="va">src</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  a73f59a76d99e3ce5a690dd422f044f1</span>
-<span class="co">#&gt; [ save:name ]  astrakhan_reptile</span></code></pre></div>
+<span class="co">#&gt; [ save:id   ]  67a2219cc6503939eb8667192e42ba45</span>
+<span class="co">#&gt; [ save:name ]  evolutional_erne</span></code></pre></div>
 <p>when you construct the context, this package will be installed for you</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context a73f59a76d99e3ce5a690dd422f044f1</span>
-<span class="co">#&gt; [ context   ]  a73f59a76d99e3ce5a690dd422f044f1</span>
+<span class="co">#&gt; Loading context 67a2219cc6503939eb8667192e42ba45</span>
+<span class="co">#&gt; [ context   ]  67a2219cc6503939eb8667192e42ba45</span>
 <span class="co">#&gt; [ library   ]  defer</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span>
@@ -396,9 +397,9 @@
 <span class="co">#&gt;   ,:\      /:.</span>
 <span class="co">#&gt;  //  \_()_/  \\</span>
 <span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\pkgs\lib\windows\4.0</span>
+<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\pkgs\lib\windows\4.0</span>
 <span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\pkgs\conan\cache/pkg</span>
+<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\pkgs\conan\cache/pkg</span>
 <span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
 <span class="co">#&gt;        ||         Repos:</span>
 <span class="co">#&gt;        ||           * https://cloud.r-project.org</span>
@@ -413,8 +414,8 @@
 <span class="co">#&gt; i No downloads are needed, 1 pkg is cached</span>
 <span class="co">#&gt; v Got defer 0.1.0 (source) (3.81 kB)</span>
 <span class="co">#&gt; i Building defer 0.1.0</span>
-<span class="co">#&gt; v Built defer 0.1.0 (2.2s)</span>
-<span class="co">#&gt; v Installed defer 0.1.0 (local) (251ms)</span>
+<span class="co">#&gt; v Built defer 0.1.0 (2s)</span>
+<span class="co">#&gt; v Installed defer 0.1.0 (local) (422ms)</span>
 <span class="co">#&gt; v Summary:   1 new   10 kept  in 2.4s</span>
 <span class="co">#&gt; Done!</span></code></pre></div>
 </div>

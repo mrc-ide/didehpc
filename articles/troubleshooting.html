@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.1</span>
       </span>
     </div>
 
@@ -109,11 +109,11 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  2179d3e2c816fd395548ba091f955cf8</span>
-<span class="co">#&gt; [ save:name ]  bare_saltwatercrocodile</span>
+<span class="co">#&gt; [ save:id   ]  8b920f7addd9a00790505589be8a8a17</span>
+<span class="co">#&gt; [ save:name ]  antisolar_pipistrelle</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context 2179d3e2c816fd395548ba091f955cf8</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
+<span class="co">#&gt; Loading context 8b920f7addd9a00790505589be8a8a17</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span></code></pre></div>
@@ -130,7 +130,7 @@
 <p>If your job status is <code>ERROR</code> that <em>probably</em> indicates an error in your code. There are lots of reasons that this could be for, and the first challenge is working out what happened.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">mysimulation</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; (-) waiting for 26a20b3...6a4, giving up in 9.5 s (\) waiting for 26a20b3...6a4,
+<pre><code>#&gt; (-) waiting for b0db226...6e7, giving up in 9.5 s (\) waiting for b0db226...6e7,
 #&gt; giving up in 8.9 s</code></pre>
 <p>This job will fail, and <code>$status()</code> will report <code>ERROR</code></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -144,33 +144,33 @@
 <p>The other place worth looking is the job log</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [ hello     ]  2021-04-09 16:29:18</span>
-<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210409-162624</span>
-<span class="co">#&gt; [ init      ]  2021-04-09 16:29:18.184</span>
-<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST25</span>
-<span class="co">#&gt; [ process   ]  5872</span>
+<span class="co">#&gt; [ hello     ]  2021-04-20 10:32:38</span>
+<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210420-102851</span>
+<span class="co">#&gt; [ init      ]  2021-04-20 10:32:38.972</span>
+<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST29</span>
+<span class="co">#&gt; [ process   ]  1976</span>
 <span class="co">#&gt; [ version   ]  0.3.0</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span>
 <span class="co">#&gt; [ parallel  ]  running as single core job</span>
-<span class="co">#&gt; [ root      ]  Q:\didehpc\20210409-162624\contexts</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
-<span class="co">#&gt; [ task      ]  26a20b39a438a8dba1aced709eafa6a4</span>
+<span class="co">#&gt; [ root      ]  Q:\didehpc\20210420-102851\contexts</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
+<span class="co">#&gt; [ task      ]  b0db2269face2e96d1b7cba3771066e7</span>
 <span class="co">#&gt; [ expr      ]  mysimulation(10)</span>
-<span class="co">#&gt; [ start     ]  2021-04-09 16:29:18.356</span>
+<span class="co">#&gt; [ start     ]  2021-04-20 10:32:39.191</span>
 <span class="co">#&gt; [ error     ]</span>
 <span class="co">#&gt;     Error in mysimulation(10): could not find function "mysimulation"</span>
-<span class="co">#&gt; [ end       ]  2021-04-09 16:29:18.434</span>
+<span class="co">#&gt; [ end       ]  2021-04-20 10:32:39.301</span>
 <span class="co">#&gt;     Error in context:::main_task_run() : Error while running task:</span>
 <span class="co">#&gt;     Execution halted</span></code></pre></div>
 <p>Sometimes there will be additional diagnostic information there.</p>
 <p>Here’s another example:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span><span class="st">"c:/myfile.csv"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; (-) waiting for bc596b6...300, giving up in 9.5 s (\) waiting for bc596b6...300,
+<pre><code>#&gt; (-) waiting for d8dcc5d...f9f, giving up in 9.5 s (\) waiting for d8dcc5d...f9f,
 #&gt; giving up in 9.0 s</code></pre>
 <p>This job will fail, and <code>$status()</code> will report <code>ERROR</code></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -183,26 +183,26 @@
 <p>The log gives a better idea of what is going on - the file <code>c:/myfile.csv</code> does not exist (because it is not found on the cluster; using relative paths is much preferred to absolute paths)</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [ hello     ]  2021-04-09 16:29:19</span>
-<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210409-162624</span>
-<span class="co">#&gt; [ init      ]  2021-04-09 16:29:19.840</span>
-<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST25</span>
-<span class="co">#&gt; [ process   ]  5784</span>
+<span class="co">#&gt; [ hello     ]  2021-04-20 10:32:40</span>
+<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210420-102851</span>
+<span class="co">#&gt; [ init      ]  2021-04-20 10:32:40.519</span>
+<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST29</span>
+<span class="co">#&gt; [ process   ]  4180</span>
 <span class="co">#&gt; [ version   ]  0.3.0</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span>
 <span class="co">#&gt; [ parallel  ]  running as single core job</span>
-<span class="co">#&gt; [ root      ]  Q:\didehpc\20210409-162624\contexts</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
-<span class="co">#&gt; [ task      ]  bc596b630c41fce6026d09765ad16300</span>
+<span class="co">#&gt; [ root      ]  Q:\didehpc\20210420-102851\contexts</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
+<span class="co">#&gt; [ task      ]  d8dcc5dcd1c8a0dbac0ba798d35fbf9f</span>
 <span class="co">#&gt; [ expr      ]  read.csv("c:/myfile.csv")</span>
-<span class="co">#&gt; [ start     ]  2021-04-09 16:29:19.996</span>
+<span class="co">#&gt; [ start     ]  2021-04-20 10:32:40.738</span>
 <span class="co">#&gt; [ error     ]</span>
 <span class="co">#&gt;     Error in file(file, "rt"): cannot open the connection</span>
-<span class="co">#&gt; [ end       ]  2021-04-09 16:29:20.059</span>
+<span class="co">#&gt; [ end       ]  2021-04-20 10:32:40.847</span>
 <span class="co">#&gt;     Error in context:::main_task_run() : Error while running task:</span>
 <span class="co">#&gt;     In addition: Warning message:</span>
 <span class="co">#&gt;     In file(file, "rt") :</span>
@@ -243,11 +243,11 @@
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span>, sources <span class="op">=</span> <span class="st">"mycode.R"</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ save:id   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb</span>
-<span class="co">#&gt; [ save:name ]  disintegrative_cow</span>
+<span class="co">#&gt; [ save:id   ]  7cd93c32fc84e3e1d68180e059f192ce</span>
+<span class="co">#&gt; [ save:name ]  undefeated_annelida</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context f754fcf9ea94fe4780d5b0b5f5e2f4eb</span>
-<span class="co">#&gt; [ context   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb</span>
+<span class="co">#&gt; Loading context 7cd93c32fc84e3e1d68180e059f192ce</span>
+<span class="co">#&gt; [ context   ]  7cd93c32fc84e3e1d68180e059f192ce</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]  mycode.R</span></code></pre></div>
@@ -255,7 +255,7 @@
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for f677de0...bbc, giving up in 9.5 s (\) waiting for f677de0...bbc,</span>
+<span class="co">#&gt; (-) waiting for 0e9277d...7df, giving up in 9.5 s (\) waiting for 0e9277d...7df,</span>
 <span class="co">#&gt; giving up in 9.0 s</span>
 <span class="co">#&gt; [1] 20</span></code></pre></div>
 <p>…but then you’re editing the file and save the file but it is not syntactically correct:</p>
@@ -267,7 +267,7 @@
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">times2</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>
 <span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for ca86b03...383, giving up in 9.5 s (\) waiting for ca86b03...383,</span>
+<span class="co">#&gt; (-) waiting for d89d598...a72, giving up in 9.5 s (\) waiting for d89d598...a72,</span>
 <span class="co">#&gt; giving up in 9.0 s</span>
 <span class="co">#&gt; &lt;context_task_error in source(s, envir): mycode.R:5:0: unexpected end of input</span>
 <span class="co">#&gt; 3: }</span>
@@ -278,14 +278,14 @@
 <p>The error here has happened before getting to your code - it is happening when context loads the source files. The log makes this a bit clearer:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [ hello     ]  2021-04-09 16:29:23</span>
-<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210409-162624</span>
-<span class="co">#&gt; [ init      ]  2021-04-09 16:29:23.340</span>
-<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST25</span>
-<span class="co">#&gt; [ process   ]  2980</span>
+<span class="co">#&gt; [ hello     ]  2021-04-20 10:32:44</span>
+<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210420-102851</span>
+<span class="co">#&gt; [ init      ]  2021-04-20 10:32:44.098</span>
+<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST29</span>
+<span class="co">#&gt; [ process   ]  4680</span>
 <span class="co">#&gt; [ version   ]  0.3.0</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  f754fcf9ea94fe4780d5b0b5f5e2f4eb</span>
+<span class="co">#&gt; [ context   ]  7cd93c32fc84e3e1d68180e059f192ce</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]  mycode.R</span>
@@ -319,8 +319,8 @@
 <span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
 <span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, <span class="va">config</span><span class="op">)</span>
-<span class="co">#&gt; Loading context 2179d3e2c816fd395548ba091f955cf8</span>
-<span class="co">#&gt; [ context   ]  2179d3e2c816fd395548ba091f955cf8</span>
+<span class="co">#&gt; Loading context 8b920f7addd9a00790505589be8a8a17</span>
+<span class="co">#&gt; [ context   ]  8b920f7addd9a00790505589be8a8a17</span>
 <span class="co">#&gt; [ library   ]</span>
 <span class="co">#&gt; [ namespace ]</span>
 <span class="co">#&gt; [ source    ]</span></code></pre></div>
@@ -330,19 +330,19 @@
 <p>And wait…</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for 790d6f9...c6c, giving up in 9.5 s (\) waiting for 790d6f9...c6c,</span>
-<span class="co">#&gt; giving up in 9.0 s (|) waiting for 790d6f9...c6c, giving up in 8.5 s (/) waiting</span>
-<span class="co">#&gt; for 790d6f9...c6c, giving up in 8.0 s (-) waiting for 790d6f9...c6c, giving</span>
-<span class="co">#&gt; up in 7.5 s (\) waiting for 790d6f9...c6c, giving up in 6.9 s (|) waiting for</span>
-<span class="co">#&gt; 790d6f9...c6c, giving up in 6.4 s (/) waiting for 790d6f9...c6c, giving up</span>
-<span class="co">#&gt; in 5.9 s (-) waiting for 790d6f9...c6c, giving up in 5.4 s (\) waiting for</span>
-<span class="co">#&gt; 790d6f9...c6c, giving up in 4.9 s (|) waiting for 790d6f9...c6c, giving up</span>
-<span class="co">#&gt; in 4.4 s (/) waiting for 790d6f9...c6c, giving up in 3.9 s (-) waiting for</span>
-<span class="co">#&gt; 790d6f9...c6c, giving up in 3.4 s (\) waiting for 790d6f9...c6c, giving up</span>
-<span class="co">#&gt; in 2.9 s (|) waiting for 790d6f9...c6c, giving up in 2.4 s (/) waiting for</span>
-<span class="co">#&gt; 790d6f9...c6c, giving up in 1.9 s (-) waiting for 790d6f9...c6c, giving up</span>
-<span class="co">#&gt; in 1.3 s (\) waiting for 790d6f9...c6c, giving up in 0.8 s (|) waiting for</span>
-<span class="co">#&gt; 790d6f9...c6c, giving up in 0.3 s (/) waiting for 790d6f9...c6c, giving up in</span>
+<span class="co">#&gt; (-) waiting for f60850d...a72, giving up in 9.5 s (\) waiting for f60850d...a72,</span>
+<span class="co">#&gt; giving up in 9.0 s (|) waiting for f60850d...a72, giving up in 8.5 s (/) waiting</span>
+<span class="co">#&gt; for f60850d...a72, giving up in 8.0 s (-) waiting for f60850d...a72, giving</span>
+<span class="co">#&gt; up in 7.5 s (\) waiting for f60850d...a72, giving up in 6.9 s (|) waiting for</span>
+<span class="co">#&gt; f60850d...a72, giving up in 6.4 s (/) waiting for f60850d...a72, giving up</span>
+<span class="co">#&gt; in 5.9 s (-) waiting for f60850d...a72, giving up in 5.4 s (\) waiting for</span>
+<span class="co">#&gt; f60850d...a72, giving up in 4.9 s (|) waiting for f60850d...a72, giving up</span>
+<span class="co">#&gt; in 4.4 s (/) waiting for f60850d...a72, giving up in 3.9 s (-) waiting for</span>
+<span class="co">#&gt; f60850d...a72, giving up in 3.4 s (\) waiting for f60850d...a72, giving up</span>
+<span class="co">#&gt; in 2.9 s (|) waiting for f60850d...a72, giving up in 2.4 s (/) waiting for</span>
+<span class="co">#&gt; f60850d...a72, giving up in 1.8 s (-) waiting for f60850d...a72, giving up</span>
+<span class="co">#&gt; in 1.3 s (\) waiting for f60850d...a72, giving up in 0.8 s (|) waiting for</span>
+<span class="co">#&gt; f60850d...a72, giving up in 0.3 s (/) waiting for f60850d...a72, giving up in</span>
 <span class="co">#&gt; 0.0 s</span>
 <span class="co">#&gt; Error in task_wait(self$root$db, self$id, timeout, time_poll, progress): task not returned in time</span></code></pre></div>
 <p>It’s never going to succeed and yet it’s status will stay as <code>PENDING</code>:</p>
@@ -360,9 +360,9 @@
 <code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">reconcile</span><span class="op">(</span><span class="op">)</span>
 <span class="co">#&gt; Fetching job status from the cluster...</span>
 <span class="co">#&gt;   ...done</span>
-<span class="co">#&gt; manually erroring task 790d6f98e0ec1581c8e048610f9f1c6c</span>
+<span class="co">#&gt; manually erroring task f60850d7c2129bccc308a0d6571cba72</span>
 <span class="co">#&gt; Tasks have failed while context booting:</span>
-<span class="co">#&gt;   - 790d6f98e0ec1581c8e048610f9f1c6c</span></code></pre></div>
+<span class="co">#&gt;   - f60850d7c2129bccc308a0d6571cba72</span></code></pre></div>
 <p>Which will print information about anything that was adjusted.</p>
 </div>
 </div>
