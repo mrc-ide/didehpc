@@ -1,3 +1,7 @@
+# didehpc 0.3.1
+
+* rrq worker resource configuration may differ from the normal task resource requirements (#83)
+
 # didehpc 0.3.0
 
 * Complete overhaul. Key breaking changes:
