@@ -7,6 +7,15 @@ match_value <- function(arg, choices, name = deparse(substitute(arg))) {
   arg
 }
 
+assert_is <- function(x, what, name = deparse(substitute(x))) {
+  if (!inherits(x, what)) {
+    stop(sprintf("'%s' must be a %s", name, paste(what, collapse = " / ")),
+         call. = FALSE)
+  }
+  invisible(x)
+}
+
+
 assert_scalar <- function(x, name = deparse(substitute(x))) {
   if (length(x) != 1) {
     stop(sprintf("'%s' must be a scalar", name), call. = FALSE)

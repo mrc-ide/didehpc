@@ -19,6 +19,7 @@ didehpc_config(
   use_workers = NULL,
   use_rrq = NULL,
   worker_timeout = NULL,
+  worker_resource = NULL,
   conan_bootstrap = NULL,
   r_version = NULL,
   use_java = NULL,
@@ -109,6 +110,12 @@ should be more than enough to get your jobs up and running.
 Once workers are established you can extend or reset the timeout
 by sending the \code{TIMEOUT_SET} message (proper documentation
 will come for this soon).}
+
+\item{worker_resource}{Optionally, an object created by
+\code{\link[=worker_resource]{worker_resource()}} which controls the resources used
+by workers where these are different to jobs directly submitted
+by \verb{$enqueue()}. This is only meaningful if you are using
+\code{use_rrq = TRUE}.}
 
 \item{conan_bootstrap}{Logical, indicating if we should use the
 shared conan "bootstrap" library stored on the temporary
