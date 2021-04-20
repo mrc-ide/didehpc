@@ -1,7 +1,7 @@
 ---
 title: "Workers"
 author: "Rich FitzJohn"
-date: "2021-04-09"
+date: "2021-04-20"
 output:
   rmarkdown::html_vignette
 vignette: >
@@ -70,52 +70,11 @@ However, everything else will appear the same.
 ```r
 config <- didehpc::didehpc_config(use_workers = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
-#> Loading context a1590dd8b37b4f181f1048afc0fe0443
-#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
+#> Loading context 3840f3707c2ecf1d05678da71a470cb2
+#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
-#> Running installation script on cluster
-#>   ,:\      /:.
-#>  //  \_()_/  \\
-#> ||   |    |   ||  CONAN THE LIBRARIAN
-#> ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\contexts\lib\windows\4.0
-#> ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0
-#>  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\contexts\conan\cache/pkg
-#>   `:/  ||  \;'    Policy:    lazy
-#>        ||         Repos:
-#>        ||           * https://mrc-ide.github.io/didehpc-pkgs
-#>        XX           * https://cloud.r-project.org
-#>        XX         Packages:
-#>        XX           * context
-#>        XX           * rrq
-#>        OO           * callr
-#>        `'
-#> i Loading metadata database
-#> v Loading metadata database ... done
-#> i Getting 8 pkgs (2.78 MB), 1 cached
-#> v Got prettyunits 1.1.1 (windows) (37.71 kB)
-#> v Got hms 1.0.0 (windows) (103.58 kB)
-#> v Got redux 1.1.0 (windows) (287.94 kB)
-#> v Got docopt 0.7.1 (windows) (245.71 kB)
-#> v Got callr 3.6.0 (windows) (432.79 kB)
-#> v Got rrq 0.2.19 (source) (63.25 kB)
-#> v Got progress 1.2.2 (windows) (85.86 kB)
-#> v Got processx 3.5.1 (windows) (1.24 MB)
-#> v Got ps 1.6.0 (windows) (775.96 kB)
-#> v Installed docopt 0.7.1  (922ms)
-#> v Installed prettyunits 1.1.1  (751ms)
-#> v Installed hms 1.0.0  (1s)
-#> v Installed callr 3.6.0  (938ms)
-#> v Installed progress 1.2.2  (1.2s)
-#> v Installed redux 1.1.0  (1.3s)
-#> i Building rrq 0.2.19
-#> v Installed processx 3.5.1  (6s)
-#> v Installed ps 1.6.0  (6.5s)
-#> v Built rrq 0.2.19 (6.8s)
-#> v Installed rrq 0.2.19  (282ms)
-#> v Summary:   9 new   16 kept  in 25.7s
-#> Done!
 ```
 
 You can now submit
@@ -133,9 +92,9 @@ t$status()
 #> [1] "PENDING"
 t$times()
 #>                            task_id           submitted started finished
-#> 1 bae6c67cff519596292760b6c9a09393 2021-04-09 16:30:00    <NA>     <NA>
-#>    waiting running idle
-#> 1 0.226712      NA   NA
+#> 1 3701d72d24bb52ad7536f172f4fb0926 2021-04-20 10:48:22    <NA>     <NA>
+#>     waiting running idle
+#> 1 0.2081549      NA   NA
 ```
 
 You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!
@@ -145,10 +104,10 @@ The argument is the number of workers to submit. Each worker is equivalent to a 
 
 ```r
 workers <- obj$submit_workers(2)
-#> Submitting 2 workers with base name 'productive_howlermonkey'
+#> Submitting 2 workers with base name 'unapproachable_mayfly'
 #> submitting (-) [===================================] 100% | giving up in 600 s
 workers
-#> [1] "productive_howlermonkey_1" "productive_howlermonkey_2"
+#> [1] "unapproachable_mayfly_1" "unapproachable_mayfly_2"
 ```
 
 All workers get names in the form `<adjective>_<animal>_<integer>`
@@ -164,9 +123,8 @@ your workers.
 
 ```r
 t$wait(10)
-#> (-) waiting for bae6c67...393, giving up in 9.5 s
-#>  [1]  0.09779148  0.84671583  0.27974311  0.08104207 -0.35843423 -2.19675942
-#>  [7] -4.22286493 -3.65819002 -3.60735001 -2.23040477
+#>  [1] -0.2069151 -0.9241325 -3.6362525 -3.5992137 -4.6334960 -4.4937703
+#>  [7] -4.3445653 -5.9121364 -5.8205341 -6.0177895
 ```
 
 We're going to interact with the rrq object a bit
@@ -196,7 +154,7 @@ rrq
 #>     message_response_ids: function (worker_id)
 #>     message_send: function (command, args = NULL, worker_ids = NULL)
 #>     message_send_and_wait: function (command, args = NULL, worker_ids = NULL, named = TRUE,
-#>     queue_id: a1590dd8b37b4f181f1048afc0fe0443
+#>     queue_id: 3840f3707c2ecf1d05678da71a470cb2
 #>     queue_length: function (queue = NULL)
 #>     queue_list: function (queue = NULL)
 #>     queue_remove: function (task_ids, queue = NULL)
@@ -239,16 +197,16 @@ You can see what your workers have been up to with the
 
 ```r
 rrq$worker_log_tail(n = Inf)
-#>                   worker_id       time       command
-#> 1 productive_howlermonkey_1 1617982202         ALIVE
-#> 2 productive_howlermonkey_1 1617982202    TASK_START
-#> 3 productive_howlermonkey_2 1617982203         ALIVE
-#> 4 productive_howlermonkey_1 1617982203 TASK_COMPLETE
+#>                 worker_id       time       command
+#> 1 unapproachable_mayfly_2 1618912105         ALIVE
+#> 2 unapproachable_mayfly_2 1618912105    TASK_START
+#> 3 unapproachable_mayfly_2 1618912106 TASK_COMPLETE
+#> 4 unapproachable_mayfly_1 1618912108         ALIVE
 #>                            message
 #> 1
-#> 2 2e731137b72b951aa9236ce5e74af284
-#> 3
-#> 4 2e731137b72b951aa9236ce5e74af284
+#> 2 27f179d32f72c72342be99e44f0598cf
+#> 3 27f179d32f72c72342be99e44f0598cf
+#> 4
 ```
 
 The `time` column represents seconds - relative seconds should still be useful here.
@@ -258,17 +216,17 @@ As before, logging works on a per-task basis:
 ```r
 t$log()
 #> [ open:db   ]  rds
-#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
+#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
 #> [ root      ]  contexts
-#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
-#> [ task      ]  bae6c67cff519596292760b6c9a09393
+#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
+#> [ task      ]  3701d72d24bb52ad7536f172f4fb0926
 #> [ expr      ]  random_walk(0, 10)
-#> [ start     ]  2021-04-09 16:30:03.169
+#> [ start     ]  2021-04-20 10:48:25.614
 #> [ ok        ]
-#> [ end       ]  2021-04-09 16:30:03.372
+#> [ end       ]  2021-04-20 10:48:25.786
 ```
 
 Find out how long your workers will persist for:
@@ -276,13 +234,13 @@ Find out how long your workers will persist for:
 
 ```r
 rrq$message_send_and_wait("TIMEOUT_GET", worker_ids = workers)
-#> $productive_howlermonkey_1
+#> $unapproachable_mayfly_1
+#>   timeout remaining
+#>  600.0000  599.9219
+#>
+#> $unapproachable_mayfly_2
 #>   timeout remaining
 #>       600       600
-#>
-#> $productive_howlermonkey_2
-#>   timeout remaining
-#>  600.0000  599.4062
 ```
 
 Other than that, hopefully everything else continues as normal.  We
@@ -292,7 +250,7 @@ can submit a bunch of jobs and run them using `$lapply`:
 ```r
 sizes <- 3:8
 grp <- obj$lapply(sizes, random_walk, x = 0)
-#> Creating bundle: 'generic_centipede'
+#> Creating bundle: 'pseudohexagonal_iberianchiffchaff'
 #> [ bulk      ]  Creating 6 tasks
 #> submitting 6 tasks
 ```
@@ -301,11 +259,11 @@ Task status:
 
 ```r
 grp$status()
-#> d5e5b2c8bca08c3e86fff883303045a2 9c50fe2449d9349f2643bc8e905995c0
+#> 164940688f27df66ecf18f62c5235845 b3045a0ac5dcfb9cba3cb5a5eb73c877
 #>                        "PENDING"                        "PENDING"
-#> b789621311455b0123c6d6bac0402e0b 16bb5e2cb5128366077e08d099cdc3f0
+#> 0cf524df98f3334a616b7fe9de4c5d97 74b1db0e659f9c2b140dd23d49df548b
 #>                        "PENDING"                        "PENDING"
-#> 899f49f68a28fa79095796b00549bcd5 140859ca304b2ef81ff70e0d9a1639f2
+#> 58b92c111f9230edfa67d9837ba615dc 6becb2b2cdbefb0ad52f6299e06770a6
 #>                        "PENDING"                        "PENDING"
 ```
 
@@ -313,28 +271,30 @@ Collect the results:
 
 ```r
 res <- grp$wait(5)
-#> (-) [=======================>------------------------] 50% | giving up in 4 s
-#> (\) [=======================>------------------------] 50% | giving up in 4 s
-#> (|) [================================================] 100% | giving up in 3 s
+#> (-) [===============>--------------------------------] 33% | giving up in 4 s
+#> (\) [===============>--------------------------------] 33% | giving up in 4 s
+#> (|) [=======================================>--------] 83% | giving up in 3 s
+#> (/) [=======================================>--------] 83% | giving up in 3 s
+#> (-) [================================================] 100% | giving up in 2 s
 res
 #> [[1]]
-#> [1] 0.1945096 1.6043196 2.0674439
+#> [1] -0.6410135 -0.8148416 -1.2799312
 #>
 #> [[2]]
-#> [1]  0.28648426  0.71153306  0.57097059 -0.07021351
+#> [1]  0.60351536  0.44735373  0.07373803 -0.14527828
 #>
 #> [[3]]
-#> [1] 0.5684845 0.4023611 1.1826306 1.9730176 1.1584465
+#> [1] 1.5714724 0.8157822 2.3258290 2.4910652 2.7054504
 #>
 #> [[4]]
-#> [1] -0.862783 -1.690197 -1.792089 -1.063012 -0.648449 -1.718101
+#> [1] 2.288792 2.659858 2.708952 2.656517 1.198739 1.279239
 #>
 #> [[5]]
-#> [1] -1.7890075 -0.5330845  1.2488899  1.3586201  0.2010967  1.1742997  0.2347974
+#> [1] 0.3072271 0.7467542 0.9659910 2.3922600 3.6485857 5.2322454 3.6711208
 #>
 #> [[6]]
-#> [1] -0.19868331  0.50090255  0.19222369  0.18023779 -0.01204727  0.95169811
-#> [7] -0.92250390 -1.77291099
+#> [1] -0.03592958  0.46240236 -0.33126826 -1.49274113 -1.28328967 -2.03531791
+#> [7] -1.98302860 -2.67444963
 ```
 
 While workers will turn off automatically, it's polite to turn them
@@ -357,59 +317,59 @@ this later).
 obj$stop_workers()
 Sys.sleep(1)
 rrq$worker_log_tail(workers, n = Inf)
-#>                    worker_id       time       command
-#> 1  productive_howlermonkey_1 1617982202         ALIVE
-#> 2  productive_howlermonkey_1 1617982202    TASK_START
-#> 3  productive_howlermonkey_2 1617982203         ALIVE
-#> 4  productive_howlermonkey_1 1617982203 TASK_COMPLETE
-#> 5  productive_howlermonkey_1 1617982204       MESSAGE
-#> 6  productive_howlermonkey_1 1617982204      RESPONSE
-#> 7  productive_howlermonkey_2 1617982204       MESSAGE
-#> 8  productive_howlermonkey_2 1617982204      RESPONSE
-#> 9  productive_howlermonkey_1 1617982205    TASK_START
-#> 10 productive_howlermonkey_2 1617982205    TASK_START
-#> 11 productive_howlermonkey_1 1617982206 TASK_COMPLETE
-#> 12 productive_howlermonkey_1 1617982206    TASK_START
-#> 13 productive_howlermonkey_2 1617982206 TASK_COMPLETE
-#> 14 productive_howlermonkey_2 1617982206    TASK_START
-#> 15 productive_howlermonkey_1 1617982206 TASK_COMPLETE
-#> 16 productive_howlermonkey_1 1617982206    TASK_START
-#> 17 productive_howlermonkey_2 1617982207 TASK_COMPLETE
-#> 18 productive_howlermonkey_2 1617982207    TASK_START
-#> 19 productive_howlermonkey_1 1617982207 TASK_COMPLETE
-#> 20 productive_howlermonkey_2 1617982207 TASK_COMPLETE
-#> 21 productive_howlermonkey_1 1617982207       MESSAGE
-#> 22 productive_howlermonkey_2 1617982207       MESSAGE
-#> 23 productive_howlermonkey_2 1617982207      RESPONSE
-#> 24 productive_howlermonkey_1 1617982207      RESPONSE
-#> 25 productive_howlermonkey_1 1617982207          STOP
-#> 26 productive_howlermonkey_2 1617982207          STOP
+#>                  worker_id       time       command
+#> 1  unapproachable_mayfly_2 1618912105         ALIVE
+#> 2  unapproachable_mayfly_2 1618912105    TASK_START
+#> 3  unapproachable_mayfly_2 1618912106 TASK_COMPLETE
+#> 4  unapproachable_mayfly_2 1618912108       MESSAGE
+#> 5  unapproachable_mayfly_2 1618912108      RESPONSE
+#> 6  unapproachable_mayfly_1 1618912108         ALIVE
+#> 7  unapproachable_mayfly_1 1618912108       MESSAGE
+#> 8  unapproachable_mayfly_1 1618912108      RESPONSE
+#> 9  unapproachable_mayfly_2 1618912109    TASK_START
+#> 10 unapproachable_mayfly_1 1618912109    TASK_START
+#> 11 unapproachable_mayfly_2 1618912110 TASK_COMPLETE
+#> 12 unapproachable_mayfly_2 1618912110    TASK_START
+#> 13 unapproachable_mayfly_2 1618912110 TASK_COMPLETE
+#> 14 unapproachable_mayfly_2 1618912110    TASK_START
+#> 15 unapproachable_mayfly_1 1618912111 TASK_COMPLETE
+#> 16 unapproachable_mayfly_1 1618912111    TASK_START
+#> 17 unapproachable_mayfly_2 1618912111 TASK_COMPLETE
+#> 18 unapproachable_mayfly_2 1618912111    TASK_START
+#> 19 unapproachable_mayfly_2 1618912112 TASK_COMPLETE
+#> 20 unapproachable_mayfly_1 1618912112 TASK_COMPLETE
+#> 21 unapproachable_mayfly_2 1618912113       MESSAGE
+#> 22 unapproachable_mayfly_2 1618912113      RESPONSE
+#> 23 unapproachable_mayfly_2 1618912113          STOP
+#> 24 unapproachable_mayfly_1 1618912113       MESSAGE
+#> 25 unapproachable_mayfly_1 1618912113      RESPONSE
+#> 26 unapproachable_mayfly_1 1618912113          STOP
 #>                             message
 #> 1
-#> 2  2e731137b72b951aa9236ce5e74af284
-#> 3
-#> 4  2e731137b72b951aa9236ce5e74af284
+#> 2  27f179d32f72c72342be99e44f0598cf
+#> 3  27f179d32f72c72342be99e44f0598cf
+#> 4                       TIMEOUT_GET
 #> 5                       TIMEOUT_GET
-#> 6                       TIMEOUT_GET
+#> 6
 #> 7                       TIMEOUT_GET
 #> 8                       TIMEOUT_GET
-#> 9  7095a131d4f32806f2b171db71f56e8b
-#> 10 30d415c27a7ff9eae15e4de1330f3f94
-#> 11 7095a131d4f32806f2b171db71f56e8b
-#> 12 d6f9c039b1879b4524ff8ae6cc07699c
-#> 13 30d415c27a7ff9eae15e4de1330f3f94
-#> 14 a1c0d9bfaf6e1d12f0883426143c461a
-#> 15 d6f9c039b1879b4524ff8ae6cc07699c
-#> 16 5003b13d4bce25875adb2d385cfa3ce9
-#> 17 a1c0d9bfaf6e1d12f0883426143c461a
-#> 18 809ab0362abc9aa96ed43f1fd7a042fb
-#> 19 5003b13d4bce25875adb2d385cfa3ce9
-#> 20 809ab0362abc9aa96ed43f1fd7a042fb
+#> 9  dc100d55d3a78a7f4f61b3d89526831d
+#> 10 3406fcdd78641204d11a322298f8abc6
+#> 11 dc100d55d3a78a7f4f61b3d89526831d
+#> 12 e1dfa33d74de4d0952c934ddfac1104d
+#> 13 e1dfa33d74de4d0952c934ddfac1104d
+#> 14 036cbee5117ab3392a19a89db9595f8c
+#> 15 3406fcdd78641204d11a322298f8abc6
+#> 16 05ebf1c0fd731afcb6a882844bb333fe
+#> 17 036cbee5117ab3392a19a89db9595f8c
+#> 18 23e8a16400d38c7602e9d080242da6f3
+#> 19 23e8a16400d38c7602e9d080242da6f3
+#> 20 05ebf1c0fd731afcb6a882844bb333fe
 #> 21                             STOP
 #> 22                             STOP
-#> 23                             STOP
+#> 23                         OK (BYE)
 #> 24                             STOP
-#> 25                         OK (BYE)
+#> 25                             STOP
 #> 26                         OK (BYE)
 rrq$destroy()
 ```
@@ -428,8 +388,8 @@ The first part here looks very similar, except that we use `use_rrq = TRUE` rath
 ```r
 config <- didehpc::didehpc_config(use_rrq = TRUE)
 obj <- didehpc::queue_didehpc(ctx, config = config)
-#> Loading context a1590dd8b37b4f181f1048afc0fe0443
-#> [ context   ]  a1590dd8b37b4f181f1048afc0fe0443
+#> Loading context 3840f3707c2ecf1d05678da71a470cb2
+#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
@@ -440,21 +400,21 @@ We still submit workers
 
 ```r
 workers <- obj$submit_workers(10)
-#> Submitting 10 workers with base name 'subdermic_chameleon'
-#> submitting (-) [======>----------------------------] 20% | giving up in 600 s
+#> Submitting 10 workers with base name 'contusioned_barb'
+#> submitting (-) [======>----------------------------] 20% | giving up in 599 s
 #> submitting (\) [=========>-------------------------] 30% | giving up in 599 s
-#> submitting (|) [=============>---------------------] 40% | giving up in 599 s
+#> submitting (|) [=============>---------------------] 40% | giving up in 598 s
 #> submitting (/) [=================>-----------------] 50% | giving up in 598 s
-#> submitting (-) [====================>--------------] 60% | giving up in 598 s
+#> submitting (-) [====================>--------------] 60% | giving up in 597 s
 #> submitting (\) [=======================>-----------] 70% | giving up in 597 s
-#> submitting (|) [===========================>-------] 80% | giving up in 597 s
-#> submitting (/) [===============================>---] 90% | giving up in 596 s
-#> submitting (-) [===================================] 100% | giving up in 596 s
+#> submitting (|) [===========================>-------] 80% | giving up in 596 s
+#> submitting (/) [===============================>---] 90% | giving up in 595 s
+#> submitting (-) [===================================] 100% | giving up in 594 s
 workers
-#>  [1] "subdermic_chameleon_1"  "subdermic_chameleon_2"  "subdermic_chameleon_3"
-#>  [4] "subdermic_chameleon_4"  "subdermic_chameleon_5"  "subdermic_chameleon_6"
-#>  [7] "subdermic_chameleon_7"  "subdermic_chameleon_8"  "subdermic_chameleon_9"
-#> [10] "subdermic_chameleon_10"
+#>  [1] "contusioned_barb_1"  "contusioned_barb_2"  "contusioned_barb_3"
+#>  [4] "contusioned_barb_4"  "contusioned_barb_5"  "contusioned_barb_6"
+#>  [7] "contusioned_barb_7"  "contusioned_barb_8"  "contusioned_barb_9"
+#> [10] "contusioned_barb_10"
 ```
 
 To send tasks to these workers we directly use the `rrq_controller` object - we'll not use the `queue_didehpc` object from this point.
@@ -479,7 +439,7 @@ For example; submitting 50 trivial tasks to our pool of workers and retrieving t
 ```r
 system.time(res <- rrq$lapply(1:50, sin))
 #>    user  system elapsed
-#>   0.009   0.001   0.048
+#>   0.013   0.002   0.054
 ```
 
 or 500 tasks:
@@ -488,7 +448,7 @@ or 500 tasks:
 ```r
 system.time(res <- rrq$lapply(1:500, sin, progress = FALSE))
 #>    user  system elapsed
-#>   0.060   0.010   0.459
+#>   0.094   0.031   0.531
 ```
 
 Across the network, the latency here is ~1/600 s per task.  On fi--didemrchnb it will hopefully be a bit faster because of the infiniband network.
@@ -510,6 +470,50 @@ get_rrq_controller <- function(x, ...) {
 ```
 
 within your sources, then you can use it in place of running (say) a `lapply()` call in your code. This approach allows a relatively simple form of inter-process communication. Talk to Rich if this is something you might have a use for, if you have simulation needs that are larger than a single node.
+
+## Advanced use: different worker and task resources
+
+Suppose that we want to submit a job where we have a single process which orchestrates a group of workers each of which takes up an entire node. We used this pattern in the covid response where we wanted to run different MCMC chains on different nodes, each using 32 cores, but we also needed a single "controlling" process to organise collecting results from these nodes.
+
+What we want to do do is specify a different set of resources to be used by the workers than by tasks submitted by `$enqueue()`. Note that this only makes sense when using `use_rrq = TRUE`. For example, to submit a controlling process that uses the `GeneralNodes` template and one core (the default) but worker processes that can use 8 cores, we might write
+
+
+```r
+config <- didehpc::didehpc_config(
+  use_rrq = TRUE,
+  worker_resource = didehpc::worker_resource(cores = 8))
+config
+#> <didehpc_config>
+#>  - cluster: fi--dideclusthn
+#>  - credentials:
+#>     - username: rfitzjoh
+#>     - password: *******************
+#>  - username: rfitzjoh
+#>  - resource:
+#>     - template: GeneralNodes
+#>     - parallel: FALSE
+#>     - count: 1
+#>     - type: Cores
+#>  - shares:
+#>     - home: (local) /home/rich/net/home => \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh => Q: (remote)
+#>     - temp: (local) /home/rich/net/temp => \\fi--didef3.dide.ic.ac.uk\tmp => T: (remote)
+#>  - use_workers: FALSE
+#>  - use_rrq: TRUE
+#>  - worker_timeout: 600
+#>  - conan_bootstrap: TRUE
+#>  - r_version: 4.0.3
+#>  - use_java: FALSE
+#>  - redis_host: fi--dideclusthn.dide.ic.ac.uk
+#>  - worker_resource:
+#>     - template: GeneralNodes
+#>     - parallel: TRUE
+#>     - count: 8
+#>     - type: Cores
+```
+
+See the `worker_resource` section here indicates different resources to the `resource` section.
+
+Now, when submitting workers with `obj$submit_workers` each worker will be able to use 8 cores, but a task submitted by `$enqueue()` will only be able to use one. You might then submit a task that uses the `get_rrq_controller` trick above as part of your single core job, which can then farm out work to your workers using the `rrq` queue object.
 
 ## Cleaning up
 
