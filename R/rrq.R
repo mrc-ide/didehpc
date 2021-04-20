@@ -76,10 +76,11 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
   batch_template <- data$templates$rrq_worker
 
   ## Will be shared across all jobs submitted
-  job_template <- config$template
   cluster <- config$cluster
-  resource_type <- config$resource$type
-  resource_count <- config$resource$count
+  resource <- config$worker_resource %||% config$resource
+  job_template <- resource$template
+  resource_type <- resource$type
+  resource_count <- resource$count
 
   base <- ids::adjective_animal()
   names <- sprintf("%s_%d", base, seq_len(n))

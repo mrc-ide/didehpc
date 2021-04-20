@@ -69,8 +69,8 @@ didehpc::didehpc_config()
 #>     - username: rfitzjoh
 #>     - password: *******************
 #>  - username: rfitzjoh
-#>  - template: GeneralNodes
 #>  - resource:
+#>     - template: GeneralNodes
 #>     - parallel: FALSE
 #>     - count: 1
 #>     - type: Cores
@@ -120,8 +120,8 @@ Then save this together to form a "context".
 ```r
 ctx <- context::context_save("contexts", packages = packages, sources = sources)
 #> [ open:db   ]  rds
-#> [ save:id   ]  51c32720e31a2411ea2e9fe85f0a5488
-#> [ save:name ]  euhedral_fluke
+#> [ save:id   ]  c09243465471f09beed2bdc2168db3f6
+#> [ save:name ]  wistful_groundhog
 ```
 
 If you have no packages or no sources, use `NULL` or omit them in
@@ -144,8 +144,8 @@ jobs.
 
 ```r
 obj <- didehpc::queue_didehpc(ctx)
-#> Loading context 51c32720e31a2411ea2e9fe85f0a5488
-#> [ context   ]  51c32720e31a2411ea2e9fe85f0a5488
+#> Loading context c09243465471f09beed2bdc2168db3f6
+#> [ context   ]  c09243465471f09beed2bdc2168db3f6
 #> [ library   ]  dplyr, tidyr
 #>
 #> Attaching package: 'dplyr'
@@ -161,9 +161,9 @@ obj <- didehpc::queue_didehpc(ctx)
 #>   ,:\      /:.
 #>  //  \_()_/  \\
 #> ||   |    |   ||  CONAN THE LIBRARIAN
-#> ||   |    |   ||  Library:   Q:\didehpc\20210409-162624\contexts\lib\windows\4.0
+#> ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\contexts\lib\windows\4.0
 #> ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0
-#>  \\  / || \  //   Cache:     Q:\didehpc\20210409-162624\contexts\conan\cache/pkg
+#>  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\contexts\conan\cache/pkg
 #>   `:/  ||  \;'    Policy:    lazy
 #>        ||         Repos:
 #>        ||           * https://mrc-ide.github.io/didehpc-pkgs
@@ -175,44 +175,42 @@ obj <- didehpc::queue_didehpc(ctx)
 #>        `'
 #> i Loading metadata database
 #> v Loading metadata database ... done
-#> i Getting 18 pkgs (9.34 MB)
-#> v Got assertthat 0.2.1 (windows) (55.09 kB)
-#> v Got fansi 0.4.2 (windows) (224.26 kB)
-#> v Got cli 2.3.1 (windows) (474.17 kB)
-#> v Got ellipsis 0.3.1 (windows) (46.12 kB)
-#> v Got generics 0.1.0 (windows) (71.29 kB)
-#> v Got glue 1.4.2 (windows) (155.51 kB)
-#> v Got lifecycle 1.0.0 (windows) (111.19 kB)
-#> v Got dplyr 1.0.5 (windows) (1.34 MB)
-#> v Got magrittr 2.0.1 (windows) (235.61 kB)
-#> v Got pkgconfig 2.0.3 (windows) (22.34 kB)
-#> v Got pillar 1.5.1 (windows) (962.07 kB)
+#> i Getting 17 pkgs (9.37 MB)
+#> v Got ellipsis 0.3.1 (windows) (46.15 kB)
+#> v Got fansi 0.4.2 (windows) (224.19 kB)
+#> v Got generics 0.1.0 (windows) (70.84 kB)
+#> v Got cli 2.4.0 (windows) (504.14 kB)
+#> v Got magrittr 2.0.1 (windows) (235.68 kB)
+#> v Got pkgconfig 2.0.3 (windows) (22.08 kB)
+#> v Got lifecycle 1.0.0 (windows) (111.22 kB)
+#> v Got glue 1.4.2 (windows) (155.42 kB)
+#> v Got pillar 1.6.0 (windows) (1.02 MB)
+#> v Got tidyselect 1.1.0 (windows) (203.17 kB)
+#> v Got utf8 1.2.1 (windows) (209.84 kB)
+#> v Got tibble 3.1.0 (windows) (825.59 kB)
+#> v Got purrr 0.3.4 (windows) (426.90 kB)
 #> v Got rlang 0.4.10 (windows) (1.20 MB)
-#> v Got tidyselect 1.1.0 (windows) (203.20 kB)
-#> v Got purrr 0.3.4 (windows) (430.05 kB)
-#> v Got tibble 3.1.0 (windows) (825.66 kB)
-#> v Got vctrs 0.3.7 (windows) (1.25 MB)
-#> v Got utf8 1.2.1 (windows) (209.89 kB)
 #> v Got tidyr 1.1.3 (windows) (1.06 MB)
-#> v Installed assertthat 0.2.1  (1.3s)
-#> v Installed cli 2.3.1  (1.4s)
-#> v Installed generics 0.1.0  (1.5s)
-#> v Installed ellipsis 0.3.1  (1.8s)
-#> v Installed glue 1.4.2  (1.9s)
-#> v Installed fansi 0.4.2  (2.2s)
-#> v Installed pkgconfig 2.0.3  (2.1s)
-#> v Installed pillar 1.5.1  (2.3s)
-#> v Installed magrittr 2.0.1  (2.6s)
-#> v Installed purrr 0.3.4  (2.6s)
-#> v Installed lifecycle 1.0.0  (3s)
-#> v Installed dplyr 1.0.5  (3.3s)
-#> v Installed rlang 0.4.10  (2.2s)
-#> v Installed tibble 3.1.0  (2.2s)
-#> v Installed tidyselect 1.1.0  (2.1s)
-#> v Installed utf8 1.2.1  (2.1s)
-#> v Installed vctrs 0.3.7  (2s)
-#> v Installed tidyr 1.1.3  (2s)
-#> v Summary:   18 new   10 kept  in 38.5s
+#> v Got dplyr 1.0.5 (windows) (1.33 MB)
+#> v Got vctrs 0.3.7 (windows) (1.25 MB)
+#> v Installed cli 2.4.0  (766ms)
+#> v Installed generics 0.1.0  (797ms)
+#> v Installed ellipsis 0.3.1  (1.2s)
+#> v Installed fansi 0.4.2  (1.4s)
+#> v Installed glue 1.4.2  (1.5s)
+#> v Installed magrittr 2.0.1  (1.8s)
+#> v Installed lifecycle 1.0.0  (2.1s)
+#> v Installed dplyr 1.0.5  (2.6s)
+#> v Installed pkgconfig 2.0.3  (1.9s)
+#> v Installed pillar 1.6.0  (2.5s)
+#> v Installed purrr 0.3.4  (2s)
+#> v Installed rlang 0.4.10  (2s)
+#> v Installed tidyselect 1.1.0  (1.6s)
+#> v Installed tibble 3.1.0  (2.1s)
+#> v Installed utf8 1.2.1  (1.7s)
+#> v Installed vctrs 0.3.7  (1.6s)
+#> v Installed tidyr 1.1.3  (1.5s)
+#> v Summary:   17 new   10 kept  in 29.1s
 #> Done!
 ```
 
@@ -231,9 +229,9 @@ running the function.  Otherwise it will throw an error.
 
 ```r
 t$wait(120)
-#> (-) waiting for e95f350...439, giving up in 119.5 s (\) waiting for
-#> e95f350...439, giving up in 119.0 s (|) waiting for e95f350...439, giving up in
-#> 118.5 s (/) waiting for e95f350...439, giving up in 117.9 s
+#> (-) waiting for 4ca2fe5...8aa, giving up in 119.5 s (\) waiting for
+#> 4ca2fe5...8aa, giving up in 119.0 s (|) waiting for 4ca2fe5...8aa, giving up in
+#> 118.4 s (/) waiting for 4ca2fe5...8aa, giving up in 117.9 s
 #> R version 4.0.3 (2020-10-10)
 #> Platform: x86_64-w64-mingw32/x64 (64-bit)
 #> Running under: Windows Server 2012 R2 x64 (build 9600)
@@ -256,7 +254,7 @@ t$wait(120)
 #> loaded via a namespace (and not attached):
 #>  [1] fansi_0.4.2      crayon_1.4.1     digest_0.6.27    utf8_1.2.1
 #>  [5] context_0.3.0    R6_2.5.0         lifecycle_1.0.0  storr_1.2.5
-#>  [9] magrittr_2.0.1   pillar_1.5.1     rlang_0.4.10     vctrs_0.3.7
+#>  [9] magrittr_2.0.1   pillar_1.6.0     rlang_0.4.10     vctrs_0.3.7
 #> [13] generics_0.1.0   ellipsis_0.3.1   glue_1.4.2       purrr_0.3.4
 #> [17] compiler_4.0.3   pkgconfig_2.0.3  tidyselect_1.1.0 tibble_3.1.0
 ```
@@ -289,7 +287,7 @@ t$result()
 #> loaded via a namespace (and not attached):
 #>  [1] fansi_0.4.2      crayon_1.4.1     digest_0.6.27    utf8_1.2.1
 #>  [5] context_0.3.0    R6_2.5.0         lifecycle_1.0.0  storr_1.2.5
-#>  [9] magrittr_2.0.1   pillar_1.5.1     rlang_0.4.10     vctrs_0.3.7
+#>  [9] magrittr_2.0.1   pillar_1.6.0     rlang_0.4.10     vctrs_0.3.7
 #> [13] generics_0.1.0   ellipsis_0.3.1   glue_1.4.2       purrr_0.3.4
 #> [17] compiler_4.0.3   pkgconfig_2.0.3  tidyselect_1.1.0 tibble_3.1.0
 ```
@@ -304,12 +302,12 @@ the function `random_walk`.
 ```r
 t <- obj$enqueue(random_walk(0, 10))
 res <- t$wait(120)
-#> (-) waiting for ce3bb67...6bd, giving up in 119.5 s (\) waiting for
-#> ce3bb67...6bd, giving up in 119.0 s (|) waiting for ce3bb67...6bd, giving up in
-#> 118.5 s (/) waiting for ce3bb67...6bd, giving up in 118.0 s
+#> (-) waiting for f39b69f...6b2, giving up in 119.5 s (\) waiting for f39b69f...
+#> 6b2, giving up in 119.0 s (|) waiting for f39b69f...6b2, giving up in 118.5 s
+#> (/) waiting for f39b69f...6b2, giving up in 117.9 s
 res
-#>  [1]  0.79595262  0.06749001  0.57074786  1.83615530  0.58195408  0.45859492
-#>  [7] -0.12357467 -0.76396828 -1.57312402 -2.93615422
+#>  [1] 1.771693 1.370885 1.672578 3.179195 4.286129 3.464411 2.391140 1.003582
+#>  [9] 1.806466 2.620871
 ```
 
 The `t` object has a number of other methods you can use:
@@ -322,7 +320,7 @@ t
 #>     clone: function (deep = FALSE)
 #>     context_id: function ()
 #>     expr: function (locals = FALSE)
-#>     id: ce3bb6764b04ee2d9b2cb7efef64b6bd
+#>     id: f39b69ffff0c1283ab8e492e031366b2
 #>     initialize: function (id, root, check_exists = TRUE)
 #>     log: function (parse = TRUE)
 #>     result: function (allow_incomplete = FALSE)
@@ -337,8 +335,8 @@ Get the result from running a task
 
 ```r
 t$result()
-#>  [1]  0.79595262  0.06749001  0.57074786  1.83615530  0.58195408  0.45859492
-#>  [7] -0.12357467 -0.76396828 -1.57312402 -2.93615422
+#>  [1] 1.771693 1.370885 1.672578 3.179195 4.286129 3.464411 2.391140 1.003582
+#>  [9] 1.806466 2.620871
 ```
 
 Get the status of the task
@@ -365,9 +363,9 @@ Find out how long everything took
 ```r
 t$times()
 #>                            task_id           submitted             started
-#> 1 ce3bb6764b04ee2d9b2cb7efef64b6bd 2021-04-09 16:29:13 2021-04-09 16:29:15
-#>              finished  waiting running      idle
-#> 1 2021-04-09 16:29:15 2.187085 0.03125 0.4121306
+#> 1 f39b69ffff0c1283ab8e492e031366b2 2021-04-20 10:32:34 2021-04-20 10:32:36
+#>              finished  waiting    running      idle
+#> 1 2021-04-20 10:32:36 2.069958 0.06250095 0.5105689
 ```
 
 You may see negative numbers for "waiting" as the submitted time is
@@ -379,14 +377,14 @@ And get the log from running the task
 
 ```r
 t$log()
-#> [ hello     ]  2021-04-09 16:29:14
-#> [ wd        ]  Q:/didehpc/20210409-162624
-#> [ init      ]  2021-04-09 16:29:14.152
-#> [ hostname  ]  FI--DIDECLUST25
-#> [ process   ]  4124
+#> [ hello     ]  2021-04-20 10:32:34
+#> [ wd        ]  Q:/didehpc/20210420-102851
+#> [ init      ]  2021-04-20 10:32:34.800
+#> [ hostname  ]  FI--DIDECLUST29
+#> [ process   ]  4272
 #> [ version   ]  0.3.0
 #> [ open:db   ]  rds
-#> [ context   ]  51c32720e31a2411ea2e9fe85f0a5488
+#> [ context   ]  c09243465471f09beed2bdc2168db3f6
 #> [ library   ]  dplyr, tidyr
 #>
 #>     Attaching package: 'dplyr'
@@ -402,13 +400,13 @@ t$log()
 #> [ namespace ]
 #> [ source    ]  mysources.R
 #> [ parallel  ]  running as single core job
-#> [ root      ]  Q:\didehpc\20210409-162624\contexts
-#> [ context   ]  51c32720e31a2411ea2e9fe85f0a5488
-#> [ task      ]  ce3bb6764b04ee2d9b2cb7efef64b6bd
+#> [ root      ]  Q:\didehpc\20210420-102851\contexts
+#> [ context   ]  c09243465471f09beed2bdc2168db3f6
+#> [ task      ]  f39b69ffff0c1283ab8e492e031366b2
 #> [ expr      ]  random_walk(0, 10)
-#> [ start     ]  2021-04-09 16:29:15.340
+#> [ start     ]  2021-04-20 10:32:36.175
 #> [ ok        ]
-#> [ end       ]  2021-04-09 16:29:15.418
+#> [ end       ]  2021-04-20 10:32:36.285
 #>     Warning messages:
 #>     1: package 'tidyr' was built under R version 4.0.5
 #>     2: package 'dplyr' was built under R version 4.0.5
@@ -421,10 +419,10 @@ this point; if the job fails inexplicably the answer may be in:
 ```r
 obj$dide_log(t)
 #>  [1] "generated on host: kea"
-#>  [2] "generated on date: 2021-04-09"
-#>  [3] "didehpc version: 0.3.0"
+#>  [2] "generated on date: 2021-04-20"
+#>  [3] "didehpc version: 0.3.1"
 #>  [4] "context version: 0.3.0"
-#>  [5] "running on: FI--DIDECLUST25"
+#>  [5] "running on: FI--DIDECLUST29"
 #>  [6] "mapping Q: -> \\\\fi--san03.dide.ic.ac.uk\\homes\\rfitzjoh"
 #>  [7] "The command completed successfully."
 #>  [8] ""
@@ -432,20 +430,18 @@ obj$dide_log(t)
 #> [10] "The command completed successfully."
 #> [11] ""
 #> [12] "Using Rtools at T:\\Rtools\\Rtools40"
-#> [13] "working directory: Q:\\didehpc\\20210409-162624"
+#> [13] "working directory: Q:\\didehpc\\20210420-102851"
 #> [14] "this is a single task"
-#> [15] "logfile: Q:\\didehpc\\20210409-162624\\contexts\\logs\\ce3bb6764b04ee2d9b2cb7efef64b6bd"
+#> [15] "logfile: Q:\\didehpc\\20210420-102851\\contexts\\logs\\f39b69ffff0c1283ab8e492e031366b2"
 #> [16] ""
-#> [17] "Q:\\didehpc\\20210409-162624>Rscript \"Q:\\didehpc\\20210409-162624\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210409-162624\\contexts\" ce3bb6764b04ee2d9b2cb7efef64b6bd  1>\"Q:\\didehpc\\20210409-162624\\contexts\\logs\\ce3bb6764b04ee2d9b2cb7efef64b6bd\" 2>&1"
+#> [17] "Q:\\didehpc\\20210420-102851>Rscript \"Q:\\didehpc\\20210420-102851\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210420-102851\\contexts\" f39b69ffff0c1283ab8e492e031366b2  1>\"Q:\\didehpc\\20210420-102851\\contexts\\logs\\f39b69ffff0c1283ab8e492e031366b2\" 2>&1"
 #> [18] "Removing mapping Q:"
-#> [19] "There are open files and/or incomplete directory searches pending on the connection to Q:."
+#> [19] "Q: was deleted successfully."
 #> [20] ""
-#> [21] "Q: was deleted successfully."
-#> [22] ""
-#> [23] "Removing mapping T:"
-#> [24] "T: was deleted successfully."
-#> [25] ""
-#> [26] "Quitting"
+#> [21] "Removing mapping T:"
+#> [22] "T: was deleted successfully."
+#> [23] ""
+#> [24] "Quitting"
 ```
 
 Want more information? See `vignette("didehpc")` for more details.

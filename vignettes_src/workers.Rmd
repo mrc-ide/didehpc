@@ -250,6 +250,23 @@ get_rrq_controller <- function(x, ...) {
 
 within your sources, then you can use it in place of running (say) a `lapply()` call in your code. This approach allows a relatively simple form of inter-process communication. Talk to Rich if this is something you might have a use for, if you have simulation needs that are larger than a single node.
 
+## Advanced use: different worker and task resources
+
+Suppose that we want to submit a job where we have a single process which orchestrates a group of workers each of which takes up an entire node. We used this pattern in the covid response where we wanted to run different MCMC chains on different nodes, each using 32 cores, but we also needed a single "controlling" process to organise collecting results from these nodes.
+
+What we want to do do is specify a different set of resources to be used by the workers than by tasks submitted by `$enqueue()`. Note that this only makes sense when using `use_rrq = TRUE`. For example, to submit a controlling process that uses the `GeneralNodes` template and one core (the default) but worker processes that can use 8 cores, we might write
+
+```{r}
+config <- didehpc::didehpc_config(
+  use_rrq = TRUE,
+  worker_resource = didehpc::worker_resource(cores = 8))
+config
+```
+
+See the `worker_resource` section here indicates different resources to the `resource` section.
+
+Now, when submitting workers with `obj$submit_workers` each worker will be able to use 8 cores, but a task submitted by `$enqueue()` will only be able to use one. You might then submit a task that uses the `get_rrq_controller` trick above as part of your single core job, which can then farm out work to your workers using the `rrq` queue object.
+
 ## Cleaning up
 
 Above we use `rrq$destroy()` to clean up every trace of the queue. Periodically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.

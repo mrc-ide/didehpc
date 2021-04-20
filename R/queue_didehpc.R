@@ -327,8 +327,8 @@ submit_dide <- function(obj, data, task_ids, names) {
   names <- setNames(task_names(task_ids, names), task_ids)
 
   ## Will be shared across all jobs submitted
-  job_template <- config$template
   cluster <- config$cluster
+  job_template <- config$resource$template
   resource_type <- config$resource$type
   resource_count <- config$resource$count
 
