@@ -397,3 +397,56 @@ obj$reconcile()
 ```
 
 Which will print information about anything that was adjusted.
+
+## Asking for help
+
+If you need help, you can ask in the "Cluster" teams channel or try your luck emailing Rich and Wes (they may or may not have time to respond, or may be on leave).
+
+When asking for help it is really important that you make it as easy as possible for us to help you. This is surprisingly hard to do well, and we would ask that you first take a look at these two short articles:
+
+* [How to ask a good question](https://stackoverflow.com/help/how-to-ask)
+* [How to create a minimal, reproducible example](https://stackoverflow.com/help/minimal-reproducible-example)
+
+Things we will need to know:
+
+* Your DIDE username (as this makes seeing job statuses much easier)
+* Minimally, which cluster you are using but better to post your entire didehpc config (`obj$config` if you have managed to create an object)
+* What you've tried doing
+* The values of any errors (not just that they occurred!)
+* Logs of the offending job if you have it
+
+Too often, we will get requests from people that where we have no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we'll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we're both quite fed up. We will never complain if you provide "too much" information in a good effort to outline where your problem is.
+
+**Don't say**
+
+Hi, I was running a cluster job, but it seems like it failed. I'm sure it worked the other day though! Do you know what the problem is?
+
+**Do say**
+
+> Since yesterday, my cluster job has stopped working.
+>
+> My dide username is `alicebobson` and my dide config is:
+>
+> ```
+> <didehpc_config>
+>  - cluster: fi--dideclusthn
+>  - username: rfitzjoh
+>  (etc)
+> ```
+>
+> I am working on the `myproject` directory of the malaria share (`\\projects\malaria`)
+>
+>
+> I have set up my cluster job with
+>
+> ```
+> # include short script here if you can!
+> ```
+>
+> The job `43333cbd79ccbf9ede79556b592473c8` is one that failed with an error, and the log says
+>
+> ```
+> # contents of t$log() here
+> ```
+
+with this sort of information the problem may just jump out at us, or we may be able to create the error ourselves - either way we may be able to work on the problem and get back to you with a solution rather than a request for more information.

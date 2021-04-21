@@ -18,6 +18,7 @@ codecov
 com
 conan
 config
+covid
 dide
 dideclusthn
 didemrchnb
@@ -40,6 +41,7 @@ mrc
 ncov
 nonstandard
 org
+pkgdepends
 quickstart
 rJava
 redis
@@ -52,6 +54,7 @@ uk
 unsubmit
 unsubmits
 unsubmitting
+verylazy
 wip
 wmic
 www
