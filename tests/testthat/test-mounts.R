@@ -311,6 +311,15 @@ test_that("Prevent duplicated drives", {
 })
 
 
+test_that("Remap nas regex", {
+  expect_equal(use_app_on_nas("\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3-app.dide.local/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas4\\X"), "\\\\fi--didenas4-app\\X")
+  expect_equal(use_app_on_nas("//fi--didenas5/X"), "//fi--didenas5-app/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//fi--didenas3.dide.local/X"), "//fi--didenas3-app.dide.local/X")
+})
+
 test_that("Remap nas", {
   mounts <- example_mounts(tempfile())
   shares <- Map(path_mapping,
