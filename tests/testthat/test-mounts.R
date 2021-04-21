@@ -310,6 +310,14 @@ test_that("Prevent duplicated drives", {
     "Duplicate remote drive names: T:")
 })
 
+test_that("Remap nas regex", {
+  expect_equal(use_app_on_nas("\\\\fi--didenas1.dide.ic.ac.uk\\X"), "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//fi--didenas3.dide.ic.ac.uk/X"), "//fi--didenas3-app.dide.local/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas4\\X"), "\\\\fi--didenas4-app\\X")
+  expect_equal(use_app_on_nas("//fi--didenas5/X"), "//fi--didenas5-app/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//fi--didenas3.dide.local/X"), "//fi--didenas3-app.dide.local/X")
+})
 
 test_that("Remap nas", {
   mounts <- example_mounts(tempfile())
@@ -323,7 +331,7 @@ test_that("Remap nas", {
   expect_equal(res1[1:3], res2[1:3])
 
   expect_equal(res1[[4]]$path_remote,
-               "\\\\fi--didenas1-app.dide.ic.ac.uk\\Project")
+               "\\\\fi--didenas1-app.dide.local\\Project")
   expect_equal(res2[[4]]$path_remote,
                "\\\\fi--didenas1.dide.ic.ac.uk\\Project")
   expect_equal(res1[[4]][-2], res2[[4]][-2])

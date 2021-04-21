@@ -89,6 +89,19 @@ wmic_parse <- function(x) {
 }
 
 
+
+use_app_on_nas <- function(path_remote) {
+  path_remote <-
+    sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
+        path_remote)
+
+  path_remote <-
+    sub("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
+        path_remote)
+
+  path_remote
+}
+
 ## Normalisation
 
 ## This function will detect home, temp and if the current working
@@ -114,9 +127,7 @@ dide_detect_mount <- function(mounts, shares, home, temp,
 
   if (remap_nas) {
     for (i in seq_along(ret)) {
-      ret[[i]]$path_remote <-
-               sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
-                   ret[[i]]$path_remote)
+      ret[[i]]$path_remote <- use_app_on_nas(ret[[i]]$path_remote)
     }
   }
   ret

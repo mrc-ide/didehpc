@@ -1,3 +1,7 @@
+# didehpc 0.3.3
+
+Fix issue if working directory is on an infiniband-capable NAS share.
+
 # didehpc 0.3.2
 
 * The "verylazy" provisioning policy does not tell pkgdepends about already present packages, which avoids some issues where a library has been manually tweaked using `$install_packages()` (#88)
