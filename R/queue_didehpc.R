@@ -253,19 +253,21 @@ queue_didehpc_ <- R6::R6Class(
       } else {
         needs_rrq <- self$config$use_rrq || self$config$use_workers
         dat <- context_packages(self$context, needs_rrq)
-        complete <- private$lib$check(dat$packages)$complete
+        status <- private$lib$check(dat$packages)
+        packages <- dat$packages
         run_provision <- TRUE
         if (policy == "verylazy") {
           policy <- "lazy"
-          run_provision <- !complete
-          if (complete && !quiet) {
+          run_provision <- !status$complete
+          packages <- status$missing
+          if (!run_provision && !quiet) {
             message("Nothing to install; try running with policy = 'upgrade'")
           }
         }
       }
 
       if (run_provision) {
-        self$install_packages(dat$packages, dat$repos, policy, dryrun,
+        self$install_packages(packages, dat$repos, policy, dryrun,
                               show_progress, show_log)
       }
 
