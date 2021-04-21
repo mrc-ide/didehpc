@@ -1,3 +1,7 @@
+# didehpc 0.3.2
+
+* The "verylazy" provisioning policy does not tell pkgdepends about already present packages, which avoids some issues where a library has been manually tweaked using `$install_packages()` (#88)
+
 # didehpc 0.3.1
 
 * rrq worker resource configuration may differ from the normal task resource requirements (#83)

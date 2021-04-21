@@ -221,9 +221,10 @@ test_that("Package provisioning interface logic is correct", {
   private <- r6_private(obj)
   private$lib <- list(
     provision = mockery::mock(),
-    check = mockery::mock(list(complete = FALSE),
-                          list(complete = TRUE),
-                          list(complete = TRUE)))
+    check = mockery::mock(
+      list(complete = FALSE, missing = "context", found = character(0)),
+      list(complete = TRUE, missing = character(0), found = "context"),
+      list(complete = TRUE, missing = character(0), found = "context")))
   expect_false(private$provisioned)
 
   expect_message(
@@ -269,4 +270,55 @@ test_that("Package provisioning interface logic is correct", {
     obj$provision_context(),
     "Nothing to install; try running with policy = 'upgrade'")
   expect_true(private$provisioned)
+})
+
+
+test_that("Don't tell pkgdepends about installed packages if verylazy", {
+  config <- example_config()
+  packages <- c("context", "apple", "banana", "carrot", "durian", "eggplant")
+  ctx <- context::context_save(file.path(config$workdir, "context"),
+                               packages = packages[-1])
+  obj <- queue_didehpc(ctx, config, initialise = FALSE)
+
+  i <- c(3, 5)
+  private <- r6_private(obj)
+  private$lib <- list(
+    provision = mockery::mock(),
+    check = mockery::mock(
+      list(complete = FALSE, missing = packages, found = character(0)),
+      list(complete = FALSE, missing = packages[i], found = packages[-i]),
+      list(complete = TRUE, missing = character(0), found = packages),
+      cycle = TRUE))
+
+  expect_false(private$provisioned)
+
+  ## default is verylazy:
+  expect_message(obj$provision_context(), "Running installation script")
+  expect_equal(
+    mockery::mock_args(private$lib$provision)[[1]][c(1, 3)],
+    list(packages, "lazy"))
+
+  expect_message(obj$provision_context(), "Running installation script")
+  expect_equal(
+    mockery::mock_args(private$lib$provision)[[2]][c(1, 3)],
+    list(packages[i], "lazy"))
+
+  expect_message(obj$provision_context(), "Nothing to install")
+  mockery::expect_called(private$lib$provision, 2) # not called this time
+
+  ## Lazy is slightly less lazy:
+  expect_message(obj$provision_context("lazy"), "Running installation script")
+  expect_equal(
+    mockery::mock_args(private$lib$provision)[[3]][c(1, 3)],
+    list(packages, "lazy"))
+
+  expect_message(obj$provision_context("lazy"), "Running installation script")
+  expect_equal(
+    mockery::mock_args(private$lib$provision)[[4]][c(1, 3)],
+    list(packages, "lazy")) # cf above; all packages now listed
+
+  expect_message(obj$provision_context("lazy"), "Running installation script")
+  expect_equal(
+    mockery::mock_args(private$lib$provision)[[4]][c(1, 3)],
+    list(packages, "lazy")) # cf above; actually called, all packages
 })
