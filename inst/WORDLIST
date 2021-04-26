@@ -12,6 +12,7 @@ UNC
 Unmap
 WIP
 ac
+alloc
 chmod
 cifs
 codecov
@@ -48,6 +49,7 @@ redis
 reestablished
 rrq
 smb
+std
 svg
 traceback
 uk
