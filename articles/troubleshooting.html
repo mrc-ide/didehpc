@@ -366,6 +366,79 @@
 <p>Which will print information about anything that was adjusted.</p>
 </div>
 </div>
+<div id="my-job-works-on-my-computer-but-not-on-the-cluster" class="section level2">
+<h2 class="hasAnchor">
+<a href="#my-job-works-on-my-computer-but-not-on-the-cluster" class="anchor"></a>My job works on my computer but not on the cluster</h2>
+<p>In that case, something is different between how the cluster sees the world, and how your computer sees it.</p>
+<ul>
+<li>Look in the logs to try and find the reason why the failing jobs are doing so.</li>
+<li>Are there variables in the global R environment on your local computer, that your code relies upon, that won’t be present on the cluster? Do you have local R packages or sources loaded which you haven’t declared when initialising your context?</li>
+<li>Or any system variables, or other dependencies which enable your job to work locally, but won’t be set up on a cluster node?</li>
+<li>Are you referring to any files visible to your local machine, but not on the cluster? Are you referring to <code>C:</code> for instance?</li>
+<li>(Rarely:) Are you viewing a cached version of any network storage on your local computer, that has not been synced to the real network storage view that the cluster has?</li>
+<li>Check that you have not run out of disk-space. The Q: quota is normally 15Gb.</li>
+<li>If you are running C code, check for other causes of indeterminate failures, such as uninitialised variables, or array out-of-bounds errors. These are unpredictable errors by nature, but surprisingly often you might get away with it on a local computer, while a cluster node behaves differently.</li>
+<li>If you are running stochastic code, check that you are <em>really</em> using the same random number seeds.</li>
+</ul>
+</div>
+<div id="some-of-my-jobs-work-on-the-cluster-but-others-fail-" class="section level2">
+<h2 class="hasAnchor">
+<a href="#some-of-my-jobs-work-on-the-cluster-but-others-fail-" class="anchor"></a>Some of my jobs work on the cluster, but others fail.</h2>
+<ul>
+<li>Look in the logs to try and find the reason why the failing jobs do so.</li>
+<li>Try rerunning the failed jobs. Is it the same set that passes, and the same set that fails? In that case, consider what makes your jobs different - perhaps job-specific input data or parameters could cause the failures.</li>
+<li>If you find messages about “Error allocating a vector…” or “std::bad_alloc”, then try and work out the memory usage of a single job. Perhaps run it locally with task manager (windows), or <code>top</code> (linux) running, and watch to see what the memory usage is. If the job is single-core, consider the total memory used if you run 8 or 16 instances on the same cluster machine. If the total memory exceeds the available, then behaviour will be undefined, and some jobs will likely fail.</li>
+<li>In the above example, note that someone else’s memory-hungry combination of jobs may affect your small-memory job, if they run on the same node. We don’t enforce any memory limits on jobs, which on the whole, is nice and convenient, but it carries the risk that the above can happen.</li>
+<li>Always check you’re not running out disk space. The Q: quota is normally 15Gb.</li>
+<li>Find what node your jobs were running on. If you consistently get errors on one node, but not others, then get in touch with Wes, as we do get node failures from time to time, where the fault is not obvious at first.</li>
+</ul>
+</div>
+<div id="my-job-is-slower-on-the-cluster-than-running-locally" class="section level2">
+<h2 class="hasAnchor">
+<a href="#my-job-is-slower-on-the-cluster-than-running-locally" class="anchor"></a>My job is slower on the cluster than running locally!</h2>
+<ul>
+<li>This is expected, especially for single-core jobs. Cluster nodes are aiming to provide bandwidth, rather than linear performance, so a single job may run slower on a cluster node than on your own computer. But the cluster node might be able to run 8 or more such jobs at once, without taking any longer, while you continue using your local computer for local things.</li>
+<li>If that is still insufficient, and you still want to compare timings in this way, then check that the cluster is doing <em>exactly</em> the same work as your local computer.</li>
+</ul>
+</div>
+<div id="asking-for-help" class="section level2">
+<h2 class="hasAnchor">
+<a href="#asking-for-help" class="anchor"></a>Asking for help</h2>
+<p>If you need help, you can ask in the “Cluster” teams channel or try your luck emailing Rich and Wes (they may or may not have time to respond, or may be on leave).</p>
+<p>When asking for help it is really important that you make it as easy as possible for us to help you. This is surprisingly hard to do well, and we would ask that you first take a look at these two short articles:</p>
+<ul>
+<li><a href="https://stackoverflow.com/help/how-to-ask">How to ask a good question</a></li>
+<li><a href="https://stackoverflow.com/help/minimal-reproducible-example">How to create a minimal, reproducible example</a></li>
+</ul>
+<p>Things we will need to know:</p>
+<ul>
+<li>Your DIDE username (as this makes seeing job statuses much easier)</li>
+<li>Minimally, which cluster you are using but better to post your entire didehpc config (<code>obj$config</code> if you have managed to create an object)</li>
+<li>What you’ve tried doing</li>
+<li>The values of any errors (not just that they occurred!)</li>
+<li>Logs of the offending job if you have it</li>
+</ul>
+<p>Too often, we will get requests from people that where we have no information about what was run, what packages or versions are being installed, etc. This means your message sits there until we see it, we’ll ask for clarification - that message sits there until you see it, you respond with a little more information, and it may be days until we finally discover the root cause of your problem, by which point we’re both quite fed up. We will never complain if you provide “too much” information in a good effort to outline where your problem is.</p>
+<p><strong>Don’t say</strong></p>
+<blockquote>
+<p>Hi, I was running a cluster job, but it seems like it failed. I’m sure it worked the other day though! Do you know what the problem is?</p>
+</blockquote>
+<p><strong>Do say</strong></p>
+<blockquote>
+<p>Since yesterday, my cluster job has stopped working.</p>
+<p>My dide username is <code>alicebobson</code> and my dide config is:</p>
+<pre><code>&lt;didehpc_config&gt;
+ - cluster: fi--dideclusthn
+ - username: rfitzjoh
+ (etc)</code></pre>
+<p>I am working on the <code>myproject</code> directory of the malaria share (<code>\\projects\malaria</code>)</p>
+<p>I have set up my cluster job with</p>
+<pre><code># include short script here if you can!</code></pre>
+<p>The job <code>43333cbd79ccbf9ede79556b592473c8</code> is one that failed with an error, and the log says</p>
+<pre><code># contents of t$log() here</code></pre>
+</blockquote>
+<p>with this sort of information the problem may just jump out at us, or we may be able to create the error ourselves - either way we may be able to work on the problem and get back to you with a solution rather than a request for more information.</p>
+</div>
 </div>
   </div>
 
