@@ -20,7 +20,7 @@ This is a package for interfacing with the DIDE cluster directly from R.  It is 
 
 The steps below are described in more detail in the [vignettes](https://mrc-ide.github.io/didehpc)
 
-1. Ensure that your project is in a directory that the cluster can see (i.e. on one of the network drives).  See [notes](https://mrc-ide.github.io/didehpc/vignettes/didehpc.html#mapping-network-drives) for instructions
+1. Ensure that your project is in a directory that the cluster can see (i.e. on one of the network drives).  See [notes](https://mrc-ide.github.io/didehpc/articles/didehpc.html#mapping-network-drives) for instructions
 2. Set your DIDE credentials up so that you can log in and tell `didehpc` about them.
 3. Create a "context" in which future expressions will be evaluated (which will be recreated on the cluster)
 4. Create a "queue" that uses that context
@@ -29,11 +29,11 @@ The steps below are described in more detail in the [vignettes](https://mrc-ide.
 
 ## Documentation
 
-* New to this? [The main vignette](https://mrc-ide.github.io/didehpc/vignettes/didehpc.html) contains full instructions and explanations about why some bits are needed.
-* Need a reminder? There is a [quickstart guide](https://mrc-ide.github.io/didehpc/vignettes/quickstart.html) which is much shorter and will be quicker to glance through.
-* Trying to install packages on the cluster? Check the [packages vignette](https://mrc-ide.github.io/didehpc/vignettes/packages.html) for ways of controlling this.
-* Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/didehpc/vignettes/troubleshooting.html).
-* Lots of small jobs to run? Consider using [workers](https://mrc-ide.github.io/didehpc/vignettes/workers.html) for a fast queue over several cluster nodes.
+* New to this? [The main vignette](https://mrc-ide.github.io/didehpc/articles/didehpc.html) contains full instructions and explanations about why some bits are needed.
+* Need a reminder? There is a [quickstart guide](https://mrc-ide.github.io/didehpc/articles/quickstart.html) which is much shorter and will be quicker to glance through.
+* Trying to install packages on the cluster? Check the [packages vignette](https://mrc-ide.github.io/didehpc/articles/packages.html) for ways of controlling this.
+* Having problems? Check the [troubleshooting guide](https://mrc-ide.github.io/didehpc/articles/troubleshooting.html).
+* Lots of small jobs to run? Consider using [workers](https://mrc-ide.github.io/didehpc/articles/workers.html) for a fast queue over several cluster nodes.
 
 ## Issues
 
