@@ -34,7 +34,7 @@ Suggests:
     pkgdepends (>= 0.1.0),
     redux,
     rmarkdown,
-    rrq (>= 0.2.19),
+    rrq (>= 0.3.0),
     testthat,
     withr
 RoxygenNote: 7.1.1
