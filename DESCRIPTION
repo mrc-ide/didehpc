@@ -1,6 +1,6 @@
 Package: didehpc
 Title: DIDE HPC Support
-Version: 0.3.3
+Version: 0.3.4
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -14,7 +14,7 @@ BugReports: https://github.com/mrc-ide/didehpc/issues
 Depends:
     R (>= 3.2.2)
 Imports:
-    conan,
+    conan (>= 0.1.1),
     crayon,
     context (>= 0.3.0),
     getPass,
