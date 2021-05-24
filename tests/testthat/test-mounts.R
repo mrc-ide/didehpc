@@ -99,8 +99,7 @@ test_that("detect_mount_windows tries different methods in turn", {
   mockery::stub(detect_mount_windows, "wmic_call", mock_wmic_call)
 
   expect_equal(detect_mount_windows(), res$result)
-  win_dir <- Sys.getenv("windir")
-  if (win_dir == "") win_dir <- "C:\\Windows"
+  win_dir <- Sys.getenv("windir", "C:\\Windows")
   mockery::expect_called(mock_wmic_call, 2)
   expect_equal(
     mockery::mock_args(mock_wmic_call),
