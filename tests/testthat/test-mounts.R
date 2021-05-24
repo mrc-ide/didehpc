@@ -48,7 +48,7 @@ test_that("Parse return value into sensible output (linux)", {
   expect_equal(res, cmp)
 })
 
-test_that("Warn if given unexpected output", {
+test_that("Warn if given unexpected output (linux)", {
   skip_on_os("windows")  
   dat <- c(
     "//fi--didef3/other on /home/bob/net/other type cifs (rw,relatime)",
