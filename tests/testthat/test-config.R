@@ -77,6 +77,9 @@ test_that("Can transform cluster names", {
   expect_equal(cluster_name("fi--didemrchnb"), "fi--didemrchnb")
   expect_equal(cluster_name("big"), "fi--didemrchnb")
   expect_equal(cluster_name("mrc"), "fi--didemrchnb")
+  
+  expect_equal(cluster_name("wpia-hpc-hn"), "wpia-hpc-hn")
+  expect_equal(cluster_name("covid"), "wpia-hpc-hn")
 })
 
 
@@ -109,12 +112,20 @@ test_that("Check that resources are acceptable", {
     check_resources("fi--dideclusthn", "GeneralNodes", 9001, FALSE, FALSE),
     "Maximum number of cores for fi--dideclusthn is 24")
   expect_error(
+    check_resources("fi--didemrchnb", "GeneralNodes", 9001, FALSE, FALSE),
+    "Maximum number of cores for fi--didemrchnb is 64")
+  expect_error(
+    check_resources("wpia-hpc-hn", "AllNodes", 9001, FALSE, FALSE),
+    "Maximum number of cores for wpia-hpc-hn is 32")
+  
+  expect_error(
     check_resources("fi--dideclusthn", "GeneralNodes", 2, TRUE, FALSE),
     "Cannot specify both wholenode and cores")
 })
 
 
 test_that("Can find redis host, given cluster", {
+  expect_equal(redis_host("wpia-hpc-hn"), "12.0.1.254")
   expect_equal(redis_host("fi--didemrchnb"), "12.0.0.1")
   expect_equal(redis_host("fi--dideclusthn"), "11.0.0.1")
   expect_error(redis_host("fi--didegpu"),
