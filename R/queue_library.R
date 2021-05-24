@@ -48,7 +48,6 @@ queue_library <- R6::R6Class(
       client <- self$client
       client$login()
       dat <- self$write_batch(packages, repos, policy, dryrun)
-
       job_template <- queue_template(cluster)
       dide_id <- client$submit(dat$batch, dat$name, job_template, cluster)
 
@@ -63,8 +62,10 @@ queue_library <- R6::R6Class(
 queue_template <- function(cluster) {
   if (cluster == "fi--didemrchnb") {
     "BuildQueue"
-  } else {
+  } else if (cluster == "fi--dideclusthn") {
     "GeneralNodes"
+  } else if (cluster == "wpia-hpc-hn") {
+    "AllNodes"
   }
 }
 
