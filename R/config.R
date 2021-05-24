@@ -394,7 +394,7 @@ cluster_name <- function(name) {
       alias <- list(
         "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
         "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
-        "wpia-hpc-hn" = c("covid"))
+        "wpia-hpc-hn" = "covid")
       alias <-
         setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
       name <- alias[[match_value(tolower(name), names(alias), "name")]]
@@ -408,9 +408,20 @@ valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
                             "20Core", "24Core", "32Core"),
-       "wpia-hpc-hn" = c("AllNodes"))
+       "wpia-hpc-hn" = "AllNodes")
 }
 
+didehpc_check_max_cores <- function(cluster, cores) {
+  max_cores <- 
+    switch(cluster,
+         "fi--dideclusthn" = 24,
+         "fi--didemrchnb" = 64,
+         "wpia-hpc-hn" = 32,
+         stop(sprintf("Invalid cluster '%s'", cluster)))
+  if (cores > max_cores) {
+    stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
+  }
+}
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   template <- match_value(template, valid_templates()[[cluster]])
@@ -421,12 +432,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop("Cannot specify both wholenode and cores")
     }
     assert_scalar_integer(cores)
-    max_cores <- 24
-    if (cluster == "fi--didemrchnb") max_cores <- 64
-    else if (cluster == "wpia-hpc-hn") max_cores <- 32
-    if (cores > max_cores) {
-      stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
-    }
+    didehpc_check_max_cores(cluster, cores)
     parallel <- parallel %||% (cores > 1) # be careful of precendence
     ret <- list(template = template, parallel = parallel,
                 count = cores, type = "Cores")

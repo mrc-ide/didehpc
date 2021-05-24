@@ -58,17 +58,13 @@ queue_library <- R6::R6Class(
     }
   ))
 
-
 queue_template <- function(cluster) {
-  if (cluster == "fi--didemrchnb") {
-    "BuildQueue"
-  } else if (cluster == "fi--dideclusthn") {
-    "GeneralNodes"
-  } else if (cluster == "wpia-hpc-hn") {
-    "AllNodes"
-  }
+  switch(cluster,
+    "fi--dideclusthn" = "GeneralNodes",
+    "fi--didemrchnb" = "BuildQueue",
+    "wpia-hpc-hn" = "AllNodes",
+    stop(sprintf("Invalid cluster '%s'", cluster)))
 }
-
 
 provision_policy <- function(policy, name = deparse(substitute(name))) {
   if (is.logical(policy)) {
