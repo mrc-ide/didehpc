@@ -117,8 +117,7 @@ test_that("detect_mount_windows errors if no method found", {
     detect_mount_windows(),
     "Could not determine windows mounts using wmic.+some error")
   mockery::expect_called(mock_wmic_call, 3)
-  win_dir <- Sys.getenv("windir")
-  if (win_dir == "") win_dir <- "C:\\Windows"
+  win_dir <- Sys.getenv("windir", "C:\\Windows")
   expect_equal(
     mockery::mock_args(mock_wmic_call),
     list(list("csv"),
