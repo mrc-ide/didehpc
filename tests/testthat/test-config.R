@@ -121,6 +121,9 @@ test_that("Check that resources are acceptable", {
   expect_error(
     check_resources("fi--dideclusthn", "GeneralNodes", 2, TRUE, FALSE),
     "Cannot specify both wholenode and cores")
+  expect_error(
+    didehpc_check_max_cores("unknown_cluster", 99),
+    "Invalid cluster 'unknown_cluster'")
 })
 
 
