@@ -22,15 +22,16 @@ test_that("detect_mount uses correct implementation", {
 })
 
 
-test_that("return sensible data when no mounts found", {
+test_that("return sensible data when no mounts found (linux)", {
+  skip_on_os("windows")
   mock_system2 <- mockery::mock(character())
   mockery::stub(detect_mount_unix, "system2", mock_system2)
   res <- detect_mount_unix()
   expect_equal(res, cbind(remote = character(), local = character()))
 })
 
-
-test_that("Parse return value into sensible output", {
+test_that("Parse return value into sensible output (linux)", {
+  skip_on_os("windows")
   dat <- c(
     "//fi--didef3/other on /home/bob/net/other type cifs (rw,relatime)",
     "//fi--san03/homes/bob on /home/bob/net/home type cifs (rw,relatime)",
@@ -47,8 +48,8 @@ test_that("Parse return value into sensible output", {
   expect_equal(res, cmp)
 })
 
-
-test_that("Warn if given unexpected output", {
+test_that("Warn if given unexpected output (linux)", {
+  skip_on_os("windows")  
   dat <- c(
     "//fi--didef3/other on /home/bob/net/other type cifs (rw,relatime)",
     "//fi--san03/homes/bob sur /home/bob/net/home type cifs (rw,relatime)",
@@ -98,12 +99,12 @@ test_that("detect_mount_windows tries different methods in turn", {
   mockery::stub(detect_mount_windows, "wmic_call", mock_wmic_call)
 
   expect_equal(detect_mount_windows(), res$result)
-
+  win_dir <- Sys.getenv("windir", "C:\\Windows")
   mockery::expect_called(mock_wmic_call, 2)
   expect_equal(
     mockery::mock_args(mock_wmic_call),
     list(list("csv"),
-         list("C:\\Windows\\System32\\wbem\\en-US\\csv")))
+         list(sprintf("%s\\System32\\wbem\\en-US\\csv", win_dir))))
 })
 
 
@@ -115,11 +116,12 @@ test_that("detect_mount_windows errors if no method found", {
     detect_mount_windows(),
     "Could not determine windows mounts using wmic.+some error")
   mockery::expect_called(mock_wmic_call, 3)
+  win_dir <- Sys.getenv("windir", "C:\\Windows")
   expect_equal(
     mockery::mock_args(mock_wmic_call),
     list(list("csv"),
-         list("C:\\Windows\\System32\\wbem\\en-US\\csv"),
-         list("C:\\Windows\\System32\\wbem\\en-GB\\csv")))
+         list(sprintf("%s\\System32\\wbem\\en-US\\csv", win_dir)),
+         list(sprintf("%s\\System32\\wbem\\en-GB\\csv", win_dir))))
 })
 
 

@@ -72,9 +72,10 @@
 ##'   or a list of such calls.
 ##'
 ##' @param template A job template.  On fi--dideclusthn this can be
-##'   "GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+##'   "GeneralNodes" or "8Core". On "fi--didemrchnb" this can be
 ##'   "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
-##'   "24Core" or "32Core". See the main cluster documentation if you
+##'   "24Core" or "32Core". On the new "wpia-hpc-hn" cluster, you should
+##'   currently use "AllNodes". See the main cluster documentation if you
 ##'   tweak these parameters, as you may not have permission to use
 ##'   all templates (and if you use one that you don't have permission
 ##'   for the job will fail).  For training purposes there is also a
@@ -85,8 +86,8 @@
 ##'   useful when using the `GeneralNodes` template.  If
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
-##'   forever!  24 is the largest this should be on fi--dideclusthn
-##'   and 64 on fi--didemrchnb (assuming you have access to those
+##'   forever!  24 is the largest this should be on fi--dideclusthn,
+##'   64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
 ##'   nodes).  If omitted then a single core is selected for the
 ##'   GeneralNodes template or the *entire machine* for the other
 ##'   templates (unless modified by `wholenode`).
@@ -211,7 +212,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
   mounts <- detect_mount()
-  remap_nas <- cluster == "fi--didemrchnb"
+  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
                               workdir, credentials$username, remap_nas)
   resource <- check_resources(cluster, dat$template, dat$cores,
@@ -380,7 +381,7 @@ print.didehpc_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb")
+  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn")
 }
 
 
@@ -392,7 +393,8 @@ cluster_name <- function(name) {
     if (!(name %in% valid_clusters())) {
       alias <- list(
         "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
-        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"))
+        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
+        "wpia-hpc-hn" = "covid")
       alias <-
         setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
       name <- alias[[match_value(tolower(name), names(alias), "name")]]
@@ -405,9 +407,21 @@ cluster_name <- function(name) {
 valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
-                            "20Core", "24Core", "32Core"))
+                            "20Core", "24Core", "32Core"),
+       "wpia-hpc-hn" = "AllNodes")
 }
 
+didehpc_check_max_cores <- function(cluster, cores) {
+  max_cores <- 
+    switch(cluster,
+         "fi--dideclusthn" = 24,
+         "fi--didemrchnb" = 64,
+         "wpia-hpc-hn" = 32,
+         stop(sprintf("Invalid cluster '%s'", cluster)))
+  if (cores > max_cores) {
+    stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
+  }
+}
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   template <- match_value(template, valid_templates()[[cluster]])
@@ -418,10 +432,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
       stop("Cannot specify both wholenode and cores")
     }
     assert_scalar_integer(cores)
-    max_cores <- if (cluster == "fi--didemrchnb") 64 else 24
-    if (cores > max_cores) {
-      stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
-    }
+    didehpc_check_max_cores(cluster, cores)
     parallel <- parallel %||% (cores > 1) # be careful of precendence
     ret <- list(template = template, parallel = parallel,
                 count = cores, type = "Cores")
@@ -466,6 +477,7 @@ rtools_versions <- function(path, r_version) {
                 "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
                 "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
                 "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
+                "4.1" = list(path = "Rtools40", gcc = mingw, make = "usr"),
                 stop(sprintf("No RTools version found for R %s", r_version)))
 
   ret$binpref <-
@@ -482,6 +494,7 @@ rtools_versions <- function(path, r_version) {
 
 redis_host <- function(cluster) {
   switch(cluster,
+         "wpia-hpc-hn" = "12.0.1.254",
          "fi--didemrchnb" = "12.0.0.1",
          "fi--dideclusthn" = "11.0.0.1",
          stop(sprintf("No redis host for cluster '%s'", cluster)))

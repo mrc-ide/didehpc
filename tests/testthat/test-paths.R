@@ -15,7 +15,7 @@ test_that("can validate creation of path mapping", {
     "Local mount point does not exist: ")
   expect_error(
     path_mapping("home", "Q:", "Q://fi--san03/homes/bob", "Q:"),
-    "Local mount point does not exist: Q:/")
+    "path_remote must be a network path, starting with")
   expect_error(
     path_mapping("home", getwd(), "//fi--san03/homes/bob", "Q"),
     "drive_remote must be of the form 'X:'")

@@ -1,3 +1,7 @@
+# didehpc 0.3.4
+
+Add support for R 4.1.0 and new covid cluster.
+
 # didehpc 0.3.3
 
 Fix issue if working directory is on an infiniband-capable NAS share.
