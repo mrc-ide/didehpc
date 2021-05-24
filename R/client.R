@@ -409,7 +409,7 @@ client_parse_r_versions <- function(txt) {
 
 client_parse_headnodes <- function(txt) {
   dat <- strsplit(txt, "\n")[[1]]
-  stopifnot(all(grepl("^fi--", dat)))
+  stopifnot(all(grepl("^fi--|wpia-", dat)))
   setdiff(dat, "fi--didelxhn")
 }
 

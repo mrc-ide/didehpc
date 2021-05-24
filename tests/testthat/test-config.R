@@ -62,7 +62,7 @@ test_that("Try and get the username out of windows", {
 
 
 test_that("valid clusters is correct", {
-  expect_equal(valid_clusters(), c("fi--dideclusthn", "fi--didemrchnb"))
+  expect_equal(valid_clusters(), c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn"))
 })
 
 

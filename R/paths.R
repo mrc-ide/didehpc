@@ -40,11 +40,15 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   if (!file.exists(path_local)) {
     stop("Local mount point does not exist: ", path_local)
   }
-  clean_path_remote(path_remote)
+
+  path_remote <- clean_path_remote(path_remote)
+  if (!grepl("^\\\\\\\\(.*)$", path_remote)) {
+    stop("path_remote must be a network path, starting with // or \\\\\\\\")
+  }
 
   ret <- list(
     name = name,
-    path_remote = clean_path_remote(path_remote),
+    path_remote = path_remote,
     path_local = clean_path_local(path_local),
     drive_remote = drive_remote)
   class(ret) <- "path_mapping"
