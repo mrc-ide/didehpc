@@ -31,19 +31,22 @@ path_mapping <- function(name, path_local, path_remote, drive_remote) {
   assert_scalar_character(path_local)
   assert_scalar_character(path_remote)
   assert_scalar_character(drive_remote)
+
   if (!grepl("^[A-Za-z]:$", drive_remote)) {
     stop("drive_remote must be of the form 'X:'")
   }
+
   if (grepl("^[A-Za-z]:$", path_local)) {
     path_local <- paste0(path_local, "/")
-  }
-  if (!file.exists(path_local)) {
-    stop("Local mount point does not exist: ", path_local)
   }
 
   path_remote <- clean_path_remote(path_remote)
   if (!grepl("^\\\\\\\\(.*)$", path_remote)) {
     stop("path_remote must be a network path, starting with // or \\\\\\\\")
+  }
+
+  if (!file.exists(path_local)) {
+    stop("Local mount point does not exist: ", path_local)
   }
 
   ret <- list(
