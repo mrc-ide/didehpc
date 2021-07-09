@@ -224,6 +224,12 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$java_home <- ""
   }
 
+  if (cluster == "fi--didemrchnb") {
+    redis_host <- "129.31.26.134"
+  } else {
+    redis_host <- paste0(cluster, ".dide.ic.ac.uk")
+  }
+
   ret <- list(cluster = cluster,
               credentials = credentials,
               username = credentials$username,
@@ -239,7 +245,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
               use_java = dat$use_java,
               java_home = dat$java_home,
               ## derived values
-              redis_host = paste0(cluster, ".dide.ic.ac.uk"))
+              redis_host = redis_host)
 
   if (!is.null(worker_resource)) {
     if (!ret$use_rrq) {
@@ -495,7 +501,7 @@ rtools_versions <- function(path, r_version) {
 redis_host <- function(cluster) {
   switch(cluster,
          "wpia-hpc-hn" = "12.0.1.254",
-         "fi--didemrchnb" = "12.0.0.1",
+         "fi--didemrchnb" = "129.31.26.134",
          "fi--dideclusthn" = "11.0.0.1",
          stop(sprintf("No redis host for cluster '%s'", cluster)))
 }
