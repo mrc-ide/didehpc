@@ -47,7 +47,8 @@ test_that("queue interface to controller creation sends correct args", {
   ctx <- context::context_save(file.path(config$workdir, "context"))
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   mock_rrq_controller <- mockery::mock()
-  mockery::stub(obj$rrq_controller, "rrq_controller", mock_rrq_controller)
+  mockery::stub(obj$rrq_controller, "didehpc_rrq_controller",
+                mock_rrq_controller)
   obj$rrq_controller()
   mockery::expect_called(mock_rrq_controller, 1)
   expect_equal(mockery::mock_args(mock_rrq_controller)[[1]],
@@ -61,7 +62,7 @@ test_that("stopping workers interaction test", {
   worker_ids <- ids::random_id(4)
   mock_rrq <- list(worker_stop = mockery::mock())
   mock_rrq_controller <- mockery::mock(mock_rrq)
-  mockery::stub(rrq_stop_workers, "rrq_controller", mock_rrq_controller)
+  mockery::stub(rrq_stop_workers, "didehpc_rrq_controller", mock_rrq_controller)
   rrq_stop_workers(config, id, worker_ids)
 
   mockery::expect_called(mock_rrq_controller, 1)
@@ -80,10 +81,10 @@ test_that("rrq controller reads the cluster host", {
   mock_hiredis <- mockery::mock(redux::redis)
   mock_rrq <- mockery::mock()
   id <- ids::random_id()
-  mockery::stub(rrq_controller, "rrq::rrq_controller", mock_rrq)
-  mockery::stub(rrq_controller, "redux::hiredis", mock_hiredis)
+  mockery::stub(didehpc_rrq_controller, "rrq__rrq_controller", mock_rrq)
+  mockery::stub(didehpc_rrq_controller, "redux::hiredis", mock_hiredis)
   expect_error(
-    rrq_controller(list(use_rrq = FALSE, use_workers = FALSE), id),
+    didehpc_rrq_controller(list(use_rrq = FALSE, use_workers = FALSE), id),
     "workers not enabled")
   mockery::expect_called(mock_hiredis, 0)
   mockery::expect_called(mock_rrq, 0)
@@ -91,7 +92,7 @@ test_that("rrq controller reads the cluster host", {
   config <- list(use_rrq = TRUE,
                  use_workers = FALSE,
                  redis_host = "redis.example.com")
-  expect_silent(rrq_controller(config, id))
+  expect_silent(didehpc_rrq_controller(config, id))
   mockery::expect_called(mock_hiredis, 1)
   mockery::expect_called(mock_rrq, 1)
   expect_equal(mockery::mock_args(mock_hiredis)[[1]],
@@ -104,7 +105,7 @@ test_that("configure environment", {
   skip_if_no_redis()
   config <- list(use_rrq = TRUE, redis_host = NULL, worker_timeout = 100)
   id <- ids::random_id()
-  rrq <- rrq_controller(config, id)
+  rrq <- didehpc_rrq_controller(config, id)
   expect_null(rrq$con$GET(rrq$keys$envir))
 
   rrq_init(rrq, config)
@@ -159,7 +160,7 @@ test_that("Can send context tasks to a worker", {
   ids <- c(context::task_save(quote(sin(1)), ctx),
            context::task_save(quote(sin(2)), ctx))
   rrq_submit_context_tasks(config, ctx, ids, NULL)
-  rrq <- rrq_controller(config, ctx$id)
+  rrq <- didehpc_rrq_controller(config, ctx$id)
   rrq_init(rrq, config)
   rrq$envir(NULL, FALSE) # just simpler not to have this here
   id_rrq <- rrq$task_list()

@@ -177,7 +177,7 @@ queue_didehpc_ <- R6::R6Class(
     ##'   faster than submitting via `$enqueue()`. See `vignette("workers")`
     ##'   for more information.
     rrq_controller = function() {
-      rrq_controller(self$config, self$context$id)
+      didehpc_rrq_controller(self$config, self$context$id)
     },
 
     ##' @description Unsubmit tasks from the cluster. This removes the tasks

@@ -1,10 +1,16 @@
 ## Create and configure an rrq controller for use from the controlling
 ## node
-rrq_controller <- function(config, id) {
+didehpc_rrq_controller <- function(config, id) {
   if (!(isTRUE(config$use_rrq) || isTRUE(config$use_workers))) {
     stop("workers not enabled")
   }
-  rrq::rrq_controller(id, redux::hiredis(host = config$redis_host))
+  rrq__rrq_controller(id, redux::hiredis(host = config$redis_host))
+}
+
+
+## This exists to help mockery
+rrq__rrq_controller <- function(id, con) {
+  rrq::rrq_controller$new(id, con) # nocov
 }
 
 
@@ -25,7 +31,7 @@ rrq_init <- function(rrq, config) {
 
 ## Submit a set of context jobs into the redis queue
 rrq_submit_context_tasks <- function(config, context, task_ids, names) {
-  rrq <- rrq_controller(config, context$id)
+  rrq <- didehpc_rrq_controller(config, context$id)
   ## NOTE: We don't cope with names here
   root <- context$root$path
   db <- context$root$db
@@ -115,5 +121,5 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
 
 
 rrq_stop_workers <- function(config, id, worker_ids) {
-  rrq_controller(config, id)$worker_stop(worker_ids)
+  didehpc_rrq_controller(config, id)$worker_stop(worker_ids)
 }

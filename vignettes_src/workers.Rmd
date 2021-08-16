@@ -117,7 +117,7 @@ t$wait(10)
 We're going to interact with the rrq object a bit
 
 ```{r}
-rrq <- obj$rrq_controller()
+rrq <- obj$rrq_controller$new(()
 rrq
 ```
 
@@ -209,7 +209,7 @@ workers
 To send tasks to these workers we directly use the `rrq_controller` object - we'll not use the `queue_didehpc` object from this point.
 
 ```{r}
-rrq <- obj$rrq_controller()
+rrq <- obj$rrq_controller$new(()
 ```
 
 This will look and act a lot like the main didehpc queue controller, but with a few differences.  Tasks will come back as plain strings rather than user-friendly objects and `lapply` and `enqueue_bulk` are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistent record on disk.  The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.
@@ -244,7 +244,7 @@ It is theoretically possible to submit a cluster job that creates an `rrq_contro
 get_rrq_controller <- function(x, ...) {
   queue_id <- Sys.getenv("CONTEXT_ID", "")
   stopifnot(queue_id != "")
-  rrq::rrq_controller(queue_id)
+  rrq::rrq_controller$new((queue_id)
 }
 ```
 
