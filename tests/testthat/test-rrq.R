@@ -81,7 +81,7 @@ test_that("rrq controller reads the cluster host", {
   mock_hiredis <- mockery::mock(redux::redis)
   mock_rrq <- mockery::mock()
   id <- ids::random_id()
-  mockery::stub(didehpc_rrq_controller, "rrq__rrq_controller", mock_rrq)
+  mockery::stub(didehpc_rrq_controller, "rrq::rrq_controller$new", mock_rrq)
   mockery::stub(didehpc_rrq_controller, "redux::hiredis", mock_hiredis)
   expect_error(
     didehpc_rrq_controller(list(use_rrq = FALSE, use_workers = FALSE), id),

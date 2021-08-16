@@ -4,13 +4,7 @@ didehpc_rrq_controller <- function(config, id) {
   if (!(isTRUE(config$use_rrq) || isTRUE(config$use_workers))) {
     stop("workers not enabled")
   }
-  rrq__rrq_controller(id, redux::hiredis(host = config$redis_host))
-}
-
-
-## This exists to help mockery
-rrq__rrq_controller <- function(id, con) {
-  rrq::rrq_controller$new(id, con) # nocov
+  rrq::rrq_controller$new(id, redux::hiredis(host = config$redis_host))
 }
 
 
