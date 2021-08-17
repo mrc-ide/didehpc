@@ -244,7 +244,7 @@ It is theoretically possible to submit a cluster job that creates an `rrq_contro
 get_rrq_controller <- function(x, ...) {
   queue_id <- Sys.getenv("CONTEXT_ID", "")
   stopifnot(queue_id != "")
-  rrq::rrq_controller(queue_id)
+  rrq::rrq_controller$new((queue_id)
 }
 ```
 

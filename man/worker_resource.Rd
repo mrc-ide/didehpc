@@ -13,9 +13,10 @@ worker_resource(
 }
 \arguments{
 \item{template}{A job template.  On fi--dideclusthn this can be
-"GeneralNodes" or "8Core", while on "fi--didemrchnb" this can be
+"GeneralNodes" or "8Core". On "fi--didemrchnb" this can be
 "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
-"24Core" or "32Core". See the main cluster documentation if you
+"24Core" or "32Core". On the new "wpia-hpc-hn" cluster, you should
+currently use "AllNodes". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
 for the job will fail).  For training purposes there is also a
@@ -26,8 +27,8 @@ instructed to.}
 useful when using the \code{GeneralNodes} template.  If
 specified, then we will request this many cores from the windows
 queuer.  If you request too many cores then your task will queue
-forever!  24 is the largest this should be on fi--dideclusthn
-and 64 on fi--didemrchnb (assuming you have access to those
+forever!  24 is the largest this should be on fi--dideclusthn,
+64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
 nodes).  If omitted then a single core is selected for the
 GeneralNodes template or the \emph{entire machine} for the other
 templates (unless modified by \code{wholenode}).}

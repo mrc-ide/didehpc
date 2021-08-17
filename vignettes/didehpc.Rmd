@@ -312,11 +312,11 @@ To set this up, we'd write:
 
 ```r
 ctx <- context::context_save(root, sources = "mysources.R")
-#> [ init:id   ]  bc7b327a3c2f4aa1188782376962aae4
+#> [ init:id   ]  6f2a9c5197415536c9916aa99763600b
 #> [ init:db   ]  rds
 #> [ init:path ]  contexts
-#> [ save:id   ]  3840f3707c2ecf1d05678da71a470cb2
-#> [ save:name ]  unkind_kitten
+#> [ save:id   ]  02a9261fe4e9e6554d76936ecb35cef0
+#> [ save:name ]  counterterrorist_xuanhanosaurus
 ```
 
 `sources` can be a character vector, `NULL` or `character(0)` if
@@ -350,8 +350,8 @@ context directory.
 
 ```r
 obj <- didehpc::queue_didehpc(ctx)
-#> Loading context 3840f3707c2ecf1d05678da71a470cb2
-#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
+#> Loading context 02a9261fe4e9e6554d76936ecb35cef0
+#> [ context   ]  02a9261fe4e9e6554d76936ecb35cef0
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
@@ -359,9 +359,9 @@ obj <- didehpc::queue_didehpc(ctx)
 #>   ,:\      /:.
 #>  //  \_()_/  \\
 #> ||   |    |   ||  CONAN THE LIBRARIAN
-#> ||   |    |   ||  Library:   Q:\didehpc\20210420-102851\contexts\lib\windows\4.0
+#> ||   |    |   ||  Library:   Q:\didehpc\20210817-145020\contexts\lib\windows\4.0
 #> ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0
-#>  \\  / || \  //   Cache:     Q:\didehpc\20210420-102851\contexts\conan\cache/pkg
+#>  \\  / || \  //   Cache:     Q:\didehpc\20210817-145020\contexts\conan\cache/pkg
 #>   `:/  ||  \;'    Policy:    lazy
 #>        ||         Repos:
 #>        ||           * https://mrc-ide.github.io/didehpc-pkgs
@@ -371,36 +371,33 @@ obj <- didehpc::queue_didehpc(ctx)
 #>        XX
 #>        OO
 #>        `'
+#> i Loading metadata database
+#> v Loading metadata database ... done
 #>
-#> v Updated metadata database: 4.33 MB in 14 files.
-#>
-#> i Updating metadata database
-#> v Updating metadata database ... done
-#>
-#> i Getting 9 pkgs (5.18 MB) and 1 pkg with unknown size
+#> i Getting 9 pkgs (5.29 MB) and 1 pkg with unknown size
 #> v Got context 0.3.0 (source) (37.72 kB)
-#> v Got crayon 1.4.1 (windows) (141.72 kB)
-#> v Got digest 0.6.27 (windows) (268.60 kB)
-#> v Got ids 1.0.1 (windows) (123.91 kB)
-#> v Got R6 2.5.0 (windows) (84.10 kB)
-#> v Got sys 3.4 (windows) (59.68 kB)
+#> v Got ids 1.0.1 (windows) (123.89 kB)
+#> v Got R6 2.5.0 (windows) (84.09 kB)
+#> v Got askpass 1.1 (windows) (243.58 kB)
+#> v Got crayon 1.4.1 (windows) (141.87 kB)
+#> v Got digest 0.6.27 (windows) (268.65 kB)
 #> v Got uuid 0.1-4 (windows) (33.77 kB)
-#> v Got askpass 1.1 (windows) (243.57 kB)
-#> v Got storr 1.2.5 (windows) (401.10 kB)
-#> v Got openssl 1.4.3 (windows) (3.99 MB)
-#> v Installed R6 2.5.0  (797ms)
-#> v Installed crayon 1.4.1  (985ms)
-#> v Installed ids 1.0.1  (1.1s)
-#> v Installed askpass 1.1  (1.4s)
-#> v Installed sys 3.4  (1.3s)
-#> v Installed digest 0.6.27  (1.6s)
-#> v Installed storr 1.2.5  (1.7s)
-#> v Installed uuid 0.1-4  (1.3s)
-#> v Installed openssl 1.4.3  (2.1s)
+#> v Got sys 3.4 (windows) (59.83 kB)
+#> v Got openssl 1.4.4 (windows) (4.10 MB)
+#> v Got storr 1.2.5 (windows) (401.33 kB)
+#> v Installed R6 2.5.0  (594ms)
+#> v Installed crayon 1.4.1  (766ms)
+#> v Installed ids 1.0.1  (860ms)
+#> v Installed askpass 1.1  (1s)
+#> v Installed sys 3.4  (954ms)
+#> v Installed digest 0.6.27  (1.2s)
+#> v Installed storr 1.2.5  (1.3s)
+#> v Installed uuid 0.1-4  (1s)
+#> v Installed openssl 1.4.4  (1.5s)
 #> i Building context 0.3.0
-#> v Built context 0.3.0 (4.2s)
-#> v Installed context 0.3.0  (501ms)
-#> v Summary:   10 new  in 17s
+#> v Built context 0.3.0 (3.1s)
+#> v Installed context 0.3.0  (344ms)
+#> v Summary:   10 new  in 12.7s
 #> Done!
 ```
 
@@ -471,10 +468,11 @@ For documentation about the individual methods, see help for `didehpc::queue_did
 obj$cluster_load(TRUE)
 #>            name free used total % used
 #> --------------- ---- ---- ----- ------
-#> fi--dideclusthn  133   83   216    38%
-#>  fi--didemrchnb 1268  512  1780    29%
+#> fi--dideclusthn  134   82   216    38%
+#>  fi--didemrchnb  730 1050  1780    59%
+#>     wpia-hpc-hn  352    0   352     0%
 #> --------------- ---- ---- ----- ------
-#>         didehpc 1401  595  1996    30%
+#>         didehpc 1216 1132  2348    48%
 ```
 
 (if you're on a ANSI-compatible terminal this will be in glorious
@@ -514,10 +512,10 @@ sessionInfo()
 #>  [5] tools_4.0.3       digest_0.6.27     pkgbuild_1.2.0    uuid_0.1-4
 #>  [9] lifecycle_0.2.0   jsonlite_1.7.1    evaluate_0.14     tibble_3.0.4
 #> [13] pkgconfig_2.0.3   rlang_0.4.9       cli_2.2.0         filelock_1.0.2
-#> [17] curl_4.3          conan_0.1.0       xfun_0.19         withr_2.3.0
+#> [17] curl_4.3          conan_0.1.1       xfun_0.19         withr_2.3.0
 #> [21] queuer_0.3.0      storr_1.2.5       httr_1.4.2        stringr_1.4.0
 #> [25] knitr_1.30        vctrs_0.3.5       desc_1.2.0        askpass_1.1
-#> [29] didehpc_0.3.1     context_0.3.0     rprojroot_2.0.2   glue_1.4.2
+#> [29] didehpc_0.3.6     context_0.3.0     rprojroot_2.0.2   glue_1.4.2
 #> [33] R6_2.5.0          processx_3.4.5    rematch_1.0.1     fansi_0.4.1
 #> [37] callr_3.5.1       magrittr_2.0.1    rematch2_2.1.2    ids_1.0.1
 #> [41] pkgdepends_0.1.0  ps_1.4.0          ellipsis_0.3.1    assertthat_0.2.1
@@ -538,8 +536,8 @@ We can then poll the cluster for results until it completes:
 
 ```r
 t$wait(100)
-#> (-) waiting for 047dc5c...eb6, giving up in 99.5 s (\) waiting for
-#> 047dc5c...eb6, giving up in 98.9 s
+#> (-) waiting for d826bc6...9e1, giving up in 99.5 s (\) waiting for
+#> d826bc6...9e1, giving up in 98.9 s
 #> R version 4.0.3 (2020-10-10)
 #> Platform: x86_64-w64-mingw32/x64 (64-bit)
 #> Running under: Windows Server 2012 R2 x64 (build 9600)
@@ -590,7 +588,7 @@ t
 #>     clone: function (deep = FALSE)
 #>     context_id: function ()
 #>     expr: function (locals = FALSE)
-#>     id: d81e8f0844c3e406154890241296b3ca
+#>     id: c6cfa739a58b925f4919c4d4ebdead1e
 #>     initialize: function (id, root, check_exists = TRUE)
 #>     log: function (parse = TRUE)
 #>     result: function (allow_incomplete = FALSE)
@@ -617,7 +615,7 @@ and you can try and get the result of running the task:
 
 ```r
 t$result()
-#> Error: task d81e8f0844c3e406154890241296b3ca is unfetchable: PENDING
+#> Error: task c6cfa739a58b925f4919c4d4ebdead1e is unfetchable: PENDING
 ```
 
 This errors if the task is not yet complete.
@@ -629,10 +627,10 @@ seconds.
 
 ```r
 t$wait(100)
-#> (-) waiting for d81e8f0...3ca, giving up in 99.5 s (\) waiting for
-#> d81e8f0...3ca, giving up in 99.0 s
-#>  [1] -0.4928795  0.7289429 -0.2421211 -3.2556916 -3.2460848 -3.5261959
-#>  [7] -2.4020246 -3.8434006 -2.6915769 -2.0246884
+#> (-) waiting for c6cfa73...d1e, giving up in 99.5 s (\) waiting for
+#> c6cfa73...d1e, giving up in 99.0 s
+#>  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202
+#>  [7]  4.32781963  4.53920816  3.29061261  2.64571591
 ```
 
 once the task has completed, `t$result()` and `t$wait` are equivalent
@@ -640,8 +638,8 @@ once the task has completed, `t$result()` and `t$wait` are equivalent
 
 ```r
 t$result()
-#>  [1] -0.4928795  0.7289429 -0.2421211 -3.2556916 -3.2460848 -3.5261959
-#>  [7] -2.4020246 -3.8434006 -2.6915769 -2.0246884
+#>  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202
+#>  [7]  4.32781963  4.53920816  3.29061261  2.64571591
 ```
 
 You can query the times of your tasks
@@ -650,9 +648,9 @@ You can query the times of your tasks
 ```r
 t$times()
 #>                            task_id           submitted             started
-#> 1 d81e8f0844c3e406154890241296b3ca 2021-04-20 10:29:31 2021-04-20 10:29:32
-#>              finished   waiting   running      idle
-#> 1 2021-04-20 10:29:32 0.9419801 0.1093771 0.7981758
+#> 1 c6cfa739a58b925f4919c4d4ebdead1e 2021-08-17 14:50:47 2021-08-17 14:50:48
+#>              finished   waiting    running      idle
+#> 1 2021-08-17 14:50:48 0.7953935 0.07812715 0.7084134
 ```
 
 which will show you when the task was submitted, started and stopped.
@@ -662,25 +660,25 @@ Every task creates a log:
 
 ```r
 t$log()
-#> [ hello     ]  2021-04-20 10:29:32
-#> [ wd        ]  Q:/didehpc/20210420-102851
-#> [ init      ]  2021-04-20 10:29:32.122
-#> [ hostname  ]  FI--DIDECLUST29
-#> [ process   ]  5732
+#> [ hello     ]  2021-08-17 14:50:47
+#> [ wd        ]  Q:/didehpc/20210817-145020
+#> [ init      ]  2021-08-17 14:50:47.946
+#> [ hostname  ]  FI--DIDECLUST26
+#> [ process   ]  3752
 #> [ version   ]  0.3.0
 #> [ open:db   ]  rds
-#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
+#> [ context   ]  02a9261fe4e9e6554d76936ecb35cef0
 #> [ library   ]
 #> [ namespace ]
 #> [ source    ]  mysources.R
 #> [ parallel  ]  running as single core job
-#> [ root      ]  Q:\didehpc\20210420-102851\contexts
-#> [ context   ]  3840f3707c2ecf1d05678da71a470cb2
-#> [ task      ]  d81e8f0844c3e406154890241296b3ca
+#> [ root      ]  Q:\didehpc\20210817-145020\contexts
+#> [ context   ]  02a9261fe4e9e6554d76936ecb35cef0
+#> [ task      ]  c6cfa739a58b925f4919c4d4ebdead1e
 #> [ expr      ]  random_walk(0, 10)
-#> [ start     ]  2021-04-20 10:29:32.341
+#> [ start     ]  2021-08-17 14:50:48.102
 #> [ ok        ]
-#> [ end       ]  2021-04-20 10:29:32.497
+#> [ end       ]  2021-08-17 14:50:48.227
 ```
 
 Warning messages and other output will be printed here.  So if you
@@ -697,10 +695,10 @@ need to look at this when a job seems to get stuck with status
 ```r
 obj$dide_log(t)
 #>  [1] "generated on host: kea"
-#>  [2] "generated on date: 2021-04-20"
-#>  [3] "didehpc version: 0.3.1"
+#>  [2] "generated on date: 2021-08-17"
+#>  [3] "didehpc version: 0.3.6"
 #>  [4] "context version: 0.3.0"
-#>  [5] "running on: FI--DIDECLUST29"
+#>  [5] "running on: FI--DIDECLUST26"
 #>  [6] "mapping Q: -> \\\\fi--san03.dide.ic.ac.uk\\homes\\rfitzjoh"
 #>  [7] "The command completed successfully."
 #>  [8] ""
@@ -708,11 +706,11 @@ obj$dide_log(t)
 #> [10] "The command completed successfully."
 #> [11] ""
 #> [12] "Using Rtools at T:\\Rtools\\Rtools40"
-#> [13] "working directory: Q:\\didehpc\\20210420-102851"
+#> [13] "working directory: Q:\\didehpc\\20210817-145020"
 #> [14] "this is a single task"
-#> [15] "logfile: Q:\\didehpc\\20210420-102851\\contexts\\logs\\d81e8f0844c3e406154890241296b3ca"
+#> [15] "logfile: Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e"
 #> [16] ""
-#> [17] "Q:\\didehpc\\20210420-102851>Rscript \"Q:\\didehpc\\20210420-102851\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210420-102851\\contexts\" d81e8f0844c3e406154890241296b3ca  1>\"Q:\\didehpc\\20210420-102851\\contexts\\logs\\d81e8f0844c3e406154890241296b3ca\" 2>&1"
+#> [17] "Q:\\didehpc\\20210817-145020>Rscript \"Q:\\didehpc\\20210817-145020\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210817-145020\\contexts\" c6cfa739a58b925f4919c4d4ebdead1e  1>\"Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e\" 2>&1"
 #> [18] "Removing mapping Q:"
 #> [19] "Q: was deleted successfully."
 #> [20] ""
@@ -727,7 +725,7 @@ The queue knows which tasks it has created and you can list them:
 
 ```r
 obj$task_list()
-#> [1] "047dc5c3ea5e175ef1ce2964b1861eb6" "d81e8f0844c3e406154890241296b3ca"
+#> [1] "c6cfa739a58b925f4919c4d4ebdead1e" "d826bc66ff934fbc9a76467e1f4f89e1"
 ```
 
 The long identifiers are random and are long enough that collisions
@@ -746,7 +744,7 @@ cluster has passed an object directly back to you.
 ```r
 id <- t$id
 id
-#> [1] "d81e8f0844c3e406154890241296b3ca"
+#> [1] "c6cfa739a58b925f4919c4d4ebdead1e"
 ```
 
 ```
@@ -757,8 +755,8 @@ id
 ```r
 t2 <- obj$task_get(id)
 t2$result()
-#>  [1] -0.4928795  0.7289429 -0.2421211 -3.2556916 -3.2460848 -3.5261959
-#>  [7] -2.4020246 -3.8434006 -2.6915769 -2.0246884
+#>  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202
+#>  [7]  4.32781963  4.53920816  3.29061261  2.64571591
 ```
 
 ## Running many jobs
@@ -781,7 +779,7 @@ sizes:
 ```r
 sizes <- 3:8
 grp <- obj$lapply(sizes, random_walk, x = 0)
-#> Creating bundle: 'kingsize_wombat'
+#> Creating bundle: 'sound_nymph'
 #> [ bulk      ]  Creating 6 tasks
 #> submitting 6 tasks
 #> submitting (-) [============>--------------------------] 33% | waited for 0s
@@ -805,11 +803,11 @@ Get the status of all the jobs
 
 ```r
 grp$status()
-#> 898e2dd8a0e2e7df1005b26140e7e3bc 0c5639a5239818527689f9557de6178a
+#> 8ca54f49ac82893d91c19a13891cb3ee c80f92cc3f3babc837a8ef18603db4f0
 #>                       "COMPLETE"                       "COMPLETE"
-#> 0cf1dd6e134570b2fb13b0084a41fd14 f11825d585df90798ecf7536e4086009
-#>                        "PENDING"                       "COMPLETE"
-#> 5baa1bc078e23fe05ec43eac2705eb55 44fe346014f8a91aaaefe67a26c6ce44
+#> 85935191f16cb04fd814f6df3297158c d5a841a1f7916c8a2eaf645143fe3359
+#>                       "COMPLETE"                       "COMPLETE"
+#> 22252a47ced26ab45e2d1387bdf4ecb8 5c4ae85ef913ce4e55010feafbb5c2a1
 #>                        "PENDING"                        "PENDING"
 ```
 
@@ -834,35 +832,35 @@ We can submit this as a group of 6 jobs with `enqueue_bulk`. Here we add the `ti
 
 ```r
 obj$enqueue_bulk(pars, random_walk, timeout = 120)
-#> Creating bundle: 'jagged_northernspottedowl'
+#> Creating bundle: 'selfish_anemoneshrimp'
 #> [ bulk      ]  Creating 6 tasks
 #> submitting 6 tasks
-#> submitting (-) [============>--------------------------] 33% | waited for 0s
+#> submitting (-) [============>--------------------------] 33% | waited for 1s
 #> submitting (\) [===================>-------------------] 50% | waited for 1s
-#> submitting (|) [=========================>-------------] 67% | waited for 1s
-#> submitting (/) [===============================>-------] 83% | waited for 2s
-#> submitting (-) [=======================================] 100% | waited for 2s
+#> submitting (|) [=========================>-------------] 67% | waited for 2s
+#> submitting (/) [===============================>-------] 83% | waited for 3s
+#> submitting (-) [=======================================] 100% | waited for 3s
 #> (-) [==============================================] 100% | giving up in 119 s
 #> [[1]]
-#> [1] -0.4138958 -1.5107192 -3.4800550 -3.2835614 -4.7553850
+#> [1] -0.5092372 -0.4486443 -0.6431714  0.1341441 -1.1818970
 #>
 #> [[2]]
-#> [1]  0.2786019  0.4971977 -0.3174573 -1.2684465 -0.3909664
+#> [1] -1.18855584 -0.02861008  0.82356347  1.51119207  0.35416280
 #>
 #> [[3]]
-#> [1] 2.504436 3.610663 2.815307 2.080678 3.153207
+#> [1] 1.850285 2.423607 1.597023 1.560501 2.187977
 #>
 #> [[4]]
-#>  [1] -0.95849374 -1.32175679 -2.11785470 -1.15118194 -1.93156578 -0.92933534
-#>  [7] -0.41192536 -0.09267347 -1.05174716 -3.04784834
+#>  [1] -1.0831528 -4.0599794 -2.9609470 -2.1744547 -0.1222570 -0.8703516
+#>  [7] -0.9264912 -0.5261700  1.2054075  0.2159083
 #>
 #> [[5]]
-#>  [1]  1.98109787  1.81049891  3.15977384  2.05752610  1.28942801  0.13488732
-#>  [7]  0.18222808  0.93515165  0.61288818 -0.03350182
+#>  [1]  0.72165118  0.36474247  0.55938912 -0.01860092  0.61308581 -0.80447926
+#>  [7]  0.41558732  0.51387762  0.83248026  0.44125104
 #>
 #> [[6]]
-#>  [1] 0.6445774 2.0884435 1.9083819 1.0971958 2.2117717 1.9550850 3.0714089
-#>  [8] 4.9561154 5.6003901 4.4296370
+#>  [1] 2.0346518 3.2722265 3.4380578 5.1838941 3.7677278 1.9371159 1.5488215
+#>  [8] 1.7675202 0.7970567 1.1976480
 ```
 
 This has applied the function `random_walk` over each row of `pars`.
@@ -918,7 +916,7 @@ but you cannot retrieve results:
 
 ```r
 t$result()
-#> Error: task 5a53928f839edce23b03ea3f8cfadb03 is unfetchable: CANCELLED
+#> Error: task 485a1550fa19bb614d571e368d16164a is unfetchable: CANCELLED
 ```
 
 The argument to `unsubmit` can be a vector.  For example, if you had a task bundle `grp` you could unsubmit all members of the group with
