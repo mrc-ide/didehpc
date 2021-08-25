@@ -37,6 +37,13 @@ reconcile_compare <- function(obj, task_ids = NULL) {
   dat <- obj$client$status_user("*", obj$config$cluster)
   message("  ...done")
 
+  ## If tasks have been created in a group with names per-task, then
+  ## we need to do a bit of processing to get the actual id. We
+  ## construct these names as "%s (%s)" so this regex should always
+  ## work:
+  re <- "^.+\\(([[:xdigit:]]{32})\\)$"
+  dat$name <- sub(re, "\\1", dat$name)
+
   i <- match(task_ids, dat$name)
   st_hpc <- dat$status[i]
 
