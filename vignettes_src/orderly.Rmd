@@ -65,6 +65,7 @@ orderly::orderly_bundle_import(file.path(root, output_path, output_filename),
                                root = orderly_root)
 ```
 And you can see that the report has been run and imported into the orderly archive
+
 ```{r}
 orderly::orderly_list_archive(root = orderly_root)
 ```
