@@ -48,7 +48,7 @@ inst/web/install: inst/scripts/install.R
 website: staticdocs inst/web/install
 	./update_web.sh
 
-vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd vignettes/workers.Rmd
+vignettes: vignettes/quickstart.Rmd vignettes/didehpc.Rmd vignettes/workers.Rmd vignettes/orderly.Rmd
 	${RSCRIPT} -e "library(methods); devtools::build_vignettes(dependencies=FALSE)"
 
 # vignettes/%.Rmd: vignettes/src/%.R

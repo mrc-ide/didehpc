@@ -1,0 +1,118 @@
+---
+title: "Using didehpc to run orderly tasks"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Using didehpc to run orderly tasks}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<!-- HEADER -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  error = FALSE,
+  comment = "#>"
+)
+orderly_root <- orderly:::prepare_orderly_example("demo")
+```
+
+When using [orderly](https://github.com/vimc/orderly) some tasks might be slow to run and would be better suited to running on a remote machine. You can use the cluster and [orderly bundles](https://www.vaccineimpact.org/orderly/articles/bundles.html) to achieve this. If your orderly instance is using a [sharepoint remote](https://github.com/vimc/orderly.sharepoint) or has no remote then you can use the cluster to run your slow running tasks. If your orderly instance has an [OrderlyWeb](https://github.com/vimc/orderly-web) remote then you can run tasks directly on the remote via `orderly::orderly_run_remote` or you can run on the cluster. Typically a cluster node will have more power than an OrderlyWeb worker.
+
+## Running a task on the cluster
+
+To run a single task or report on the cluster start by setting up our directory structure. We need to create
+* `input_path` - a network directory for storing bundles we want to run
+* `working_dir` - a network directory to act as the working directory for the bundle run
+* `output_path` - a network directory where output bundles are saved, this is relative to `working_dir`
+* `orderly_root` - the (possibly) non-network path for the root of the orderly archive. There is no need for your orderly archive to be on a network path, and it may be preferable to store it somewhere not on a network drive to keep things tidy. For example on Linux, we might write:
+
+```{r}
+working_dir <- "~/net/home/contexts"
+input_path <- file.path(working_dir, "input")
+output_path <- "output"
+```
+
+You can then use `orderly_bundle_pack` to create a bundle which can be run on the remote machine. This will create a `.zip` file containing the report and any dependencies required to run the report.
+
+```{r}
+bundle <- orderly::orderly_bundle_pack(input_path, 
+                                       "minimal", 
+                                       root = orderly_root)
+```
+
+Then setup the cluster with required packages, you will need `orderly` at a minimum. You can use the list of packages from the `orderly.yml` e.g. for report `internal-2017-population-TUV-MHL`
+
+```{r}
+orderly_packages <- yaml::read_yaml(
+  file.path(orderly_root, "src/minimal/orderly.yml"))$packages
+packages <- list(loaded = c("orderly", orderly_packages))
+config <- didehpc::didehpc_config(workdir = working_dir)
+ctx <- context::context_save(working_dir, packages = packages, package_sources = src)
+obj <- didehpc::queue_didehpc(ctx, config = config)
+```
+
+The orderly task can then be run via `orderly::orderly_bundle_run`, being careful to make sure the paths are relative to the `workdir` passed in `didehpc_config`
+
+```{r}
+bundle_path <- file.path(basename(input_path), basename(bundle$path))
+t <- obj$enqueue(orderly::orderly_bundle_run(bundle_path, output_path))
+```
+
+Then we need to wait for the bundle to complete running. Here we wait for a result with a timeout of 100s.
+
+```{r}
+output <- t$wait(100)
+```
+
+Now it has completed we can import the result back into your local archive. If you are on windows then can use the `path` from the result. If you are on Mac or Linux you will need to construct the path from the `filename`
+
+```{r}
+orderly::orderly_bundle_import(file.path(working_dir, output_path, output$filename),
+                               root = orderly_root)
+```
+And you can see that the report has been run and imported into the orderly archive
+
+```{r}
+orderly::orderly_list_archive(root = orderly_root)
+```
+`orderly::orderly_bundle_pack` can pack reports for running on the cluster which take `parameters`, `instance` and `remote` args like `orderly_run`. There are also remote equivalents which will can be used to pack a bundle on the remote instance, see [`orderly::orderly_bundle_pack_remote`](https://www.vaccineimpact.org/orderly/reference/orderly_bundle_pack_remote.html) for details.
+
+## Bundle multiple reports or one report with multiple sets of parameters
+
+A bundle can only contain 1 orderly task for running. If you want to run multiple reports on the cluster or one report with multiple sets of parameters you need to create multiple bundles. You can make this easier with a script e.g.
+
+```{r}
+params <- c(0.25, 0.5, 0.75)
+bundles <- lapply(params, function(nmin) {
+  orderly::orderly_bundle_pack(input_path, "other", 
+                               parameters = list(nmin = nmin), 
+                               root = orderly_root)
+  })
+paths <- vapply(bundles, function(bundle) {
+    file.path(basename(input_path), basename(bundle$path))
+  }, character(1))
+```
+
+and queue the tasks with `lapply`
+
+```{r}
+t <- obj$lapply(paths, orderly::orderly_bundle_run, output_path)
+```
+import the results
+
+```{r}
+for (output in t$wait(100)) {
+  orderly::orderly_bundle_import(
+    file.path(working_dir, output_path, output$filename),
+    root = orderly_root)
+}
+```
+
+```{r}
+orderly::orderly_list_archive(root = orderly_root)
+```
