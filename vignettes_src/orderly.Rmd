@@ -52,7 +52,7 @@ orderly_packages <- yaml::read_yaml(
   file.path(orderly_root, "src/minimal/orderly.yml"))$packages
 packages <- list(loaded = c("orderly", orderly_packages))
 config <- didehpc::didehpc_config(workdir = working_dir)
-ctx <- context::context_save(working_dir, packages = packages)
+ctx <- context::context_save(working_dir, packages = packages, package_sources = src)
 obj <- didehpc::queue_didehpc(ctx, config = config)
 ```
 
@@ -69,12 +69,10 @@ Then we need to wait for the bundle to complete running. Here we wait for a resu
 output <- t$wait(100)
 ```
 
-Now it has completed we can import the result back into your local archive. If you are on windows then can use the `path` from the result. If you are on Mac or Linux you will need to construct the path
+Now it has completed we can import the result back into your local archive. If you are on windows then can use the `path` from the result. If you are on Mac or Linux you will need to construct the path from the `filename`
 
 ```{r}
-path <- strsplit(output$path, "\\\\")[[1]]
-output_filename <- path[length(path)]
-orderly::orderly_bundle_import(file.path(working_dir, output_path, output_filename),
+orderly::orderly_bundle_import(file.path(working_dir, output_path, output$filename),
                                root = orderly_root)
 ```
 And you can see that the report has been run and imported into the orderly archive
@@ -109,10 +107,9 @@ import the results
 
 ```{r}
 for (output in t$wait(100)) {
-  path <- strsplit(output$path, "\\\\")[[1]]
-  output_filename <- path[length(path)]
-  orderly::orderly_bundle_import(file.path(working_dir, output_path, output_filename),
-                               root = orderly_root)
+  orderly::orderly_bundle_import(
+    file.path(working_dir, output_path, output$filename),
+    root = orderly_root)
 }
 ```
 
