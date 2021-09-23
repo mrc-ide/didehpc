@@ -36,7 +36,7 @@ bundle <- orderly::orderly_bundle_pack(path_bundles,
 #> [ bundle pack ]  20210917-170405-74c5ef39
 ```
 
-Then setup the cluster with required packages, you will need `orderly` at a minimum. You can use the list of packages from the `orderly.yml` e.g. for report `internal-2017-population-TUV-MHL`
+Then setup the cluster with required packages, you will need `orderly` at a minimum. You can use the list of packages from the `orderly.yml` e.g. for report `minimal`
 
 
 ```r
