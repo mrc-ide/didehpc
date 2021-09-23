@@ -126,7 +126,7 @@
 <span class="co">#&gt; [ start      ]  2021-09-17 17:04:05</span>
 <span class="co">#&gt; [ data       ]  source =&gt; dat: 20 x 2</span>
 <span class="co">#&gt; [ bundle pack ]  20210917-170405-74c5ef39</span></code></pre></div>
-<p>Then setup the cluster with required packages, you will need <code>orderly</code> at a minimum. You can use the list of packages from the <code>orderly.yml</code> e.g. for report <code>internal-2017-population-TUV-MHL</code></p>
+<p>Then setup the cluster with required packages, you will need <code>orderly</code> at a minimum. You can use the list of packages from the <code>orderly.yml</code> e.g. for report <code>minimal</code></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">orderly_packages</span> <span class="op">&lt;-</span> <span class="fu">yaml</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/yaml/man/read_yaml.html">read_yaml</a></span><span class="op">(</span>
   <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">orderly_root</span>, <span class="st">"src/minimal/orderly.yml"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">packages</span>
