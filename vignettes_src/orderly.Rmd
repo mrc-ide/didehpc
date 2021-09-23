@@ -45,7 +45,7 @@ bundle <- orderly::orderly_bundle_pack(input_path,
                                        root = orderly_root)
 ```
 
-Then setup the cluster with required packages, you will need `orderly` at a minimum. You can use the list of packages from the `orderly.yml` e.g. for report `internal-2017-population-TUV-MHL`
+Then setup the cluster with required packages, you will need `orderly` at a minimum. You can use the list of packages from the `orderly.yml` e.g. for report `minimal`
 
 ```{r}
 orderly_packages <- yaml::read_yaml(
