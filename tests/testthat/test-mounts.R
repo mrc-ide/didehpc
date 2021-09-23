@@ -327,6 +327,15 @@ test_that("Remap nas regex", {
   expect_equal(use_app_on_nas("\\\\wpia-hpc-hn\\X"), "\\\\wpia-hpc-hn-app\\X")
   expect_equal(use_app_on_nas("//wpia-hpc-hn/X"), "//wpia-hpc-hn-app/X")
   
+  expect_equal(use_app_on_nas("\\\\wpia-hpc-hn-app\\X"), "\\\\wpia-hpc-hn-app\\X")
+  expect_equal(use_app_on_nas("//wpia-hpc-hn-app/X"), "//wpia-hpc-hn-app/X")
+  expect_equal(use_app_on_nas("\\\\wpia-hpc-hn-app.dide.local\\X"), "\\\\wpia-hpc-hn-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//wpia-hpc-hn-app.dide.local/X"), "//wpia-hpc-hn-app.dide.local/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas1-app\\X"), "\\\\fi--didenas1-app\\X")
+  expect_equal(use_app_on_nas("//fi--didenas3-app/X"), "//fi--didenas3-app/X")
+  expect_equal(use_app_on_nas("\\\\fi--didenas4-app.dide.local\\X"), "\\\\fi--didenas4-app.dide.local\\X")
+  expect_equal(use_app_on_nas("//fi--didenas5-app.dide.local/X"), "//fi--didenas5-app.dide.local/X")
+  
 })
 
 test_that("Remap nas", {

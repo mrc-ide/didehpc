@@ -91,13 +91,22 @@ wmic_parse <- function(x) {
 
 
 use_app_on_nas <- function(path_remote) {
-  path_remote <-
-    sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
+  
+  # If we're NOT already accessing this path by infiniband,
+  # but we could be, then add -app to the server name the cluster
+  # will use.
+  
+  if (!(grepl("^[/\\\\]{2}fi--didenas[1345]-app", path_remote) ||
+        grepl("^[/\\\\]{2}wpia-hpc-hn-app", path_remote))) {
+  
+    path_remote <-
+      sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
         path_remote)
   
-  path_remote <-
-    sub("^([/\\\\]{2}wpia-hpc-hn)\\b", "\\1-app",
+    path_remote <-
+      sub("^([/\\\\]{2}wpia-hpc-hn)\\b", "\\1-app",
         path_remote)
+  }
   
 
   path_remote <-
