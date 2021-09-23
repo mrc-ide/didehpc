@@ -1,3 +1,7 @@
+# didehpc 0.3.9
+
+Add support for new infiniband storage on covid cluster headnode.
+
 # didehpc 0.3.4
 
 Add support for R 4.1.0 and new covid cluster.

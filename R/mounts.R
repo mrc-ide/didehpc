@@ -94,9 +94,18 @@ use_app_on_nas <- function(path_remote) {
   path_remote <-
     sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
         path_remote)
+  
+  path_remote <-
+    sub("^([/\\\\]{2}wpia-hpc-hn)\\b", "\\1-app",
+        path_remote)
+  
 
   path_remote <-
     sub("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
+        path_remote)
+  
+  path_remote <-
+    sub("^([/\\\\]{2}wpia-hpc-hn-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
         path_remote)
 
   path_remote
