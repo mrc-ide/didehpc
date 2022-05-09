@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.11</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/didehpc.html">Get started</a>
 </li>
@@ -50,7 +46,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -79,7 +75,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/mrc-ide/didehpc/">
+  <a href="https://github.com/mrc-ide/didehpc/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -100,7 +96,7 @@
       <h1 data-toc-skip>Quickstart for R and the DIDE cluster</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/didehpc/blob/master/vignettes/quickstart.Rmd"><code>vignettes/quickstart.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mrc-ide/didehpc/blob/HEAD/vignettes/quickstart.Rmd" class="external-link"><code>vignettes/quickstart.Rmd</code></a></small>
       <div class="hidden name"><code>quickstart.Rmd</code></div>
 
     </div>
@@ -120,24 +116,24 @@
 <li><p>your package dependencies are all on CRAN, and are all available in windows binary form.</p></li>
 </ul>
 <p>If any of these do not apply to you, you’ll probably need to read the full vignette. In any case the full vignette contains a bunch more information anyway.</p>
-<div id="install-a-lot-of-packages" class="section level2">
-<h2 class="hasAnchor">
-<a href="#install-a-lot-of-packages" class="anchor"></a>Install a lot of packages</h2>
-<p>Install the packages using <a href="https://cran.rstudio.com/package=drat"><code>drat</code></a></p>
+<div class="section level2">
+<h2 id="install-a-lot-of-packages">Install a lot of packages<a class="anchor" aria-label="anchor" href="#install-a-lot-of-packages"></a>
+</h2>
+<p>Install the packages using <a href="https://cran.rstudio.com/package=drat" class="external-link"><code>drat</code></a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.package("drat") # if you don't have it already</span>
 <span class="fu">drat</span><span class="fu">:::</span><span class="fu">add</span><span class="op">(</span><span class="st">"mrc-ide"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"didehpc"</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"didehpc"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="describe-your-computer-so-we-can-find-things" class="section level2">
-<h2 class="hasAnchor">
-<a href="#describe-your-computer-so-we-can-find-things" class="anchor"></a>Describe your computer so we can find things</h2>
+<div class="section level2">
+<h2 id="describe-your-computer-so-we-can-find-things">Describe your computer so we can find things<a class="anchor" aria-label="anchor" href="#describe-your-computer-so-we-can-find-things"></a>
+</h2>
 <p>On windows if you are using a domain machine, you should need only to select the cluster you want to use</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>didehpc.cluster <span class="op">=</span> <span class="st">"fi--didemrchnb"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>didehpc.cluster <span class="op">=</span> <span class="st">"fi--didemrchnb"</span><span class="op">)</span></code></pre></div>
 <p>Otherwise, and on any other platform you’ll need to provide your username:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>didehpc.cluster <span class="op">=</span> <span class="st">"fi--didemrchnb"</span>,
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>didehpc.cluster <span class="op">=</span> <span class="st">"fi--didemrchnb"</span>,
         didehpc.username <span class="op">=</span> <span class="st">"yourusername"</span><span class="op">)</span></code></pre></div>
 <p>You can see the default configuration with</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -168,28 +164,28 @@
 <code class="sourceCode R"><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/web_login.html">web_login</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>because this exposes a number of problems early on.</p>
 </div>
-<div id="describe-your-project-dependencies-so-we-can-recreate-that-on-the-cluster" class="section level2">
-<h2 class="hasAnchor">
-<a href="#describe-your-project-dependencies-so-we-can-recreate-that-on-the-cluster" class="anchor"></a>Describe your project dependencies so we can recreate that on the cluster</h2>
+<div class="section level2">
+<h2 id="describe-your-project-dependencies-so-we-can-recreate-that-on-the-cluster">Describe your project dependencies so we can recreate that on the cluster<a class="anchor" aria-label="anchor" href="#describe-your-project-dependencies-so-we-can-recreate-that-on-the-cluster"></a>
+</h2>
 <p>Make a vector of packages that you use in your project:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"tidyr"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dplyr"</span>, <span class="st">"tidyr"</span><span class="op">)</span></code></pre></div>
 <p>And of files that define functions that you ned to run things:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sources</span> <span class="op">&lt;-</span> <span class="st">"mysources.R"</span></code></pre></div>
 <p>If you had a vector here that would be OK too.</p>
 <p>Then save this together to form a “context”.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span>, packages <span class="op">=</span> <span class="va">packages</span>, sources <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="st">"contexts"</span>, packages <span class="op">=</span> <span class="va">packages</span>, sources <span class="op">=</span> <span class="va">sources</span><span class="op">)</span>
 <span class="co">#&gt; [ open:db   ]  rds</span>
 <span class="co">#&gt; [ save:id   ]  9a70cec48c3108b80503144f9b88cc8d</span>
 <span class="co">#&gt; [ save:name ]  complexional_australiancurlew</span></code></pre></div>
 <p>If you have no packages or no sources, use <code>NULL</code> or omit them in the call below (which is the default anyway).</p>
 <p>The first argument here, <code>"contexts"</code> is the name of a directory that we will use to hold a lot of information about your jobs. You don’t need (or particularly want) to know what is in here.</p>
 </div>
-<div id="build-a-queue-based-on-this-context-" class="section level2">
-<h2 class="hasAnchor">
-<a href="#build-a-queue-based-on-this-context-" class="anchor"></a>Build a queue, based on this context.</h2>
+<div class="section level2">
+<h2 id="build-a-queue-based-on-this-context-">Build a queue, based on this context.<a class="anchor" aria-label="anchor" href="#build-a-queue-based-on-this-context-"></a>
+</h2>
 <p>This will prompt you for your password, as it will try and log in.</p>
 <p>It also installs windows versions of all packages within the <code>contexts</code> directory – both packages required to get this whole system working and then the packages required for your particular jobs.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -264,7 +260,7 @@
 <span class="co">#&gt; Done!</span></code></pre></div>
 <p>Once you get to this point we’re ready to start running things on the cluster. Let’s fire off a test to make sure that everything works OK:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>We can poll the job for a while, which will print a progress bar. If the job is returned in time, it will return the result of running the function. Otherwise it will throw an error.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span>
@@ -325,9 +321,9 @@
 <span class="co">#&gt; [13] generics_0.1.0   ellipsis_0.3.2   glue_1.4.2       purrr_0.3.4</span>
 <span class="co">#&gt; [17] compiler_4.0.3   pkgconfig_2.0.3  tidyselect_1.1.1 tibble_3.1.3</span></code></pre></div>
 </div>
-<div id="running-a-single-task" class="section level2">
-<h2 class="hasAnchor">
-<a href="#running-a-single-task" class="anchor"></a>Running a single task</h2>
+<div class="section level2">
+<h2 id="running-a-single-task">Running a single task<a class="anchor" aria-label="anchor" href="#running-a-single-task"></a>
+</h2>
 <p>This is just using the <code>enqueue</code> function as above. But it also works with functions defined in files passed in as <code>sources</code>; here the function <code>random_walk</code>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
@@ -454,11 +450,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Rich FitzJohn, Wes Hinsley.</p>
+  <p></p>
+<p>Developed by Rich FitzJohn, Wes Hinsley.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -466,6 +464,8 @@
 
   
 
+
+  
 
   </body>
 </html>
