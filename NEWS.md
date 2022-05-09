@@ -1,3 +1,7 @@
+# didehpc 0.3.11
+
+Fix path issues and support cmdstandr/RTools.
+
 # didehpc 0.3.9
 
 Add support for new infiniband storage on covid cluster headnode.

@@ -466,9 +466,9 @@ check_worker_resource <- function(worker_resource, cluster, template,
 rtools_versions <- function(path, r_version) {
   r_version_2 <- as.character(r_version[1, 1:2])
   if (r_version < "4.0.0") {
-    mingw <- "mingw_$(WIN)"
+    mingw <- "mingw_%R_BITS%"
   } else {
-    mingw <- "mingw$(WIN)"
+    mingw <- "mingw%R_BITS%"
   }
 
   ret <- switch(r_version_2,
