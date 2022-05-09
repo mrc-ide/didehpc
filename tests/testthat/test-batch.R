@@ -45,7 +45,7 @@ test_that("Can create path and template data", {
 
 
 test_that("batch data creates entries for share drives", {
-  config <- example_config(r_version = numeric_version("4.0.3"))
+  config <- example_config(r_version = numeric_version("4.0.5"))
   root <- file.path(config$workdir, "context")
   dir.create(root, FALSE, TRUE)
   context_id <- ids::random_id()
@@ -58,7 +58,7 @@ test_that("batch data creates entries for share drives", {
 
 
 test_that("can disable conan bootstrap", {
-  config <- example_config(r_version = numeric_version("4.0.3"))
+  config <- example_config(r_version = numeric_version("4.0.5"))
   root <- file.path(config$workdir, "context")
   dir.create(root, FALSE, TRUE)
   context_id <- ids::random_id()

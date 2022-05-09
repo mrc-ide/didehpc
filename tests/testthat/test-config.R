@@ -169,8 +169,8 @@ test_that("fetch r versions", {
   testthat::skip_if_offline()
   dat <- r_versions()
   expect_is(dat, "numeric_version")
-  expect_true(numeric_version("4.0.3") %in% dat)
-  expect_true(length(dat) > 10)
+  expect_true(numeric_version("4.0.5") %in% dat)
+  expect_true(length(dat) > 4)
 })
 
 
@@ -180,10 +180,10 @@ test_that("Select a sensible r version", {
   vmax <- max(v)
   vmid <- v[length(v) - 3]
   expect_equal(select_r_version(vmax), vmax)
-  expect_error(select_r_version("3.4.9"),
-               "Unsupported R version: 3.4.9")
+  expect_error(select_r_version("3.6.0"),
+               "Unsupported R version: 3.6.0")
   expect_equal(select_r_version(NULL, vmid), vmid)
-  expect_equal(select_r_version(NULL, "3.4.9"), numeric_version("3.5.0"))
+  expect_equal(select_r_version(NULL, "3.6.0"), numeric_version("3.6.3"))
 })
 
 
