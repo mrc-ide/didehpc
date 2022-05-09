@@ -10,6 +10,9 @@ set CONTEXT_WORKDIR={{context_workdir}}
 set CONTEXT_ROOT={{context_root}}
 set CONTEXT_ID={{context_id}}
 set R_LIBS_USER={{r_libs_user}}
+set RTOOLS35_HOME=T:\Rtools\Rtools35
+set RTOOLS40_HOME=T:\Rtools\Rtools40
+set RTOOLS42_HOME=T:\Rtools\Rtools42
 
 call setr64_{{r_version}}.bat
 
