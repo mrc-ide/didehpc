@@ -1,3 +1,7 @@
+# didehpc 0.3.12
+
+Fix failure to build from source due to BINPREF wrongly set.
+
 # didehpc 0.3.11
 
 Fix path issues and support cmdstandr/RTools.

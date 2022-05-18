@@ -467,8 +467,10 @@ rtools_versions <- function(path, r_version) {
   r_version_2 <- as.character(r_version[1, 1:2])
   if (r_version < "4.0.0") {
     mingw <- "mingw_%R_BITS%"
+    binpref_mingw <- "mingw_$(WIN)"
   } else {
     mingw <- "mingw%R_BITS%"
+    binpref_mingw <- "mingw$(WIN)"
   }
 
   ret <- switch(r_version_2,
@@ -481,7 +483,7 @@ rtools_versions <- function(path, r_version) {
                 stop(sprintf("No RTools version found for R %s", r_version)))
 
   ret$binpref <-
-    unix_path(file.path(path, "Rtools", ret$path, mingw, "bin"))
+    unix_path(file.path(path, "Rtools", ret$path, binpref_mingw, "bin"))
 
   ret$rtools_root <- windows_path(file_path(path, "Rtools", ret$path))
   ret$gcc_path <- windows_path(file_path(ret$rtools_root, ret$gcc, "bin"))
