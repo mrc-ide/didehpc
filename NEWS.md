@@ -1,3 +1,7 @@
+# didehpc 0.3.13
+
+Support for R 4.2.1
+
 # didehpc 0.3.12
 
 Fix failure to build from source due to BINPREF wrongly set.
