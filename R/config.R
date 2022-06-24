@@ -480,6 +480,7 @@ rtools_versions <- function(path, r_version) {
                 "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
                 "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
                 "4.1" = list(path = "Rtools40", gcc = mingw, make = "usr"),
+                "4.2" = list(path = "Rtools42", gcc = mingw, make = "usr"),
                 stop(sprintf("No RTools version found for R %s", r_version)))
 
   ret$binpref <-
