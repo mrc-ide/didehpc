@@ -460,57 +460,6 @@ check_worker_resource <- function(worker_resource, cluster, template,
                              call. = FALSE))
 }
 
-
-## TODO: document how updates happen as there's some manual
-## downloading and installation of rtools.
-rtools_versions <- function(path, r_version) {
-  r_version_2 <- as.character(r_version[1, 1:2])
-  
-  # R before 4.0.0
-  if (r_version < "4.0.0") {
-    mingw <- "mingw_%R_BITS%"
-    binpref_mingw <- "mingw_$(WIN)"
- 
-  # R 4.0.0 - 4.1.x
-  
-  } else if (r_version < "4.2.0") {
-    mingw <- "mingw%R_BITS%"
-    binpref_mingw <- "mingw$(WIN)"
-  
-  # R 4.2.x
-    
-  } else {
-    mingw <- "x86_64-w64-mingw32.static.posix"
-    binpref_mingw <- "x86_64-w64-mingw32.static.posix"
-  }
-
-
-  ret <- switch(r_version_2,
-                "3.3" = list(path = "Rtools35", gcc = mingw, make = ""),
-                "3.4" = list(path = "Rtools35", gcc = mingw, make = ""),
-                "3.5" = list(path = "Rtools35", gcc = mingw, make = ""),
-                "3.6" = list(path = "Rtools35", gcc = mingw, make = ""),
-                "4.0" = list(path = "Rtools40", gcc = mingw, make = "usr"),
-                "4.1" = list(path = "Rtools40", gcc = mingw, make = "usr"),
-                "4.2" = list(path = "Rtools42", gcc = mingw, make = "usr"),
-                stop(sprintf("No RTools version found for R %s", r_version)))
-
-  ret$binpref <-
-    unix_path(file.path(path, "Rtools", ret$path, binpref_mingw, "bin"))
-  
-  if (r_version_2 == "4.2") {
-    ret$binpref <- paste0(ret$binpref, "/")
-  }
-
-  ret$rtools_root <- windows_path(file_path(path, "Rtools", ret$path))
-  ret$gcc_path <- windows_path(file_path(ret$rtools_root, ret$gcc, "bin"))
-  ret$make_path <- windows_path(file_path(ret$rtools_root, ret$make, "bin"))
-
-  ret$path <- NULL
-  ret
-}
-
-
 redis_host <- function(cluster) {
   switch(cluster,
          "wpia-hpc-hn" = "12.0.1.254",
