@@ -55,8 +55,6 @@ template_data <- function(context_root, context_id, config, workdir) {
     conan_path_bootstrap <- NULL
   }
 
-  rtools <- rtools_versions(temp_drive, config$r_version)
-
   list(hostname = hostname(),
        date = as.character(Sys.Date()),
        didehpc_version = as.character(packageVersion("didehpc")),
@@ -71,7 +69,6 @@ template_data <- function(context_root, context_id, config, workdir) {
        context_id = context_id,
        conan_path_bootstrap = conan_path_bootstrap,
        r_libs_user = r_libs_user,
-       rtools = rtools,
        parallel = parallel,
        redis_host = redis_host(config$cluster),
        rrq_key_alive = config$rrq_key_alive,

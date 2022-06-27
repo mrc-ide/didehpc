@@ -136,35 +136,6 @@ test_that("Can find redis host, given cluster", {
 })
 
 
-test_that("Can get a reasonable rtools version", {
-  expect_equal(
-    rtools_versions("<prefix>", numeric_version("4.0.0")),
-    list(gcc = "mingw%R_BITS%",
-         make = "usr",
-         binpref = "<prefix>/Rtools/Rtools40/mingw$(WIN)/bin",
-         rtools_root = "<prefix>\\Rtools\\Rtools40",
-         gcc_path = "<prefix>\\Rtools\\Rtools40\\mingw%R_BITS%\\bin",
-         make_path = "<prefix>\\Rtools\\Rtools40\\usr\\bin"))
-  expect_equal(
-    rtools_versions("<prefix>", numeric_version("3.6.3")),
-    list(gcc = "mingw_%R_BITS%",
-         make = "",
-         binpref = "<prefix>/Rtools/Rtools35/mingw_$(WIN)/bin",
-         rtools_root = "<prefix>\\Rtools\\Rtools35",
-         gcc_path = "<prefix>\\Rtools\\Rtools35\\mingw_%R_BITS%\\bin",
-         make_path = "<prefix>\\Rtools\\Rtools35\\\\bin"))
-  expect_equal(
-    rtools_versions("<prefix>", numeric_version("3.5.0")),
-    rtools_versions("<prefix>", numeric_version("3.6.0")))
-  expect_equal(
-    rtools_versions("<prefix>", numeric_version("3.4.3")),
-    rtools_versions("<prefix>", numeric_version("3.5.0")))
-  expect_equal(
-    rtools_versions("<prefix>", numeric_version("3.3.3")),
-    rtools_versions("<prefix>", numeric_version("3.5.0")))
-})
-
-
 test_that("fetch r versions", {
   testthat::skip_if_offline()
   dat <- r_versions()
