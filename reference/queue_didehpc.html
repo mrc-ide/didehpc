@@ -20,7 +20,7 @@ derives.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -84,29 +84,37 @@ derives.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">queue_didehpc</span><span class="op">(</span>
-  <span class="va">context</span>,
-  config <span class="op">=</span> <span class="fu"><a href="didehpc_config.html">didehpc_config</a></span><span class="op">(</span><span class="op">)</span>,
-  root <span class="op">=</span> <span class="cn">NULL</span>,
-  initialise <span class="op">=</span> <span class="cn">TRUE</span>,
-  provision <span class="op">=</span> <span class="cn">NULL</span>,
-  login <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">queue_didehpc</span><span class="op">(</span></span>
+<span>  <span class="va">context</span>,</span>
+<span>  config <span class="op">=</span> <span class="fu"><a href="didehpc_config.html">didehpc_config</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  root <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  initialise <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  provision <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  login <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>context</dt>
 <dd><p>A context</p></dd>
+
+
 <dt>config</dt>
 <dd><p>Optional dide configuration information.</p></dd>
+
+
 <dt>root</dt>
 <dd><p>A root directory, not usually needed</p></dd>
+
+
 <dt>initialise</dt>
 <dd><p>Passed through to the base queue. If you set
 this to <code>FALSE</code> you will not be able to submit tasks. By default
 if <code>FALSE</code> this also sets <code>provision</code> to <code>later</code> and <code>login</code> to
 <code>FALSE</code>.</p></dd>
+
+
 <dt>provision</dt>
 <dd><p>A provisioning strategy to use. Options are</p><ul><li><p><code>verylazy</code> (the default) which installs packages if any declared
 package is not present, or if the remote library has already
@@ -124,11 +132,14 @@ minimise installation time and does not upgrade packages unless required.</p></l
 provisioned (this option can come in useful if you really don't
 want to risk any accidental package installation)</p></li>
 </ul></dd>
+
+
 <dt>login</dt>
 <dd><p>Logical, indicating if we should immediately
 login. If <code>TRUE</code>, then you will be prompted to login
 immediately, rather than when a request to the web portal is
 made.</p></dd>
+
 </dl></div>
     <div id="super-class">
     <h2>Super class</h2>
@@ -189,15 +200,15 @@ with this.</p></dd>
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Constructor</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/queue_didehpc.html">queue_didehpc_</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  <span class="va">context</span>,
-  <span class="va">config</span>,
-  <span class="va">root</span>,
-  <span class="va">initialise</span>,
-  <span class="va">provision</span>,
-  <span class="va">login</span>,
-  client <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/queue_didehpc.html">queue_didehpc_</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="va">context</span>,</span>
+<span>  <span class="va">config</span>,</span>
+<span>  <span class="va">root</span>,</span>
+<span>  <span class="va">initialise</span>,</span>
+<span>  <span class="va">provision</span>,</span>
+<span>  <span class="va">login</span>,</span>
+<span>  client <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -221,7 +232,7 @@ automatically at either when creating the object (by default)
 or when you make your first request to the portal. However,
 you can call this to refresh the session too.</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span>refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span>refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -239,7 +250,7 @@ This will refresh the session, which is typically what you want to do.</p></dd>
 <h3 id="method-cluster-load-">Method <code><a href="cluster_load.html">cluster_load()</a></code><a class="anchor" aria-label="anchor" href="#method-cluster-load-"></a></h3>
 <p>Report on the overall cluster usage</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">cluster_load</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span>, nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">cluster_load</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span>, nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -266,7 +277,7 @@ and you have tasks stuck in <code>PENDING</code> or <code>RUNNING</code> that ar
 clearly not happy. This function does not play well with workers and
 you should not use it if using them.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">reconcile</span><span class="op">(</span>task_ids <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">reconcile</span><span class="op">(</span>task_ids <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -287,7 +298,7 @@ use this to resubmit a task that has failed if you think it will
 run successfully a second time (e.g., because you cancelled it
 the first time around).</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span><span class="va">task_ids</span>, names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span><span class="va">task_ids</span>, names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -309,7 +320,7 @@ the first time around).</p><div class="section">
 <code>use_rrq</code> or <code>use_workers</code> is <code>TRUE</code> in your configuration.
 See <code><a href="../articles/workers.html">vignette("workers")</a></code> for more information.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit_workers</span><span class="op">(</span><span class="va">n</span>, timeout <span class="op">=</span> <span class="fl">600</span>, progress <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit_workers</span><span class="op">(</span><span class="va">n</span>, timeout <span class="op">=</span> <span class="fl">600</span>, progress <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -337,7 +348,7 @@ while waiting for workers.</p></dd>
 <code><a href="../articles/workers.html">vignette("workers")</a></code> for more information. By default
 workers will timeout after 10 minutes of inactivity.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">stop_workers</span><span class="op">(</span>worker_ids <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">stop_workers</span><span class="op">(</span>worker_ids <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -358,7 +369,7 @@ a lightweight queue using your workers which is typically much
 faster than submitting via <code>$enqueue()</code>. See <code><a href="../articles/workers.html">vignette("workers")</a></code>
 for more information.</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">rrq_controller</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">rrq_controller</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -369,7 +380,7 @@ from the queue if they have not been started yet, and stops
 them if currently running. It will have no effect if the tasks
 are completed (successfully or errored)</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">task_ids</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">task_ids</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -386,7 +397,7 @@ are completed (successfully or errored)</p><div class="section">
 <p>Find the DIDE task id of your task. This is the number
 displayed in the web portal.</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">dide_id</span><span class="op">(</span><span class="va">task_ids</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">dide_id</span><span class="op">(</span><span class="va">task_ids</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -404,7 +415,7 @@ displayed in the web portal.</p><div class="section">
 out what has happened to a task that has unexpectedly failed, but
 for which <code>$log()</code> is uninformative.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">dide_log</span><span class="op">(</span><span class="va">task_id</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">dide_log</span><span class="op">(</span><span class="va">task_id</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -422,13 +433,13 @@ for which <code>$log()</code> is uninformative.</p><div class="section">
 This sets up the remote set of packages that your tasks will use.
 See <code><a href="../articles/packages.html">vignette("packages")</a></code> for more information.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">provision_context</span><span class="op">(</span>
-  policy <span class="op">=</span> <span class="st">"verylazy"</span>,
-  dryrun <span class="op">=</span> <span class="cn">FALSE</span>,
-  quiet <span class="op">=</span> <span class="cn">FALSE</span>,
-  show_progress <span class="op">=</span> <span class="cn">NULL</span>,
-  show_log <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">provision_context</span><span class="op">(</span></span>
+<span>  policy <span class="op">=</span> <span class="st">"verylazy"</span>,</span>
+<span>  dryrun <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  quiet <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_log <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -472,14 +483,14 @@ more directly install packages on the cluster than the
 <code>$provision_context</code> method that you would typically use.
 See <code><a href="../articles/packages.html">vignette("packages")</a></code> for more information.</p><div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">install_packages</span><span class="op">(</span>
-  <span class="va">packages</span>,
-  repos <span class="op">=</span> <span class="cn">NULL</span>,
-  policy <span class="op">=</span> <span class="st">"lazy"</span>,
-  dryrun <span class="op">=</span> <span class="cn">FALSE</span>,
-  show_progress <span class="op">=</span> <span class="cn">NULL</span>,
-  show_log <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">install_packages</span><span class="op">(</span></span>
+<span>  <span class="va">packages</span>,</span>
+<span>  repos <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  policy <span class="op">=</span> <span class="st">"lazy"</span>,</span>
+<span>  dryrun <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  show_progress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show_log <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -540,7 +551,7 @@ bar</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

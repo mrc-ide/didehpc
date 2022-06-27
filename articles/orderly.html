@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -110,52 +110,52 @@
 </h2>
 <p>To run a single task or report on the cluster start by initialising your bundle on a network drive. For example on Linux:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"~/net/home/contexts"</span>
-<span class="va">path_bundles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">root</span>, <span class="st">"bundles"</span><span class="op">)</span>
-
-<span class="co">## Create bundle</span>
-<span class="va">bundle</span> <span class="op">&lt;-</span> <span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_pack</span><span class="op">(</span><span class="va">path_bundles</span>,
-                                       <span class="st">"minimal"</span>,
-                                       root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span>
-<span class="co">#&gt; [ name       ]  minimal</span>
-<span class="co">#&gt; [ id         ]  20210917-170405-74c5ef39</span>
-<span class="co">#&gt; [ start      ]  2021-09-17 17:04:05</span>
-<span class="co">#&gt; [ data       ]  source =&gt; dat: 20 x 2</span>
-<span class="co">#&gt; [ bundle pack ]  20210917-170405-74c5ef39</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"~/net/home/contexts"</span></span>
+<span><span class="va">path_bundles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">root</span>, <span class="st">"bundles"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Create bundle</span></span>
+<span><span class="va">bundle</span> <span class="op">&lt;-</span> <span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_pack</span><span class="op">(</span><span class="va">path_bundles</span>,</span>
+<span>                                       <span class="st">"minimal"</span>,</span>
+<span>                                       root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ name       ]  minimal</span></span>
+<span><span class="co">#&gt; [ id         ]  20210917-170405-74c5ef39</span></span>
+<span><span class="co">#&gt; [ start      ]  2021-09-17 17:04:05</span></span>
+<span><span class="co">#&gt; [ data       ]  source =&gt; dat: 20 x 2</span></span>
+<span><span class="co">#&gt; [ bundle pack ]  20210917-170405-74c5ef39</span></span></code></pre></div>
 <p>Then setup the cluster with required packages, you will need <code>orderly</code> at a minimum. You can use the list of packages from the <code>orderly.yml</code> e.g. for report <code>minimal</code></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">orderly_packages</span> <span class="op">&lt;-</span> <span class="fu">yaml</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/yaml/man/read_yaml.html" class="external-link">read_yaml</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">orderly_root</span>, <span class="st">"src/minimal/orderly.yml"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">packages</span>
-<span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>loaded <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orderly"</span>, <span class="va">orderly_packages</span><span class="op">)</span><span class="op">)</span>
-<span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>workdir <span class="op">=</span> <span class="va">root</span><span class="op">)</span>
-<span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="va">packages</span><span class="op">)</span>
-<span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, config <span class="op">=</span> <span class="va">config</span><span class="op">)</span>
-<span class="co">#&gt; Loading context a2f7131b7f75f321d64919549cacb254</span>
-<span class="co">#&gt; [ context   ]  a2f7131b7f75f321d64919549cacb254</span>
-<span class="co">#&gt; [ library   ]</span>
-<span class="co">#&gt; [ namespace ]  orderly</span>
-<span class="co">#&gt; [ source    ]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">orderly_packages</span> <span class="op">&lt;-</span> <span class="fu">yaml</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/yaml/man/read_yaml.html" class="external-link">read_yaml</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">orderly_root</span>, <span class="st">"src/minimal/orderly.yml"</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">packages</span></span>
+<span><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>loaded <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"orderly"</span>, <span class="va">orderly_packages</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>workdir <span class="op">=</span> <span class="va">root</span><span class="op">)</span></span>
+<span><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="va">packages</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ open:db   ]  rds</span></span>
+<span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, config <span class="op">=</span> <span class="va">config</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading context a2f7131b7f75f321d64919549cacb254</span></span>
+<span><span class="co">#&gt; [ context   ]  a2f7131b7f75f321d64919549cacb254</span></span>
+<span><span class="co">#&gt; [ library   ]</span></span>
+<span><span class="co">#&gt; [ namespace ]  orderly</span></span>
+<span><span class="co">#&gt; [ source    ]</span></span></code></pre></div>
 <p>The orderly task can then be run via <code>orderly::orderly_bundle_run</code>, being careful to make sure the paths are relative to the <code>workdir</code> passed in <code>didehpc_config</code></p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"bundles"</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">$</span><span class="va">path</span><span class="op">)</span><span class="op">)</span>
-<span class="va">output_path</span> <span class="op">&lt;-</span> <span class="st">"output"</span>
-<span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_run</span><span class="op">(</span><span class="va">path</span>, <span class="va">output_path</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"bundles"</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">$</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">output_path</span> <span class="op">&lt;-</span> <span class="st">"output"</span></span>
+<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_run</span><span class="op">(</span><span class="va">path</span>, <span class="va">output_path</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>When the job has completed you can import the returned bundle. If you are on windows then the <code>path</code> in the result should just work. If you are on Mac or Linux you will need to construct the path</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">$</span><span class="va">path</span>, <span class="st">"\\\\"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>
-<span class="co">#&gt; (-) waiting for 1b51e7c...d7d, giving up in 99.5 s (\) waiting for</span>
-<span class="co">#&gt; 1b51e7c...d7d, giving up in 99.0 s (|) waiting for 1b51e7c...d7d, giving up in</span>
-<span class="co">#&gt; 98.4 s</span>
-<span class="va">output_filename</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">]</span>
-<span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">root</span>, <span class="va">output_path</span>, <span class="va">output_filename</span><span class="op">)</span>,
-                               root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span>
-<span class="co">#&gt; [ import     ]  minimal:20210917-170405-74c5ef39</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span><span class="op">$</span><span class="va">path</span>, <span class="st">"\\\\"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; (-) waiting for 1b51e7c...d7d, giving up in 99.5 s (\) waiting for</span></span>
+<span><span class="co">#&gt; 1b51e7c...d7d, giving up in 99.0 s (|) waiting for 1b51e7c...d7d, giving up in</span></span>
+<span><span class="co">#&gt; 98.4 s</span></span>
+<span><span class="va">output_filename</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_import</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">root</span>, <span class="va">output_path</span>, <span class="va">output_filename</span><span class="op">)</span>,</span>
+<span>                               root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ import     ]  minimal:20210917-170405-74c5ef39</span></span></code></pre></div>
 <p>And you can see that the report has been run and imported into the orderly archive</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_list_archive</span><span class="op">(</span>root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span>
-<span class="co">#&gt;      name                       id</span>
-<span class="co">#&gt; 1 minimal 20210917-170405-74c5ef39</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_list_archive</span><span class="op">(</span>root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      name                       id</span></span>
+<span><span class="co">#&gt; 1 minimal 20210917-170405-74c5ef39</span></span></code></pre></div>
 <p><code>orderly::orderly_bundle_pack</code> can pack reports for running on the cluster which take <code>parameters</code>, <code>instance</code> and <code>remote</code> args like <code>orderly_run</code>. There are also remote equivalents which will can be used to pack a bundle on the remote instance, see <a href="https://www.vaccineimpact.org/orderly/reference/orderly_bundle_pack_remote.html" class="external-link"><code>orderly::orderly_bundle_pack_remote</code></a> for details.</p>
 </div>
 <div class="section level2">
@@ -163,44 +163,44 @@
 </h2>
 <p>A bundle can only contain 1 orderly task for running. If you want to run multiple reports on the cluster or one report with multiple sets of parameters you need to create multiple bundles. You can make this easier with a script e.g.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span>
-<span class="va">bundles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">params</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nmin</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_pack</span><span class="op">(</span><span class="va">path_bundles</span>, <span class="st">"other"</span>,
-                               parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nmin <span class="op">=</span> <span class="va">nmin</span><span class="op">)</span>,
-                               root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span>
-  <span class="op">}</span><span class="op">)</span>
-<span class="co">#&gt; [ name       ]  other</span>
-<span class="co">#&gt; [ id         ]  20210917-170408-b262a15f</span>
-<span class="co">#&gt; [ sources    ]  functions.R</span>
-<span class="co">#&gt; [ parameter  ]  nmin: 0.25</span>
-<span class="co">#&gt; [ start      ]  2021-09-17 17:04:08</span>
-<span class="co">#&gt; [ data       ]  source =&gt; extract: 19 x 2</span>
-<span class="co">#&gt; [ bundle pack ]  20210917-170408-b262a15f</span>
-<span class="co">#&gt; [ name       ]  other</span>
-<span class="co">#&gt; [ id         ]  20210917-170408-de8cb4a7</span>
-<span class="co">#&gt; [ sources    ]  functions.R</span>
-<span class="co">#&gt; [ parameter  ]  nmin: 0.5</span>
-<span class="co">#&gt; [ start      ]  2021-09-17 17:04:08</span>
-<span class="co">#&gt; [ data       ]  source =&gt; extract: 8 x 2</span>
-<span class="co">#&gt; [ bundle pack ]  20210917-170408-de8cb4a7</span>
-<span class="co">#&gt; [ name       ]  other</span>
-<span class="co">#&gt; [ id         ]  20210917-170409-0862e40f</span>
-<span class="co">#&gt; [ sources    ]  functions.R</span>
-<span class="co">#&gt; [ parameter  ]  nmin: 0.75</span>
-<span class="co">#&gt; [ start      ]  2021-09-17 17:04:09</span>
-<span class="co">#&gt; [ data       ]  source =&gt; extract: 7 x 2</span>
-<span class="co">#&gt; [ bundle pack ]  20210917-170409-0862e40f</span>
-<span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">bundles</span>, <span class="kw">function</span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"bundles"</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">$</span><span class="va">path</span><span class="op">)</span><span class="op">)</span>
-  <span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span></span>
+<span><span class="va">bundles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">params</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nmin</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_bundle_pack</span><span class="op">(</span><span class="va">path_bundles</span>, <span class="st">"other"</span>,</span>
+<span>                               parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>nmin <span class="op">=</span> <span class="va">nmin</span><span class="op">)</span>,</span>
+<span>                               root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ name       ]  other</span></span>
+<span><span class="co">#&gt; [ id         ]  20210917-170408-b262a15f</span></span>
+<span><span class="co">#&gt; [ sources    ]  functions.R</span></span>
+<span><span class="co">#&gt; [ parameter  ]  nmin: 0.25</span></span>
+<span><span class="co">#&gt; [ start      ]  2021-09-17 17:04:08</span></span>
+<span><span class="co">#&gt; [ data       ]  source =&gt; extract: 19 x 2</span></span>
+<span><span class="co">#&gt; [ bundle pack ]  20210917-170408-b262a15f</span></span>
+<span><span class="co">#&gt; [ name       ]  other</span></span>
+<span><span class="co">#&gt; [ id         ]  20210917-170408-de8cb4a7</span></span>
+<span><span class="co">#&gt; [ sources    ]  functions.R</span></span>
+<span><span class="co">#&gt; [ parameter  ]  nmin: 0.5</span></span>
+<span><span class="co">#&gt; [ start      ]  2021-09-17 17:04:08</span></span>
+<span><span class="co">#&gt; [ data       ]  source =&gt; extract: 8 x 2</span></span>
+<span><span class="co">#&gt; [ bundle pack ]  20210917-170408-de8cb4a7</span></span>
+<span><span class="co">#&gt; [ name       ]  other</span></span>
+<span><span class="co">#&gt; [ id         ]  20210917-170409-0862e40f</span></span>
+<span><span class="co">#&gt; [ sources    ]  functions.R</span></span>
+<span><span class="co">#&gt; [ parameter  ]  nmin: 0.75</span></span>
+<span><span class="co">#&gt; [ start      ]  2021-09-17 17:04:09</span></span>
+<span><span class="co">#&gt; [ data       ]  source =&gt; extract: 7 x 2</span></span>
+<span><span class="co">#&gt; [ bundle pack ]  20210917-170409-0862e40f</span></span>
+<span><span class="va">paths</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">bundles</span>, <span class="kw">function</span><span class="op">(</span><span class="va">bundle</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"bundles"</span>, <span class="fu"><a href="https://rdrr.io/r/base/basename.html" class="external-link">basename</a></span><span class="op">(</span><span class="va">bundle</span><span class="op">$</span><span class="va">path</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>and queue the tasks with <code>lapply</code></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">paths</span>, <span class="fu">orderly</span><span class="fu">::</span><span class="va">orderly_bundle_run</span>, <span class="va">output_path</span><span class="op">)</span>
-<span class="co">#&gt; Creating bundle: 'balsamic_chimpanzee'</span>
-<span class="co">#&gt; [ bulk      ]  Creating 3 tasks</span>
-<span class="co">#&gt; submitting 3 tasks</span>
-<span class="co">#&gt; submitting (-) [=========================&gt;-------------] 67% | waited for 0s</span>
-<span class="co">#&gt; submitting (\) [=======================================] 100% | waited for 1s</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">paths</span>, <span class="fu">orderly</span><span class="fu">::</span><span class="va">orderly_bundle_run</span>, <span class="va">output_path</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating bundle: 'balsamic_chimpanzee'</span></span>
+<span><span class="co">#&gt; [ bulk      ]  Creating 3 tasks</span></span>
+<span><span class="co">#&gt; submitting 3 tasks</span></span>
+<span><span class="co">#&gt; submitting (-) [=========================&gt;-------------] 67% | waited for 0s</span></span>
+<span><span class="co">#&gt; submitting (\) [=======================================] 100% | waited for 1s</span></span></code></pre></div>
 <p>import the results</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="cf">for</span> (output <span class="cf">in</span> t<span class="op">$</span><span class="kw">wait</span>(<span class="dv">100</span>)) {</span>
 <span id="cb8-2"><a href="#cb8-2"></a>  out &lt;-<span class="st"> </span><span class="kw">strsplit</span>(output<span class="op">$</span>path, <span class="st">"</span><span class="ch">\\\\</span><span class="st">"</span>)[[<span class="dv">1</span>]]</span>
@@ -217,12 +217,12 @@
 <span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; [ import     ]  other:20210917-170408-de8cb4a7</span></span>
 <span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; [ import     ]  other:20210917-170409-0862e40f</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_list_archive</span><span class="op">(</span>root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span>
-<span class="co">#&gt;      name                       id</span>
-<span class="co">#&gt; 1 minimal 20210917-170405-74c5ef39</span>
-<span class="co">#&gt; 2   other 20210917-170408-b262a15f</span>
-<span class="co">#&gt; 3   other 20210917-170408-de8cb4a7</span>
-<span class="co">#&gt; 4   other 20210917-170409-0862e40f</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">orderly</span><span class="fu">::</span><span class="fu">orderly_list_archive</span><span class="op">(</span>root <span class="op">=</span> <span class="va">orderly_root</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      name                       id</span></span>
+<span><span class="co">#&gt; 1 minimal 20210917-170405-74c5ef39</span></span>
+<span><span class="co">#&gt; 2   other 20210917-170408-b262a15f</span></span>
+<span><span class="co">#&gt; 3   other 20210917-170408-de8cb4a7</span></span>
+<span><span class="co">#&gt; 4   other 20210917-170409-0862e40f</span></span></code></pre></div>
 </div>
   </div>
 
@@ -243,7 +243,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer>

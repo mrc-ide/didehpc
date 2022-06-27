@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -134,9 +134,9 @@
 </h3>
 <p>Install the packages using <a href="https://cran.rstudio.com/package=drat" class="external-link"><code>drat</code></a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.package("drat") # if you don't have it already</span>
-<span class="fu">drat</span><span class="fu">:::</span><span class="fu">add</span><span class="op">(</span><span class="st">"mrc-ide"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"didehpc"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.package("drat") # if you don't have it already</span></span>
+<span><span class="fu">drat</span><span class="fu">:::</span><span class="fu">add</span><span class="op">(</span><span class="st">"mrc-ide"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"didehpc"</span><span class="op">)</span></span></code></pre></div>
 <p>Be sure to run this in a fresh session.</p>
 </div>
 <div class="section level3">
@@ -146,9 +146,9 @@
 <p>The reason for this separation is that ideally the machine-specific options will not end up in scripts, because that makes things less portable (for example, we need to get your username, but your username is unlikely to work for your collaborators).</p>
 <p>Ideally in your ~/.Rprofile file, you will add something like:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>
-  didehpc.username <span class="op">=</span> <span class="st">"rfitzjoh"</span>,
-  didehpc.home <span class="op">=</span> <span class="st">"~/net/home"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span></span>
+<span>  didehpc.username <span class="op">=</span> <span class="st">"rfitzjoh"</span>,</span>
+<span>  didehpc.home <span class="op">=</span> <span class="st">"~/net/home"</span><span class="op">)</span></span></code></pre></div>
 <p>and then set only options (such as cluster and cores or template) that vary with a project.</p>
 <p>If you use the “big” cluster, you can add <code>didehpc.cluster = "fi--didemrchnb"</code> here.</p>
 <p>(to set this up, try running <code>usethis::edit_r_profile()</code>)</p>
@@ -159,35 +159,35 @@
 <p>Mac users will need to provide their username here as above.</p>
 <p>If you have a Linux system and have configured your smb mounts as described below, you might as well take advantage of this and set <code>credentials = "~/.smbcredentials"</code> and you will never be prompted for your password:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>didehpc.credentials <span class="op">=</span> <span class="st">"~/.smbcredentials"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>didehpc.credentials <span class="op">=</span> <span class="st">"~/.smbcredentials"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="seeing-the-default-configuration">Seeing the default configuration<a class="anchor" aria-label="anchor" href="#seeing-the-default-configuration"></a>
 </h4>
 <p>To see the configuration that will be run if you don’t do anything (else), run:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; &lt;didehpc_config&gt;</span>
-<span class="co">#&gt;  - cluster: fi--dideclusthn</span>
-<span class="co">#&gt;  - credentials:</span>
-<span class="co">#&gt;     - username: rfitzjoh</span>
-<span class="co">#&gt;     - password: *******************</span>
-<span class="co">#&gt;  - username: rfitzjoh</span>
-<span class="co">#&gt;  - resource:</span>
-<span class="co">#&gt;     - template: GeneralNodes</span>
-<span class="co">#&gt;     - parallel: FALSE</span>
-<span class="co">#&gt;     - count: 1</span>
-<span class="co">#&gt;     - type: Cores</span>
-<span class="co">#&gt;  - shares:</span>
-<span class="co">#&gt;     - home: (local) /home/rich/net/home =&gt; \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh =&gt; Q: (remote)</span>
-<span class="co">#&gt;     - temp: (local) /home/rich/net/temp =&gt; \\fi--didef3.dide.ic.ac.uk\tmp =&gt; T: (remote)</span>
-<span class="co">#&gt;  - use_workers: FALSE</span>
-<span class="co">#&gt;  - use_rrq: FALSE</span>
-<span class="co">#&gt;  - worker_timeout: 600</span>
-<span class="co">#&gt;  - conan_bootstrap: TRUE</span>
-<span class="co">#&gt;  - r_version: 4.0.3</span>
-<span class="co">#&gt;  - use_java: FALSE</span>
-<span class="co">#&gt;  - redis_host: fi--dideclusthn.dide.ic.ac.uk</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;didehpc_config&gt;</span></span>
+<span><span class="co">#&gt;  - cluster: fi--dideclusthn</span></span>
+<span><span class="co">#&gt;  - credentials:</span></span>
+<span><span class="co">#&gt;     - username: rfitzjoh</span></span>
+<span><span class="co">#&gt;     - password: *******************</span></span>
+<span><span class="co">#&gt;  - username: rfitzjoh</span></span>
+<span><span class="co">#&gt;  - resource:</span></span>
+<span><span class="co">#&gt;     - template: GeneralNodes</span></span>
+<span><span class="co">#&gt;     - parallel: FALSE</span></span>
+<span><span class="co">#&gt;     - count: 1</span></span>
+<span><span class="co">#&gt;     - type: Cores</span></span>
+<span><span class="co">#&gt;  - shares:</span></span>
+<span><span class="co">#&gt;     - home: (local) /home/rich/net/home =&gt; \\fi--san03.dide.ic.ac.uk\homes\rfitzjoh =&gt; Q: (remote)</span></span>
+<span><span class="co">#&gt;     - temp: (local) /home/rich/net/temp =&gt; \\fi--didef3.dide.ic.ac.uk\tmp =&gt; T: (remote)</span></span>
+<span><span class="co">#&gt;  - use_workers: FALSE</span></span>
+<span><span class="co">#&gt;  - use_rrq: FALSE</span></span>
+<span><span class="co">#&gt;  - worker_timeout: 600</span></span>
+<span><span class="co">#&gt;  - conan_bootstrap: TRUE</span></span>
+<span><span class="co">#&gt;  - r_version: 4.0.3</span></span>
+<span><span class="co">#&gt;  - use_java: FALSE</span></span>
+<span><span class="co">#&gt;  - redis_host: fi--dideclusthn.dide.ic.ac.uk</span></span></code></pre></div>
 <p>In here you can see the cluster (here, <code>fi--didemrchnb</code>), credentials and username, the job template (<code>GeneralNodes</code>), information about the resources that will be requested (1 core) and information on filesystem mappings. There are a few other bits of information that may be explained further down. The possible options are explained further in the help for <code><a href="../reference/didehpc_config.html">didehpc::didehpc_config</a></code></p>
 <p>If you request help, we will almost always want to see this!</p>
 </div>
@@ -207,8 +207,8 @@
 </ul>
 <p>So to map your “M drive” to which points at <code>\\fi--didef3.dide.ic.ac.uk\malaria</code> to <code>M:</code> on the cluster you can write</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/path_mapping.html">path_mapping</a></span><span class="op">(</span><span class="st">"malaria"</span>, <span class="st">"M:"</span>, <span class="st">"//fi--didef3.dide.ic.ac.uk/malaria"</span>, <span class="st">"M:"</span><span class="op">)</span>
-<span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>shares <span class="op">=</span> <span class="va">share</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/path_mapping.html">path_mapping</a></span><span class="op">(</span><span class="st">"malaria"</span>, <span class="st">"M:"</span>, <span class="st">"//fi--didef3.dide.ic.ac.uk/malaria"</span>, <span class="st">"M:"</span><span class="op">)</span></span>
+<span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>shares <span class="op">=</span> <span class="va">share</span><span class="op">)</span></span></code></pre></div>
 <p>If you have more than one share to map, pass them through as a list (e.g., <code>didehpc::didehpc_config(shares = list(share1, share2, ...))</code>).</p>
 <p>For most systems we hope that <code>didehpc</code> will do a reasonable job of detecting the shares that you are running on, so this should (hopefully) only be necessary for detecting additional shares. The issue there is that you’ll need to use absolute paths to refer to the resources and that’s going to complicate things…</p>
 </div>
@@ -222,7 +222,7 @@
 </h4>
 <p>Every context has a “root”; this is the directory that everything will be saved in. Most of the examples in the help use <code>contexts</code> which is fairly self explanatory but it can be any directory. Generally it will be in the current directory.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"contexts"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"contexts"</span></span></code></pre></div>
 <p>This directory is going to get large over time and will eventually need to be deleted. Don’t treat these as archival storage - more as long-lived temporary directories and don’t be afraid to create a new one and delete old ones when you’ve collected your results.</p>
 </div>
 <div class="section level4">
@@ -230,11 +230,11 @@
 </h4>
 <p>If you list packages as a character vector then all packages will be installed for you, and they will also be <em>attached</em>; this is what happens when you use the function <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code> So for example if you need to depend on the <code>rstan</code> and <code>dplyr</code> packages you could write:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rstan"</span>, <span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rstan"</span>, <span class="st">"dplyr"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Attaching packages is not always what is wanted, especially if you have packages that clobber functions in base packages (e.g., <code>dplyr</code>!). An alternative is to list a set of packages that you want installed and split them into packages you would like attached and packages you would only like loaded:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>loaded <span class="op">=</span> <span class="st">"rstan"</span>, attached <span class="op">=</span> <span class="st">"dplyr"</span><span class="op">)</span>
-<span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="va">packages</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">packages</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>loaded <span class="op">=</span> <span class="st">"rstan"</span>, attached <span class="op">=</span> <span class="st">"dplyr"</span><span class="op">)</span></span>
+<span><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, packages <span class="op">=</span> <span class="va">packages</span><span class="op">)</span></span></code></pre></div>
 <p>In this case, the packages in the <code>loaded</code> section will be installed (along with their dependencies) and before anything runs, we will run <code>loadNamespace</code> on them to confirm that they are properly available. Access functions in this package with the double-colon operator, like <code>dplyr::select</code>. However they will not be attached so will not modify the search path.</p>
 <p>In contrast, packages listed in <code>attached</code> will be loaded with <code>library</code> so they will be available without qualification (e.g., <code>stanc</code> and <code>rstan::stanc</code> will both work).</p>
 </div>
@@ -244,22 +244,22 @@
 <p>If you define any of your own functions you will need to tell the cluster about them. The easiest way to do this is to save them in a file that contains only function definitions (and does not read data, etc).</p>
 <p>For example, I have a file <code>mysources.R</code> with a very simple simulation in it. Imagine this is some slow function that given an integer <code>n_steps</code> after a bunch of calculation yields a random walk of <code>n_steps</code> steps starting from point <code>x</code></p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">random_walk</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n_steps</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">n_steps</span><span class="op">)</span>
-  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_steps</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">x</span><span class="op">)</span>
-    <span class="va">ret</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span>
-  <span class="op">}</span>
-  <span class="va">ret</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">random_walk</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n_steps</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">ret</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">n_steps</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">n_steps</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>    <span class="va">ret</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">ret</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>To set this up, we’d write:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, sources <span class="op">=</span> <span class="st">"mysources.R"</span><span class="op">)</span>
-<span class="co">#&gt; [ init:id   ]  6f2a9c5197415536c9916aa99763600b</span>
-<span class="co">#&gt; [ init:db   ]  rds</span>
-<span class="co">#&gt; [ init:path ]  contexts</span>
-<span class="co">#&gt; [ save:id   ]  02a9261fe4e9e6554d76936ecb35cef0</span>
-<span class="co">#&gt; [ save:name ]  counterterrorist_xuanhanosaurus</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, sources <span class="op">=</span> <span class="st">"mysources.R"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ init:id   ]  6f2a9c5197415536c9916aa99763600b</span></span>
+<span><span class="co">#&gt; [ init:db   ]  rds</span></span>
+<span><span class="co">#&gt; [ init:path ]  contexts</span></span>
+<span><span class="co">#&gt; [ save:id   ]  02a9261fe4e9e6554d76936ecb35cef0</span></span>
+<span><span class="co">#&gt; [ save:name ]  counterterrorist_xuanhanosaurus</span></span></code></pre></div>
 <p><code>sources</code> can be a character vector, <code>NULL</code> or <code>character(0)</code> if you have no sources, or just omit it.</p>
 </div>
 <div class="section level4">
@@ -268,8 +268,8 @@
 <p>If you depend on packages that are not on CRAN (e.g., your personal research code) you’ll need to tell <code>context</code> where to find them with its <code>package_sources</code> argument.</p>
 <p>If the packages are on GitHub and public you can pass the GitHub username/repo pair, in <code>devtools</code> style:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">...</span>,
-  package_sources <span class="op">=</span> <span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_sources.html" class="external-link">conan_sources</a></span><span class="op">(</span><span class="st">"mrc-ide/dust"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">...</span>,</span>
+<span>  package_sources <span class="op">=</span> <span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_sources.html" class="external-link">conan_sources</a></span><span class="op">(</span><span class="st">"mrc-ide/dust"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Like with <code>devtools</code> you can use subdirectories, specific commits or tags in the specification.</p>
 </div>
 </div>
@@ -278,112 +278,112 @@
 </h3>
 <p>Once a context has been created, we can create a queue with it. This is separate from the actual cluster queue, but will be our interface to it. Running this step takes a while because it installs all the packages that the cluster will need into the context directory.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span>
-<span class="co">#&gt; Loading context 02a9261fe4e9e6554d76936ecb35cef0</span>
-<span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span>
-<span class="co">#&gt; [ library   ]</span>
-<span class="co">#&gt; [ namespace ]</span>
-<span class="co">#&gt; [ source    ]  mysources.R</span>
-<span class="co">#&gt; Running installation script on cluster</span>
-<span class="co">#&gt;   ,:\      /:.</span>
-<span class="co">#&gt;  //  \_()_/  \\</span>
-<span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span>
-<span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210817-145020\contexts\lib\windows\4.0</span>
-<span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span>
-<span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210817-145020\contexts\conan\cache/pkg</span>
-<span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span>
-<span class="co">#&gt;        ||         Repos:</span>
-<span class="co">#&gt;        ||           * https://mrc-ide.github.io/didehpc-pkgs</span>
-<span class="co">#&gt;        XX           * https://cloud.r-project.org</span>
-<span class="co">#&gt;        XX         Packages:</span>
-<span class="co">#&gt;        XX           * context</span>
-<span class="co">#&gt;        XX</span>
-<span class="co">#&gt;        OO</span>
-<span class="co">#&gt;        `'</span>
-<span class="co">#&gt; i Loading metadata database</span>
-<span class="co">#&gt; v Loading metadata database ... done</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; i Getting 9 pkgs (5.29 MB) and 1 pkg with unknown size</span>
-<span class="co">#&gt; v Got context 0.3.0 (source) (37.72 kB)</span>
-<span class="co">#&gt; v Got ids 1.0.1 (windows) (123.89 kB)</span>
-<span class="co">#&gt; v Got R6 2.5.0 (windows) (84.09 kB)</span>
-<span class="co">#&gt; v Got askpass 1.1 (windows) (243.58 kB)</span>
-<span class="co">#&gt; v Got crayon 1.4.1 (windows) (141.87 kB)</span>
-<span class="co">#&gt; v Got digest 0.6.27 (windows) (268.65 kB)</span>
-<span class="co">#&gt; v Got uuid 0.1-4 (windows) (33.77 kB)</span>
-<span class="co">#&gt; v Got sys 3.4 (windows) (59.83 kB)</span>
-<span class="co">#&gt; v Got openssl 1.4.4 (windows) (4.10 MB)</span>
-<span class="co">#&gt; v Got storr 1.2.5 (windows) (401.33 kB)</span>
-<span class="co">#&gt; v Installed R6 2.5.0  (594ms)</span>
-<span class="co">#&gt; v Installed crayon 1.4.1  (766ms)</span>
-<span class="co">#&gt; v Installed ids 1.0.1  (860ms)</span>
-<span class="co">#&gt; v Installed askpass 1.1  (1s)</span>
-<span class="co">#&gt; v Installed sys 3.4  (954ms)</span>
-<span class="co">#&gt; v Installed digest 0.6.27  (1.2s)</span>
-<span class="co">#&gt; v Installed storr 1.2.5  (1.3s)</span>
-<span class="co">#&gt; v Installed uuid 0.1-4  (1s)</span>
-<span class="co">#&gt; v Installed openssl 1.4.4  (1.5s)</span>
-<span class="co">#&gt; i Building context 0.3.0</span>
-<span class="co">#&gt; v Built context 0.3.0 (3.1s)</span>
-<span class="co">#&gt; v Installed context 0.3.0  (344ms)</span>
-<span class="co">#&gt; v Summary:   10 new  in 12.7s</span>
-<span class="co">#&gt; Done!</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading context 02a9261fe4e9e6554d76936ecb35cef0</span></span>
+<span><span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span></span>
+<span><span class="co">#&gt; [ library   ]</span></span>
+<span><span class="co">#&gt; [ namespace ]</span></span>
+<span><span class="co">#&gt; [ source    ]  mysources.R</span></span>
+<span><span class="co">#&gt; Running installation script on cluster</span></span>
+<span><span class="co">#&gt;   ,:\      /:.</span></span>
+<span><span class="co">#&gt;  //  \_()_/  \\</span></span>
+<span><span class="co">#&gt; ||   |    |   ||  CONAN THE LIBRARIAN</span></span>
+<span><span class="co">#&gt; ||   |    |   ||  Library:   Q:\didehpc\20210817-145020\contexts\lib\windows\4.0</span></span>
+<span><span class="co">#&gt; ||   |____|   ||  Bootstrap: T:\conan\bootstrap\4.0</span></span>
+<span><span class="co">#&gt;  \\  / || \  //   Cache:     Q:\didehpc\20210817-145020\contexts\conan\cache/pkg</span></span>
+<span><span class="co">#&gt;   `:/  ||  \;'    Policy:    lazy</span></span>
+<span><span class="co">#&gt;        ||         Repos:</span></span>
+<span><span class="co">#&gt;        ||           * https://mrc-ide.github.io/didehpc-pkgs</span></span>
+<span><span class="co">#&gt;        XX           * https://cloud.r-project.org</span></span>
+<span><span class="co">#&gt;        XX         Packages:</span></span>
+<span><span class="co">#&gt;        XX           * context</span></span>
+<span><span class="co">#&gt;        XX</span></span>
+<span><span class="co">#&gt;        OO</span></span>
+<span><span class="co">#&gt;        `'</span></span>
+<span><span class="co">#&gt; i Loading metadata database</span></span>
+<span><span class="co">#&gt; v Loading metadata database ... done</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; i Getting 9 pkgs (5.29 MB) and 1 pkg with unknown size</span></span>
+<span><span class="co">#&gt; v Got context 0.3.0 (source) (37.72 kB)</span></span>
+<span><span class="co">#&gt; v Got ids 1.0.1 (windows) (123.89 kB)</span></span>
+<span><span class="co">#&gt; v Got R6 2.5.0 (windows) (84.09 kB)</span></span>
+<span><span class="co">#&gt; v Got askpass 1.1 (windows) (243.58 kB)</span></span>
+<span><span class="co">#&gt; v Got crayon 1.4.1 (windows) (141.87 kB)</span></span>
+<span><span class="co">#&gt; v Got digest 0.6.27 (windows) (268.65 kB)</span></span>
+<span><span class="co">#&gt; v Got uuid 0.1-4 (windows) (33.77 kB)</span></span>
+<span><span class="co">#&gt; v Got sys 3.4 (windows) (59.83 kB)</span></span>
+<span><span class="co">#&gt; v Got openssl 1.4.4 (windows) (4.10 MB)</span></span>
+<span><span class="co">#&gt; v Got storr 1.2.5 (windows) (401.33 kB)</span></span>
+<span><span class="co">#&gt; v Installed R6 2.5.0  (594ms)</span></span>
+<span><span class="co">#&gt; v Installed crayon 1.4.1  (766ms)</span></span>
+<span><span class="co">#&gt; v Installed ids 1.0.1  (860ms)</span></span>
+<span><span class="co">#&gt; v Installed askpass 1.1  (1s)</span></span>
+<span><span class="co">#&gt; v Installed sys 3.4  (954ms)</span></span>
+<span><span class="co">#&gt; v Installed digest 0.6.27  (1.2s)</span></span>
+<span><span class="co">#&gt; v Installed storr 1.2.5  (1.3s)</span></span>
+<span><span class="co">#&gt; v Installed uuid 0.1-4  (1s)</span></span>
+<span><span class="co">#&gt; v Installed openssl 1.4.4  (1.5s)</span></span>
+<span><span class="co">#&gt; i Building context 0.3.0</span></span>
+<span><span class="co">#&gt; v Built context 0.3.0 (3.1s)</span></span>
+<span><span class="co">#&gt; v Installed context 0.3.0  (344ms)</span></span>
+<span><span class="co">#&gt; v Summary:   10 new  in 12.7s</span></span>
+<span><span class="co">#&gt; Done!</span></span></code></pre></div>
 <p>If the above command does not throw an error, then you have successfully logged in and the cluster is ready to use.</p>
 <p>When you first run <code>queue_didehpc</code> it will install windows versions of all required packages within the context directory (here, “contexts”). This is necessary even when you are on windows because the cluster cannot see files that are on your computer.</p>
 <p><code>obj</code> is a weird sort of object called an <code>R6</code> class. It’s a bit like a Python or Java class if you’ve come from those languages. The thing you need to know is that the object is like a list and contains a number of functions that can be run by running <code>obj$functionname()</code>. These functions all act by <em>side effect</em>; they interact with a little database stored in the context root directory or by communicating with the cluster using the web interface that Wes created.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span>
-<span class="co">#&gt; &lt;queue_didehpc&gt;</span>
-<span class="co">#&gt;   Inherits from: &lt;queue_base&gt;</span>
-<span class="co">#&gt;   Public:</span>
-<span class="co">#&gt;     client: web_client, R6</span>
-<span class="co">#&gt;     cluster_load: function (cluster = NULL, nodes = TRUE)</span>
-<span class="co">#&gt;     config: didehpc_config</span>
-<span class="co">#&gt;     context: context</span>
-<span class="co">#&gt;     dide_id: function (task_ids)</span>
-<span class="co">#&gt;     dide_log: function (task_id)</span>
-<span class="co">#&gt;     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)</span>
-<span class="co">#&gt;     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)</span>
-<span class="co">#&gt;     enqueue_bulk: function (X, FUN, ..., do_call = TRUE, envir = parent.frame(),</span>
-<span class="co">#&gt;     initialize: function (context, config, root, initialise, provision, login,</span>
-<span class="co">#&gt;     initialize_context: function ()</span>
-<span class="co">#&gt;     install_packages: function (packages, repos = NULL, policy = "lazy", dryrun = FALSE,</span>
-<span class="co">#&gt;     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1,</span>
-<span class="co">#&gt;     login: function (refresh = TRUE)</span>
-<span class="co">#&gt;     mapply: function (FUN, ..., MoreArgs = NULL, envir = parent.frame(),</span>
-<span class="co">#&gt;     provision_context: function (policy = "verylazy", dryrun = FALSE, quiet = FALSE,</span>
-<span class="co">#&gt;     reconcile: function (task_ids = NULL)</span>
-<span class="co">#&gt;     rrq_controller: function ()</span>
-<span class="co">#&gt;     stop_workers: function (worker_ids = NULL)</span>
-<span class="co">#&gt;     submit: function (task_ids, names = NULL)</span>
-<span class="co">#&gt;     submit_workers: function (n, timeout = 600, progress = NULL)</span>
-<span class="co">#&gt;     task_bundle_get: function (name)</span>
-<span class="co">#&gt;     task_bundle_info: function ()</span>
-<span class="co">#&gt;     task_bundle_list: function ()</span>
-<span class="co">#&gt;     task_delete: function (task_ids)</span>
-<span class="co">#&gt;     task_get: function (task_id, check_exists = TRUE)</span>
-<span class="co">#&gt;     task_list: function ()</span>
-<span class="co">#&gt;     task_result: function (task_id)</span>
-<span class="co">#&gt;     task_status: function (task_ids = NULL, named = TRUE)</span>
-<span class="co">#&gt;     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE)</span>
-<span class="co">#&gt;     unsubmit: function (task_ids)</span>
-<span class="co">#&gt;   Private:</span>
-<span class="co">#&gt;     data: list</span>
-<span class="co">#&gt;     db: storr, R6</span>
-<span class="co">#&gt;     lib: queue_library, R6</span>
-<span class="co">#&gt;     provisioned: TRUE</span>
-<span class="co">#&gt;     root: context_root</span>
-<span class="co">#&gt;     submit_or_delete: function (task_ids, name = NULL)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span></span>
+<span><span class="co">#&gt; &lt;queue_didehpc&gt;</span></span>
+<span><span class="co">#&gt;   Inherits from: &lt;queue_base&gt;</span></span>
+<span><span class="co">#&gt;   Public:</span></span>
+<span><span class="co">#&gt;     client: web_client, R6</span></span>
+<span><span class="co">#&gt;     cluster_load: function (cluster = NULL, nodes = TRUE)</span></span>
+<span><span class="co">#&gt;     config: didehpc_config</span></span>
+<span><span class="co">#&gt;     context: context</span></span>
+<span><span class="co">#&gt;     dide_id: function (task_ids)</span></span>
+<span><span class="co">#&gt;     dide_log: function (task_id)</span></span>
+<span><span class="co">#&gt;     enqueue: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)</span></span>
+<span><span class="co">#&gt;     enqueue_: function (expr, envir = parent.frame(), submit = TRUE, name = NULL)</span></span>
+<span><span class="co">#&gt;     enqueue_bulk: function (X, FUN, ..., do_call = TRUE, envir = parent.frame(),</span></span>
+<span><span class="co">#&gt;     initialize: function (context, config, root, initialise, provision, login,</span></span>
+<span><span class="co">#&gt;     initialize_context: function ()</span></span>
+<span><span class="co">#&gt;     install_packages: function (packages, repos = NULL, policy = "lazy", dryrun = FALSE,</span></span>
+<span><span class="co">#&gt;     lapply: function (X, FUN, ..., envir = parent.frame(), timeout = 0, time_poll = 1,</span></span>
+<span><span class="co">#&gt;     login: function (refresh = TRUE)</span></span>
+<span><span class="co">#&gt;     mapply: function (FUN, ..., MoreArgs = NULL, envir = parent.frame(),</span></span>
+<span><span class="co">#&gt;     provision_context: function (policy = "verylazy", dryrun = FALSE, quiet = FALSE,</span></span>
+<span><span class="co">#&gt;     reconcile: function (task_ids = NULL)</span></span>
+<span><span class="co">#&gt;     rrq_controller: function ()</span></span>
+<span><span class="co">#&gt;     stop_workers: function (worker_ids = NULL)</span></span>
+<span><span class="co">#&gt;     submit: function (task_ids, names = NULL)</span></span>
+<span><span class="co">#&gt;     submit_workers: function (n, timeout = 600, progress = NULL)</span></span>
+<span><span class="co">#&gt;     task_bundle_get: function (name)</span></span>
+<span><span class="co">#&gt;     task_bundle_info: function ()</span></span>
+<span><span class="co">#&gt;     task_bundle_list: function ()</span></span>
+<span><span class="co">#&gt;     task_delete: function (task_ids)</span></span>
+<span><span class="co">#&gt;     task_get: function (task_id, check_exists = TRUE)</span></span>
+<span><span class="co">#&gt;     task_list: function ()</span></span>
+<span><span class="co">#&gt;     task_result: function (task_id)</span></span>
+<span><span class="co">#&gt;     task_status: function (task_ids = NULL, named = TRUE)</span></span>
+<span><span class="co">#&gt;     task_times: function (task_ids = NULL, unit_elapsed = "secs", sorted = TRUE)</span></span>
+<span><span class="co">#&gt;     unsubmit: function (task_ids)</span></span>
+<span><span class="co">#&gt;   Private:</span></span>
+<span><span class="co">#&gt;     data: list</span></span>
+<span><span class="co">#&gt;     db: storr, R6</span></span>
+<span><span class="co">#&gt;     lib: queue_library, R6</span></span>
+<span><span class="co">#&gt;     provisioned: TRUE</span></span>
+<span><span class="co">#&gt;     root: context_root</span></span>
+<span><span class="co">#&gt;     submit_or_delete: function (task_ids, name = NULL)</span></span></code></pre></div>
 <p>For documentation about the individual methods, see help for <code><a href="../reference/queue_didehpc.html">didehpc::queue_didehpc</a></code> and in queuer (much of this needs writing still!). For example, to see the overall cluster load you can run:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">cluster_load</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt;            name free used total % used</span>
-<span class="co">#&gt; --------------- ---- ---- ----- ------</span>
-<span class="co">#&gt; fi--dideclusthn  134   82   216    38%</span>
-<span class="co">#&gt;  fi--didemrchnb  730 1050  1780    59%</span>
-<span class="co">#&gt;     wpia-hpc-hn  352    0   352     0%</span>
-<span class="co">#&gt; --------------- ---- ---- ----- ------</span>
-<span class="co">#&gt;         didehpc 1216 1132  2348    48%</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">cluster_load</span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            name free used total % used</span></span>
+<span><span class="co">#&gt; --------------- ---- ---- ----- ------</span></span>
+<span><span class="co">#&gt; fi--dideclusthn  134   82   216    38%</span></span>
+<span><span class="co">#&gt;  fi--didemrchnb  730 1050  1780    59%</span></span>
+<span><span class="co">#&gt;     wpia-hpc-hn  352    0   352     0%</span></span>
+<span><span class="co">#&gt; --------------- ---- ---- ----- ------</span></span>
+<span><span class="co">#&gt;         didehpc 1216 1132  2348    48%</span></span></code></pre></div>
 <p>(if you’re on a ANSI-compatible terminal this will be in glorious Technicolor).</p>
 </div>
 <div class="section level3">
@@ -391,65 +391,65 @@
 </h3>
 <p>Before running a real job, let’s test that everything works correctly by running the <code>sessionInfo</code> command on the cluster. When run locally, <code>sessionInfo</code> prints information about the state of your R session:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; R version 4.0.3 (2020-10-10)</span>
-<span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span>
-<span class="co">#&gt; Running under: Ubuntu 18.04.5 LTS</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; Matrix products: default</span>
-<span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1</span>
-<span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; locale:</span>
-<span class="co">#&gt;  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C</span>
-<span class="co">#&gt;  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=C</span>
-<span class="co">#&gt;  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8</span>
-<span class="co">#&gt;  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C</span>
-<span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C</span>
-<span class="co">#&gt; [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; attached base packages:</span>
-<span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; loaded via a namespace (and not attached):</span>
-<span class="co">#&gt;  [1] zip_2.1.1         pillar_1.4.7      compiler_4.0.3    prettyunits_1.1.1</span>
-<span class="co">#&gt;  [5] tools_4.0.3       digest_0.6.27     pkgbuild_1.2.0    uuid_0.1-4</span>
-<span class="co">#&gt;  [9] lifecycle_0.2.0   jsonlite_1.7.1    evaluate_0.14     tibble_3.0.4</span>
-<span class="co">#&gt; [13] pkgconfig_2.0.3   rlang_0.4.9       cli_2.2.0         filelock_1.0.2</span>
-<span class="co">#&gt; [17] curl_4.3          conan_0.1.1       xfun_0.19         withr_2.3.0</span>
-<span class="co">#&gt; [21] queuer_0.3.0      storr_1.2.5       httr_1.4.2        stringr_1.4.0</span>
-<span class="co">#&gt; [25] knitr_1.30        vctrs_0.3.5       desc_1.2.0        askpass_1.1</span>
-<span class="co">#&gt; [29] didehpc_0.3.6     context_0.3.0     rprojroot_2.0.2   glue_1.4.2</span>
-<span class="co">#&gt; [33] R6_2.5.0          processx_3.4.5    rematch_1.0.1     fansi_0.4.1</span>
-<span class="co">#&gt; [37] callr_3.5.1       magrittr_2.0.1    rematch2_2.1.2    ids_1.0.1</span>
-<span class="co">#&gt; [41] pkgdepends_0.1.0  ps_1.4.0          ellipsis_0.3.1    assertthat_0.2.1</span>
-<span class="co">#&gt; [45] lpSolve_5.6.15    stringi_1.5.3     openssl_1.4.3     crayon_1.3.4</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; R version 4.0.3 (2020-10-10)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 18.04.5 LTS</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1</span></span>
+<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt;  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C</span></span>
+<span><span class="co">#&gt;  [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=C</span></span>
+<span><span class="co">#&gt;  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8</span></span>
+<span><span class="co">#&gt;  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C</span></span>
+<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C</span></span>
+<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] zip_2.1.1         pillar_1.4.7      compiler_4.0.3    prettyunits_1.1.1</span></span>
+<span><span class="co">#&gt;  [5] tools_4.0.3       digest_0.6.27     pkgbuild_1.2.0    uuid_0.1-4</span></span>
+<span><span class="co">#&gt;  [9] lifecycle_0.2.0   jsonlite_1.7.1    evaluate_0.14     tibble_3.0.4</span></span>
+<span><span class="co">#&gt; [13] pkgconfig_2.0.3   rlang_0.4.9       cli_2.2.0         filelock_1.0.2</span></span>
+<span><span class="co">#&gt; [17] curl_4.3          conan_0.1.1       xfun_0.19         withr_2.3.0</span></span>
+<span><span class="co">#&gt; [21] queuer_0.3.0      storr_1.2.5       httr_1.4.2        stringr_1.4.0</span></span>
+<span><span class="co">#&gt; [25] knitr_1.30        vctrs_0.3.5       desc_1.2.0        askpass_1.1</span></span>
+<span><span class="co">#&gt; [29] didehpc_0.3.6     context_0.3.0     rprojroot_2.0.2   glue_1.4.2</span></span>
+<span><span class="co">#&gt; [33] R6_2.5.0          processx_3.4.5    rematch_1.0.1     fansi_0.4.1</span></span>
+<span><span class="co">#&gt; [37] callr_3.5.1       magrittr_2.0.1    rematch2_2.1.2    ids_1.0.1</span></span>
+<span><span class="co">#&gt; [41] pkgdepends_0.1.0  ps_1.4.0          ellipsis_0.3.1    assertthat_0.2.1</span></span>
+<span><span class="co">#&gt; [45] lpSolve_5.6.15    stringi_1.5.3     openssl_1.4.3     crayon_1.3.4</span></span></code></pre></div>
 <p>To run this on the cluster, we wrap it in <code>obj$enqueue</code>. This prevents the evaluation of the expression and instead organises it to be run on the cluster:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can then poll the cluster for results until it completes:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for d826bc6...9e1, giving up in 99.5 s (\) waiting for</span>
-<span class="co">#&gt; d826bc6...9e1, giving up in 98.9 s</span>
-<span class="co">#&gt; R version 4.0.3 (2020-10-10)</span>
-<span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span>
-<span class="co">#&gt; Running under: Windows Server 2012 R2 x64 (build 9600)</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; Matrix products: default</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; locale:</span>
-<span class="co">#&gt; [1] LC_COLLATE=English_United Kingdom.1252</span>
-<span class="co">#&gt; [2] LC_CTYPE=English_United Kingdom.1252</span>
-<span class="co">#&gt; [3] LC_MONETARY=English_United Kingdom.1252</span>
-<span class="co">#&gt; [4] LC_NUMERIC=C</span>
-<span class="co">#&gt; [5] LC_TIME=English_United Kingdom.1252</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; attached base packages:</span>
-<span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; loaded via a namespace (and not attached):</span>
-<span class="co">#&gt; [1] compiler_4.0.3 R6_2.5.0       context_0.3.0  digest_0.6.27  storr_1.2.5</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (-) waiting for d826bc6...9e1, giving up in 99.5 s (\) waiting for</span></span>
+<span><span class="co">#&gt; d826bc6...9e1, giving up in 98.9 s</span></span>
+<span><span class="co">#&gt; R version 4.0.3 (2020-10-10)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: Windows Server 2012 R2 x64 (build 9600)</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt; [1] LC_COLLATE=English_United Kingdom.1252</span></span>
+<span><span class="co">#&gt; [2] LC_CTYPE=English_United Kingdom.1252</span></span>
+<span><span class="co">#&gt; [3] LC_MONETARY=English_United Kingdom.1252</span></span>
+<span><span class="co">#&gt; [4] LC_NUMERIC=C</span></span>
+<span><span class="co">#&gt; [5] LC_TIME=English_United Kingdom.1252</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt; [1] compiler_4.0.3 R6_2.5.0       context_0.3.0  digest_0.6.27  storr_1.2.5</span></span></code></pre></div>
 <p>(see the next section for more information about this).</p>
 <p>The important part to notice here is that the R “Platform” (second and third line) is Windows Server, as opposed to the host machine which is running Linux. If we had added packages to the context they would be shown too.</p>
 </div>
@@ -459,119 +459,119 @@
 <p>Let’s run something more interesting now by running the <code>random_walk</code> function defined in the <code>mysources.R</code> file.</p>
 <p>As above, jobs are queued by running:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Like the queue object, <code>obj</code>, task objects are R6 objects that can be used to get information and results back from the task.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span>
-<span class="co">#&gt; &lt;queuer_task&gt;</span>
-<span class="co">#&gt;   Public:</span>
-<span class="co">#&gt;     clone: function (deep = FALSE)</span>
-<span class="co">#&gt;     context_id: function ()</span>
-<span class="co">#&gt;     expr: function (locals = FALSE)</span>
-<span class="co">#&gt;     id: c6cfa739a58b925f4919c4d4ebdead1e</span>
-<span class="co">#&gt;     initialize: function (id, root, check_exists = TRUE)</span>
-<span class="co">#&gt;     log: function (parse = TRUE)</span>
-<span class="co">#&gt;     result: function (allow_incomplete = FALSE)</span>
-<span class="co">#&gt;     root: context_root</span>
-<span class="co">#&gt;     status: function ()</span>
-<span class="co">#&gt;     times: function (unit_elapsed = "secs")</span>
-<span class="co">#&gt;     wait: function (timeout, time_poll = 0.5, progress = NULL)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span></span>
+<span><span class="co">#&gt; &lt;queuer_task&gt;</span></span>
+<span><span class="co">#&gt;   Public:</span></span>
+<span><span class="co">#&gt;     clone: function (deep = FALSE)</span></span>
+<span><span class="co">#&gt;     context_id: function ()</span></span>
+<span><span class="co">#&gt;     expr: function (locals = FALSE)</span></span>
+<span><span class="co">#&gt;     id: c6cfa739a58b925f4919c4d4ebdead1e</span></span>
+<span><span class="co">#&gt;     initialize: function (id, root, check_exists = TRUE)</span></span>
+<span><span class="co">#&gt;     log: function (parse = TRUE)</span></span>
+<span><span class="co">#&gt;     result: function (allow_incomplete = FALSE)</span></span>
+<span><span class="co">#&gt;     root: context_root</span></span>
+<span><span class="co">#&gt;     status: function ()</span></span>
+<span><span class="co">#&gt;     times: function (unit_elapsed = "secs")</span></span>
+<span><span class="co">#&gt;     wait: function (timeout, time_poll = 0.5, progress = NULL)</span></span></code></pre></div>
 <p>the task’s status</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "PENDING"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "PENDING"</span></span></code></pre></div>
 <p>…which will move from <code>PENDING</code> to <code>RUNNING</code> to <code>COMPLETE</code> or <code>ERROR</code>. You can get information on submission and running times</p>
 <p>and you can try and get the result of running the task:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error: task c6cfa739a58b925f4919c4d4ebdead1e is unfetchable: PENDING</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: task c6cfa739a58b925f4919c4d4ebdead1e is unfetchable: PENDING</span></span></code></pre></div>
 <p>This errors if the task is not yet complete.</p>
 <p>The <code>wait</code> function, used above, is like <code>result</code> but it will repeatedly poll for the task to be completed for up to <code>timeout</code> seconds.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>
-<span class="co">#&gt; (-) waiting for c6cfa73...d1e, giving up in 99.5 s (\) waiting for</span>
-<span class="co">#&gt; c6cfa73...d1e, giving up in 99.0 s</span>
-<span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span>
-<span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (-) waiting for c6cfa73...d1e, giving up in 99.5 s (\) waiting for</span></span>
+<span><span class="co">#&gt; c6cfa73...d1e, giving up in 99.0 s</span></span>
+<span><span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span></span>
+<span><span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></span></code></pre></div>
 <p>once the task has completed, <code>t$result()</code> and <code>t$wait</code> are equivalent</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span>
-<span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span></span>
+<span><span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></span></code></pre></div>
 <p>You can query the times of your tasks</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">times</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;                            task_id           submitted             started</span>
-<span class="co">#&gt; 1 c6cfa739a58b925f4919c4d4ebdead1e 2021-08-17 14:50:47 2021-08-17 14:50:48</span>
-<span class="co">#&gt;              finished   waiting    running      idle</span>
-<span class="co">#&gt; 1 2021-08-17 14:50:48 0.7953935 0.07812715 0.7084134</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">times</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                            task_id           submitted             started</span></span>
+<span><span class="co">#&gt; 1 c6cfa739a58b925f4919c4d4ebdead1e 2021-08-17 14:50:47 2021-08-17 14:50:48</span></span>
+<span><span class="co">#&gt;              finished   waiting    running      idle</span></span>
+<span><span class="co">#&gt; 1 2021-08-17 14:50:48 0.7953935 0.07812715 0.7084134</span></span></code></pre></div>
 <p>which will show you when the task was submitted, started and stopped.</p>
 <p>Every task creates a log:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [ hello     ]  2021-08-17 14:50:47</span>
-<span class="co">#&gt; [ wd        ]  Q:/didehpc/20210817-145020</span>
-<span class="co">#&gt; [ init      ]  2021-08-17 14:50:47.946</span>
-<span class="co">#&gt; [ hostname  ]  FI--DIDECLUST26</span>
-<span class="co">#&gt; [ process   ]  3752</span>
-<span class="co">#&gt; [ version   ]  0.3.0</span>
-<span class="co">#&gt; [ open:db   ]  rds</span>
-<span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span>
-<span class="co">#&gt; [ library   ]</span>
-<span class="co">#&gt; [ namespace ]</span>
-<span class="co">#&gt; [ source    ]  mysources.R</span>
-<span class="co">#&gt; [ parallel  ]  running as single core job</span>
-<span class="co">#&gt; [ root      ]  Q:\didehpc\20210817-145020\contexts</span>
-<span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span>
-<span class="co">#&gt; [ task      ]  c6cfa739a58b925f4919c4d4ebdead1e</span>
-<span class="co">#&gt; [ expr      ]  random_walk(0, 10)</span>
-<span class="co">#&gt; [ start     ]  2021-08-17 14:50:48.102</span>
-<span class="co">#&gt; [ ok        ]</span>
-<span class="co">#&gt; [ end       ]  2021-08-17 14:50:48.227</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [ hello     ]  2021-08-17 14:50:47</span></span>
+<span><span class="co">#&gt; [ wd        ]  Q:/didehpc/20210817-145020</span></span>
+<span><span class="co">#&gt; [ init      ]  2021-08-17 14:50:47.946</span></span>
+<span><span class="co">#&gt; [ hostname  ]  FI--DIDECLUST26</span></span>
+<span><span class="co">#&gt; [ process   ]  3752</span></span>
+<span><span class="co">#&gt; [ version   ]  0.3.0</span></span>
+<span><span class="co">#&gt; [ open:db   ]  rds</span></span>
+<span><span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span></span>
+<span><span class="co">#&gt; [ library   ]</span></span>
+<span><span class="co">#&gt; [ namespace ]</span></span>
+<span><span class="co">#&gt; [ source    ]  mysources.R</span></span>
+<span><span class="co">#&gt; [ parallel  ]  running as single core job</span></span>
+<span><span class="co">#&gt; [ root      ]  Q:\didehpc\20210817-145020\contexts</span></span>
+<span><span class="co">#&gt; [ context   ]  02a9261fe4e9e6554d76936ecb35cef0</span></span>
+<span><span class="co">#&gt; [ task      ]  c6cfa739a58b925f4919c4d4ebdead1e</span></span>
+<span><span class="co">#&gt; [ expr      ]  random_walk(0, 10)</span></span>
+<span><span class="co">#&gt; [ start     ]  2021-08-17 14:50:48.102</span></span>
+<span><span class="co">#&gt; [ ok        ]</span></span>
+<span><span class="co">#&gt; [ end       ]  2021-08-17 14:50:48.227</span></span></code></pre></div>
 <p>Warning messages and other output will be printed here. So if you include <code><a href="https://rdrr.io/r/base/message.html" class="external-link">message()</a></code>, <code><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat()</a></code> or <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> calls in your task they will appear between <code>start</code> and <code>end</code>.</p>
 <p>There is another bit of log that happens before this and contains information about getting the system started up. You should only need to look at this when a job seems to get stuck with status <code>PENDING</code> for ages.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">dide_log</span><span class="op">(</span><span class="va">t</span><span class="op">)</span>
-<span class="co">#&gt;  [1] "generated on host: kea"</span>
-<span class="co">#&gt;  [2] "generated on date: 2021-08-17"</span>
-<span class="co">#&gt;  [3] "didehpc version: 0.3.6"</span>
-<span class="co">#&gt;  [4] "context version: 0.3.0"</span>
-<span class="co">#&gt;  [5] "running on: FI--DIDECLUST26"</span>
-<span class="co">#&gt;  [6] "mapping Q: -&gt; \\\\fi--san03.dide.ic.ac.uk\\homes\\rfitzjoh"</span>
-<span class="co">#&gt;  [7] "The command completed successfully."</span>
-<span class="co">#&gt;  [8] ""</span>
-<span class="co">#&gt;  [9] "mapping T: -&gt; \\\\fi--didef3.dide.ic.ac.uk\\tmp"</span>
-<span class="co">#&gt; [10] "The command completed successfully."</span>
-<span class="co">#&gt; [11] ""</span>
-<span class="co">#&gt; [12] "Using Rtools at T:\\Rtools\\Rtools40"</span>
-<span class="co">#&gt; [13] "working directory: Q:\\didehpc\\20210817-145020"</span>
-<span class="co">#&gt; [14] "this is a single task"</span>
-<span class="co">#&gt; [15] "logfile: Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e"</span>
-<span class="co">#&gt; [16] ""</span>
-<span class="co">#&gt; [17] "Q:\\didehpc\\20210817-145020&gt;Rscript \"Q:\\didehpc\\20210817-145020\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210817-145020\\contexts\" c6cfa739a58b925f4919c4d4ebdead1e  1&gt;\"Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e\" 2&gt;&amp;1"</span>
-<span class="co">#&gt; [18] "Removing mapping Q:"</span>
-<span class="co">#&gt; [19] "Q: was deleted successfully."</span>
-<span class="co">#&gt; [20] ""</span>
-<span class="co">#&gt; [21] "Removing mapping T:"</span>
-<span class="co">#&gt; [22] "T: was deleted successfully."</span>
-<span class="co">#&gt; [23] ""</span>
-<span class="co">#&gt; [24] "Quitting"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">dide_log</span><span class="op">(</span><span class="va">t</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "generated on host: kea"</span></span>
+<span><span class="co">#&gt;  [2] "generated on date: 2021-08-17"</span></span>
+<span><span class="co">#&gt;  [3] "didehpc version: 0.3.6"</span></span>
+<span><span class="co">#&gt;  [4] "context version: 0.3.0"</span></span>
+<span><span class="co">#&gt;  [5] "running on: FI--DIDECLUST26"</span></span>
+<span><span class="co">#&gt;  [6] "mapping Q: -&gt; \\\\fi--san03.dide.ic.ac.uk\\homes\\rfitzjoh"</span></span>
+<span><span class="co">#&gt;  [7] "The command completed successfully."</span></span>
+<span><span class="co">#&gt;  [8] ""</span></span>
+<span><span class="co">#&gt;  [9] "mapping T: -&gt; \\\\fi--didef3.dide.ic.ac.uk\\tmp"</span></span>
+<span><span class="co">#&gt; [10] "The command completed successfully."</span></span>
+<span><span class="co">#&gt; [11] ""</span></span>
+<span><span class="co">#&gt; [12] "Using Rtools at T:\\Rtools\\Rtools40"</span></span>
+<span><span class="co">#&gt; [13] "working directory: Q:\\didehpc\\20210817-145020"</span></span>
+<span><span class="co">#&gt; [14] "this is a single task"</span></span>
+<span><span class="co">#&gt; [15] "logfile: Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e"</span></span>
+<span><span class="co">#&gt; [16] ""</span></span>
+<span><span class="co">#&gt; [17] "Q:\\didehpc\\20210817-145020&gt;Rscript \"Q:\\didehpc\\20210817-145020\\contexts\\bin\\task_run\" \"Q:\\didehpc\\20210817-145020\\contexts\" c6cfa739a58b925f4919c4d4ebdead1e  1&gt;\"Q:\\didehpc\\20210817-145020\\contexts\\logs\\c6cfa739a58b925f4919c4d4ebdead1e\" 2&gt;&amp;1"</span></span>
+<span><span class="co">#&gt; [18] "Removing mapping Q:"</span></span>
+<span><span class="co">#&gt; [19] "Q: was deleted successfully."</span></span>
+<span><span class="co">#&gt; [20] ""</span></span>
+<span><span class="co">#&gt; [21] "Removing mapping T:"</span></span>
+<span><span class="co">#&gt; [22] "T: was deleted successfully."</span></span>
+<span><span class="co">#&gt; [23] ""</span></span>
+<span><span class="co">#&gt; [24] "Quitting"</span></span></code></pre></div>
 <p>The queue knows which tasks it has created and you can list them:</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">task_list</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "c6cfa739a58b925f4919c4d4ebdead1e" "d826bc66ff934fbc9a76467e1f4f89e1"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">task_list</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "c6cfa739a58b925f4919c4d4ebdead1e" "d826bc66ff934fbc9a76467e1f4f89e1"</span></span></code></pre></div>
 <p>The long identifiers are random and are long enough that collisions are unlikely.</p>
 <p>Notice that the task ran remotely but we never had to indicate which filename things were written to. There is a small database based on <a href="https://richfitz.github.com/storr" class="external-link"><code>storr</code></a> that holds all the information within the context root (here, “contexts”). This means you can close down R and later on regenerate the <code>ctx</code> and <code>obj</code> objects and recreate the task objects, and re-get your results. But at the same time it provides the <em>illusion</em> that the cluster has passed an object directly back to you.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">id</span> <span class="op">&lt;-</span> <span class="va">t</span><span class="op">$</span><span class="va">id</span>
-<span class="va">id</span>
-<span class="co">#&gt; [1] "c6cfa739a58b925f4919c4d4ebdead1e"</span></code></pre></div>
-<pre><code><span class="co">## [1] "40934f0a0d28ca7385b8eb201b1146b7"</span></code></pre>
+<code class="sourceCode R"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="va">t</span><span class="op">$</span><span class="va">id</span></span>
+<span><span class="va">id</span></span>
+<span><span class="co">#&gt; [1] "c6cfa739a58b925f4919c4d4ebdead1e"</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] "40934f0a0d28ca7385b8eb201b1146b7"</span></span></code></pre>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t2</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">task_get</span><span class="op">(</span><span class="va">id</span><span class="op">)</span>
-<span class="va">t2</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span>
-<span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t2</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">task_get</span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="va">t2</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] -0.09103302  0.60818181  2.22847428  2.28615058  2.27823970  2.18390202</span></span>
+<span><span class="co">#&gt;  [7]  4.32781963  4.53920816  3.29061261  2.64571591</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="running-many-jobs">Running many jobs<a class="anchor" aria-label="anchor" href="#running-many-jobs"></a>
@@ -586,66 +586,66 @@
 <p>The second approach is more general and <code>$lapply</code> is implemented using it.</p>
 <p>Suppose we want to make a bunch of trees of different sizes. This would involve mapping our <code>random_walk</code> function over a vector of sizes:</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sizes</span> <span class="op">&lt;-</span> <span class="fl">3</span><span class="op">:</span><span class="fl">8</span>
-<span class="va">grp</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">sizes</span>, <span class="va">random_walk</span>, x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-<span class="co">#&gt; Creating bundle: 'sound_nymph'</span>
-<span class="co">#&gt; [ bulk      ]  Creating 6 tasks</span>
-<span class="co">#&gt; submitting 6 tasks</span>
-<span class="co">#&gt; submitting (-) [============&gt;--------------------------] 33% | waited for 0s</span>
-<span class="co">#&gt; submitting (\) [===================&gt;-------------------] 50% | waited for 1s</span>
-<span class="co">#&gt; submitting (|) [=========================&gt;-------------] 67% | waited for 1s</span>
-<span class="co">#&gt; submitting (/) [===============================&gt;-------] 83% | waited for 2s</span>
-<span class="co">#&gt; submitting (-) [=======================================] 100% | waited for 2s</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">sizes</span> <span class="op">&lt;-</span> <span class="fl">3</span><span class="op">:</span><span class="fl">8</span></span>
+<span><span class="va">grp</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">sizes</span>, <span class="va">random_walk</span>, x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating bundle: 'sound_nymph'</span></span>
+<span><span class="co">#&gt; [ bulk      ]  Creating 6 tasks</span></span>
+<span><span class="co">#&gt; submitting 6 tasks</span></span>
+<span><span class="co">#&gt; submitting (-) [============&gt;--------------------------] 33% | waited for 0s</span></span>
+<span><span class="co">#&gt; submitting (\) [===================&gt;-------------------] 50% | waited for 1s</span></span>
+<span><span class="co">#&gt; submitting (|) [=========================&gt;-------------] 67% | waited for 1s</span></span>
+<span><span class="co">#&gt; submitting (/) [===============================&gt;-------] 83% | waited for 2s</span></span>
+<span><span class="co">#&gt; submitting (-) [=======================================] 100% | waited for 2s</span></span></code></pre></div>
 <p>By default, <code>$lapply</code> returns a “task_bundle” with an automatically generated name. You can customise the name with the <code>name</code> argument.</p>
 <p>In contrast to <code>lapply</code> this is not blocking (i.e., submitting tasks and collecting the results is done asynchronously) but if you pass a <code>timeout</code> argument to <code>$lapply</code> then it will poll until the jobs are done, in the same way as <code>wait()</code>, below.</p>
 <p>Get the status of all the jobs</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">grp</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; 8ca54f49ac82893d91c19a13891cb3ee c80f92cc3f3babc837a8ef18603db4f0</span>
-<span class="co">#&gt;                       "COMPLETE"                       "COMPLETE"</span>
-<span class="co">#&gt; 85935191f16cb04fd814f6df3297158c d5a841a1f7916c8a2eaf645143fe3359</span>
-<span class="co">#&gt;                       "COMPLETE"                       "COMPLETE"</span>
-<span class="co">#&gt; 22252a47ced26ab45e2d1387bdf4ecb8 5c4ae85ef913ce4e55010feafbb5c2a1</span>
-<span class="co">#&gt;                        "PENDING"                        "PENDING"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">grp</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 8ca54f49ac82893d91c19a13891cb3ee c80f92cc3f3babc837a8ef18603db4f0</span></span>
+<span><span class="co">#&gt;                       "COMPLETE"                       "COMPLETE"</span></span>
+<span><span class="co">#&gt; 85935191f16cb04fd814f6df3297158c d5a841a1f7916c8a2eaf645143fe3359</span></span>
+<span><span class="co">#&gt;                       "COMPLETE"                       "COMPLETE"</span></span>
+<span><span class="co">#&gt; 22252a47ced26ab45e2d1387bdf4ecb8 5c4ae85ef913ce4e55010feafbb5c2a1</span></span>
+<span><span class="co">#&gt;                        "PENDING"                        "PENDING"</span></span></code></pre></div>
 <p>Wait until they are all complete and get the results</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">grp</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span>
-<span class="co">#&gt; (-) [==============================================] 100% | giving up in 119 s</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">grp</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">120</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (-) [==============================================] 100% | giving up in 119 s</span></span></code></pre></div>
 <p>The other bulk interface is where you want to run a function over a combination of parameters. Suppose we wanted to run random walks of a number of lengths from a number of starting positions, in all combinations. We might enumerate the possibilities like:</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, n_steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, n_steps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>We can submit this as a group of 6 jobs with <code>enqueue_bulk</code>. Here we add the <code>timeout</code> option which makes this a blocking operation:</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">enqueue_bulk</span><span class="op">(</span><span class="va">pars</span>, <span class="va">random_walk</span>, timeout <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
-<span class="co">#&gt; Creating bundle: 'selfish_anemoneshrimp'</span>
-<span class="co">#&gt; [ bulk      ]  Creating 6 tasks</span>
-<span class="co">#&gt; submitting 6 tasks</span>
-<span class="co">#&gt; submitting (-) [============&gt;--------------------------] 33% | waited for 1s</span>
-<span class="co">#&gt; submitting (\) [===================&gt;-------------------] 50% | waited for 1s</span>
-<span class="co">#&gt; submitting (|) [=========================&gt;-------------] 67% | waited for 2s</span>
-<span class="co">#&gt; submitting (/) [===============================&gt;-------] 83% | waited for 3s</span>
-<span class="co">#&gt; submitting (-) [=======================================] 100% | waited for 3s</span>
-<span class="co">#&gt; (-) [==============================================] 100% | giving up in 119 s</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; [1] -0.5092372 -0.4486443 -0.6431714  0.1341441 -1.1818970</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; [1] -1.18855584 -0.02861008  0.82356347  1.51119207  0.35416280</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; [[3]]</span>
-<span class="co">#&gt; [1] 1.850285 2.423607 1.597023 1.560501 2.187977</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; [[4]]</span>
-<span class="co">#&gt;  [1] -1.0831528 -4.0599794 -2.9609470 -2.1744547 -0.1222570 -0.8703516</span>
-<span class="co">#&gt;  [7] -0.9264912 -0.5261700  1.2054075  0.2159083</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; [[5]]</span>
-<span class="co">#&gt;  [1]  0.72165118  0.36474247  0.55938912 -0.01860092  0.61308581 -0.80447926</span>
-<span class="co">#&gt;  [7]  0.41558732  0.51387762  0.83248026  0.44125104</span>
-<span class="co">#&gt;</span>
-<span class="co">#&gt; [[6]]</span>
-<span class="co">#&gt;  [1] 2.0346518 3.2722265 3.4380578 5.1838941 3.7677278 1.9371159 1.5488215</span>
-<span class="co">#&gt;  [8] 1.7675202 0.7970567 1.1976480</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">enqueue_bulk</span><span class="op">(</span><span class="va">pars</span>, <span class="va">random_walk</span>, timeout <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating bundle: 'selfish_anemoneshrimp'</span></span>
+<span><span class="co">#&gt; [ bulk      ]  Creating 6 tasks</span></span>
+<span><span class="co">#&gt; submitting 6 tasks</span></span>
+<span><span class="co">#&gt; submitting (-) [============&gt;--------------------------] 33% | waited for 1s</span></span>
+<span><span class="co">#&gt; submitting (\) [===================&gt;-------------------] 50% | waited for 1s</span></span>
+<span><span class="co">#&gt; submitting (|) [=========================&gt;-------------] 67% | waited for 2s</span></span>
+<span><span class="co">#&gt; submitting (/) [===============================&gt;-------] 83% | waited for 3s</span></span>
+<span><span class="co">#&gt; submitting (-) [=======================================] 100% | waited for 3s</span></span>
+<span><span class="co">#&gt; (-) [==============================================] 100% | giving up in 119 s</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] -0.5092372 -0.4486443 -0.6431714  0.1341441 -1.1818970</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] -1.18855584 -0.02861008  0.82356347  1.51119207  0.35416280</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] 1.850285 2.423607 1.597023 1.560501 2.187977</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; [[4]]</span></span>
+<span><span class="co">#&gt;  [1] -1.0831528 -4.0599794 -2.9609470 -2.1744547 -0.1222570 -0.8703516</span></span>
+<span><span class="co">#&gt;  [7] -0.9264912 -0.5261700  1.2054075  0.2159083</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; [[5]]</span></span>
+<span><span class="co">#&gt;  [1]  0.72165118  0.36474247  0.55938912 -0.01860092  0.61308581 -0.80447926</span></span>
+<span><span class="co">#&gt;  [7]  0.41558732  0.51387762  0.83248026  0.44125104</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; [[6]]</span></span>
+<span><span class="co">#&gt;  [1] 2.0346518 3.2722265 3.4380578 5.1838941 3.7677278 1.9371159 1.5488215</span></span>
+<span><span class="co">#&gt;  [8] 1.7675202 0.7970567 1.1976480</span></span></code></pre></div>
 <p>This has applied the function <code>random_walk</code> over each row of <code>pars</code>.</p>
 </div>
 <div class="section level3">
@@ -654,32 +654,32 @@
 <p>Suppose you fire off a bunch of jobs and realise that you have the wrong data or they’re all going to fail - you can stop them fairly easily.</p>
 <p>Here’s a job that will run for an hour and return nothing:</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">3600</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">3600</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Wait for the job to start up:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw">while</span> <span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="st">"PENDING"</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">while</span> <span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span> <span class="op">==</span> <span class="st">"PENDING"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">.5</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>Now that it’s started it can be cancelled with the <code>$unsubmit</code> method:</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>
-<span class="co">#&gt; [1] "OK"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "OK"</span></span></code></pre></div>
 <p>unsubmitting multiple times is safe, and will have no effect.</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>
-<span class="co">#&gt; [1] "NOT_RUNNING"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">t</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "NOT_RUNNING"</span></span></code></pre></div>
 <p>Alternatively you can use <code>obj$task_delete(t$id)</code> which unsubmits the task and then deletes it.</p>
 <p>Note that the task is not actually deleted (see below); you can still get at the expression:</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">expr</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Sys.sleep(3600)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">expr</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Sys.sleep(3600)</span></span></code></pre></div>
 <p>but you cannot retrieve results:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; Error: task 485a1550fa19bb614d571e368d16164a is unfetchable: CANCELLED</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">result</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error: task 485a1550fa19bb614d571e368d16164a is unfetchable: CANCELLED</span></span></code></pre></div>
 <p>The argument to <code>unsubmit</code> can be a vector. For example, if you had a task bundle <code>grp</code> you could unsubmit all members of the group with</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">grp</span><span class="op">$</span><span class="va">ids</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">unsubmit</span><span class="op">(</span><span class="va">grp</span><span class="op">$</span><span class="va">ids</span><span class="op">)</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="deleting-jobs">Deleting jobs<a class="anchor" aria-label="anchor" href="#deleting-jobs"></a>
 </h4>
@@ -696,21 +696,21 @@
 </h3>
 <p>If you are running tasks that can use more than one core, you can request more resources for your task and use process level parallelism with the <code>parallel</code> package. To request 8 cores, you could run:</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div>
 <p>When your task starts, 8 cores will be allocated to it and a <code>parallel</code> cluster will be created. You can use it with things like <code><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parallel::parLapply</a></code>, specifying <code>cl</code> as <code>NULL</code>. So if within your cluster job you needed to apply function <code>f</code> to a each element of a list <code>x</code>, you could write:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">run_f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parLapply</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="va">x</span>, <span class="va">f</span><span class="op">)</span>
-<span class="op">}</span>
-<span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">run_f</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">run_f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html" class="external-link">parLapply</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="va">x</span>, <span class="va">f</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">run_f</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The parallel bits can be embedded within larger blocks of code. All functions in <code>parallel</code> that take <code>cl</code> as a first argument can be used. You do not need to (and should not) set up the cluster as this will happen automatically as the job starts.</p>
 <p>Alternatively, if you want to control cluster creation (e.g., you are using software that does this for you) then, pass <code>parallel = FALSE</code> to the config call:</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">8</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">8</span>, parallel <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>In this case you are responsible for setting up the cluster.</p>
 <p>As an alternative to requesting cores, you can use a different job template:</p>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"16Core"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>template <span class="op">=</span> <span class="st">"16Core"</span><span class="op">)</span></span></code></pre></div>
 <p>which will reserve you the entire node. Again, a cluster will be started with all available cores unless you also specify <code>parallel = FALSE</code>.</p>
 </div>
 <div class="section level3">
@@ -777,7 +777,7 @@ password=&lt;dide-password&gt;</code></pre>
 <p>and set this to be chmod 600 for a modicum of security, but be aware your password is stored in plaintext.</p>
 <p>This set up is clearly insecure. I believe if you omit the credentials line you can have the system prompt you for a password interactively, but I’m not sure how that works with automatic mounting.</p>
 <p>Finally, run</p>
-<pre><code><span class="va">mount</span> <span class="op">-</span><span class="va">a</span></code></pre>
+<pre><code><span><span class="va">mount</span> <span class="op">-</span><span class="va">a</span></span></code></pre>
 <p>to mount all drives and with any luck it will all work and you don’t have to do this until you get a new computer.</p>
 </div>
 </div>
@@ -800,7 +800,7 @@ password=&lt;dide-password&gt;</code></pre>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer>

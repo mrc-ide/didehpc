@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 2.0.3
+pkgdown: 2.0.5
 pkgdown_sha: ~
 articles:
   didehpc: didehpc.html
@@ -8,5 +8,5 @@ articles:
   quickstart: quickstart.html
   troubleshooting: troubleshooting.html
   workers: workers.html
-last_built: 2022-05-18T13:06Z
+last_built: 2022-06-27T12:20Z
 

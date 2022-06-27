@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -78,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">path_mapping</span><span class="op">(</span><span class="va">name</span>, <span class="va">path_local</span>, <span class="va">path_remote</span>, <span class="va">drive_remote</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">path_mapping</span><span class="op">(</span><span class="va">name</span>, <span class="va">path_local</span>, <span class="va">path_remote</span>, <span class="va">drive_remote</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -86,12 +86,16 @@
     <dl><dt>name</dt>
 <dd><p>Name of this map.  Can be anything at all, and is used
 for information purposes only.</p></dd>
+
+
 <dt>path_local</dt>
 <dd><p>The point where the drive is attached locally.
 On Windows this will be something like "Q:/", on Mac something
 like "/Volumes/mountname", and on Linux it could be anything at
 all, depending on what you used when you mounted it (or what is
 written in <code>/etc/fstab</code>)</p></dd>
+
+
 <dt>path_remote</dt>
 <dd><p>The network path for this drive.  It
 will look something like <code>\\\\fi--didef3.dide.ic.ac.uk\\tmp\\</code>.
@@ -101,11 +105,14 @@ backslashes at the beginning and then two for each separator).
 If this makes you feel bad know that you are not alone:
 https://xkcd.com/1638 -- alternatively you may use forward
 slashes in place of backslashes (e.g. <code>//fi--didef3.dide.ic.ac.uk/tmp</code>)</p></dd>
+
+
 <dt>drive_remote</dt>
 <dd><p>The place to mount the drive on the cluster.
 We're probably going to mount things at Q: and T: already so
 don't use those.  And things like C: are likely to be used.
 Perhaps there are some guidelines for this somewhere?</p></dd>
+
 </dl></div>
     <div id="author">
     <h2>Author</h2>
@@ -124,7 +131,7 @@ Perhaps there are some guidelines for this somewhere?</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

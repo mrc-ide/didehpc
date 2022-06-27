@@ -19,7 +19,7 @@ vignette("workers") for more details.'><!-- mathjax --><script src="https://cdnj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -82,12 +82,12 @@ will override those in <code><a href="didehpc_config.html">didehpc_config()</a><
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">worker_resource</span><span class="op">(</span>
-  template <span class="op">=</span> <span class="cn">NULL</span>,
-  cores <span class="op">=</span> <span class="cn">NULL</span>,
-  wholenode <span class="op">=</span> <span class="cn">NULL</span>,
-  parallel <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">worker_resource</span><span class="op">(</span></span>
+<span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  wholenode <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parallel <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -103,6 +103,8 @@ all templates (and if you use one that you don't have permission
 for the job will fail).  For training purposes there is also a
 "Training" template, but you will only need to use this when
 instructed to.</p></dd>
+
+
 <dt>cores</dt>
 <dd><p>The number of cores to request.  This is mostly
 useful when using the <code>GeneralNodes</code> template.  If
@@ -113,10 +115,14 @@ forever!  24 is the largest this should be on fi--dideclusthn,
 nodes).  If omitted then a single core is selected for the
 GeneralNodes template or the <em>entire machine</em> for the other
 templates (unless modified by <code>wholenode</code>).</p></dd>
+
+
 <dt>wholenode</dt>
 <dd><p>Request the whole node?  This will default to
 <code>TRUE</code> if any template other than <code>GeneralNodes</code> is
 selected.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>Should we set up the parallel cluster?  Normally
 if more than one core is implied (via the <code>cores</code> argument,
@@ -126,11 +132,16 @@ Details).  If <code>parallel</code> is set to <code>FALSE</code> then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
 you're just after the whole node for the memory).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list with class <code>worker_resource</code> which can be passed
+    
+
+<p>A list with class <code>worker_resource</code> which can be passed
 into <code><a href="didehpc_config.html">didehpc_config</a></code></p>
+
+
     </div>
 
   </div>
@@ -145,7 +156,7 @@ into <code><a href="didehpc_config.html">didehpc_config</a></code></p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

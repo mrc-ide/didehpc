@@ -18,7 +18,7 @@ DIDE cluster web client"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -110,12 +110,12 @@ DIDE cluster web client"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Create an API client for the DIDE cluster</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va"><a href="../reference/web_client.html">web_client</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>
-  credentials <span class="op">=</span> <span class="cn">NULL</span>,
-  cluster_default <span class="op">=</span> <span class="st">"fi--dideclusthn"</span>,
-  login <span class="op">=</span> <span class="cn">FALSE</span>,
-  client <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/web_client.html">web_client</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  credentials <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cluster_default <span class="op">=</span> <span class="st">"fi--dideclusthn"</span>,</span>
+<span>  login <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  client <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -148,7 +148,7 @@ given credentials.</p></dd>
 <h3 id="method-login-">Method <code>login()</code><a class="anchor" aria-label="anchor" href="#method-login-"></a></h3>
 <p>Log in to the cluster</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span>refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span>refresh <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -165,7 +165,7 @@ it looks like we are already (useful if login has expired)</p></dd>
 <h3 id="method-logout-">Method <code>logout()</code><a class="anchor" aria-label="anchor" href="#method-logout-"></a></h3>
 <p>Log the client out</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">logout</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">logout</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -174,7 +174,7 @@ it looks like we are already (useful if login has expired)</p></dd>
 <p>Test whether the client is logged in, returning <code>TRUE</code>
 or <code>FALSE</code>.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">logged_in</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">logged_in</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -182,7 +182,7 @@ or <code>FALSE</code>.</p><div class="section">
 <h3 id="method-check-access-">Method <code>check_access()</code><a class="anchor" aria-label="anchor" href="#method-check-access-"></a></h3>
 <p>Validate that we have access to a given cluster</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">check_access</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">check_access</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -199,14 +199,14 @@ the value given when creating the client.</p></dd>
 <h3 id="method-submit-">Method <code>submit()</code><a class="anchor" aria-label="anchor" href="#method-submit-"></a></h3>
 <p>Submit a job to the cluster</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span>
-  <span class="va">path</span>,
-  <span class="va">name</span>,
-  <span class="va">template</span>,
-  cluster <span class="op">=</span> <span class="cn">NULL</span>,
-  resource_type <span class="op">=</span> <span class="st">"Cores"</span>,
-  resource_count <span class="op">=</span> <span class="fl">1</span>
-<span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span></span>
+<span>  <span class="va">path</span>,</span>
+<span>  <span class="va">name</span>,</span>
+<span>  <span class="va">template</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  resource_type <span class="op">=</span> <span class="st">"Cores"</span>,</span>
+<span>  resource_count <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -247,7 +247,7 @@ or <code>Nodes</code>)</p></dd>
 <h3 id="method-cancel-">Method <code>cancel()</code><a class="anchor" aria-label="anchor" href="#method-cancel-"></a></h3>
 <p>Cancel a cluster task</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">cancel</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">cancel</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -275,7 +275,7 @@ and values one of <code>OK</code>, <code>NOT_FOUND</code>, <code>WRONG_USER</cod
 <h3 id="method-log-">Method <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code><a class="anchor" aria-label="anchor" href="#method-log-"></a></h3>
 <p>Get log from job</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -296,7 +296,7 @@ the value given when creating the client.</p></dd>
 <h3 id="method-status-user-">Method <code>status_user()</code><a class="anchor" aria-label="anchor" href="#method-status-user-"></a></h3>
 <p>Return status of all your jobs</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">status_user</span><span class="op">(</span>state <span class="op">=</span> <span class="st">"*"</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">status_user</span><span class="op">(</span>state <span class="op">=</span> <span class="st">"*"</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -319,7 +319,7 @@ given when creating the client.</p></dd>
 <h3 id="method-status-job-">Method <code>status_job()</code><a class="anchor" aria-label="anchor" href="#method-status-job-"></a></h3>
 <p>Return status of a single job</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">status_job</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">status_job</span><span class="op">(</span><span class="va">dide_id</span>, cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -341,7 +341,7 @@ given when creating the client.</p></dd>
 <p>Return an overall measure of cluster use, one
 entry per node within a cluster.</p><div class="section">
 <h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">load_node</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">load_node</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -361,7 +361,7 @@ entry per cluster that you have access to.
 Helper function; wraps around <code>load_overall</code> and <code>load_node</code> and
 always shows the output.</p><div class="section">
 <h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">load_overall</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">load_overall</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -370,7 +370,7 @@ always shows the output.</p><div class="section">
 
 <div class="section">
 <h4 id="usage-12">Usage<a class="anchor" aria-label="anchor" href="#usage-12"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">load_show</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span>, nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">load_show</span><span class="op">(</span>cluster <span class="op">=</span> <span class="cn">NULL</span>, nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -395,7 +395,7 @@ client was created.</p></dd>
 be used as a relatively fast "ping" to check that you are
 logged in the client and server are talking properly.</p><div class="section">
 <h4 id="usage-13">Usage<a class="anchor" aria-label="anchor" href="#usage-13"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">headnodes</span><span class="op">(</span>forget <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">headnodes</span><span class="op">(</span>forget <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -412,7 +412,7 @@ the server where we have previously fetched it.</p></dd>
 <h3 id="method-r-versions-">Method <code>r_versions()</code><a class="anchor" aria-label="anchor" href="#method-r-versions-"></a></h3>
 <p>Return a vector of all available R versions</p><div class="section">
 <h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">r_versions</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">r_versions</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -420,7 +420,7 @@ the server where we have previously fetched it.</p></dd>
 <h3 id="method-api-client-">Method <code>api_client()</code><a class="anchor" aria-label="anchor" href="#method-api-client-"></a></h3>
 <p>Returns the low-level API client for debugging</p><div class="section">
 <h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span class="va">web_client</span><span class="op">$</span><span class="fu">api_client</span><span class="op">(</span><span class="op">)</span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">web_client</span><span class="op">$</span><span class="fu">api_client</span><span class="op">(</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -440,7 +440,7 @@ the server where we have previously fetched it.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>

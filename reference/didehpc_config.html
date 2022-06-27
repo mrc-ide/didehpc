@@ -19,7 +19,7 @@ documentation coming later."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.12</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.14</span>
       </span>
     </div>
 
@@ -82,28 +82,28 @@ documentation coming later.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">didehpc_config</span><span class="op">(</span>
-  credentials <span class="op">=</span> <span class="cn">NULL</span>,
-  home <span class="op">=</span> <span class="cn">NULL</span>,
-  temp <span class="op">=</span> <span class="cn">NULL</span>,
-  cluster <span class="op">=</span> <span class="cn">NULL</span>,
-  shares <span class="op">=</span> <span class="cn">NULL</span>,
-  template <span class="op">=</span> <span class="cn">NULL</span>,
-  cores <span class="op">=</span> <span class="cn">NULL</span>,
-  wholenode <span class="op">=</span> <span class="cn">NULL</span>,
-  parallel <span class="op">=</span> <span class="cn">NULL</span>,
-  workdir <span class="op">=</span> <span class="cn">NULL</span>,
-  use_workers <span class="op">=</span> <span class="cn">NULL</span>,
-  use_rrq <span class="op">=</span> <span class="cn">NULL</span>,
-  worker_timeout <span class="op">=</span> <span class="cn">NULL</span>,
-  worker_resource <span class="op">=</span> <span class="cn">NULL</span>,
-  conan_bootstrap <span class="op">=</span> <span class="cn">NULL</span>,
-  r_version <span class="op">=</span> <span class="cn">NULL</span>,
-  use_java <span class="op">=</span> <span class="cn">NULL</span>,
-  java_home <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="fu">didehpc_config_global</span><span class="op">(</span><span class="va">...</span>, check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">didehpc_config</span><span class="op">(</span></span>
+<span>  credentials <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  home <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  temp <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shares <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  wholenode <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parallel <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  workdir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_workers <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_rrq <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  worker_timeout <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  worker_resource <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  conan_bootstrap <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  r_version <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  use_java <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  java_home <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">didehpc_config_global</span><span class="op">(</span><span class="va">...</span>, check <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -113,18 +113,28 @@ documentation coming later.</p>
 or a path to a file containing lines <code>username=&lt;username&gt;</code>
 and <code>password=&lt;password&gt;</code> or your username (in which case
 you will be prompted graphically for your password).</p></dd>
+
+
 <dt>home</dt>
 <dd><p>Path to network home directory, on local system</p></dd>
+
+
 <dt>temp</dt>
 <dd><p>Path to network temp directory, on local system</p></dd>
+
+
 <dt>cluster</dt>
 <dd><p>Name of the cluster to use; one of
 <code><a href="valid_clusters.html">valid_clusters()</a></code> or one of the aliases
 (small/little/dide/ide; big/mrc).</p></dd>
+
+
 <dt>shares</dt>
 <dd><p>Optional additional share mappings.  Can either be a
 single path mapping (as returned by <code><a href="path_mapping.html">path_mapping()</a></code>
 or a list of such calls.</p></dd>
+
+
 <dt>template</dt>
 <dd><p>A job template.  On fi--dideclusthn this can be
 "GeneralNodes" or "8Core". On "fi--didemrchnb" this can be
@@ -136,6 +146,8 @@ all templates (and if you use one that you don't have permission
 for the job will fail).  For training purposes there is also a
 "Training" template, but you will only need to use this when
 instructed to.</p></dd>
+
+
 <dt>cores</dt>
 <dd><p>The number of cores to request.  This is mostly
 useful when using the <code>GeneralNodes</code> template.  If
@@ -146,10 +158,14 @@ forever!  24 is the largest this should be on fi--dideclusthn,
 nodes).  If omitted then a single core is selected for the
 GeneralNodes template or the <em>entire machine</em> for the other
 templates (unless modified by <code>wholenode</code>).</p></dd>
+
+
 <dt>wholenode</dt>
 <dd><p>Request the whole node?  This will default to
 <code>TRUE</code> if any template other than <code>GeneralNodes</code> is
 selected.</p></dd>
+
+
 <dt>parallel</dt>
 <dd><p>Should we set up the parallel cluster?  Normally
 if more than one core is implied (via the <code>cores</code> argument,
@@ -159,8 +175,12 @@ Details).  If <code>parallel</code> is set to <code>FALSE</code> then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
 you're just after the whole node for the memory).</p></dd>
+
+
 <dt>workdir</dt>
 <dd><p>The path to work in on the cluster, if running out of place.</p></dd>
+
+
 <dt>use_workers</dt>
 <dd><p>Submit jobs to an internal queue, and run them
 on a set of workers submitted separately?  If <code>TRUE</code>, then
@@ -170,6 +190,8 @@ that workers can poll.  After queuing tasks, use
 <code>submit_workers</code> to submit workers that will process these
 tasks, terminating when they are done.  You can use this
 approach to throttle the resources you need.</p></dd>
+
+
 <dt>use_rrq</dt>
 <dd><p>Use <code>rrq</code> to run a set of workers on the
 cluster.  This is an experimental option, and the interface here
@@ -177,6 +199,8 @@ may change.  For now all this does is ensure a few additional
 packages are installed, and tweaks some environment variables in
 the generated batch files.  Actual rrq workers are submitted
 with the <code>submit_workers</code> method of the object.</p></dd>
+
+
 <dt>worker_timeout</dt>
 <dd><p>When using workers (via <code>use_workers</code>
 or <code>use_rrq</code>, the length of time (in seconds) that workers
@@ -191,12 +215,16 @@ should be more than enough to get your jobs up and running.
 Once workers are established you can extend or reset the timeout
 by sending the <code>TIMEOUT_SET</code> message (proper documentation
 will come for this soon).</p></dd>
+
+
 <dt>worker_resource</dt>
 <dd><p>Optionally, an object created by
 <code><a href="worker_resource.html">worker_resource()</a></code> which controls the resources used
 by workers where these are different to jobs directly submitted
 by <code>$enqueue()</code>. This is only meaningful if you are using
 <code>use_rrq = TRUE</code>.</p></dd>
+
+
 <dt>conan_bootstrap</dt>
 <dd><p>Logical, indicating if we should use the
 shared conan "bootstrap" library stored on the temporary
@@ -204,6 +232,8 @@ directory. Setting this to <code>FALSE</code> will install all dependencies
 required to install packages first into a temporary location
 (this may take a few minutes) before installation. Generally
 leave this as-is.</p></dd>
+
+
 <dt>r_version</dt>
 <dd><p>A string, or <code>numeric_version</code> object, describing
 the R version required.  Not all R versions are known to be
@@ -212,19 +242,28 @@ versions for the cluster you are using.  If omitted then: if
 your R version matches a version on the cluster that will be
 used, or the oldest cluster version that is newer than yours, or
 the most recent cluster version.</p></dd>
+
+
 <dt>use_java</dt>
 <dd><p>Logical, indicating if the script is going to
 require Java, for example via the rJava package.</p></dd>
+
+
 <dt>java_home</dt>
 <dd><p>A string, optionally giving the path of a
 custom Java Runtime Environment, which will be used if
 the use_java logical is true. If left blank, then the
 default cluster Java Runtime Environment will be used.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>arguments to <code>didehpc_config</code></p></dd>
+
+
 <dt>check</dt>
 <dd><p>Logical, indicating if we should check that the
 configuration object can be created</p></dd>
+
 </dl></div>
     <div id="resources-and-parallel-computing">
     <h2>Resources and parallel computing</h2>
@@ -289,7 +328,7 @@ think you have a use case please let me know.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
