@@ -402,15 +402,23 @@ context_packages <- function(context, need_rrq = FALSE) {
   ## 'callr' is needed if using 'rrq' because the rrq/context queue
   ## runs things in separate processes using callr, but this is only
   ## an optional dependency.
-  list(packages = unique(c("context",
-                           if (need_rrq) c("rrq", "callr"),
-                           context$packages$attached,
-                           context$packages$loaded,
-                           context$package_sources$packages)),
-       repos = c(context$package_sources$repos,
-                 didehpc = "https://mrc-ide.github.io/didehpc-pkgs"))
+  packages <- setdiff(unique(c("context",
+                               if (need_rrq) c("rrq", "callr"),
+                               context$packages$attached,
+                               context$packages$loaded,
+                               context$package_sources$packages)),
+                      builtin_packages())
+  repos <- c(context$package_sources$repos,
+             didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  list(packages = packages,
+       repos = repos)
 }
 
+
+builtin_packages <- function() {
+  rownames(installed.packages(priority = "high"))
+}
+c
 
 task_names <- function(task_ids, names) {
   if (is.null(names)) {

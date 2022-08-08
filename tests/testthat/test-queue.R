@@ -188,6 +188,18 @@ test_that("Can get all context packages", {
 })
 
 
+test_that("Can exclude base packages from install", {
+  root <- tempfile()
+  repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
+  ctx <- context::context_save(root, packages = c("base", "utils", "foo"))
+  expect_equal(context_packages(ctx),
+               list(packages = c("context", "foo"), repos = repos))
+  expect_equal(context_packages(ctx, TRUE),
+               list(packages = c("context", "rrq", "callr", "foo"),
+                    repos = repos))
+})
+
+
 test_that("Can get all context packages where loaded is used", {
   root <- tempfile()
   repos <- c(didehpc = "https://mrc-ide.github.io/didehpc-pkgs")
