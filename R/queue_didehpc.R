@@ -400,9 +400,9 @@ task_get_id <- function(x) {
 
 task_get_ids <- function(task_ids) {
   if (is.list(task_ids)) {
-    return(vcapply(task_ids, task_get_ids))
+    vcapply(task_ids, task_get_ids)
   } else {
-    return(task_get_id(task_ids))
+    task_get_id(task_ids)
   }
 }
 
