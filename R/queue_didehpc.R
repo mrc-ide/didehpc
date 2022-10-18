@@ -185,10 +185,10 @@ queue_didehpc_ <- R6::R6Class(
     ##'   them if currently running. It will have no effect if the tasks
     ##'   are completed (successfully or errored)
     ##'
-    ##' @param task_ids Can be a task id (that is, a string), a task, a
-    ##' task_bundle, or a vector of any of the above.
+    ##' @param task_ids Can be a task id (string), a task, a
+    ##' bundle of tasks returned by enqueue_bulk, or a vector of any of the above.
     unsubmit = function(task_ids) {
-        unsubmit_dide(self, task_ids) # TODO: used to map to id here
+      unsubmit_dide(self, task_ids) # TODO: used to map to id here
     },
 
     ##' @description Find the DIDE task id of your task. This is the number
