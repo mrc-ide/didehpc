@@ -1,3 +1,7 @@
+# didehpc 0.3.15
+
+More flexible job cancel (unsubmit).
+
 # didehpc 0.3.14
 
 Support for R 4.2.1

@@ -132,7 +132,18 @@ test_that("Submit job and update db", {
   expect_equal(t$status(), "CANCELLED")
   expect_error(t$result(), "task [[:xdigit:]]+ is unfetchable: CANCELLED")
 
-  expect_equal(obj$unsubmit(t$id), "NOT_RUNNING")
+  # Task is already unsubmitted - and this time send task object instead of id
+  
+  expect_equal(obj$unsubmit(t), "NOT_RUNNING")
+  
+  # Test getting ids from multiple tasks
+
+  t1 <- t$clone()
+  t2 <- t$clone()
+  t2$id <- paste0(t2$id, "Z")
+  expect_identical(task_get_ids(c(t1,t2)),
+                   c(t1$id, t2$id))
+
 })
 
 

@@ -76,45 +76,45 @@ with this.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{queue_didehpc_$new()}}
-\item \href{#method-login}{\code{queue_didehpc_$login()}}
-\item \href{#method-cluster_load}{\code{queue_didehpc_$cluster_load()}}
-\item \href{#method-reconcile}{\code{queue_didehpc_$reconcile()}}
-\item \href{#method-submit}{\code{queue_didehpc_$submit()}}
-\item \href{#method-submit_workers}{\code{queue_didehpc_$submit_workers()}}
-\item \href{#method-stop_workers}{\code{queue_didehpc_$stop_workers()}}
-\item \href{#method-rrq_controller}{\code{queue_didehpc_$rrq_controller()}}
-\item \href{#method-unsubmit}{\code{queue_didehpc_$unsubmit()}}
-\item \href{#method-dide_id}{\code{queue_didehpc_$dide_id()}}
-\item \href{#method-dide_log}{\code{queue_didehpc_$dide_log()}}
-\item \href{#method-provision_context}{\code{queue_didehpc_$provision_context()}}
-\item \href{#method-install_packages}{\code{queue_didehpc_$install_packages()}}
+\item \href{#method-queue_didehpc-new}{\code{queue_didehpc_$new()}}
+\item \href{#method-queue_didehpc-login}{\code{queue_didehpc_$login()}}
+\item \href{#method-queue_didehpc-cluster_load}{\code{queue_didehpc_$cluster_load()}}
+\item \href{#method-queue_didehpc-reconcile}{\code{queue_didehpc_$reconcile()}}
+\item \href{#method-queue_didehpc-submit}{\code{queue_didehpc_$submit()}}
+\item \href{#method-queue_didehpc-submit_workers}{\code{queue_didehpc_$submit_workers()}}
+\item \href{#method-queue_didehpc-stop_workers}{\code{queue_didehpc_$stop_workers()}}
+\item \href{#method-queue_didehpc-rrq_controller}{\code{queue_didehpc_$rrq_controller()}}
+\item \href{#method-queue_didehpc-unsubmit}{\code{queue_didehpc_$unsubmit()}}
+\item \href{#method-queue_didehpc-dide_id}{\code{queue_didehpc_$dide_id()}}
+\item \href{#method-queue_didehpc-dide_log}{\code{queue_didehpc_$dide_log()}}
+\item \href{#method-queue_didehpc-provision_context}{\code{queue_didehpc_$provision_context()}}
+\item \href{#method-queue_didehpc-install_packages}{\code{queue_didehpc_$install_packages()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue">}\href{../../queuer/html/queue_base.html#method-enqueue}{\code{queuer::queue_base$enqueue()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_">}\href{../../queuer/html/queue_base.html#method-enqueue_}{\code{queuer::queue_base$enqueue_()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_bulk">}\href{../../queuer/html/queue_base.html#method-enqueue_bulk}{\code{queuer::queue_base$enqueue_bulk()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="initialize_context">}\href{../../queuer/html/queue_base.html#method-initialize_context}{\code{queuer::queue_base$initialize_context()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="lapply">}\href{../../queuer/html/queue_base.html#method-lapply}{\code{queuer::queue_base$lapply()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="mapply">}\href{../../queuer/html/queue_base.html#method-mapply}{\code{queuer::queue_base$mapply()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get">}\href{../../queuer/html/queue_base.html#method-task_bundle_get}{\code{queuer::queue_base$task_bundle_get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info">}\href{../../queuer/html/queue_base.html#method-task_bundle_info}{\code{queuer::queue_base$task_bundle_info()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list">}\href{../../queuer/html/queue_base.html#method-task_bundle_list}{\code{queuer::queue_base$task_bundle_list()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete">}\href{../../queuer/html/queue_base.html#method-task_delete}{\code{queuer::queue_base$task_delete()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get">}\href{../../queuer/html/queue_base.html#method-task_get}{\code{queuer::queue_base$task_get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list">}\href{../../queuer/html/queue_base.html#method-task_list}{\code{queuer::queue_base$task_list()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result">}\href{../../queuer/html/queue_base.html#method-task_result}{\code{queuer::queue_base$task_result()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status">}\href{../../queuer/html/queue_base.html#method-task_status}{\code{queuer::queue_base$task_status()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times">}\href{../../queuer/html/queue_base.html#method-task_times}{\code{queuer::queue_base$task_times()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue"><a href='../../queuer/html/queue_base.html#method-queue_base-enqueue'><code>queuer::queue_base$enqueue()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_"><a href='../../queuer/html/queue_base.html#method-queue_base-enqueue_'><code>queuer::queue_base$enqueue_()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_bulk"><a href='../../queuer/html/queue_base.html#method-queue_base-enqueue_bulk'><code>queuer::queue_base$enqueue_bulk()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="initialize_context"><a href='../../queuer/html/queue_base.html#method-queue_base-initialize_context'><code>queuer::queue_base$initialize_context()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="lapply"><a href='../../queuer/html/queue_base.html#method-queue_base-lapply'><code>queuer::queue_base$lapply()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="mapply"><a href='../../queuer/html/queue_base.html#method-queue_base-mapply'><code>queuer::queue_base$mapply()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_get'><code>queuer::queue_base$task_bundle_get()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_info'><code>queuer::queue_base$task_bundle_info()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_list'><code>queuer::queue_base$task_bundle_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete"><a href='../../queuer/html/queue_base.html#method-queue_base-task_delete'><code>queuer::queue_base$task_delete()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get"><a href='../../queuer/html/queue_base.html#method-queue_base-task_get'><code>queuer::queue_base$task_get()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list"><a href='../../queuer/html/queue_base.html#method-queue_base-task_list'><code>queuer::queue_base$task_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result"><a href='../../queuer/html/queue_base.html#method-queue_base-task_result'><code>queuer::queue_base$task_result()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status"><a href='../../queuer/html/queue_base.html#method-queue_base-task_status'><code>queuer::queue_base$task_status()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times"><a href='../../queuer/html/queue_base.html#method-queue_base-task_times'><code>queuer::queue_base$task_times()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-new"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-new}{}}}
 \subsection{Method \code{new()}}{
 Constructor
 \subsection{Usage}{
@@ -141,8 +141,8 @@ for testing the package}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-login"></a>}}
-\if{latex}{\out{\hypertarget{method-login}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-login"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-login}{}}}
 \subsection{Method \code{login()}}{
 Log onto the web portal. This will be called
 automatically at either when creating the object (by default)
@@ -163,8 +163,8 @@ This will refresh the session, which is typically what you want to do.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cluster_load"></a>}}
-\if{latex}{\out{\hypertarget{method-cluster_load}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-cluster_load"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-cluster_load}{}}}
 \subsection{Method \code{cluster_load()}}{
 Report on the overall cluster usage
 \subsection{Usage}{
@@ -184,8 +184,8 @@ Report on the overall cluster usage
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-reconcile"></a>}}
-\if{latex}{\out{\hypertarget{method-reconcile}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-reconcile"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-reconcile}{}}}
 \subsection{Method \code{reconcile()}}{
 Attempt to reconcile any differences in task state
 between our database and the HPC queue. This is needed when
@@ -206,8 +206,8 @@ you should not use it if using them.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-submit"></a>}}
-\if{latex}{\out{\hypertarget{method-submit}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-submit"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-submit}{}}}
 \subsection{Method \code{submit()}}{
 Submit a task to the queue. Ordinarily you do not call
 this directly, it is called by the \verb{$enqueue()} method of
@@ -230,8 +230,8 @@ the first time around).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-submit_workers"></a>}}
-\if{latex}{\out{\hypertarget{method-submit_workers}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-submit_workers"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-submit_workers}{}}}
 \subsection{Method \code{submit_workers()}}{
 Submit workers to the queue. This only works if
 \code{use_rrq} or \code{use_workers} is \code{TRUE} in your configuration.
@@ -255,8 +255,8 @@ while waiting for workers.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-stop_workers"></a>}}
-\if{latex}{\out{\hypertarget{method-stop_workers}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-stop_workers"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-stop_workers}{}}}
 \subsection{Method \code{stop_workers()}}{
 Stop workers running on the cluster. See
 \code{vignette("workers")} for more information. By default
@@ -275,8 +275,8 @@ default all workers are stopped.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-rrq_controller"></a>}}
-\if{latex}{\out{\hypertarget{method-rrq_controller}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-rrq_controller"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-rrq_controller}{}}}
 \subsection{Method \code{rrq_controller()}}{
 Return an \link[rrq:rrq_controller]{rrq::rrq_controller} object, if you have
 set \code{use_rrq} or \code{use_workers} in your configuration. This is
@@ -289,8 +289,8 @@ for more information.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-unsubmit"></a>}}
-\if{latex}{\out{\hypertarget{method-unsubmit}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-unsubmit"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-unsubmit}{}}}
 \subsection{Method \code{unsubmit()}}{
 Unsubmit tasks from the cluster. This removes the tasks
 from the queue if they have not been started yet, and stops
@@ -303,14 +303,15 @@ are completed (successfully or errored)
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{task_ids}}{Vector of task ids to unsubmit.}
+\item{\code{task_ids}}{Can be a task id (that is, a string), a task, a
+task_bundle, or a vector of any of the above.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-dide_id"></a>}}
-\if{latex}{\out{\hypertarget{method-dide_id}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-dide_id"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-dide_id}{}}}
 \subsection{Method \code{dide_id()}}{
 Find the DIDE task id of your task. This is the number
 displayed in the web portal.
@@ -327,8 +328,8 @@ displayed in the web portal.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-dide_log"></a>}}
-\if{latex}{\out{\hypertarget{method-dide_log}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-dide_log"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-dide_log}{}}}
 \subsection{Method \code{dide_log()}}{
 Return the pre-context log of a task. Use this to find
 out what has happened to a task that has unexpectedly failed, but
@@ -346,8 +347,8 @@ for which \verb{$log()} is uninformative.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-provision_context"></a>}}
-\if{latex}{\out{\hypertarget{method-provision_context}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-provision_context"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-provision_context}{}}}
 \subsection{Method \code{provision_context()}}{
 Provision your context for running on the cluster.
 This sets up the remote set of packages that your tasks will use.
@@ -388,8 +389,8 @@ bar}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-install_packages"></a>}}
-\if{latex}{\out{\hypertarget{method-install_packages}{}}}
+\if{html}{\out{<a id="method-queue_didehpc-install_packages"></a>}}
+\if{latex}{\out{\hypertarget{method-queue_didehpc-install_packages}{}}}
 \subsection{Method \code{install_packages()}}{
 Install packages on the cluster. This can be used to
 more directly install packages on the cluster than the
