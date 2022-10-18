@@ -185,8 +185,8 @@ queue_didehpc_ <- R6::R6Class(
     ##'   them if currently running. It will have no effect if the tasks
     ##'   are completed (successfully or errored)
     ##'
-    ##' @param task_ids Can be a task id (string), a task, a
-    ##' bundle of tasks returned by enqueue_bulk, or a vector of any of the above.
+    ##' @param task_ids Can be a task id (string), a vector of task ids, a task, a
+    ##' list of tasks, a bundle returned by enqueue_bulk, or a list of bundles.
     unsubmit = function(task_ids) {
       unsubmit_dide(self, task_ids) # TODO: used to map to id here
     },

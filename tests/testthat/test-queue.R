@@ -141,7 +141,13 @@ test_that("Submit job and update db", {
   t1 <- t$clone()
   t2 <- t$clone()
   t2$id <- paste0(t2$id, "Z")
+  
+  # Check a list works
   expect_identical(task_get_ids(c(t1,t2)),
+                   c(t1$id, t2$id))
+  
+  # Check a vector of character ids works
+  expect_identical(task_get_ids(c(t1$id,t2$id)),
                    c(t1$id, t2$id))
 
 })
