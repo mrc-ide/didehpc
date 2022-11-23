@@ -136,10 +136,26 @@ test_that("Submit job and update db", {
   
   expect_equal(obj$unsubmit(t), "NOT_RUNNING")
   
-  # Test getting ids from multiple tasks
+  
 
-  t1 <- t$clone()
-  t2 <- t$clone()
+})
+
+test_that("More unsubmit tests", {
+  dide_id <- "462461"
+  client <- list(submit = mockery::mock(dide_id))
+    
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  
+  private <- r6_private(obj)
+  private$provisioned <- TRUE
+  
+  t1 <- obj$enqueue(sin(1))
+  
+  # Test getting ids from multiple tasks
+  
+  t2 <- t1$clone()
   t2$id <- paste0(t2$id, "Z")
   
   # Check a list works
@@ -149,7 +165,6 @@ test_that("Submit job and update db", {
   # Check a vector of character ids works
   expect_identical(task_get_ids(c(t1$id,t2$id)),
                    c(t1$id, t2$id))
-
 })
 
 
