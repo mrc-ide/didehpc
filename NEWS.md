@@ -1,4 +1,8 @@
-# didehpc 0.3.15
+# didehpc 0.3.17
+
+Support MEM1024 job template for selecting nodes with 1Tb of RAM
+
+# didehpc 0.3.16
 
 More flexible job cancel (unsubmit).
 
