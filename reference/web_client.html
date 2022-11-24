@@ -18,7 +18,7 @@ DIDE cluster web client"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.16</span>
       </span>
     </div>
 
@@ -90,23 +90,23 @@ DIDE cluster web client"><!-- mathjax --><script src="https://cdnjs.cloudflare.c
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>web_client$new()</code></a></p></li>
-<li><p><a href="#method-login"><code>web_client$login()</code></a></p></li>
-<li><p><a href="#method-logout"><code>web_client$logout()</code></a></p></li>
-<li><p><a href="#method-logged_in"><code>web_client$logged_in()</code></a></p></li>
-<li><p><a href="#method-check_access"><code>web_client$check_access()</code></a></p></li>
-<li><p><a href="#method-submit"><code>web_client$submit()</code></a></p></li>
-<li><p><a href="#method-cancel"><code>web_client$cancel()</code></a></p></li>
-<li><p><a href="#method-log"><code>web_client$log()</code></a></p></li>
-<li><p><a href="#method-status_user"><code>web_client$status_user()</code></a></p></li>
-<li><p><a href="#method-status_job"><code>web_client$status_job()</code></a></p></li>
-<li><p><a href="#method-load_node"><code>web_client$load_node()</code></a></p></li>
-<li><p><a href="#method-load_overall"><code>web_client$load_overall()</code></a></p></li>
-<li><p><a href="#method-load_show"><code>web_client$load_show()</code></a></p></li>
-<li><p><a href="#method-headnodes"><code>web_client$headnodes()</code></a></p></li>
-<li><p><a href="#method-r_versions"><code>web_client$r_versions()</code></a></p></li>
-<li><p><a href="#method-api_client"><code>web_client$api_client()</code></a></p></li>
-</ul></div><p></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-web_client-new"><code>web_client$new()</code></a></p></li>
+<li><p><a href="#method-web_client-login"><code>web_client$login()</code></a></p></li>
+<li><p><a href="#method-web_client-logout"><code>web_client$logout()</code></a></p></li>
+<li><p><a href="#method-web_client-logged_in"><code>web_client$logged_in()</code></a></p></li>
+<li><p><a href="#method-web_client-check_access"><code>web_client$check_access()</code></a></p></li>
+<li><p><a href="#method-web_client-submit"><code>web_client$submit()</code></a></p></li>
+<li><p><a href="#method-web_client-cancel"><code>web_client$cancel()</code></a></p></li>
+<li><p><a href="#method-web_client-log"><code>web_client$log()</code></a></p></li>
+<li><p><a href="#method-web_client-status_user"><code>web_client$status_user()</code></a></p></li>
+<li><p><a href="#method-web_client-status_job"><code>web_client$status_job()</code></a></p></li>
+<li><p><a href="#method-web_client-load_node"><code>web_client$load_node()</code></a></p></li>
+<li><p><a href="#method-web_client-load_overall"><code>web_client$load_overall()</code></a></p></li>
+<li><p><a href="#method-web_client-load_show"><code>web_client$load_show()</code></a></p></li>
+<li><p><a href="#method-web_client-headnodes"><code>web_client$headnodes()</code></a></p></li>
+<li><p><a href="#method-web_client-r_versions"><code>web_client$r_versions()</code></a></p></li>
+<li><p><a href="#method-web_client-api_client"><code>web_client$api_client()</code></a></p></li>
+</ul></div><p></p><hr><a id="method-web_client-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Create an API client for the DIDE cluster</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -144,7 +144,7 @@ given credentials.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-login"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-login"></a><div class="section">
 <h3 id="method-login-">Method <code>login()</code><a class="anchor" aria-label="anchor" href="#method-login-"></a></h3>
 <p>Log in to the cluster</p><div class="section">
 <h4 id="usage-1">Usage<a class="anchor" aria-label="anchor" href="#usage-1"></a></h4>
@@ -161,7 +161,7 @@ it looks like we are already (useful if login has expired)</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-logout"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-logout"></a><div class="section">
 <h3 id="method-logout-">Method <code>logout()</code><a class="anchor" aria-label="anchor" href="#method-logout-"></a></h3>
 <p>Log the client out</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -169,7 +169,7 @@ it looks like we are already (useful if login has expired)</p></dd>
 </div>
 
 
-</div><p></p><hr><a id="method-logged_in"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-logged_in"></a><div class="section">
 <h3 id="method-logged-in-">Method <code>logged_in()</code><a class="anchor" aria-label="anchor" href="#method-logged-in-"></a></h3>
 <p>Test whether the client is logged in, returning <code>TRUE</code>
 or <code>FALSE</code>.</p><div class="section">
@@ -178,7 +178,7 @@ or <code>FALSE</code>.</p><div class="section">
 </div>
 
 
-</div><p></p><hr><a id="method-check_access"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-check_access"></a><div class="section">
 <h3 id="method-check-access-">Method <code>check_access()</code><a class="anchor" aria-label="anchor" href="#method-check-access-"></a></h3>
 <p>Validate that we have access to a given cluster</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
@@ -195,7 +195,7 @@ the value given when creating the client.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-submit"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-submit"></a><div class="section">
 <h3 id="method-submit-">Method <code>submit()</code><a class="anchor" aria-label="anchor" href="#method-submit-"></a></h3>
 <p>Submit a job to the cluster</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
@@ -243,7 +243,7 @@ or <code>Nodes</code>)</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-cancel"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-cancel"></a><div class="section">
 <h3 id="method-cancel-">Method <code>cancel()</code><a class="anchor" aria-label="anchor" href="#method-cancel-"></a></h3>
 <p>Cancel a cluster task</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
@@ -271,7 +271,7 @@ and values one of <code>OK</code>, <code>NOT_FOUND</code>, <code>WRONG_USER</cod
 <code>ID_ERROR</code></p>
 </div>
 
-</div><p></p><hr><a id="method-log"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-log"></a><div class="section">
 <h3 id="method-log-">Method <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code><a class="anchor" aria-label="anchor" href="#method-log-"></a></h3>
 <p>Get log from job</p><div class="section">
 <h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
@@ -292,7 +292,7 @@ the value given when creating the client.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-status_user"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-status_user"></a><div class="section">
 <h3 id="method-status-user-">Method <code>status_user()</code><a class="anchor" aria-label="anchor" href="#method-status-user-"></a></h3>
 <p>Return status of all your jobs</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
@@ -315,7 +315,7 @@ given when creating the client.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-status_job"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-status_job"></a><div class="section">
 <h3 id="method-status-job-">Method <code>status_job()</code><a class="anchor" aria-label="anchor" href="#method-status-job-"></a></h3>
 <p>Return status of a single job</p><div class="section">
 <h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
@@ -336,7 +336,7 @@ given when creating the client.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-load_node"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-load_node"></a><div class="section">
 <h3 id="method-load-node-">Method <code>load_node()</code><a class="anchor" aria-label="anchor" href="#method-load-node-"></a></h3>
 <p>Return an overall measure of cluster use, one
 entry per node within a cluster.</p><div class="section">
@@ -354,7 +354,7 @@ the value given when creating the client.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-load_overall"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-load_overall"></a><div class="section">
 <h3 id="method-load-overall-">Method <code>load_overall()</code><a class="anchor" aria-label="anchor" href="#method-load-overall-"></a></h3>
 <p>Return an overall measure of cluster use, one
 entry per cluster that you have access to.
@@ -365,7 +365,7 @@ always shows the output.</p><div class="section">
 </div>
 
 
-</div><p></p><hr><a id="method-load_show"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-load_show"></a><div class="section">
 <h3 id="method-load-show-">Method <code>load_show()</code><a class="anchor" aria-label="anchor" href="#method-load-show-"></a></h3>
 
 <div class="section">
@@ -388,7 +388,7 @@ client was created.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-headnodes"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-headnodes"></a><div class="section">
 <h3 id="method-headnodes-">Method <code>headnodes()</code><a class="anchor" aria-label="anchor" href="#method-headnodes-"></a></h3>
 <p>Return a vector of known cluster headnodes. Typically
 <code><a href="valid_clusters.html">valid_clusters()</a></code> will be faster. This endpoint can
@@ -408,7 +408,7 @@ the server where we have previously fetched it.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-r_versions"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-r_versions"></a><div class="section">
 <h3 id="method-r-versions-">Method <code>r_versions()</code><a class="anchor" aria-label="anchor" href="#method-r-versions-"></a></h3>
 <p>Return a vector of all available R versions</p><div class="section">
 <h4 id="usage-14">Usage<a class="anchor" aria-label="anchor" href="#usage-14"></a></h4>
@@ -416,7 +416,7 @@ the server where we have previously fetched it.</p></dd>
 </div>
 
 
-</div><p></p><hr><a id="method-api_client"></a><div class="section">
+</div><p></p><hr><a id="method-web_client-api_client"></a><div class="section">
 <h3 id="method-api-client-">Method <code>api_client()</code><a class="anchor" aria-label="anchor" href="#method-api-client-"></a></h3>
 <p>Returns the low-level API client for debugging</p><div class="section">
 <h4 id="usage-15">Usage<a class="anchor" aria-label="anchor" href="#usage-15"></a></h4>

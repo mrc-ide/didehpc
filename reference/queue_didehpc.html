@@ -20,7 +20,7 @@ derives.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.15</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.16</span>
       </span>
     </div>
 
@@ -168,35 +168,35 @@ with this.</p></dd>
 <div class="section">
 <h3 id="public-methods">Public methods<a class="anchor" aria-label="anchor" href="#public-methods"></a></h3>
 
-<ul><li><p><a href="#method-new"><code>queue_didehpc_$new()</code></a></p></li>
-<li><p><a href="#method-login"><code>queue_didehpc_$login()</code></a></p></li>
-<li><p><a href="#method-cluster_load"><code>queue_didehpc_$cluster_load()</code></a></p></li>
-<li><p><a href="#method-reconcile"><code>queue_didehpc_$reconcile()</code></a></p></li>
-<li><p><a href="#method-submit"><code>queue_didehpc_$submit()</code></a></p></li>
-<li><p><a href="#method-submit_workers"><code>queue_didehpc_$submit_workers()</code></a></p></li>
-<li><p><a href="#method-stop_workers"><code>queue_didehpc_$stop_workers()</code></a></p></li>
-<li><p><a href="#method-rrq_controller"><code>queue_didehpc_$rrq_controller()</code></a></p></li>
-<li><p><a href="#method-unsubmit"><code>queue_didehpc_$unsubmit()</code></a></p></li>
-<li><p><a href="#method-dide_id"><code>queue_didehpc_$dide_id()</code></a></p></li>
-<li><p><a href="#method-dide_log"><code>queue_didehpc_$dide_log()</code></a></p></li>
-<li><p><a href="#method-provision_context"><code>queue_didehpc_$provision_context()</code></a></p></li>
-<li><p><a href="#method-install_packages"><code>queue_didehpc_$install_packages()</code></a></p></li>
-</ul></div><p><details><summary>Inherited methods</summary><ul><li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue"><code>queuer::queue_base$enqueue()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue_"><code>queuer::queue_base$enqueue_()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_bulk"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue_bulk"><code>queuer::queue_base$enqueue_bulk()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="initialize_context"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-initialize_context"><code>queuer::queue_base$initialize_context()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="lapply"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-lapply"><code>queuer::queue_base$lapply()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="mapply"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-mapply"><code>queuer::queue_base$mapply()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_get"><code>queuer::queue_base$task_bundle_get()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_info"><code>queuer::queue_base$task_bundle_info()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_list"><code>queuer::queue_base$task_bundle_list()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_delete"><code>queuer::queue_base$task_delete()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_get"><code>queuer::queue_base$task_get()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_list"><code>queuer::queue_base$task_list()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_result"><code>queuer::queue_base$task_result()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_status"><code>queuer::queue_base$task_status()</code></a></span></p></li>
-<li><p><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_times"><code>queuer::queue_base$task_times()</code></a></span></p></li>
-</ul></details></p><hr><a id="method-new"></a><div class="section">
+<ul><li><p><a href="#method-queue_didehpc-new"><code>queue_didehpc_$new()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-login"><code>queue_didehpc_$login()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-cluster_load"><code>queue_didehpc_$cluster_load()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-reconcile"><code>queue_didehpc_$reconcile()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-submit"><code>queue_didehpc_$submit()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-submit_workers"><code>queue_didehpc_$submit_workers()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-stop_workers"><code>queue_didehpc_$stop_workers()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-rrq_controller"><code>queue_didehpc_$rrq_controller()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-unsubmit"><code>queue_didehpc_$unsubmit()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-dide_id"><code>queue_didehpc_$dide_id()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-dide_log"><code>queue_didehpc_$dide_log()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-provision_context"><code>queue_didehpc_$provision_context()</code></a></p></li>
+<li><p><a href="#method-queue_didehpc-install_packages"><code>queue_didehpc_$install_packages()</code></a></p></li>
+</ul></div><p><details><summary>Inherited methods</summary><ul><li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue"><code>queuer::queue_base$enqueue()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue_"><code>queuer::queue_base$enqueue_()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="enqueue_bulk"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-enqueue_bulk"><code>queuer::queue_base$enqueue_bulk()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="initialize_context"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-initialize_context"><code>queuer::queue_base$initialize_context()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="lapply"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-lapply"><code>queuer::queue_base$lapply()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="mapply"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-mapply"><code>queuer::queue_base$mapply()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_get"><code>queuer::queue_base$task_bundle_get()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_info"><code>queuer::queue_base$task_bundle_info()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_list"><code>queuer::queue_base$task_bundle_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_delete"><code>queuer::queue_base$task_delete()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_get"><code>queuer::queue_base$task_get()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_list"><code>queuer::queue_base$task_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_result"><code>queuer::queue_base$task_result()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_status"><code>queuer::queue_base$task_status()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_times"><code>queuer::queue_base$task_times()</code></a></span></li>
+</ul></details></p><hr><a id="method-queue_didehpc-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Constructor</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
@@ -225,7 +225,7 @@ for testing the package</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-login"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-login"></a><div class="section">
 <h3 id="method-login-">Method <code>login()</code><a class="anchor" aria-label="anchor" href="#method-login-"></a></h3>
 <p>Log onto the web portal. This will be called
 automatically at either when creating the object (by default)
@@ -246,7 +246,7 @@ This will refresh the session, which is typically what you want to do.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-cluster_load"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-cluster_load"></a><div class="section">
 <h3 id="method-cluster-load-">Method <code><a href="cluster_load.html">cluster_load()</a></code><a class="anchor" aria-label="anchor" href="#method-cluster-load-"></a></h3>
 <p>Report on the overall cluster usage</p><div class="section">
 <h4 id="usage-2">Usage<a class="anchor" aria-label="anchor" href="#usage-2"></a></h4>
@@ -268,7 +268,7 @@ This will refresh the session, which is typically what you want to do.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-reconcile"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-reconcile"></a><div class="section">
 <h3 id="method-reconcile-">Method <code>reconcile()</code><a class="anchor" aria-label="anchor" href="#method-reconcile-"></a></h3>
 <p>Attempt to reconcile any differences in task state
 between our database and the HPC queue. This is needed when
@@ -289,7 +289,7 @@ you should not use it if using them.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-submit"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-submit"></a><div class="section">
 <h3 id="method-submit-">Method <code>submit()</code><a class="anchor" aria-label="anchor" href="#method-submit-"></a></h3>
 <p>Submit a task to the queue. Ordinarily you do not call
 this directly, it is called by the <code>$enqueue()</code> method of
@@ -314,7 +314,7 @@ the first time around).</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-submit_workers"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-submit_workers"></a><div class="section">
 <h3 id="method-submit-workers-">Method <code>submit_workers()</code><a class="anchor" aria-label="anchor" href="#method-submit-workers-"></a></h3>
 <p>Submit workers to the queue. This only works if
 <code>use_rrq</code> or <code>use_workers</code> is <code>TRUE</code> in your configuration.
@@ -342,7 +342,7 @@ while waiting for workers.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-stop_workers"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-stop_workers"></a><div class="section">
 <h3 id="method-stop-workers-">Method <code>stop_workers()</code><a class="anchor" aria-label="anchor" href="#method-stop-workers-"></a></h3>
 <p>Stop workers running on the cluster. See
 <code><a href="../articles/workers.html">vignette("workers")</a></code> for more information. By default
@@ -361,7 +361,7 @@ default all workers are stopped.</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-rrq_controller"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-rrq_controller"></a><div class="section">
 <h3 id="method-rrq-controller-">Method <code>rrq_controller()</code><a class="anchor" aria-label="anchor" href="#method-rrq-controller-"></a></h3>
 <p>Return an <a href="https://rdrr.io/pkg/rrq/man/rrq_controller.html" class="external-link">rrq::rrq_controller</a> object, if you have
 set <code>use_rrq</code> or <code>use_workers</code> in your configuration. This is
@@ -373,7 +373,7 @@ for more information.</p><div class="section">
 </div>
 
 
-</div><p></p><hr><a id="method-unsubmit"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-unsubmit"></a><div class="section">
 <h3 id="method-unsubmit-">Method <code>unsubmit()</code><a class="anchor" aria-label="anchor" href="#method-unsubmit-"></a></h3>
 <p>Unsubmit tasks from the cluster. This removes the tasks
 from the queue if they have not been started yet, and stops
@@ -386,13 +386,14 @@ are completed (successfully or errored)</p><div class="section">
 <div class="section">
 <h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>task_ids</code></dt>
-<dd><p>Vector of task ids to unsubmit.</p></dd>
+<dd><p>Can be a task id (that is, a string), a task, a
+task_bundle, or a vector of any of the above.</p></dd>
 
 
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-dide_id"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-dide_id"></a><div class="section">
 <h3 id="method-dide-id-">Method <code>dide_id()</code><a class="anchor" aria-label="anchor" href="#method-dide-id-"></a></h3>
 <p>Find the DIDE task id of your task. This is the number
 displayed in the web portal.</p><div class="section">
@@ -409,7 +410,7 @@ displayed in the web portal.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-dide_log"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-dide_log"></a><div class="section">
 <h3 id="method-dide-log-">Method <code>dide_log()</code><a class="anchor" aria-label="anchor" href="#method-dide-log-"></a></h3>
 <p>Return the pre-context log of a task. Use this to find
 out what has happened to a task that has unexpectedly failed, but
@@ -427,7 +428,7 @@ for which <code>$log()</code> is uninformative.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-provision_context"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-provision_context"></a><div class="section">
 <h3 id="method-provision-context-">Method <code>provision_context()</code><a class="anchor" aria-label="anchor" href="#method-provision-context-"></a></h3>
 <p>Provision your context for running on the cluster.
 This sets up the remote set of packages that your tasks will use.
@@ -476,7 +477,7 @@ bar</p></dd>
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-install_packages"></a><div class="section">
+</div><p></p><hr><a id="method-queue_didehpc-install_packages"></a><div class="section">
 <h3 id="method-install-packages-">Method <code>install_packages()</code><a class="anchor" aria-label="anchor" href="#method-install-packages-"></a></h3>
 <p>Install packages on the cluster. This can be used to
 more directly install packages on the cluster than the
