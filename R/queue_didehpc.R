@@ -185,7 +185,8 @@ queue_didehpc_ <- R6::R6Class(
     ##'   them if currently running. It will have no effect if the tasks
     ##'   are completed (successfully or errored)
     ##'
-    ##' @param task_ids Vector of task ids to unsubmit.
+    ##' @param task_ids Can be a task id (string), a vector of task ids, a task, a
+    ##' list of tasks, a bundle returned by enqueue_bulk, or a list of bundles.
     unsubmit = function(task_ids) {
       unsubmit_dide(self, task_ids) # TODO: used to map to id here
     },
@@ -354,8 +355,9 @@ submit_dide <- function(obj, data, task_ids, names) {
   }
 }
 
-
 unsubmit_dide <- function(obj, task_ids) {
+  task_ids <- task_get_ids(task_ids)
+  
   db <- obj$context$db
   client <- obj$client
 
@@ -394,6 +396,14 @@ task_get_id <- function(x) {
     stop("Can't determine task id")
   }
   task_ids
+}
+
+task_get_ids <- function(task_ids) {
+  if (is.list(task_ids)) {
+    vcapply(task_ids, task_get_ids)
+  } else {
+    task_get_id(task_ids)
+  }
 }
 
 

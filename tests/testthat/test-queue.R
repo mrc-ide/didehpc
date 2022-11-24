@@ -132,7 +132,32 @@ test_that("Submit job and update db", {
   expect_equal(t$status(), "CANCELLED")
   expect_error(t$result(), "task [[:xdigit:]]+ is unfetchable: CANCELLED")
 
-  expect_equal(obj$unsubmit(t$id), "NOT_RUNNING")
+  # Task is already unsubmitted - and this time send task object instead of id
+
+  expect_equal(obj$unsubmit(t), "NOT_RUNNING")
+
+})
+
+test_that("Test support for multiple cancels", {
+  client <- list(submit = mockery::mock("42", "43"))
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+
+  private <- r6_private(obj)
+  private$provisioned <- TRUE
+
+  t1 <- obj$enqueue(sin(1))
+  t2 <- obj$enqueue(cos(1))
+
+  # Check a list works
+  expect_identical(task_get_ids(c(t1,t2)),
+                   c(t1$id, t2$id))
+
+  # Check a vector of character ids works
+  expect_identical(task_get_ids(c(t1$id,t2$id)),
+                   c(t1$id, t2$id))
+
 })
 
 

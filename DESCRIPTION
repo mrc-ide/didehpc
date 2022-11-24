@@ -1,6 +1,6 @@
 Package: didehpc
 Title: DIDE HPC Support
-Version: 0.3.15
+Version: 0.3.16
 Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     email = "rich.fitzjohn@gmail.com"),
              person("Wes", "Hinsley", role = "aut"),
@@ -37,7 +37,7 @@ Suggests:
     rrq (>= 0.5.0),
     testthat,
     withr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Remotes:

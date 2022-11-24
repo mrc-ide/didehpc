@@ -14,27 +14,27 @@ Client for the DIDE cluster web interface.
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{web_client$new()}}
-\item \href{#method-login}{\code{web_client$login()}}
-\item \href{#method-logout}{\code{web_client$logout()}}
-\item \href{#method-logged_in}{\code{web_client$logged_in()}}
-\item \href{#method-check_access}{\code{web_client$check_access()}}
-\item \href{#method-submit}{\code{web_client$submit()}}
-\item \href{#method-cancel}{\code{web_client$cancel()}}
-\item \href{#method-log}{\code{web_client$log()}}
-\item \href{#method-status_user}{\code{web_client$status_user()}}
-\item \href{#method-status_job}{\code{web_client$status_job()}}
-\item \href{#method-load_node}{\code{web_client$load_node()}}
-\item \href{#method-load_overall}{\code{web_client$load_overall()}}
-\item \href{#method-load_show}{\code{web_client$load_show()}}
-\item \href{#method-headnodes}{\code{web_client$headnodes()}}
-\item \href{#method-r_versions}{\code{web_client$r_versions()}}
-\item \href{#method-api_client}{\code{web_client$api_client()}}
+\item \href{#method-web_client-new}{\code{web_client$new()}}
+\item \href{#method-web_client-login}{\code{web_client$login()}}
+\item \href{#method-web_client-logout}{\code{web_client$logout()}}
+\item \href{#method-web_client-logged_in}{\code{web_client$logged_in()}}
+\item \href{#method-web_client-check_access}{\code{web_client$check_access()}}
+\item \href{#method-web_client-submit}{\code{web_client$submit()}}
+\item \href{#method-web_client-cancel}{\code{web_client$cancel()}}
+\item \href{#method-web_client-log}{\code{web_client$log()}}
+\item \href{#method-web_client-status_user}{\code{web_client$status_user()}}
+\item \href{#method-web_client-status_job}{\code{web_client$status_job()}}
+\item \href{#method-web_client-load_node}{\code{web_client$load_node()}}
+\item \href{#method-web_client-load_overall}{\code{web_client$load_overall()}}
+\item \href{#method-web_client-load_show}{\code{web_client$load_show()}}
+\item \href{#method-web_client-headnodes}{\code{web_client$headnodes()}}
+\item \href{#method-web_client-r_versions}{\code{web_client$r_versions()}}
+\item \href{#method-web_client-api_client}{\code{web_client$api_client()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-web_client-new"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-new}{}}}
 \subsection{Method \code{new()}}{
 Create an API client for the DIDE cluster
 \subsection{Usage}{
@@ -66,8 +66,8 @@ given credentials.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-login"></a>}}
-\if{latex}{\out{\hypertarget{method-login}{}}}
+\if{html}{\out{<a id="method-web_client-login"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-login}{}}}
 \subsection{Method \code{login()}}{
 Log in to the cluster
 \subsection{Usage}{
@@ -84,8 +84,8 @@ it looks like we are already (useful if login has expired)}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-logout"></a>}}
-\if{latex}{\out{\hypertarget{method-logout}{}}}
+\if{html}{\out{<a id="method-web_client-logout"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-logout}{}}}
 \subsection{Method \code{logout()}}{
 Log the client out
 \subsection{Usage}{
@@ -94,8 +94,8 @@ Log the client out
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-logged_in"></a>}}
-\if{latex}{\out{\hypertarget{method-logged_in}{}}}
+\if{html}{\out{<a id="method-web_client-logged_in"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-logged_in}{}}}
 \subsection{Method \code{logged_in()}}{
 Test whether the client is logged in, returning \code{TRUE}
 or \code{FALSE}.
@@ -105,8 +105,8 @@ or \code{FALSE}.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-check_access"></a>}}
-\if{latex}{\out{\hypertarget{method-check_access}{}}}
+\if{html}{\out{<a id="method-web_client-check_access"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-check_access}{}}}
 \subsection{Method \code{check_access()}}{
 Validate that we have access to a given cluster
 \subsection{Usage}{
@@ -123,8 +123,8 @@ the value given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-submit"></a>}}
-\if{latex}{\out{\hypertarget{method-submit}{}}}
+\if{html}{\out{<a id="method-web_client-submit"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-submit}{}}}
 \subsection{Method \code{submit()}}{
 Submit a job to the cluster
 \subsection{Usage}{
@@ -162,8 +162,8 @@ or \code{Nodes})}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cancel"></a>}}
-\if{latex}{\out{\hypertarget{method-cancel}{}}}
+\if{html}{\out{<a id="method-web_client-cancel"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-cancel}{}}}
 \subsection{Method \code{cancel()}}{
 Cancel a cluster task
 \subsection{Usage}{
@@ -188,8 +188,8 @@ and values one of \code{OK}, \code{NOT_FOUND}, \code{WRONG_USER}, \code{WRONG_ST
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-log"></a>}}
-\if{latex}{\out{\hypertarget{method-log}{}}}
+\if{html}{\out{<a id="method-web_client-log"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-log}{}}}
 \subsection{Method \code{log()}}{
 Get log from job
 \subsection{Usage}{
@@ -208,8 +208,8 @@ the value given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-status_user"></a>}}
-\if{latex}{\out{\hypertarget{method-status_user}{}}}
+\if{html}{\out{<a id="method-web_client-status_user"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-status_user}{}}}
 \subsection{Method \code{status_user()}}{
 Return status of all your jobs
 \subsection{Usage}{
@@ -230,8 +230,8 @@ given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-status_job"></a>}}
-\if{latex}{\out{\hypertarget{method-status_job}{}}}
+\if{html}{\out{<a id="method-web_client-status_job"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-status_job}{}}}
 \subsection{Method \code{status_job()}}{
 Return status of a single job
 \subsection{Usage}{
@@ -250,8 +250,8 @@ given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-load_node"></a>}}
-\if{latex}{\out{\hypertarget{method-load_node}{}}}
+\if{html}{\out{<a id="method-web_client-load_node"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-load_node}{}}}
 \subsection{Method \code{load_node()}}{
 Return an overall measure of cluster use, one
 entry per node within a cluster.
@@ -269,8 +269,8 @@ the value given when creating the client.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-load_overall"></a>}}
-\if{latex}{\out{\hypertarget{method-load_overall}{}}}
+\if{html}{\out{<a id="method-web_client-load_overall"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-load_overall}{}}}
 \subsection{Method \code{load_overall()}}{
 Return an overall measure of cluster use, one
 entry per cluster that you have access to.
@@ -282,8 +282,8 @@ always shows the output.
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-load_show"></a>}}
-\if{latex}{\out{\hypertarget{method-load_show}{}}}
+\if{html}{\out{<a id="method-web_client-load_show"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-load_show}{}}}
 \subsection{Method \code{load_show()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{web_client$load_show(cluster = NULL, nodes = TRUE)}\if{html}{\out{</div>}}
@@ -302,8 +302,8 @@ client was created.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-headnodes"></a>}}
-\if{latex}{\out{\hypertarget{method-headnodes}{}}}
+\if{html}{\out{<a id="method-web_client-headnodes"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-headnodes}{}}}
 \subsection{Method \code{headnodes()}}{
 Return a vector of known cluster headnodes. Typically
 \code{\link[=valid_clusters]{valid_clusters()}} will be faster. This endpoint can
@@ -323,8 +323,8 @@ the server where we have previously fetched it.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-r_versions"></a>}}
-\if{latex}{\out{\hypertarget{method-r_versions}{}}}
+\if{html}{\out{<a id="method-web_client-r_versions"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-r_versions}{}}}
 \subsection{Method \code{r_versions()}}{
 Return a vector of all available R versions
 \subsection{Usage}{
@@ -333,8 +333,8 @@ Return a vector of all available R versions
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-api_client"></a>}}
-\if{latex}{\out{\hypertarget{method-api_client}{}}}
+\if{html}{\out{<a id="method-web_client-api_client"></a>}}
+\if{latex}{\out{\hypertarget{method-web_client-api_client}{}}}
 \subsection{Method \code{api_client()}}{
 Returns the low-level API client for debugging
 \subsection{Usage}{
