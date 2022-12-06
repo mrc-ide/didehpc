@@ -140,6 +140,7 @@ web_client <- R6::R6Class(
       pars <- list(scheduler = cluster %||% private$cluster,
                    jobid = dide_id)
       r <- private$client$GET("/api/v1/get_job_status/", query = pars)
+      
       status_map(httr_text(r))
     },
 

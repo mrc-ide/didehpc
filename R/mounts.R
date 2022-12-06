@@ -88,9 +88,7 @@ wmic_parse <- function(x) {
   cbind(remote = dat$RemoteName, local = dat$LocalName)
 }
 
-
-
-use_app_on_nas <- function(path_remote) {
+use_app_on_nas_paddington <- function(path_remote) {
   
   # If we're NOT already accessing this path by infiniband,
   # but we could be, then add -app to the server name the cluster
@@ -120,13 +118,37 @@ use_app_on_nas <- function(path_remote) {
   path_remote
 }
 
+use_app_on_nas_south_ken <- function(path_remote) {
+  
+  # Similar to the above, but for the new South Ken
+  # cluster, wpia-hn.hpc
+  
+  if (!(grepl("^[/\\\\]{2}wpia-hn-app", path_remote))) {
+    
+    path_remote <-
+      sub("^([/\\\\]{2}wpia-hn)\\b", "\\1-app",
+          path_remote)
+  }
+  
+  
+  path_remote <-
+    sub("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|\\.hpc\\.dide\\.local\\b", 
+        "\\1.hpc.dide.local",
+        path_remote)
+  
+  path_remote <- gsub("wpia-hn-app.dide.local", "wpia-hn-app.hpc.dide.local",
+                      path_remote)
+  
+  path_remote
+}
+
 ## Normalisation
 
 ## This function will detect home, temp and if the current working
 ## directory is not in one of those then continue on to detect the cwd
 ## too.
 dide_detect_mount <- function(mounts, shares, home, temp,
-                              workdir, username, remap_nas) {
+                              workdir, username, remap_nas, cluster) {
   ret <- list()
 
   ## These two have a bit of logic, and will try to guess as best they
@@ -142,10 +164,13 @@ dide_detect_mount <- function(mounts, shares, home, temp,
   }
 
   ret <- dide_detect_mount_find_workdir(ret, workdir, mounts)
-
   if (remap_nas) {
     for (i in seq_along(ret)) {
-      ret[[i]]$path_remote <- use_app_on_nas(ret[[i]]$path_remote)
+      if (cluster %in% c("fi--didemrchnb", "wpia-hpc-hn")) {
+        ret[[i]]$path_remote <- use_app_on_nas_paddington(ret[[i]]$path_remote)
+      } else {
+        ret[[i]]$path_remote <- use_app_on_nas_south_ken(ret[[i]]$path_remote)
+      }
     }
   }
   ret

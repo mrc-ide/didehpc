@@ -213,10 +213,11 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   if (is.null(dat$template)) {
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
+
   mounts <- detect_mount()
-  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn")
+  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
-                              workdir, credentials$username, remap_nas)
+                              workdir, credentials$username, remap_nas, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores,
                               dat$wholenode, dat$parallel)
 
@@ -383,7 +384,7 @@ print.didehpc_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn")
+  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
 }
 
 
@@ -410,7 +411,8 @@ valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
                             "20Core", "24Core", "32Core", "MEM1024"),
-       "wpia-hpc-hn" = "AllNodes")
+       "wpia-hpc-hn" = "AllNodes",
+       "wpia-hn" = "AllNodes")
 }
 
 didehpc_check_max_cores <- function(cluster, cores) {
@@ -419,6 +421,7 @@ didehpc_check_max_cores <- function(cluster, cores) {
          "fi--dideclusthn" = 24,
          "fi--didemrchnb" = 64,
          "wpia-hpc-hn" = 32,
+         "wpia-hn" = 32,
          stop(sprintf("Invalid cluster '%s'", cluster)))
   if (cores > max_cores) {
     stop(sprintf("Maximum number of cores for %s is %d", cluster, max_cores))
@@ -467,6 +470,7 @@ redis_host <- function(cluster) {
          "wpia-hpc-hn" = "12.0.1.254",
          "fi--didemrchnb" = "12.0.0.1",
          "fi--dideclusthn" = "11.0.0.1",
+         "wpia-hn" = "10.0.3.254",
          stop(sprintf("No redis host for cluster '%s'", cluster)))
 }
 
