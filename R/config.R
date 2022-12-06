@@ -213,7 +213,6 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
   if (is.null(dat$template)) {
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
-
   mounts <- detect_mount()
   remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
