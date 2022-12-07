@@ -1,3 +1,7 @@
+# didehpc 0.3.18
+
+Prepare for new wpia-hn.hpc headnode and infiniband share at South Ken
+
 # didehpc 0.3.17
 
 Support MEM1024 job template for selecting nodes with 1Tb of RAM

@@ -63,6 +63,7 @@ queue_template <- function(cluster) {
     "fi--dideclusthn" = "GeneralNodes",
     "fi--didemrchnb" = "BuildQueue",
     "wpia-hpc-hn" = "AllNodes",
+    "wpia-hn" = "AllNodes",
     stop(sprintf("Invalid cluster '%s'", cluster)))
 }
 
