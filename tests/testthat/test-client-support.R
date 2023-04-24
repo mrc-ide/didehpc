@@ -18,7 +18,7 @@ test_that("Check cluster usage", {
 test_that("Construct a submit body", {
   p <- "\\\\fi--host\\\\path"
   d <- client_body_submit(p, "name", "GeneralNodes", "fi--dideclusthn",
-                          "Cores", 1)
+                          "Cores", 1, "1,2")
   expect_setequal(
     names(d),
     c("cluster", "template", "rc", "rt", "jn", "wd", "se", "so",
@@ -31,7 +31,7 @@ test_that("Construct a submit body", {
   expect_equal(d$se, "") # we might set this in future though
   expect_equal(d$so, "") # we might set this in future though
   expect_equal(d$jobs, encode64(sprintf('call "%s"', p)))
-  expect_equal(d$dep, "")
+  expect_equal(d$dep, encode64("1,2"))
   expect_equal(d$hpcfunc, "submit")
 })
 
