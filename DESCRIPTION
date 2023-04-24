@@ -16,13 +16,13 @@ Depends:
 Imports:
     conan (>= 0.1.1),
     crayon,
-    context (>= 0.3.0),
+    context (>= 0.5.0),
     getPass,
     glue,
     httr (>= 1.0.0),
     ids,
     jsonlite (>= 1.6),
-    queuer (>= 0.3.0),
+    queuer (>= 0.5.0),
     rematch,
     storr (>= 1.1.1),
     xml2 (>= 1.0.0)
@@ -42,8 +42,8 @@ Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Remotes:
     mrc-ide/conan,
-    mrc-ide/context,
-    mrc-ide/queuer,
+    mrc-ide/context$mrc-4177,
+    mrc-ide/queuer@mrc-4177,
     mrc-ide/rrq
 Encoding: UTF-8
 Language: en-GB
