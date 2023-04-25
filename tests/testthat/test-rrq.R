@@ -169,7 +169,7 @@ test_that("Can send context tasks to a worker", {
   rrq$task_data(id_rrq[[1]])
 
   ## TODO: will be exposed; in rrq this is rrq_worker_blocking; mrc-2297
-  w <- rrq:::rrq_worker_from_config(ctx$id, "didehpc")
+  w <- rrq::rrq_worker_from_config(ctx$id, "didehpc")
   w$step(TRUE)
 
   expect_equal(context::task_status(ids[[1]], ctx), "COMPLETE")
