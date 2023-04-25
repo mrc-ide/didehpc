@@ -190,7 +190,7 @@ test_that("Can plausibly submit workers", {
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   obj$client <- list(submit = mockery::mock())
   mock_wait <- mockery::mock()
-  mockery::stub(rrq_submit_workers, "rrq::worker_wait", mock_wait)
+  mockery::stub(rrq_submit_workers, "rrq::rrq_worker_wait", mock_wait)
   data <- r6_private(obj)$data
 
   expect_message(
@@ -234,7 +234,7 @@ test_that("Can plausibly submit workers with different configuration", {
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   obj$client <- list(submit = mockery::mock())
   mock_wait <- mockery::mock()
-  mockery::stub(rrq_submit_workers, "rrq::worker_wait", mock_wait)
+  mockery::stub(rrq_submit_workers, "rrq::rrq_worker_wait", mock_wait)
   data <- r6_private(obj)$data
 
   expect_message(

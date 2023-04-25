@@ -110,7 +110,7 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
   }
 
   ## We should also check here that the job is still running
-  rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
+  rrq::rrq_worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
 }
 
 
