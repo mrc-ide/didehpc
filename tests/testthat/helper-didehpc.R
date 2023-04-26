@@ -32,7 +32,7 @@ test_fake_rrq <- function(context, config) {
     dir.create(dirname(dest), FALSE, TRUE)
     file.copy(system.file("DESCRIPTION", package = "rrq"), dest)
   }
-  invisible()
+  invisible(dest)
 }
 
 

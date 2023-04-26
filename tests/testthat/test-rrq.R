@@ -271,3 +271,29 @@ test_that("Can plausibly submit workers with different configuration", {
   expect_match(args[[2]], sprintf("^%s:worker:alive:.+", ctx$id))
   expect_equal(args[3:4], list(timeout = 100, progress = FALSE))
 })
+
+
+test_that("error if remote rrq is too old", {
+  curr <- packageVersion("rrq")
+  expect_error(
+    rrq_check_package_version(curr, numeric_version("0.4.4")),
+    "Your remote version of rrq (0.4.4) is too old; must be at least 0.6.21",
+    fixed = TRUE)
+})
+
+
+test_that("warn if rrq versions differ", {
+  curr <- packageVersion("rrq")
+  other <- numeric_version("99.99.99")
+  expect_warning(
+    rrq_check_package_version(curr, other),
+    "rrq versions differ between local (0.6.21) and remote (99.99.99)",
+    fixed = TRUE)
+})
+
+
+test_that("silent of rrq versions agree", {
+  curr <- packageVersion("rrq")
+  expect_silent(
+    rrq_check_package_version(curr, curr))
+})
