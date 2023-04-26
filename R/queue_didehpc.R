@@ -426,9 +426,9 @@ context_packages <- function(context, need_rrq = FALSE) {
 
 
 builtin_packages <- function() {
-  rownames(installed.packages(priority = "high"))
+  rownames(utils::installed.packages(priority = "high"))
 }
-c
+
 
 task_names <- function(task_ids, names) {
   if (is.null(names)) {
