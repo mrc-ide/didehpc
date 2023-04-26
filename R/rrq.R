@@ -42,7 +42,7 @@ rrq_submit_context_tasks <- function(config, context, task_ids, names) {
   res <- rrq$enqueue_bulk_(dat, quote(context::task_run_external),
                            root = root,
                            identifier = context$id,
-                           collect_timeout = 0)
+                           timeout_task_wait = 0)
   ## TODO: set something in as dide_cluster and dide_id here to
   ## prevent reconcile() marking these as dead. Given that things can
   ## end up on multiple clusters, I think that we might be better off
