@@ -8,7 +8,6 @@ Authors@R: c(person("Rich", "FitzJohn", role = c("aut", "cre"),
                     role = "cph"))
 Description: DIDE HPC support.
 License: MIT + file LICENSE
-LazyData: true
 URL: https://github.com/mrc-ide/didehpc
 BugReports: https://github.com/mrc-ide/didehpc/issues
 Depends:
@@ -37,7 +36,7 @@ Suggests:
     rrq (>= 0.6.20),
     testthat,
     withr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Remotes:
