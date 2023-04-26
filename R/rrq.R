@@ -18,8 +18,14 @@ rrq_init <- function(rrq, config) {
   ## NOTE: Jobs that use rrq controller *from* a job risk a
   ## deadlock because we could request more work than we have
   ## workers
-  rrq$worker_config_save("didehpc", timeout = config$worker_timeout,
-                         queue = c("default", "context"))
+  timeout <- config$worker_timeout
+  queue <- c("default", "context")
+  if (utils::packageVersion("rrq") >= "0.7.0") {
+    cfg <- rrq::rrq_worker_config(timeout_idle = timeout, queue = queue)
+    rrq$worker_config_save("didehpc", cfg)
+  } else {
+    rrq$worker_config_save("didehpc", timeout = timeout, queue = queue)
+  }
 }
 
 
