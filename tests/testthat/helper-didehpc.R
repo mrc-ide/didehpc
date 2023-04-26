@@ -25,6 +25,17 @@ example_mounts <- function(root) {
 }
 
 
+test_fake_rrq <- function(context, config) {
+  path <- path_library(context$root$path, config$r_version)
+  dest <- file.path(path, "rrq", "DESCRIPTION")
+  if (!file.exists(dest)) {
+    dir.create(dirname(dest), FALSE, TRUE)
+    file.copy(system.file("DESCRIPTION", package = "rrq"), dest)
+  }
+  invisible()
+}
+
+
 example_config <- function(..., root = tempfile()) {
   mounts <- example_mounts(root)
   workdir <- file.path(root, "home", "sub")
