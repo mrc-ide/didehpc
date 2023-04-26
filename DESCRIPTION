@@ -43,6 +43,6 @@ Remotes:
     mrc-ide/conan,
     mrc-ide/context,
     mrc-ide/queuer,
-    mrc-ide/rrq
+    mrc-ide/rrq@mrc-4188
 Encoding: UTF-8
 Language: en-GB
