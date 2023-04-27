@@ -72,12 +72,14 @@
     </div>
 
 <div id="updating-didehpc-for-new-r-versions" class="section level1">
+
 <p>Three steps are required. This document uses the addition of <code>R 3.6.0</code> as an example, where the previous latest install was <code>R 3.5.0</code>.</p>
 <div class="section level2">
 <h2 id="install-the-new-version-of-r-on-all-cluster-nodes">Install the new version of R on all cluster nodes<a class="anchor" aria-label="anchor" href="#install-the-new-version-of-r-on-all-cluster-nodes"></a></h2>
 <ul><li>Look in <code>\\fi--didef3\Software\HPC\R</code>.</li>
 <li>Download the new R installer, and save it in the folder.</li>
-<li>Install it locally. Verify the executable folders created are of this form:<ul><li><code>C:\Program Files\R\R-3.6.0\bin\i386\Rscript.exe</code></li>
+<li>Install it locally. Verify the executable folders created are of this form:
+<ul><li><code>C:\Program Files\R\R-3.6.0\bin\i386\Rscript.exe</code></li>
 <li><code>C:\Program Files\R\R-3.6.0\bin\x64\Rscript.exe</code></li>
 </ul></li>
 <li>Copy the most recent <code>setr32_3_5_0.bat</code> and <code>setr64_3_5_0.bat</code> to new filenames matching the new version.</li>
@@ -103,16 +105,17 @@
 <span>                <span class="st">"3.5"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"Rtools34"</span>, gcc <span class="op">=</span> <span class="va">mingw</span><span class="op">)</span>,</span>
 <span>                <span class="st">"3.6"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">"Rtools34"</span>, gcc <span class="op">=</span> <span class="va">mingw</span><span class="op">)</span>,</span>
 <span>                <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"Get Rich to upgrade Rtools"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<ul><li>Locate the <code>r_versions</code> function and update the list of valid versions with the new one. This should match the filenames of the new <code>setr32</code> and <code>setr64</code> batch files created earlier.</li></ul><div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>r_versions &lt;-<span class="st"> </span><span class="cf">function</span>() {</span>
-<span id="cb4-2"><a href="#cb4-2"></a>  v &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"3.2.2"</span>, <span class="st">"3.2.4"</span>, <span class="st">"3.3.1"</span>, <span class="st">"3.3.2"</span>, <span class="st">"3.4.0"</span>, <span class="st">"3.4.2"</span>, <span class="st">"3.4.4"</span>,</span>
-<span id="cb4-3"><a href="#cb4-3"></a>         <span class="st">"3.5.0"</span>, <span class="st">"3.6.0"</span>)</span></code></pre></div>
+<ul><li>Locate the <code>r_versions</code> function and update the list of valid versions with the new one. This should match the filenames of the new <code>setr32</code> and <code>setr64</code> batch files created earlier.</li>
+</ul><div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>r_versions <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  v <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"3.2.2"</span>, <span class="st">"3.2.4"</span>, <span class="st">"3.3.1"</span>, <span class="st">"3.3.2"</span>, <span class="st">"3.4.0"</span>, <span class="st">"3.4.2"</span>, <span class="st">"3.4.4"</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">"3.5.0"</span>, <span class="st">"3.6.0"</span>)</span></code></pre></div>
 <ul><li>Update the minor version in <code>DESCRIPTION</code>, and add an entry in <code>NEWS.md</code>.</li>
 <li>Commit changes on the branch - but wait for last step before PR / merging.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="update-the-bootstrap">Update the bootstrap<a class="anchor" aria-label="anchor" href="#update-the-bootstrap"></a></h2>
 <p>Log into a remote desktop</p>
-<pre><code><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"mrc-ide/conan@prototype"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
+<pre><code><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"mrc-ide/conan@prototype"</span>, upgrade <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 <pre><code><span><span class="va">r_version</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric_version.html" class="external-link">getRversion</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"T:/conan/bootstrap"</span>, <span class="va">r_version</span><span class="op">)</span></span>
 <span><span class="fu">conan</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/conan/man/conan_bootstrap.html" class="external-link">conan_bootstrap</a></span><span class="op">(</span><span class="va">path</span>, <span class="cn">TRUE</span><span class="op">)</span></span></code></pre>
@@ -142,7 +145,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

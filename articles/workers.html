@@ -90,11 +90,12 @@
 
       
 
-      </header><script src="workers_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Workers</h1>
-                        <h4 data-toc-skip class="author">Rich FitzJohn</h4>
+                        <h4 data-toc-skip class="author">Rich
+FitzJohn</h4>
             
             <h4 data-toc-skip class="date">2021-08-17</h4>
       
@@ -109,8 +110,19 @@
 <div class="section level2">
 <h2 id="running-heaps-of-jobs-without-annoying-your-colleagues">Running heaps of jobs without annoying your colleagues<a class="anchor" aria-label="anchor" href="#running-heaps-of-jobs-without-annoying-your-colleagues"></a>
 </h2>
-<p>If you have thousands and thousands of jobs to submit at once you may not want to flood the cluster with them all at once. Each job submission is relatively slow (the HPC tools that the web interface has to use are relatively slow). The actual queue that the cluster uses doesn’t seem to like processing tens of thousands of job, and can slow down. And if you take up the whole cluster someone may come and knock on your office and complain at you. At the same time, batching your jobs up into little bits and manually sending them off is a pain and work better done by a computer.</p>
-<p>An alternative is to submit a set of “workers” to the cluster, and then submit jobs to them. This is done with the <a href="https://github.com/mrc-ide/rrq" class="external-link"><code>rrq</code></a> package, along with a <a href="https://redis.io" class="external-link"><code>redis</code></a> server running on the cluster.</p>
+<p>If you have thousands and thousands of jobs to submit at once you may
+not want to flood the cluster with them all at once. Each job submission
+is relatively slow (the HPC tools that the web interface has to use are
+relatively slow). The actual queue that the cluster uses doesn’t seem to
+like processing tens of thousands of job, and can slow down. And if you
+take up the whole cluster someone may come and knock on your office and
+complain at you. At the same time, batching your jobs up into little
+bits and manually sending them off is a pain and work better done by a
+computer.</p>
+<p>An alternative is to submit a set of “workers” to the cluster, and
+then submit jobs to them. This is done with the <a href="https://github.com/mrc-ide/rrq" class="external-link"><code>rrq</code></a> package,
+along with a <a href="https://redis.io" class="external-link"><code>redis</code></a> server
+running on the cluster.</p>
 <div class="section level3">
 <h3 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h3>
@@ -118,7 +130,8 @@
 <div class="section level3">
 <h3 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h3>
-<p>To get started you will need to install the <code>rrq</code> package locally.</p>
+<p>To get started you will need to install the <code>rrq</code> package
+locally.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">drat</span><span class="fu">::</span><span class="fu">add</span><span class="op">(</span><span class="st">"mrc-ide"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rrq"</span><span class="op">)</span></span></code></pre></div>
@@ -127,16 +140,23 @@
 <code class="sourceCode R"><span><span class="va">root</span> <span class="op">&lt;-</span> <span class="st">"contexts"</span></span>
 <span><span class="va">ctx</span> <span class="op">&lt;-</span> <span class="fu">context</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/context/man/context_save.html" class="external-link">context_save</a></span><span class="op">(</span><span class="va">root</span>, sources <span class="op">=</span> <span class="st">"mysources.R"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [ open:db   ]  rds</span></span></code></pre></div>
-<p>There are two ways we can proceed from here; the first - “workers” - is very similar to the non-worker workflow and is described first. The second - “rrq” - is a bit more involved and is described second.</p>
+<p>There are two ways we can proceed from here; the first - “workers” -
+is very similar to the non-worker workflow and is described first. The
+second - “rrq” - is a bit more involved and is described second.</p>
 </div>
 <div class="section level3">
 <h3 id="workers">Workers<a class="anchor" aria-label="anchor" href="#workers"></a>
 </h3>
-<p>Then configure and create the queue; the <code>use_workers</code> argument is important here as it:</p>
+<p>Then configure and create the queue; the <code>use_workers</code>
+argument is important here as it:</p>
 <ul>
-<li>ensures that the <code>rrq</code> package is available on the cluster, where your workers will run</li>
-<li>changes the behaviour of the <code>$enqueue</code> method so that jobs are not sent to the HPC scheduler but to the <code>rrq</code> scheduler</li>
-<li>enables the <code>$submit_workers</code> method which you will use to create workers on the cluster</li>
+<li>ensures that the <code>rrq</code> package is available on the
+cluster, where your workers will run</li>
+<li>changes the behaviour of the <code>$enqueue</code> method so that
+jobs are not sent to the HPC scheduler but to the <code>rrq</code>
+scheduler</li>
+<li>enables the <code>$submit_workers</code> method which you will use
+to create workers on the cluster</li>
 </ul>
 <p>However, everything else will appear the same.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -191,7 +211,8 @@
 <p>You can now submit</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu">random_walk</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This job will stay pending forever as the HPC scheduler will never run it</p>
+<p>This job will stay pending forever as the HPC scheduler will never
+run it</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">status</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "PENDING"</span></span>
@@ -200,16 +221,28 @@
 <span><span class="co">#&gt; 1 cb4d883580667f393a2945a05688620a 2021-08-17 14:53:51    &lt;NA&gt;     &lt;NA&gt;</span></span>
 <span><span class="co">#&gt;     waiting running idle</span></span>
 <span><span class="co">#&gt; 1 0.2062078      NA   NA</span></span></code></pre></div>
-<p>You must submit actual workers in order to actually run things. This could have been done before submitting the tasks, though workers will time out after 10 minutes of inactivity, if you have very many jobs to save your workers might exit before the work starts!</p>
-<p>The argument is the number of workers to submit. Each worker is equivalent to a job that your configuration would otherwise create (in terms of cores selected).</p>
+<p>You must submit actual workers in order to actually run things. This
+could have been done before submitting the tasks, though workers will
+time out after 10 minutes of inactivity, if you have very many jobs to
+save your workers might exit before the work starts!</p>
+<p>The argument is the number of workers to submit. Each worker is
+equivalent to a job that your configuration would otherwise create (in
+terms of cores selected).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">workers</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">submit_workers</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Submitting 2 workers with base name 'epicurean_xiaosaurus'</span></span>
 <span><span class="co">#&gt; submitting (-) [===================================] 100% | giving up in 600 s</span></span>
 <span><span class="va">workers</span></span>
 <span><span class="co">#&gt; [1] "epicurean_xiaosaurus_1" "epicurean_xiaosaurus_2"</span></span></code></pre></div>
-<p>All workers get names in the form <code>&lt;adjective&gt;_&lt;animal&gt;_&lt;integer&gt;</code> so that you can remember which workers you set off. They will turn off after 10 minutes of inactivity by default (you can tweak this with the <code>worker_timeout</code> argument to <code>didehpc_config</code> or by sending a <code>TIMEOUT_SET</code> message).</p>
-<p>One advantage over the usual queuing approach here is that you will not wait for anyone else’s jobs to complete once you have reserved your workers.</p>
+<p>All workers get names in the form
+<code>&lt;adjective&gt;_&lt;animal&gt;_&lt;integer&gt;</code> so that
+you can remember which workers you set off. They will turn off after 10
+minutes of inactivity by default (you can tweak this with the
+<code>worker_timeout</code> argument to <code>didehpc_config</code> or
+by sending a <code>TIMEOUT_SET</code> message).</p>
+<p>One advantage over the usual queuing approach here is that you will
+not wait for anyone else’s jobs to complete once you have reserved your
+workers.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">wait</span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; (-) waiting for cb4d883...20a, giving up in 9.5 s</span></span>
@@ -275,8 +308,11 @@
 <span><span class="co">#&gt;   Private:</span></span>
 <span><span class="co">#&gt;     scripts: list</span></span>
 <span><span class="co">#&gt;     store: object_store, R6</span></span></code></pre></div>
-<p>This is another R6 object, though this one at least has decent documentation - see the <code><a href="https://rdrr.io/pkg/rrq/man/rrq_controller.html" class="external-link">rrq::rrq_controller</a></code> for details of each method</p>
-<p>You can see what your workers have been up to with the <code>workers_log_tail</code> command:</p>
+<p>This is another R6 object, though this one at least has decent
+documentation - see the <code><a href="https://rdrr.io/pkg/rrq/man/rrq_controller.html" class="external-link">rrq::rrq_controller</a></code> for details of
+each method</p>
+<p>You can see what your workers have been up to with the
+<code>workers_log_tail</code> command:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rrq</span><span class="op">$</span><span class="fu">worker_log_tail</span><span class="op">(</span>n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                worker_id       time       command</span></span>
@@ -289,7 +325,8 @@
 <span><span class="co">#&gt; 2 977ba6cb22c03767d8bb2386b0c2b271</span></span>
 <span><span class="co">#&gt; 3</span></span>
 <span><span class="co">#&gt; 4 977ba6cb22c03767d8bb2386b0c2b271</span></span></code></pre></div>
-<p>The <code>time</code> column represents seconds - relative seconds should still be useful here.</p>
+<p>The <code>time</code> column represents seconds - relative seconds
+should still be useful here.</p>
 <p>As before, logging works on a per-task basis:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span><span class="op">$</span><span class="fu">log</span><span class="op">(</span><span class="op">)</span></span>
@@ -315,7 +352,8 @@
 <span><span class="co">#&gt; $epicurean_xiaosaurus_2</span></span>
 <span><span class="co">#&gt;   timeout remaining</span></span>
 <span><span class="co">#&gt;  600.0000  599.4219</span></span></code></pre></div>
-<p>Other than that, hopefully everything else continues as normal. We can submit a bunch of jobs and run them using <code>$lapply</code>:</p>
+<p>Other than that, hopefully everything else continues as normal. We
+can submit a bunch of jobs and run them using <code>$lapply</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sizes</span> <span class="op">&lt;-</span> <span class="fl">3</span><span class="op">:</span><span class="fl">8</span></span>
 <span><span class="va">grp</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="va">sizes</span>, <span class="va">random_walk</span>, x <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
@@ -357,11 +395,15 @@
 <span><span class="co">#&gt; [[6]]</span></span>
 <span><span class="co">#&gt; [1] -0.54840267  0.05881601  0.71391542  1.40774062  1.85894605  3.56734897</span></span>
 <span><span class="co">#&gt; [7]  4.74281970  5.10295235</span></span></code></pre></div>
-<p>While workers will turn off automatically, it’s polite to turn them off as soon as you’re done using <code>obj$stop_workers()</code></p>
+<p>While workers will turn off automatically, it’s polite to turn them
+off as soon as you’re done using <code>obj$stop_workers()</code></p>
 <p>Alternatively, after submitting a bunch of jobs you can run</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rrq</span><span class="op">$</span><span class="fu">message_send</span><span class="op">(</span><span class="st">"TIMEOUT_SET"</span>, <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
-<p>which will mean that the workers will stop immediately after not receiving a task (so after they finish processing all your jobs they’ll stop one by one). Practically this still takes one minute because that’s the polling timeout time (I may be able to improve this later).</p>
+<p>which will mean that the workers will stop immediately after not
+receiving a task (so after they finish processing all your jobs they’ll
+stop one by one). Practically this still takes one minute because that’s
+the polling timeout time (I may be able to improve this later).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">obj</span><span class="op">$</span><span class="fu">stop_workers</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html" class="external-link">Sys.sleep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
@@ -425,8 +467,13 @@
 <div class="section level3">
 <h3 id="rrq">rrq<a class="anchor" aria-label="anchor" href="#rrq"></a>
 </h3>
-<p>In this model, we create a very lightweight queue which in turn creates very lightweight tasks. This avoids even more overhead than the approach above, though it can be more difficult to debug because less information is saved. Rather than round-tripping data through the disk, everything goes via the redis server.</p>
-<p>The first part here looks very similar, except that we use <code>use_rrq = TRUE</code> rather than <code>use_workers</code></p>
+<p>In this model, we create a very lightweight queue which in turn
+creates very lightweight tasks. This avoids even more overhead than the
+approach above, though it can be more difficult to debug because less
+information is saved. Rather than round-tripping data through the disk,
+everything goes via the redis server.</p>
+<p>The first part here looks very similar, except that we use
+<code>use_rrq = TRUE</code> rather than <code>use_workers</code></p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span>use_rrq <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/queue_didehpc.html">queue_didehpc</a></span><span class="op">(</span><span class="va">ctx</span>, config <span class="op">=</span> <span class="va">config</span><span class="op">)</span></span>
@@ -454,15 +501,24 @@
 <span><span class="co">#&gt;  [5] "vegetarian_alaskajingle_5"  "vegetarian_alaskajingle_6"</span></span>
 <span><span class="co">#&gt;  [7] "vegetarian_alaskajingle_7"  "vegetarian_alaskajingle_8"</span></span>
 <span><span class="co">#&gt;  [9] "vegetarian_alaskajingle_9"  "vegetarian_alaskajingle_10"</span></span></code></pre></div>
-<p>To send tasks to these workers we directly use the <code>rrq_controller</code> object - we’ll not use the <code>queue_didehpc</code> object from this point.</p>
+<p>To send tasks to these workers we directly use the
+<code>rrq_controller</code> object - we’ll not use the
+<code>queue_didehpc</code> object from this point.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rrq</span> <span class="op">&lt;-</span> <span class="va">obj</span><span class="op">$</span><span class="fu">rrq_controller</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>This will look and act a lot like the main didehpc queue controller, but with a few differences. Tasks will come back as plain strings rather than user-friendly objects and <code>lapply</code> and <code>enqueue_bulk</code> are now blocking operations by default. Most tasks will clean up after they delete rather than leaving a persistent record on disk. The payback for this is potentially very fast task turnarounds and better behaviour with the disk under heavy load.</p>
+<p>This will look and act a lot like the main didehpc queue controller,
+but with a few differences. Tasks will come back as plain strings rather
+than user-friendly objects and <code>lapply</code> and
+<code>enqueue_bulk</code> are now blocking operations by default. Most
+tasks will clean up after they delete rather than leaving a persistent
+record on disk. The payback for this is potentially very fast task
+turnarounds and better behaviour with the disk under heavy load.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="va">rrq</span><span class="op">$</span><span class="fu">enqueue</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">rrq</span><span class="op">$</span><span class="fu">task_wait</span><span class="op">(</span><span class="va">t</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.841471</span></span></code></pre></div>
-<p>For example; submitting 50 trivial tasks to our pool of workers and retrieving the results:</p>
+<p>For example; submitting 50 trivial tasks to our pool of workers and
+retrieving the results:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">rrq</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, <span class="va">sin</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed</span></span>
@@ -472,23 +528,41 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">rrq</span><span class="op">$</span><span class="fu">lapply</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">500</span>, <span class="va">sin</span>, progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed</span></span>
 <span><span class="co">#&gt;   0.161   0.052   1.476</span></span></code></pre></div>
-<p>Across the network, the latency here is ~1/600 s per task. On fi–didemrchnb it will hopefully be a bit faster because of the infiniband network.</p>
+<p>Across the network, the latency here is ~1/600 s per task. On
+fi–didemrchnb it will hopefully be a bit faster because of the
+infiniband network.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rrq</span><span class="op">$</span><span class="fu">worker_stop</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">rrq</span><span class="op">$</span><span class="fu">destroy</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>It is theoretically possible to submit a cluster job that creates an <code>rrq_controller</code> and controls the second queue. To do that you need to write function like:</p>
+<p>It is theoretically possible to submit a cluster job that creates an
+<code>rrq_controller</code> and controls the second queue. To do that
+you need to write function like:</p>
 <pre><code>get_rrq_controller &lt;- function(x, ...) {
   queue_id &lt;- Sys.getenv("CONTEXT_ID", "")
   stopifnot(queue_id != "")
   rrq::rrq_controller$new((queue_id)
 }</code></pre>
-<p>within your sources, then you can use it in place of running (say) a <code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> call in your code. This approach allows a relatively simple form of inter-process communication. Talk to Rich if this is something you might have a use for, if you have simulation needs that are larger than a single node.</p>
+<p>within your sources, then you can use it in place of running (say) a
+<code><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply()</a></code> call in your code. This approach allows a
+relatively simple form of inter-process communication. Talk to Rich if
+this is something you might have a use for, if you have simulation needs
+that are larger than a single node.</p>
 </div>
 <div class="section level3">
 <h3 id="advanced-use-different-worker-and-task-resources">Advanced use: different worker and task resources<a class="anchor" aria-label="anchor" href="#advanced-use-different-worker-and-task-resources"></a>
 </h3>
-<p>Suppose that we want to submit a job where we have a single process which orchestrates a group of workers each of which takes up an entire node. We used this pattern in the covid response where we wanted to run different MCMC chains on different nodes, each using 32 cores, but we also needed a single “controlling” process to organise collecting results from these nodes.</p>
-<p>What we want to do do is specify a different set of resources to be used by the workers than by tasks submitted by <code>$enqueue()</code>. Note that this only makes sense when using <code>use_rrq = TRUE</code>. For example, to submit a controlling process that uses the <code>GeneralNodes</code> template and one core (the default) but worker processes that can use 8 cores, we might write</p>
+<p>Suppose that we want to submit a job where we have a single process
+which orchestrates a group of workers each of which takes up an entire
+node. We used this pattern in the covid response where we wanted to run
+different MCMC chains on different nodes, each using 32 cores, but we
+also needed a single “controlling” process to organise collecting
+results from these nodes.</p>
+<p>What we want to do do is specify a different set of resources to be
+used by the workers than by tasks submitted by <code>$enqueue()</code>.
+Note that this only makes sense when using <code>use_rrq = TRUE</code>.
+For example, to submit a controlling process that uses the
+<code>GeneralNodes</code> template and one core (the default) but worker
+processes that can use 8 cores, we might write</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">config</span> <span class="op">&lt;-</span> <span class="fu">didehpc</span><span class="fu">::</span><span class="fu"><a href="../reference/didehpc_config.html">didehpc_config</a></span><span class="op">(</span></span>
 <span>  use_rrq <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -520,13 +594,22 @@
 <span><span class="co">#&gt;     - parallel: TRUE</span></span>
 <span><span class="co">#&gt;     - count: 8</span></span>
 <span><span class="co">#&gt;     - type: Cores</span></span></code></pre></div>
-<p>See the <code>worker_resource</code> section here indicates different resources to the <code>resource</code> section.</p>
-<p>Now, when submitting workers with <code>obj$submit_workers</code> each worker will be able to use 8 cores, but a task submitted by <code>$enqueue()</code> will only be able to use one. You might then submit a task that uses the <code>get_rrq_controller</code> trick above as part of your single core job, which can then farm out work to your workers using the <code>rrq</code> queue object.</p>
+<p>See the <code>worker_resource</code> section here indicates different
+resources to the <code>resource</code> section.</p>
+<p>Now, when submitting workers with <code>obj$submit_workers</code>
+each worker will be able to use 8 cores, but a task submitted by
+<code>$enqueue()</code> will only be able to use one. You might then
+submit a task that uses the <code>get_rrq_controller</code> trick above
+as part of your single core job, which can then farm out work to your
+workers using the <code>rrq</code> queue object.</p>
 </div>
 <div class="section level3">
 <h3 id="cleaning-up">Cleaning up<a class="anchor" aria-label="anchor" href="#cleaning-up"></a>
 </h3>
-<p>Above we use <code>rrq$destroy()</code> to clean up every trace of the queue. Periodically we may flush the entire Redis database, or set all keys to expire after a day or so. Do not leave any important information in here please.</p>
+<p>Above we use <code>rrq$destroy()</code> to clean up every trace of
+the queue. Periodically we may flush the entire Redis database, or set
+all keys to expire after a day or so. Do not leave any important
+information in here please.</p>
 </div>
 </div>
   </div>
@@ -548,7 +631,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer>

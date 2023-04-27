@@ -110,55 +110,69 @@
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.2" id="didehpc-032">didehpc 0.3.2<a class="anchor" aria-label="anchor" href="#didehpc-032"></a></h2>
-<ul><li>The “verylazy” provisioning policy does not tell pkgdepends about already present packages, which avoids some issues where a library has been manually tweaked using <code>$install_packages()</code> (<a href="https://github.com/mrc-ide/didehpc/issues/88" class="external-link">#88</a>)</li></ul></div>
+<ul><li>The “verylazy” provisioning policy does not tell pkgdepends about already present packages, which avoids some issues where a library has been manually tweaked using <code>$install_packages()</code> (<a href="https://github.com/mrc-ide/didehpc/issues/88" class="external-link">#88</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.1" id="didehpc-031">didehpc 0.3.1<a class="anchor" aria-label="anchor" href="#didehpc-031"></a></h2>
-<ul><li>rrq worker resource configuration may differ from the normal task resource requirements (<a href="https://github.com/mrc-ide/didehpc/issues/83" class="external-link">#83</a>)</li></ul></div>
+<ul><li>rrq worker resource configuration may differ from the normal task resource requirements (<a href="https://github.com/mrc-ide/didehpc/issues/83" class="external-link">#83</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.0" id="didehpc-030">didehpc 0.3.0<a class="anchor" aria-label="anchor" href="#didehpc-030"></a></h2>
-<ul><li>Complete overhaul. Key breaking changes:<ul><li>handling of nonstandard dependency locations has changed as we now use conan</li>
+<ul><li>Complete overhaul. Key breaking changes:
+<ul><li>handling of nonstandard dependency locations has changed as we now use conan</li>
 <li>some details of workers have changed as rrq has significantly changed</li>
 <li>“out of place” running currently not supported</li>
 <li>hpctools support has been removed (believed unused)</li>
 <li>linux cluster formally removed</li>
-</ul></li></ul></div>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.11" id="didehpc-0211">didehpc 0.2.11<a class="anchor" aria-label="anchor" href="#didehpc-0211"></a></h2>
-<ul><li>Refresh available job templates, and core limits, particularly adding 32Core.</li></ul></div>
+<ul><li>Refresh available job templates, and core limits, particularly adding 32Core.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.10" id="didehpc-0210">didehpc 0.2.10<a class="anchor" aria-label="anchor" href="#didehpc-0210"></a></h2>
-<ul><li>Support for R 4.0.x with RTools 4.0</li></ul></div>
+<ul><li>Support for R 4.0.x with RTools 4.0</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.9" id="didehpc-029">didehpc 0.2.9<a class="anchor" aria-label="anchor" href="#didehpc-029"></a></h2>
 <ul><li>Support for R 3.6.1 and future versions reported by HPC portal. See <a href="https://github.com/mrc-ide/didehpc/issues/71" class="external-link">Issue </a><a href="https://github.com/mrc-ide/didehpc/issues/67" class="external-link">#67</a>, <a href="https://vimc.myjetbrains.com/youtrack/issue/mrc-481" class="external-link">mrc-481</a>, <a href="https://github.com/mrc-ide/didehpc/pull/72" class="external-link">PR </a><a href="https://github.com/mrc-ide/didehpc/issues/72" class="external-link">#72</a>, <a href="https://github.com/mrc-ide/didehpc/pull/73" class="external-link">PR </a><a href="https://github.com/mrc-ide/didehpc/issues/73" class="external-link">#73</a>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.7" id="didehpc-027">didehpc 0.2.7<a class="anchor" aria-label="anchor" href="#didehpc-027"></a></h2>
 <ul><li>Support for R 3.5.3. See <a href="https://vimc.myjetbrains.com/youtrack/issue/mrc-269" class="external-link">Issue #mrc-269</a> and <a href="https://github.com/mrc-ide/didehpc/pull/70" class="external-link">PR </a><a href="https://github.com/mrc-ide/didehpc/issues/70" class="external-link">#70</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.6" id="didehpc-026">didehpc 0.2.6<a class="anchor" aria-label="anchor" href="#didehpc-026"></a></h2>
 <ul><li>Support for R 3.6.0. See <a href="https://github.com/mrc-ide/didehpc/issues/67" class="external-link">Issue </a><a href="https://github.com/mrc-ide/didehpc/issues/67" class="external-link">#67</a> and <a href="https://github.com/mrc-ide/didehpc/pull/68" class="external-link">PR </a><a href="https://github.com/mrc-ide/didehpc/issues/68" class="external-link">#68</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="didehpc-025">didehpc 0.2.5<a class="anchor" aria-label="anchor" href="#didehpc-025"></a></h2>
 <ul><li>Unmap network drives at end of job- see (See <a href="https://github.com/mrc-ide/didehpc/issues/65" class="external-link">Issue </a><a href="https://github.com/mrc-ide/didehpc/issues/65" class="external-link">#65</a> and <a href="https://github.com/mrc-ide/didehpc/pull/66" class="external-link">PR </a><a href="https://github.com/mrc-ide/didehpc/issues/66" class="external-link">#66</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.4" id="didehpc-024">didehpc 0.2.4<a class="anchor" aria-label="anchor" href="#didehpc-024"></a></h2>
 <ul><li>Fixes for different slashes for FQDN fix(<a href="https://github.com/mrc-ide/didehpc/pull/62" class="external-link">#62</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.3" id="didehpc-023">didehpc 0.2.3<a class="anchor" aria-label="anchor" href="#didehpc-023"></a></h2>
 <ul><li>Workaround a server share issue by using fully-qualified domain address (.dide.ic.ac.uk) for the home and temp shares. (<a href="https://github.com/mrc-ide/didehpc/pull/61" class="external-link">#61</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.2" id="didehpc-022">didehpc 0.2.2<a class="anchor" aria-label="anchor" href="#didehpc-022"></a></h2>
 <ul><li>Support adding a Java Runtime to the path. (<a href="https://github.com/mrc-ide/didehpc/pull/59" class="external-link">#58</a>) by <code>@weshinsley</code>
-</li></ul></div>
+</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.1" id="didehpc-021">didehpc 0.2.1<a class="anchor" aria-label="anchor" href="#didehpc-021"></a></h2>
-<ul><li>Fixed rrq support, which had broken with changes I made to rrq</li></ul></div>
+<ul><li>Fixed rrq support, which had broken with changes I made to rrq</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.0" id="didehpc-020">didehpc 0.2.0<a class="anchor" aria-label="anchor" href="#didehpc-020"></a></h2>
 <ul><li>Support for R 3.4.x and 3.5.x (<a href="https://github.com/mrc-ide/didehpc/issues/54" class="external-link">#54</a>)</li>
@@ -169,13 +183,16 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.6" id="didehpc-016">didehpc 0.1.6<a class="anchor" aria-label="anchor" href="#didehpc-016"></a></h2>
-<ul><li>Fix mount-point detection failure with wmic occurring on some Windows machines.</li></ul></div>
+<ul><li>Fix mount-point detection failure with wmic occurring on some Windows machines.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.5" id="didehpc-015">didehpc 0.1.5<a class="anchor" aria-label="anchor" href="#didehpc-015"></a></h2>
-<ul><li>Check what resources a user has on login (<a href="https://github.com/mrc-ide/didehpc/issues/50" class="external-link">#50</a>)</li></ul></div>
+<ul><li>Check what resources a user has on login (<a href="https://github.com/mrc-ide/didehpc/issues/50" class="external-link">#50</a>)</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1.4" id="didehpc-014">didehpc 0.1.4<a class="anchor" aria-label="anchor" href="#didehpc-014"></a></h2>
-<ul><li>Support for machines set up to use <code>qdrive</code> (<a href="https://github.com/mrc-ide/didehpc/issues/48" class="external-link">#48</a>)</li></ul></div>
+<ul><li>Support for machines set up to use <code>qdrive</code> (<a href="https://github.com/mrc-ide/didehpc/issues/48" class="external-link">#48</a>)</li>
+</ul></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -190,7 +207,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
