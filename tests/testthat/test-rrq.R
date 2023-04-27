@@ -3,6 +3,7 @@ context("rrq")
 test_that("queue interface to worker submission sends correct args", {
   config <- example_config(use_workers = TRUE)
   ctx <- context::context_save(file.path(config$workdir, "context"))
+  test_fake_rrq(ctx, config)
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   mock_submit_workers <- mockery::mock()
   mockery::stub(obj$submit_workers, "rrq_submit_workers", mock_submit_workers)
@@ -106,15 +107,16 @@ test_that("configure environment", {
   config <- list(use_rrq = TRUE, redis_host = NULL, worker_timeout = 100)
   id <- ids::random_id()
   rrq <- didehpc_rrq_controller(config, id)
-  expect_null(rrq$con$GET(rrq$keys$envir))
+  expect_null(rrq$con$GET(r6_private(rrq)$keys$envir))
 
   rrq_init(rrq, config)
   expect_setequal(rrq$worker_config_list(), c("localhost", "didehpc"))
   expect_equal(
     rrq$worker_config_read("didehpc"),
-    list(timeout = 100, queue = c("default", "context"), verbose = TRUE))
+    list(timeout_idle = 100, queue = c("default", "context"), verbose = TRUE,
+         timeout_poll = 1, timeout_die = 2))
 
-  create <- rrq$con$GET(rrq$keys$envir)
+  create <- rrq$con$GET(r6_private(rrq)$keys$envir)
   expect_is(create, "raw")
   expect_is(unserialize(create), "function")
   expect_identical(environment(unserialize(create)), globalenv())
@@ -169,7 +171,7 @@ test_that("Can send context tasks to a worker", {
   rrq$task_data(id_rrq[[1]])
 
   ## TODO: will be exposed; in rrq this is rrq_worker_blocking; mrc-2297
-  w <- rrq:::rrq_worker_from_config(ctx$id, "didehpc")
+  w <- rrq::rrq_worker_from_config(ctx$id, "didehpc")
   w$step(TRUE)
 
   expect_equal(context::task_status(ids[[1]], ctx), "COMPLETE")
@@ -187,10 +189,11 @@ test_that("Can plausibly submit workers", {
   config <- example_config(use_workers = TRUE)
   config$redis_host <- NULL
   ctx <- context::context_save(file.path(config$workdir, "context"))
+  test_fake_rrq(ctx, config)
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   obj$client <- list(submit = mockery::mock())
   mock_wait <- mockery::mock()
-  mockery::stub(rrq_submit_workers, "rrq::worker_wait", mock_wait)
+  mockery::stub(rrq_submit_workers, "rrq::rrq_worker_wait", mock_wait)
   data <- r6_private(obj)$data
 
   expect_message(
@@ -231,10 +234,11 @@ test_that("Can plausibly submit workers with different configuration", {
   config <- example_config(use_rrq = TRUE, worker_resource = w)
   config$redis_host <- NULL
   ctx <- context::context_save(file.path(config$workdir, "context"))
+  test_fake_rrq(ctx, config)
   obj <- queue_didehpc(ctx, config, initialise = FALSE, provision = "fake")
   obj$client <- list(submit = mockery::mock())
   mock_wait <- mockery::mock()
-  mockery::stub(rrq_submit_workers, "rrq::worker_wait", mock_wait)
+  mockery::stub(rrq_submit_workers, "rrq::rrq_worker_wait", mock_wait)
   data <- r6_private(obj)$data
 
   expect_message(
@@ -266,4 +270,30 @@ test_that("Can plausibly submit workers with different configuration", {
   expect_s3_class(args[[1]], "rrq_controller")
   expect_match(args[[2]], sprintf("^%s:worker:alive:.+", ctx$id))
   expect_equal(args[3:4], list(timeout = 100, progress = FALSE))
+})
+
+
+test_that("error if remote rrq is too old", {
+  curr <- packageVersion("rrq")
+  expect_error(
+    rrq_check_package_version(curr, numeric_version("0.4.4")),
+    "Your remote version of rrq (0.4.4) is too old; must be at least 0.6.21",
+    fixed = TRUE)
+})
+
+
+test_that("warn if rrq versions differ", {
+  curr <- packageVersion("rrq")
+  other <- numeric_version("99.99.99")
+  expect_warning(
+    rrq_check_package_version(curr, other),
+    "rrq versions differ between local (0.6.21) and remote (99.99.99)",
+    fixed = TRUE)
+})
+
+
+test_that("silent of rrq versions agree", {
+  curr <- packageVersion("rrq")
+  expect_silent(
+    rrq_check_package_version(curr, curr))
 })

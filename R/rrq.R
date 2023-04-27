@@ -18,8 +18,13 @@ rrq_init <- function(rrq, config) {
   ## NOTE: Jobs that use rrq controller *from* a job risk a
   ## deadlock because we could request more work than we have
   ## workers
-  rrq$worker_config_save("didehpc", timeout = config$worker_timeout,
-                         queue = c("default", "context"))
+  timeout_idle <- config$worker_timeout
+  queue <- c("default", "context")
+  ## as of 0.7.0 we need to write:
+  ## > cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle, queue = queue)
+  ## > rrq$worker_config_save("didehpc", cfg)
+  rrq$worker_config_save("didehpc",
+                         timeout_idle = timeout_idle, queue = queue)
 }
 
 
@@ -35,7 +40,7 @@ rrq_submit_context_tasks <- function(config, context, task_ids, names) {
   res <- rrq$enqueue_bulk_(dat, quote(context::task_run_external),
                            root = root,
                            identifier = context$id,
-                           collect_timeout = 0)
+                           timeout_task_wait = 0)
   ## TODO: set something in as dide_cluster and dide_id here to
   ## prevent reconcile() marking these as dead. Given that things can
   ## end up on multiple clusters, I think that we might be better off
@@ -75,6 +80,11 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
   client <- obj$client
   batch_template <- data$templates$rrq_worker
 
+  path_lib <- path_library(obj$context$root$path, config$r_version)
+  rrq_check_package_version(
+    utils::packageVersion("rrq"),
+    utils::packageVersion("rrq", lib = path_lib))
+
   ## Will be shared across all jobs submitted
   cluster <- config$cluster
   resource <- config$worker_resource %||% config$resource
@@ -83,12 +93,12 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
   resource_count <- resource$count
 
   base <- ids::adjective_animal()
-  names <- sprintf("%s_%d", base, seq_len(n))
+  worker_ids <- sprintf("%s_%d", base, seq_len(n))
 
   rrq <- obj$rrq_controller()
   rrq_init(rrq, obj$config)
 
-  rrq_key_alive <- rrq::rrq_expect_worker(rrq, names)
+  rrq_key_alive <- rrq::rrq_worker_expect(rrq, worker_ids)
 
   message(sprintf("Submitting %d %s with base name '%s'",
                   n, ngettext(n, "worker", "workers"), base))
@@ -97,23 +107,44 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
 
   dir.create(data$paths$local$batch, FALSE, TRUE)
   dir.create(data$paths$local$worker_log, FALSE, TRUE)
-  rrq:::rrq_worker_script(file.path(data$paths$local$root, "bin"))
-  for (nm in names) {
-    dat <- list(rrq_worker_id = nm, rrq_key_alive = rrq_key_alive)
-    base <- paste0(nm, ".bat")
+  rrq::rrq_worker_script(file.path(data$paths$local$root, "bin"))
+  for (id in worker_ids) {
+    dat <- list(rrq_worker_id = id)
+    base <- paste0(id, ".bat")
     batch <- file.path(data$paths$local$batch, base)
     writeLines(glue_whisker(batch_template, dat), batch)
     path <- windows_path(file.path(data$paths$remote$batch, base))
     p()
-    dide_id <- client$submit(path, nm, job_template, cluster,
+    dide_id <- client$submit(path, id, job_template, cluster,
                              resource_type, resource_count)
   }
 
   ## We should also check here that the job is still running
-  rrq::worker_wait(rrq, rrq_key_alive, timeout = timeout, progress = progress)
+  rrq::rrq_worker_wait(rrq, rrq_key_alive, timeout = timeout,
+                       progress = progress)
 }
 
 
 rrq_stop_workers <- function(config, id, worker_ids) {
   didehpc_rrq_controller(config, id)$worker_stop(worker_ids)
+}
+
+
+rrq_check_package_version <- function(local, remote) {
+  min_required <- "0.6.21"
+  if (remote < min_required) {
+    err <- sprintf(
+      "Your remote version of rrq (%s) is too old; must be at least %s",
+      as.character(remote), min_required)
+    fix <- c("To fix, try running one of",
+             '  * obj$install_packages("rrq")',
+             '  * obj$install_packages("mrc-ide/rrq")')
+    stop(paste(c(err, "", fix), collapse = "\n"), call. = FALSE)
+  }
+  if (local != remote) {
+    warning(sprintf(
+      "rrq versions differ between local (%s) and remote (%s)",
+      as.character(local), as.character(remote)),
+      immediate. = TRUE)
+  }
 }

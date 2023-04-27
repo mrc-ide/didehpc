@@ -15,7 +15,9 @@ worker_resource(
 \item{template}{A job template.  On fi--dideclusthn this can be
 "GeneralNodes" or "8Core". On "fi--didemrchnb" this can be
 "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
-"24Core" or "32Core". On the new "wpia-hpc-hn" cluster, you should
+"24Core", "32Core", or "MEM1024" (for nodes with 1Tb of RAM; we have
+three - two of which have 32 cores, and the other is the AMD epyc with
+64). On the new "wpia-hpc-hn" cluster, you should
 currently use "AllNodes". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
