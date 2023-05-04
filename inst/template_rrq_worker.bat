@@ -2,14 +2,13 @@ ECHO this is an worker
 
 set RRQ_CONFIG={{cluster_name}}
 set RRQ_WORKER_ID={{{{rrq_worker_id}}}}
-set RRQ_KEY_ALIVE={{{{rrq_key_alive}}}}
 
 set CONTEXT_LOGFILE={{context_root}}\{{rrq_worker_log_path}}\%RRQ_WORKER_ID%
 ECHO logfile: %CONTEXT_LOGFILE%
 
 @REM The quoting here is necessary for paths with spaces.
 ECHO on
-Rscript "{{context_root}}\bin\rrq_worker" --config didehpc --name %RRQ_WORKER_ID% --key-alive %RRQ_KEY_ALIVE% %CONTEXT_ID% > "%CONTEXT_LOGFILE%" 2>&1
+Rscript "{{context_root}}\bin\rrq_worker" --config didehpc --worker-id %RRQ_WORKER_ID% %CONTEXT_ID% > "%CONTEXT_LOGFILE%" 2>&1
 
 @ECHO off
 %SystemDrive%

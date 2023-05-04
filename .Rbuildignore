@@ -16,3 +16,4 @@
 ^vignettes_src$
 ^\.github$
 ^.lintr$
+^scripts$

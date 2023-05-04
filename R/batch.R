@@ -71,7 +71,6 @@ template_data <- function(context_root, context_id, config, workdir) {
        r_libs_user = r_libs_user,
        parallel = parallel,
        redis_host = redis_host(config$cluster),
-       rrq_key_alive = config$rrq_key_alive,
        worker_timeout = config$worker_timeout,
        rrq_worker_log_path = path_worker_logs(NULL),
        log_path = path_logs(NULL),

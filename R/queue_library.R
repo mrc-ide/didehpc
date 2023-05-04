@@ -1,3 +1,4 @@
+##' @importFrom conan conan
 queue_library <- R6::R6Class(
   "queue_library",
   public = list(
