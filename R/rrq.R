@@ -21,10 +21,8 @@ rrq_init <- function(rrq, config) {
   timeout_idle <- config$worker_timeout
   queue <- c("default", "context")
   ## as of 0.7.0 we need to write:
-  ## > cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle, queue = queue)
-  ## > rrq$worker_config_save("didehpc", cfg)
-  rrq$worker_config_save("didehpc",
-                         timeout_idle = timeout_idle, queue = queue)
+  cfg <- rrq::rrq_worker_config(timeout_idle = timeout_idle, queue = queue)
+  rrq$worker_config_save("didehpc", cfg)
 }
 
 
