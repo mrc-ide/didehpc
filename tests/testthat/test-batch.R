@@ -22,7 +22,7 @@ test_that("Create templates", {
   expect_length(
     grep("{{", strsplit(res$runner, "\n")[[1]], fixed = TRUE), 1)
   expect_length(
-    grep("{{", strsplit(res$rrq_worker, "\n")[[1]], fixed = TRUE), 2)
+    grep("{{", strsplit(res$rrq_worker, "\n")[[1]], fixed = TRUE), 1)
 })
 
 

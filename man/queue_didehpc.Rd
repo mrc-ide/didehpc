@@ -303,8 +303,8 @@ are completed (successfully or errored)
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{task_ids}}{Can be a task id (that is, a string), a task, a
-task_bundle, or a vector of any of the above.}
+\item{\code{task_ids}}{Can be a task id (string), a vector of task ids, a task, a
+list of tasks, a bundle returned by enqueue_bulk, or a list of bundles.}
 }
 \if{html}{\out{</div>}}
 }
