@@ -215,7 +215,7 @@ test_that("submit sends correct payload", {
     mockery::mock_args(mock_client$POST)[[1]],
     list("/submit_1.php",
          client_body_submit(path, "name", "template", "fi--dideclusthn",
-                            "Cores", 1)))
+                            "Cores", 1, "")))
 
   expect_equal(cl$submit(path, "name", "template",
                          "fi--didemrchnb", "Nodes", 2), dide_id)
@@ -224,7 +224,7 @@ test_that("submit sends correct payload", {
     mockery::mock_args(mock_client$POST)[[2]],
     list("/submit_1.php",
          client_body_submit(path, "name", "template", "fi--didemrchnb",
-                            "Nodes", 2)))
+                            "Nodes", 2, "")))
 })
 
 

@@ -40,7 +40,7 @@ test_that("submission body validates path", {
   p <- "\\\\fi--host\\\\path"
   expect_error(
     client_body_submit(unix_path(p), "name", "GeneralNodes",
-                       "fi--dideclusthn", "Cores", 1),
+                       "fi--dideclusthn", "Cores", 1, ""),
     "All paths must be Windows network paths")
 })
 

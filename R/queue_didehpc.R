@@ -136,8 +136,8 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param names Optional names for the tasks.
     ##'
-    ##' @param names Optional vector of task dependencies, named by task id
-    submit = function(task_ids, names = NULL, dpeends_on = NULL) {
+    ##' @param depend_on Optional vector of dependencies, named by task id
+    submit = function(task_ids, names = NULL, depends_on = NULL) {
       if (!private$provisioned) {
         stop("Queue is not provisioned; run '$provision_library()'")
       }
@@ -198,6 +198,7 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param task_ids Vector of task identifiers to look up
     dide_id = function(task_ids) {
+      if (length(task_ids) == 0 ) return(c())
       task_ids <- task_get_id(task_ids)
       self$context$db$mget(task_ids, "dide_id")
       setNames(vcapply(task_ids, self$context$db$get, "dide_id"),
@@ -349,7 +350,11 @@ submit_dide <- function(obj, data, task_ids, names, depends_on) {
     writeLines(glue_whisker(batch_template, list(task_id = id)), batch)
     path <- windows_path(file.path(data$paths$remote$batch, base))
     p()
-    deps <- self$dide_id(depends_on)
+    if (length(depends_on) == 0L) {
+      deps <- character(0)
+    } else {
+      deps <- obj$dide_id(depends_on)
+    }
     deps <- ifelse(length(deps) > 0, "", paste0(deps, collapse = ","))
     dide_id <- client$submit(path, names[[id]], job_template, cluster,
                              resource_type, resource_count, deps)

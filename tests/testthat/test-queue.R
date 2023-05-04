@@ -65,7 +65,7 @@ test_that("submission requires provisioning", {
   expect_silent(obj$submit(ids))
   mockery::expect_called(mock_submit, 1)
   expect_equal(mockery::mock_args(mock_submit)[[1]],
-               list(obj, private$data, ids, NULL))
+               list(obj, private$data, ids, NULL, NULL))
 })
 
 
@@ -106,7 +106,7 @@ test_that("Submit job and update db", {
   mockery::expect_called(client$submit, 1)
   expect_equal(
     mockery::mock_args(client$submit)[[1]],
-    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1))
+    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1, ""))
 
   ## These are the database changes made:
   expect_equal(obj$context$db$get(t$id, "dide_id"), dide_id)
