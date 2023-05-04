@@ -138,6 +138,27 @@ test_that("Submit job and update db", {
 
 })
 
+
+test_that("Submit job with dependencies", {
+  dide_id <- "462460"
+  dide_log <- "The\nlog"
+  client <- list(
+    submit = mockery::mock(dide_id, cycle = TRUE),
+    log = mockery::mock(dide_log, cycle = TRUE)
+  )
+
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+
+  private <- r6_private(obj)
+  private$provisioned <- TRUE
+
+  t <- obj$enqueue(sin(1))
+  t2 <- obj$enqueue(sin(1), depends_on = t$id)
+  bundle <- obj$enqueue_bulk(1:3, quote(I), depends_on = t$id)
+})
+
 test_that("can retry single task", {
 
   client <- list(
