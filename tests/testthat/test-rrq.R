@@ -287,8 +287,7 @@ test_that("warn if rrq versions differ", {
   other <- numeric_version("99.99.99")
   expect_warning(
     rrq_check_package_version(curr, other),
-    "rrq versions differ between local (0.7.0) and remote (99.99.99)",
-    fixed = TRUE)
+    "rrq versions differ between local \\([0-9]+\\.[0-9]+\\.[0-9]+\\) and remote \\(99.99.99\\)")
 })
 
 
