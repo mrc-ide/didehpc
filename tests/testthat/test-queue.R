@@ -138,6 +138,61 @@ test_that("Submit job and update db", {
 
 })
 
+test_that("can retry single task", {
+
+  client <- list(
+    submit = mockery::mock("1", "2")
+  )
+
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+
+  private <- r6_private(obj)
+  private$provisioned <- TRUE
+
+  t <- obj$enqueue(stop("err"))
+  expect_s3_class(t, "queuer_task")
+  expect_true(t$id %in% obj$task_list())
+  mockery::expect_called(client$submit, 1)
+
+  # run and fail
+  ctx <- context::context_load(ctx)
+  context::task_run(t$id, ctx)
+  expect_equal(t$status(), "ERROR")
+
+  ## And finally retry
+  obj$task_retry_failed(t$id)
+  mockery::expect_called(client$submit, 2)
+  expect_equal(t$status(), "PENDING")
+  expect_equal(obj$dide_id(t$id), "2")
+})
+
+test_that("can retry bundle", {
+  client <- list(
+    submit = mockery::mock("1", "2", "3", "4")
+  )
+  config <- example_config()
+  ctx <- context::context_save(file.path(config$workdir, "context"))
+  obj <- queue_didehpc_$new(ctx, config, NULL, FALSE, FALSE, FALSE, client)
+  private <- r6_private(obj)
+  private$provisioned <- TRUE
+  grp <- obj$lapply(1:2, function(x) stop("err"))
+
+  mockery::expect_called(client$submit, 2)
+  expect_equal(obj$dide_id(grp), c("1", "2"))
+
+  # run and fail
+  ctx <- context::context_load(ctx)
+  lapply(grp$ids, function(x) context::task_run(x, ctx))
+
+  # retry
+  obj$task_bundle_retry_failed(grp$name)
+
+  mockery::expect_called(client$submit, 4)
+  expect_equal(obj$dide_id(grp), c("3", "4"))
+})
+
 test_that("Test support for multiple cancels", {
   client <- list(submit = mockery::mock("42", "43"))
   config <- example_config()

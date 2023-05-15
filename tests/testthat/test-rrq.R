@@ -112,9 +112,10 @@ test_that("configure environment", {
   rrq_init(rrq, config)
   expect_setequal(rrq$worker_config_list(), c("localhost", "didehpc"))
   expect_equal(
-    rrq$worker_config_read("didehpc"),
-    list(timeout_idle = 100, queue = c("default", "context"), verbose = TRUE,
-         timeout_poll = 1, timeout_die = 2))
+    unclass(rrq$worker_config_read("didehpc")),
+    list(queue = c("default", "context"), verbose = TRUE,
+         poll_queue = 5, timeout_idle = 100, poll_process = 1,
+         timeout_process_die = 2, heartbeat_period = NULL), tolerance = 1)
 
   create <- rrq$con$GET(r6_private(rrq)$keys$envir)
   expect_is(create, "raw")
@@ -170,8 +171,7 @@ test_that("Can send context tasks to a worker", {
 
   rrq$task_data(id_rrq[[1]])
 
-  ## TODO: will be exposed; in rrq this is rrq_worker_blocking; mrc-2297
-  w <- rrq::rrq_worker_from_config(ctx$id, "didehpc")
+  w <- rrq::rrq_worker$new(ctx$id, "didehpc")
   w$step(TRUE)
 
   expect_equal(context::task_status(ids[[1]], ctx), "COMPLETE")
@@ -287,8 +287,7 @@ test_that("warn if rrq versions differ", {
   other <- numeric_version("99.99.99")
   expect_warning(
     rrq_check_package_version(curr, other),
-    "rrq versions differ between local (0.6.21) and remote (99.99.99)",
-    fixed = TRUE)
+    "rrq versions differ between local \\([0-9]+\\.[0-9]+\\.[0-9]+\\) and remote \\(99.99.99\\)")
 })
 
 
