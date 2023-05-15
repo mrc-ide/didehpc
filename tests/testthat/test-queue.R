@@ -156,7 +156,7 @@ test_that("Submit job with dependencies", {
 
   t <- obj$enqueue(sin(1))
   t2 <- obj$enqueue(sin(1), depends_on = t$id)
-  bundle <- obj$enqueue_bulk(1:3, quote(I), depends_on = t$id)
+  bundle <- obj$enqueue_bulk(1:3, quote(I), depends_on = rep(t$id, 3))
 })
 
 test_that("can retry single task", {
