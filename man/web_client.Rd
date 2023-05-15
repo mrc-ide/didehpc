@@ -134,7 +134,8 @@ Submit a job to the cluster
   template,
   cluster = NULL,
   resource_type = "Cores",
-  resource_count = 1
+  resource_count = 1,
+  deps = ""
 )}\if{html}{\out{</div>}}
 }
 
@@ -157,6 +158,9 @@ given when creating the client.}
 or \code{Nodes})}
 
 \item{\code{resource_count}}{The number of resources to request}
+
+\item{\code{deps}}{Optional. A comma delimited string of dide ids that this job
+depends on.}
 }
 \if{html}{\out{</div>}}
 }

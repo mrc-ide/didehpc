@@ -103,10 +103,12 @@ with this.}
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_get'><code>queuer::queue_base$task_bundle_get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_info'><code>queuer::queue_base$task_bundle_info()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_list'><code>queuer::queue_base$task_bundle_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_retry_failed"><a href='../../queuer/html/queue_base.html#method-queue_base-task_bundle_retry_failed'><code>queuer::queue_base$task_bundle_retry_failed()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete"><a href='../../queuer/html/queue_base.html#method-queue_base-task_delete'><code>queuer::queue_base$task_delete()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get"><a href='../../queuer/html/queue_base.html#method-queue_base-task_get'><code>queuer::queue_base$task_get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list"><a href='../../queuer/html/queue_base.html#method-queue_base-task_list'><code>queuer::queue_base$task_list()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result"><a href='../../queuer/html/queue_base.html#method-queue_base-task_result'><code>queuer::queue_base$task_result()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_retry_failed"><a href='../../queuer/html/queue_base.html#method-queue_base-task_retry_failed'><code>queuer::queue_base$task_retry_failed()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status"><a href='../../queuer/html/queue_base.html#method-queue_base-task_status'><code>queuer::queue_base$task_status()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times"><a href='../../queuer/html/queue_base.html#method-queue_base-task_times'><code>queuer::queue_base$task_times()</code></a></span></li>
 </ul>
@@ -216,7 +218,7 @@ use this to resubmit a task that has failed if you think it will
 run successfully a second time (e.g., because you cancelled it
 the first time around).
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{queue_didehpc_$submit(task_ids, names = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{queue_didehpc_$submit(task_ids, names = NULL, depends_on = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -225,6 +227,8 @@ the first time around).
 \item{\code{task_ids}}{A vector of task identifiers to submit.}
 
 \item{\code{names}}{Optional names for the tasks.}
+
+\item{\code{depends_on}}{Optional vector of dependencies, named by task id}
 }
 \if{html}{\out{</div>}}
 }

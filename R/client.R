@@ -76,6 +76,9 @@ web_client <- R6::R6Class(
     ##' @param resource_type The type of resource to request (either `Cores`
     ##'   or `Nodes`)
     ##'
+    ##' @param deps Optional. A comma delimited string of dide ids that this job
+    ##'   depends on.
+    ##'
     ##' @param resource_count The number of resources to request
     submit = function(path, name, template, cluster = NULL,
                       resource_type = "Cores", resource_count = 1, deps = "") {

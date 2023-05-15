@@ -136,7 +136,7 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param names Optional names for the tasks.
     ##'
-    ##' @param depend_on Optional vector of dependencies, named by task id
+    ##' @param depends_on Optional vector of dependencies, named by task id
     submit = function(task_ids, names = NULL, depends_on = NULL) {
       if (!private$provisioned) {
         stop("Queue is not provisioned; run '$provision_library()'")
