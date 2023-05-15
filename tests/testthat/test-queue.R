@@ -82,10 +82,12 @@ test_that("can tell the object to skip provisioning", {
 
 
 test_that("Submit job and update db", {
-  dide_id <- "462460"
+  dide_id0 <- "462460"
+  dide_id1 <- "462461"
+  dide_id <- "462462"
   dide_log <- "The\nlog"
   client <- list(
-    submit = mockery::mock(dide_id),
+    submit = mockery::mock(dide_id0, dide_id1, dide_id),
     log = mockery::mock(dide_log, cycle = TRUE),
     cancel = mockery::mock(setNames("OK", dide_id),
                            setNames("WRONG_STATE", dide_id)))
@@ -97,16 +99,18 @@ test_that("Submit job and update db", {
   private <- r6_private(obj)
   private$provisioned <- TRUE
 
-  t <- obj$enqueue(sin(1))
+  t0 <- obj$enqueue(sin(1))
+  t1 <- obj$enqueue(sin(1))
+  t <- obj$enqueue(sin(1), depends_on = c(t0$id, t1$id))
   expect_s3_class(t, "queuer_task")
   expect_true(t$id %in% obj$task_list())
 
   path_batch_win <- paste0(private$data$paths$remote$batch, "\\", t$id, ".bat")
 
-  mockery::expect_called(client$submit, 1)
+  mockery::expect_called(client$submit, 3)
   expect_equal(
-    mockery::mock_args(client$submit)[[1]],
-    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1, ""))
+    mockery::mock_args(client$submit)[[3]],
+    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1, "462460,462461"))
 
   ## These are the database changes made:
   expect_equal(obj$context$db$get(t$id, "dide_id"), dide_id)

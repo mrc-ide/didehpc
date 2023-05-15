@@ -198,7 +198,7 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param task_ids Vector of task identifiers to look up
     dide_id = function(task_ids) {
-      if (length(task_ids) == 0 ) return(c())
+      if (length(task_ids) == 0) return(c())
       task_ids <- task_get_id(task_ids)
       self$context$db$mget(task_ids, "dide_id")
       setNames(vcapply(task_ids, self$context$db$get, "dide_id"),
@@ -355,7 +355,7 @@ submit_dide <- function(obj, data, task_ids, names, depends_on) {
     } else {
       deps <- obj$dide_id(depends_on[[id]])
     }
-    deps <- ifelse(length(deps) > 0, "", paste0(deps, collapse = ","))
+    deps <- ifelse(length(deps) > 0, paste0(deps, collapse = ","), "")
     dide_id <- client$submit(path, names[[id]], job_template, cluster,
                              resource_type, resource_count, deps)
     db$set(id, dide_id, "dide_id")
@@ -366,7 +366,7 @@ submit_dide <- function(obj, data, task_ids, names, depends_on) {
 
 unsubmit_dide <- function(obj, task_ids) {
   task_ids <- task_get_ids(task_ids)
-  
+
   db <- obj$context$db
   client <- obj$client
 
