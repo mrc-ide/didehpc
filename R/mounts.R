@@ -89,28 +89,28 @@ wmic_parse <- function(x) {
 }
 
 use_app_on_nas_paddington <- function(path_remote) {
-  
+
   # If we're NOT already accessing this path by infiniband,
   # but we could be, then add -app to the server name the cluster
   # will use.
-  
+
   if (!(grepl("^[/\\\\]{2}fi--didenas[1345]-app", path_remote) ||
         grepl("^[/\\\\]{2}wpia-hpc-hn-app", path_remote))) {
-  
+
     path_remote <-
       sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
         path_remote)
-  
+
     path_remote <-
       sub("^([/\\\\]{2}wpia-hpc-hn)\\b", "\\1-app",
         path_remote)
   }
-  
+
 
   path_remote <-
     sub("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
         path_remote)
-  
+
   path_remote <-
     sub("^([/\\\\]{2}wpia-hpc-hn-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
         path_remote)
@@ -119,26 +119,30 @@ use_app_on_nas_paddington <- function(path_remote) {
 }
 
 use_app_on_nas_south_ken <- function(path_remote) {
-  
+
   # Similar to the above, but for the new South Ken
   # cluster, wpia-hn.hpc
-  
+
   if (!(grepl("^[/\\\\]{2}wpia-hn-app", path_remote))) {
-    
+
     path_remote <-
       sub("^([/\\\\]{2}wpia-hn)\\b", "\\1-app",
           path_remote)
   }
-  
-  
+
+
   path_remote <-
-    sub("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|\\.hpc\\.dide\\.local\\b", 
+    sub("^([/\\\\]{2}wpia-hn-app)\\.hpc\\.dide\\.ic\\.ac\\.uk|\\.hpc\\.dide\\.local\\b",
         "\\1.hpc.dide.local",
         path_remote)
-  
+
   path_remote <- gsub("wpia-hn-app.dide.local", "wpia-hn-app.hpc.dide.local",
                       path_remote)
-  
+
+  # At present, wpia-hn-app.hpc is not behaving, whereas the IP address works.
+
+  path_remote <- gsub("wpia-hn-app.hpc.dide.local", "10.0.2.254", path_remote)
+
   path_remote
 }
 
