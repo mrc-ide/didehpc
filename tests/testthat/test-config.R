@@ -132,7 +132,7 @@ test_that("Can find redis host, given cluster", {
   expect_equal(redis_host("wpia-hpc-hn"), "12.0.1.254")
   expect_equal(redis_host("fi--didemrchnb"), "12.0.0.1")
   expect_equal(redis_host("fi--dideclusthn"), "11.0.0.1")
-  expect_equal(redis_host("wpia-hn"), "10.0.3.254")
+  expect_equal(redis_host("wpia-hn"), "10.0.2.254")
   expect_error(redis_host("fi--didegpu"),
                "No redis host for cluster 'fi--didegpu'")
 })
