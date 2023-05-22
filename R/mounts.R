@@ -142,6 +142,8 @@ use_app_on_nas_south_ken <- function(path_remote) {
   # At present, wpia-hn-app.hpc is not behaving, whereas the IP address works.
 
   path_remote <- gsub("wpia-hn-app.hpc.dide.local", "10.0.2.254", path_remote)
+  path_remote <- gsub("wpia-hn-app.dide.ic.ac.uk", "10.0.2.254", path_remote)
+  path_remote <- gsub("wpia-hn-app", "10.0.2.254", path_remote)
 
   path_remote
 }
