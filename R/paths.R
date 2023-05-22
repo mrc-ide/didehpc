@@ -157,11 +157,19 @@ clean_path_local <- function(path) {
 clean_path_remote <- function(path) {
   ## Make FQDN
   bits <- strsplit(clean_path(path), "/")[[1]]
-
+  
+  # Catch wpia-hn, as we need to add .hpc domain
+  
+  if (bits[3] == "wpia-hn") {
+    bits[3] <- "wpia-hn.hpc"
+  }
+  
   ## This contains... empty, empty, server-name, share, dir ...
   ## So server_name should always be index 3.
   ## Remove .dide.local if we find it.
-
+  
+  
+  
   if (grepl(".dide.local", bits[3], ignore.case = TRUE)) {
     bits[3] <- sub(".dide.local", "", bits[3], ignore.case = TRUE)
   }
