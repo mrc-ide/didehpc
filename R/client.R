@@ -76,15 +76,15 @@ web_client <- R6::R6Class(
     ##' @param resource_type The type of resource to request (either `Cores`
     ##'   or `Nodes`)
     ##'
-    ##' @param deps Optional. A comma delimited string of dide ids that this job
+    ##' @param depends_on Optional. A vector of dide ids that this job
     ##'   depends on.
     ##'
     ##' @param resource_count The number of resources to request
     submit = function(path, name, template, cluster = NULL,
-                      resource_type = "Cores", resource_count = 1, deps = "") {
+                      resource_type = "Cores", resource_count = 1, depends_on = NULL) {
       data <- client_body_submit(
         path, name, template, cluster %||% private$cluster,
-        resource_type, resource_count, deps)
+        resource_type, resource_count, depends_on)
       r <- private$client$POST("/submit_1.php", data)
       client_parse_submit(httr_text(r), 1L)
     },
@@ -303,7 +303,7 @@ api_client_login <- function(username, password) {
 
 
 client_body_submit <- function(path, name, template, cluster,
-                               resource_type, resource_count, deps) {
+                               resource_type, resource_count, depends_on) {
   ## TODO: this clearly used to allow batch submission of several jobs
   ## at once, and we should consider re-allowing that. It looks like
   ## the issue is we can't easily get the names sent as a vector? Or
@@ -316,6 +316,8 @@ client_body_submit <- function(path, name, template, cluster,
 
   name <- name %||% ""
   assert_scalar_character(name)
+
+  deps <- paste0(depends_on, collapse = ",")
 
   workdir <- ""
   stderr <- ""

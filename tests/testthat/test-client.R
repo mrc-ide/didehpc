@@ -209,22 +209,22 @@ test_that("submit sends correct payload", {
   cl <- web_client$new(login = FALSE, client = mock_client)
   path <- "\\\\host\\path"
 
-  expect_equal(cl$submit(path, "name", "template"), dide_id)
+  expect_equal(cl$submit(path, "name", "template", depends_on = c("123", "456")), dide_id)
   mockery::expect_called(mock_client$POST, 1L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[1]],
     list("/submit_1.php",
          client_body_submit(path, "name", "template", "fi--dideclusthn",
-                            "Cores", 1, "")))
+                            "Cores", 1, c("123", "456"))))
 
   expect_equal(cl$submit(path, "name", "template",
-                         "fi--didemrchnb", "Nodes", 2), dide_id)
+                         "fi--didemrchnb", "Nodes", 2, depends_on = character()), dide_id)
   mockery::expect_called(mock_client$POST, 2L)
   expect_equal(
     mockery::mock_args(mock_client$POST)[[2]],
     list("/submit_1.php",
          client_body_submit(path, "name", "template", "fi--didemrchnb",
-                            "Nodes", 2, "")))
+                            "Nodes", 2, character())))
 })
 
 

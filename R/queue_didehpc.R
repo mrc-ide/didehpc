@@ -357,7 +357,6 @@ submit_dide <- function(obj, data, task_ids, names, depends_on) {
     } else {
       deps <- obj$dide_id(depends_on[[id]])
     }
-    deps <- ifelse(length(deps) > 0, paste0(deps, collapse = ","), "")
     dide_id <- client$submit(path, names[[id]], job_template, cluster,
                              resource_type, resource_count, deps)
     db$set(id, dide_id, "dide_id")

@@ -110,7 +110,7 @@ test_that("Submit job and update db", {
   mockery::expect_called(client$submit, 3)
   expect_equal(
     mockery::mock_args(client$submit)[[3]],
-    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1, "462460,462461"))
+    list(path_batch_win, t$id, "GeneralNodes", config$cluster, "Cores", 1, c("462460","462461")))
 
   ## These are the database changes made:
   expect_equal(obj$context$db$get(t$id, "dide_id"), dide_id)
@@ -161,6 +161,7 @@ test_that("Submit job with dependencies", {
   t <- obj$enqueue(sin(1))
   t2 <- obj$enqueue(sin(1), depends_on = t$id)
   bundle <- obj$enqueue_bulk(1:3, quote(I), depends_on = rep(t$id, 3))
+  mockery::expect_called(client$submit, 5)
 })
 
 test_that("can retry single task", {
