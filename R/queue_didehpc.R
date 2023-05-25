@@ -198,7 +198,9 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param task_ids Vector of task identifiers to look up
     dide_id = function(task_ids) {
-      if (length(task_ids) == 0) return(c())
+      if (length(task_ids) == 0) {
+        return(NULL)
+      }
       task_ids <- task_get_id(task_ids)
       self$context$db$mget(task_ids, "dide_id")
       setNames(vcapply(task_ids, self$context$db$get, "dide_id"),
