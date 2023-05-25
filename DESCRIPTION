@@ -41,8 +41,8 @@ Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Remotes:
     mrc-ide/conan,
-    mrc-ide/context@mrc-4177,
-    mrc-ide/queuer@mrc-4177,
+    mrc-ide/context,
+    mrc-ide/queuer,
     mrc-ide/rrq
 Encoding: UTF-8
 Language: en-GB
