@@ -20,7 +20,7 @@ derives.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/ma
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.21</span>
       </span>
     </div>
 
@@ -190,10 +190,12 @@ with this.</p></dd>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_get"><code>queuer::queue_base$task_bundle_get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_info"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_info"><code>queuer::queue_base$task_bundle_info()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_list"><code>queuer::queue_base$task_bundle_list()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_bundle_retry_failed"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_bundle_retry_failed"><code>queuer::queue_base$task_bundle_retry_failed()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_delete"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_delete"><code>queuer::queue_base$task_delete()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_get"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_get"><code>queuer::queue_base$task_get()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_list"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_list"><code>queuer::queue_base$task_list()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_result"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_result"><code>queuer::queue_base$task_result()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_retry_failed"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_retry_failed"><code>queuer::queue_base$task_retry_failed()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_status"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_status"><code>queuer::queue_base$task_status()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="queuer" data-topic="queue_base" data-id="task_times"><a href="https://rdrr.io/pkg/queuer/man/queue_base.html#method-task_times"><code>queuer::queue_base$task_times()</code></a></span></li>
 </ul></details></p><hr><a id="method-queue_didehpc-new"></a><div class="section">
@@ -298,7 +300,7 @@ use this to resubmit a task that has failed if you think it will
 run successfully a second time (e.g., because you cancelled it
 the first time around).</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span><span class="va">task_ids</span>, names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">queue_didehpc_</span><span class="op">$</span><span class="fu">submit</span><span class="op">(</span><span class="va">task_ids</span>, names <span class="op">=</span> <span class="cn">NULL</span>, depends_on <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -309,6 +311,10 @@ the first time around).</p><div class="section">
 
 <dt><code>names</code></dt>
 <dd><p>Optional names for the tasks.</p></dd>
+
+
+<dt><code>depends_on</code></dt>
+<dd><p>Optional vector of dependencies, named by task id</p></dd>
 
 
 </dl><p></p></div>
