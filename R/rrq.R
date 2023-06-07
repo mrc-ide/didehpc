@@ -80,7 +80,7 @@ rrq_submit_workers <- function(obj, data, n, timeout = 600,
   path_lib <- path_library(obj$context$root$path, config$r_version)
   rrq_check_package_version(
     utils::packageVersion("rrq"),
-    utils::packageVersion("rrq", lib = path_lib))
+    utils::packageVersion("rrq", lib.loc = path_lib))
 
   ## Will be shared across all jobs submitted
   cluster <- config$cluster

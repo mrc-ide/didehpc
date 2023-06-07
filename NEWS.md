@@ -1,4 +1,4 @@
-# didehpc 0.3.18
+# didehpc 0.3.20
 
 Prepare for new wpia-hn.hpc headnode and infiniband share at South Ken
 
