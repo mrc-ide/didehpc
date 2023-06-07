@@ -135,14 +135,16 @@ queue_didehpc_ <- R6::R6Class(
     ##' @param task_ids A vector of task identifiers to submit.
     ##'
     ##' @param names Optional names for the tasks.
-    submit = function(task_ids, names = NULL) {
+    ##'
+    ##' @param depends_on Optional vector of dependencies, named by task id
+    submit = function(task_ids, names = NULL, depends_on = NULL) {
       if (!private$provisioned) {
         stop("Queue is not provisioned; run '$provision_library()'")
       }
       if (self$config$use_workers) {
         rrq_submit_context_tasks(self$config, self$context, task_ids, names)
       } else {
-        submit_dide(self, private$data, task_ids, names)
+        submit_dide(self, private$data, task_ids, names, depends_on)
       }
     },
 
@@ -196,6 +198,9 @@ queue_didehpc_ <- R6::R6Class(
     ##'
     ##' @param task_ids Vector of task identifiers to look up
     dide_id = function(task_ids) {
+      if (length(task_ids) == 0) {
+        return(NULL)
+      }
       task_ids <- task_get_id(task_ids)
       self$context$db$mget(task_ids, "dide_id")
       setNames(vcapply(task_ids, self$context$db$get, "dide_id"),
@@ -321,7 +326,7 @@ queue_didehpc_ <- R6::R6Class(
   ))
 
 
-submit_dide <- function(obj, data, task_ids, names) {
+submit_dide <- function(obj, data, task_ids, names, depends_on) {
   db <- obj$context$db
   config <- obj$config
   client <- obj$client
@@ -347,8 +352,13 @@ submit_dide <- function(obj, data, task_ids, names) {
     writeLines(glue_whisker(batch_template, list(task_id = id)), batch)
     path <- windows_path(file.path(data$paths$remote$batch, base))
     p()
+    if (length(depends_on) == 0L) {
+      deps <- character(0)
+    } else {
+      deps <- obj$dide_id(depends_on[[id]])
+    }
     dide_id <- client$submit(path, names[[id]], job_template, cluster,
-                             resource_type, resource_count)
+                             resource_type, resource_count, deps)
     db$set(id, dide_id, "dide_id")
     db$set(id, config$cluster, "dide_cluster")
     db$set(id, path_logs(NULL), "log_path")
@@ -357,7 +367,7 @@ submit_dide <- function(obj, data, task_ids, names) {
 
 unsubmit_dide <- function(obj, task_ids) {
   task_ids <- task_get_ids(task_ids)
-  
+
   db <- obj$context$db
   client <- obj$client
 
