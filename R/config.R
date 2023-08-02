@@ -10,19 +10,19 @@
 ##'   configuration options here.
 ##'
 ##' The `template` option chooses among templates defined on the
-##'   cluster.  If you select one of these then we will reserve an
-##'   entire node *unless* you also specify `cores`.
-##'   Alternatively if `wholenode` is specified this overrides
-##'   the logic here.
+##'   cluster.
 ##'
 ##' If you specify `cores`, the HPC will queue your job until an
 ##'   appropriate number of cores appears for the selected template.
 ##'   This can leave your job queuing forever (e.g., selecting 20 cores
-##'   on a 16Core template) so be careful.  The `cores` option is
-##'   most useful with the `GeneralNodes` template.
+##'   on a 16Core template) so be careful.
+##'   
+##' Alternatively, if you specify `wholenode` as TRUE, then you will
+##'   have exclusive access to whichever compute node is allocated
+##'   to your job, reserving all of its cores.
 ##'
-##' In either case, if more than 1 core is implied (either by using
-##'   any template other than `GeneralNodes` or by specifying a
+##' If more than 1 core is requested, either by choosing 
+##'   `wholenode`, or by specifying a
 ##'   `cores` value greater than 1) on startup, a `parallel`
 ##'   cluster will be started, using `parallel::makePSOCKcluster`
 ##'   and this will be registered as the default cluster.  The nodes
@@ -84,24 +84,22 @@
 ##'   "Training" template, but you will only need to use this when
 ##'   instructed to.
 ##'
-##' @param cores The number of cores to request.  This is mostly
-##'   useful when using the `GeneralNodes` template.  If
+##' @param cores The number of cores to request.  If
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
-##'   forever!  24 is the largest this should be on fi--dideclusthn,
-##'   64 on fi--didemrchnb and 32 on wpia-hn (assuming you have access to those
-##'   nodes).  If omitted then a single core is selected for the
-##'   GeneralNodes template or the *entire machine* for the other
-##'   templates (unless modified by `wholenode`).
+##'   forever!  24 is the largest this can be on fi--dideclusthn. On fi--didemrchnb,
+##'   the GeneralNodes template has mainly 20 cores or less, with a single 64 core
+##'   node, and the 32Core template has 32 core nodes. On wpia-hn, all the nodes are
+##'   32 core. If `cores` is omitted then a single core is assumed, unless 
+##'   `wholenode` is TRUE.
 ##'
-##' @param wholenode Request the whole node?  This will default to
-##'   `TRUE` if any template other than `GeneralNodes` is
-##'   selected.
+##' @param wholenode If TRUE, request exclusive access to whichever compute node is
+##'   allocated to the job. Your code will have access to all the cores
+##'   and memory on the node.
 ##'
 ##' @param parallel Should we set up the parallel cluster?  Normally
-##'   if more than one core is implied (via the `cores` argument,
-##'   by picking a template other than `GeneralNodes` or by using
-##'   `wholenode`) then a parallel cluster will be set up (see
+##'   if more than one core is implied (via the `cores` or `wholenode` 
+##'   arguments, then a parallel cluster will be set up (see
 ##'   Details).  If `parallel` is set to `FALSE` then this
 ##'   will not occur.  This might be useful in cases where you want to
 ##'   manage your own job level parallelism (e.g. using OpenMP) or if
