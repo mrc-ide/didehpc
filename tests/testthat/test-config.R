@@ -20,7 +20,6 @@ test_that("defaults are sensible", {
   expect_false(res$use_java)
 })
 
-
 test_that("use didehpc.username if needed and available", {
   blank <- withr::with_options(
     tmp_options_didehpc(),
@@ -120,6 +119,29 @@ test_that("Check that resources are acceptable", {
   expect_error(
     didehpc_check_max_cores("unknown_cluster", 99),
     "Invalid cluster 'unknown_cluster'")
+})
+
+test_that("default core/node choice consistent across clusters", {
+  matching <- function(returned, expected) {
+    for (field in c("parallel", "count", "type")) {
+      if (!(identical(expected[[field]], returned[[field]]))) {
+        return(FALSE)
+      }
+    }
+    TRUE
+  }
+  
+  # Args for check_resources: cluster, template, cores, wholenode, parallel
+  
+  # If we don't specify cores/parallel/whole node, we should get 1 core.
+  
+  expect_true(matching(check_resources("fi--didemrchnb", "GeneralNodes", NULL, NULL, NULL),
+                       list(parallel = FALSE, count = 1L, type = "Cores")))
+  expect_true(matching(check_resources("fi--didemrchnb", "32Core", NULL, NULL, NULL),
+                       list(parallel = FALSE, count = 1L, type = "Cores")))
+  expect_true(matching(check_resources("wpia-hn", "AllNodes", NULL, NULL, NULL),
+                       list(parallel = FALSE, count = 1L, type = "Cores")))
+  
 })
 
 

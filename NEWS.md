@@ -1,3 +1,7 @@
+# didehpc 0.3.22
+
+Retire wpia-hpc-hn. Fix default core/node selection.
+
 # didehpc 0.3.20
 
 Prepare for new wpia-hn.hpc headnode and infiniband share at South Ken

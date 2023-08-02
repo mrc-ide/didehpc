@@ -428,8 +428,7 @@ didehpc_check_max_cores <- function(cluster, cores) {
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   template <- match_value(template, valid_templates()[[cluster]])
-  general <- template %in% c("GeneralNodes", "Training")
-
+  
   if (!is.null(cores)) {
     if (isTRUE(wholenode)) {
       stop("Cannot specify both wholenode and cores")
@@ -439,7 +438,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     parallel <- parallel %||% (cores > 1) # be careful of precendence
     ret <- list(template = template, parallel = parallel,
                 count = cores, type = "Cores")
-  } else if (!general || isTRUE(wholenode)) {
+  } else if (isTRUE(wholenode)) {
     ret <- list(template = template, parallel = parallel %||% TRUE,
                 count = 1L, type = "Nodes")
   } else {
