@@ -76,7 +76,7 @@
 ##'   "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
 ##'   "24Core", "32Core", or "MEM1024" (for nodes with 1Tb of RAM; we have
 ##'   three - two of which have 32 cores, and the other is the AMD epyc with
-##'   64). On the new "wpia-hpc-hn" cluster, you should
+##'   64). On the new "wpia-hn" cluster, you should
 ##'   currently use "AllNodes". See the main cluster documentation if you
 ##'   tweak these parameters, as you may not have permission to use
 ##'   all templates (and if you use one that you don't have permission
@@ -89,7 +89,7 @@
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
 ##'   forever!  24 is the largest this should be on fi--dideclusthn,
-##'   64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
+##'   64 on fi--didemrchnb and 32 on wpia-hn (assuming you have access to those
 ##'   nodes).  If omitted then a single core is selected for the
 ##'   GeneralNodes template or the *entire machine* for the other
 ##'   templates (unless modified by `wholenode`).
@@ -214,7 +214,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
   mounts <- detect_mount()
-  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
+  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
                               workdir, credentials$username, remap_nas, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores,
@@ -385,7 +385,7 @@ print.didehpc_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
+  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hn")
 }
 
 
@@ -397,8 +397,7 @@ cluster_name <- function(name) {
     if (!(name %in% valid_clusters())) {
       alias <- list(
         "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
-        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
-        "wpia-hpc-hn" = "covid")
+        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"))
       alias <-
         setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
       name <- alias[[match_value(tolower(name), names(alias), "name")]]
@@ -412,7 +411,6 @@ valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
                             "20Core", "24Core", "32Core", "MEM1024"),
-       "wpia-hpc-hn" = "AllNodes",
        "wpia-hn" = "AllNodes")
 }
 
@@ -421,7 +419,6 @@ didehpc_check_max_cores <- function(cluster, cores) {
     switch(cluster,
          "fi--dideclusthn" = 24,
          "fi--didemrchnb" = 64,
-         "wpia-hpc-hn" = 32,
          "wpia-hn" = 32,
          stop(sprintf("Invalid cluster '%s'", cluster)))
   if (cores > max_cores) {
@@ -468,7 +465,6 @@ check_worker_resource <- function(worker_resource, cluster, template,
 
 redis_host <- function(cluster) {
   switch(cluster,
-         "wpia-hpc-hn" = "12.0.1.254",
          "fi--didemrchnb" = "12.0.0.1",
          "fi--dideclusthn" = "11.0.0.1",
          "wpia-hn" = "10.0.2.254",
