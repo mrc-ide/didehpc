@@ -94,25 +94,17 @@ use_app_on_nas_paddington <- function(path_remote) {
   # but we could be, then add -app to the server name the cluster
   # will use.
 
-  if (!(grepl("^[/\\\\]{2}fi--didenas[1345]-app", path_remote) ||
-        grepl("^[/\\\\]{2}wpia-hpc-hn-app", path_remote))) {
+  if (!(grepl("^[/\\\\]{2}fi--didenas[1345]-app", path_remote))) {
 
     path_remote <-
       sub("^([/\\\\]{2}fi--didenas[1345])\\b", "\\1-app",
         path_remote)
 
-    path_remote <-
-      sub("^([/\\\\]{2}wpia-hpc-hn)\\b", "\\1-app",
-        path_remote)
   }
 
 
   path_remote <-
     sub("^([/\\\\]{2}fi--didenas[1345]-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
-        path_remote)
-
-  path_remote <-
-    sub("^([/\\\\]{2}wpia-hpc-hn-app)\\.dide\\.ic\\.ac\\.uk|\\.dide\\.local\\b", "\\1.dide.local",
         path_remote)
 
   path_remote
@@ -166,7 +158,7 @@ dide_detect_mount <- function(mounts, shares, home, temp,
   ret <- dide_detect_mount_find_workdir(ret, workdir, mounts)
   if (remap_nas) {
     for (i in seq_along(ret)) {
-      if (cluster %in% c("fi--didemrchnb", "wpia-hpc-hn")) {
+      if (identical(cluster, "fi--didemrchnb")) {
         ret[[i]]$path_remote <- use_app_on_nas_paddington(ret[[i]]$path_remote)
       } else {
         ret[[i]]$path_remote <- use_app_on_nas_south_ken(ret[[i]]$path_remote)

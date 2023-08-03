@@ -60,7 +60,6 @@ test_that("Create queue library", {
 test_that("provisioning selects appropriate queue", {
   expect_equal(queue_template("fi--didemrchnb"), "BuildQueue")
   expect_equal(queue_template("fi--dideclusthn"), "GeneralNodes")
-  expect_equal(queue_template("wpia-hpc-hn"), "AllNodes")
   expect_equal(queue_template("wpia-hn"), "BuildQueue")
   expect_error(queue_template("unknown_cluster"), 
                "Invalid cluster 'unknown_cluster'")

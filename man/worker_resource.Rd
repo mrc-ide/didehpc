@@ -17,7 +17,7 @@ worker_resource(
 "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
 "24Core", "32Core", or "MEM1024" (for nodes with 1Tb of RAM; we have
 three - two of which have 32 cores, and the other is the AMD epyc with
-64). On the new "wpia-hpc-hn" cluster, you should
+64). On the new "wpia-hn" cluster, you should
 currently use "AllNodes". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
@@ -25,24 +25,22 @@ for the job will fail).  For training purposes there is also a
 "Training" template, but you will only need to use this when
 instructed to.}
 
-\item{cores}{The number of cores to request.  This is mostly
-useful when using the \code{GeneralNodes} template.  If
+\item{cores}{The number of cores to request.  If
 specified, then we will request this many cores from the windows
 queuer.  If you request too many cores then your task will queue
-forever!  24 is the largest this should be on fi--dideclusthn,
-64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
-nodes).  If omitted then a single core is selected for the
-GeneralNodes template or the \emph{entire machine} for the other
-templates (unless modified by \code{wholenode}).}
+forever!  24 is the largest this can be on fi--dideclusthn. On fi--didemrchnb,
+the GeneralNodes template has mainly 20 cores or less, with a single 64 core
+node, and the 32Core template has 32 core nodes. On wpia-hn, all the nodes are
+32 core. If \code{cores} is omitted then a single core is assumed, unless
+\code{wholenode} is TRUE.}
 
-\item{wholenode}{Request the whole node?  This will default to
-\code{TRUE} if any template other than \code{GeneralNodes} is
-selected.}
+\item{wholenode}{If TRUE, request exclusive access to whichever compute node is
+allocated to the job. Your code will have access to all the cores
+and memory on the node.}
 
 \item{parallel}{Should we set up the parallel cluster?  Normally
-if more than one core is implied (via the \code{cores} argument,
-by picking a template other than \code{GeneralNodes} or by using
-\code{wholenode}) then a parallel cluster will be set up (see
+if more than one core is implied (via the \code{cores} or \code{wholenode}
+arguments, then a parallel cluster will be set up (see
 Details).  If \code{parallel} is set to \code{FALSE} then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if

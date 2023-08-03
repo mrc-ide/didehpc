@@ -320,17 +320,6 @@ test_that("Remap nas regex - Paddington", {
   expect_equal(use_app_on_nas_paddington("\\\\fi--didenas1.dide.local\\X"), "\\\\fi--didenas1-app.dide.local\\X")
   expect_equal(use_app_on_nas_paddington("//fi--didenas3.dide.local/X"), "//fi--didenas3-app.dide.local/X")
 
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hpc-hn.dide.ic.ac.uk\\X"), "\\\\wpia-hpc-hn-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hpc-hn.dide.ic.ac.uk/X"), "//wpia-hpc-hn-app.dide.local/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hpc-hn.dide.local\\X"), "\\\\wpia-hpc-hn-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hpc-hn.dide.local/X"), "//wpia-hpc-hn-app.dide.local/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hpc-hn\\X"), "\\\\wpia-hpc-hn-app\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hpc-hn/X"), "//wpia-hpc-hn-app/X")
-
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hpc-hn-app\\X"), "\\\\wpia-hpc-hn-app\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hpc-hn-app/X"), "//wpia-hpc-hn-app/X")
-  expect_equal(use_app_on_nas_paddington("\\\\wpia-hpc-hn-app.dide.local\\X"), "\\\\wpia-hpc-hn-app.dide.local\\X")
-  expect_equal(use_app_on_nas_paddington("//wpia-hpc-hn-app.dide.local/X"), "//wpia-hpc-hn-app.dide.local/X")
   expect_equal(use_app_on_nas_paddington("\\\\fi--didenas1-app\\X"), "\\\\fi--didenas1-app\\X")
   expect_equal(use_app_on_nas_paddington("//fi--didenas3-app/X"), "//fi--didenas3-app/X")
   expect_equal(use_app_on_nas_paddington("\\\\fi--didenas4-app.dide.local\\X"), "\\\\fi--didenas4-app.dide.local\\X")

@@ -135,7 +135,7 @@ Submit a job to the cluster
   cluster = NULL,
   resource_type = "Cores",
   resource_count = 1,
-  deps = ""
+  depends_on = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -159,7 +159,7 @@ or \code{Nodes})}
 
 \item{\code{resource_count}}{The number of resources to request}
 
-\item{\code{deps}}{Optional. A comma delimited string of dide ids that this job
+\item{\code{depends_on}}{Optional. A vector of dide ids that this job
 depends on.}
 }
 \if{html}{\out{</div>}}

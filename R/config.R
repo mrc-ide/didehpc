@@ -10,19 +10,19 @@
 ##'   configuration options here.
 ##'
 ##' The `template` option chooses among templates defined on the
-##'   cluster.  If you select one of these then we will reserve an
-##'   entire node *unless* you also specify `cores`.
-##'   Alternatively if `wholenode` is specified this overrides
-##'   the logic here.
+##'   cluster.
 ##'
 ##' If you specify `cores`, the HPC will queue your job until an
 ##'   appropriate number of cores appears for the selected template.
 ##'   This can leave your job queuing forever (e.g., selecting 20 cores
-##'   on a 16Core template) so be careful.  The `cores` option is
-##'   most useful with the `GeneralNodes` template.
+##'   on a 16Core template) so be careful.
+##'   
+##' Alternatively, if you specify `wholenode` as TRUE, then you will
+##'   have exclusive access to whichever compute node is allocated
+##'   to your job, reserving all of its cores.
 ##'
-##' In either case, if more than 1 core is implied (either by using
-##'   any template other than `GeneralNodes` or by specifying a
+##' If more than 1 core is requested, either by choosing 
+##'   `wholenode`, or by specifying a
 ##'   `cores` value greater than 1) on startup, a `parallel`
 ##'   cluster will be started, using `parallel::makePSOCKcluster`
 ##'   and this will be registered as the default cluster.  The nodes
@@ -76,7 +76,7 @@
 ##'   "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
 ##'   "24Core", "32Core", or "MEM1024" (for nodes with 1Tb of RAM; we have
 ##'   three - two of which have 32 cores, and the other is the AMD epyc with
-##'   64). On the new "wpia-hpc-hn" cluster, you should
+##'   64). On the new "wpia-hn" cluster, you should
 ##'   currently use "AllNodes". See the main cluster documentation if you
 ##'   tweak these parameters, as you may not have permission to use
 ##'   all templates (and if you use one that you don't have permission
@@ -84,24 +84,22 @@
 ##'   "Training" template, but you will only need to use this when
 ##'   instructed to.
 ##'
-##' @param cores The number of cores to request.  This is mostly
-##'   useful when using the `GeneralNodes` template.  If
+##' @param cores The number of cores to request.  If
 ##'   specified, then we will request this many cores from the windows
 ##'   queuer.  If you request too many cores then your task will queue
-##'   forever!  24 is the largest this should be on fi--dideclusthn,
-##'   64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
-##'   nodes).  If omitted then a single core is selected for the
-##'   GeneralNodes template or the *entire machine* for the other
-##'   templates (unless modified by `wholenode`).
+##'   forever!  24 is the largest this can be on fi--dideclusthn. On fi--didemrchnb,
+##'   the GeneralNodes template has mainly 20 cores or less, with a single 64 core
+##'   node, and the 32Core template has 32 core nodes. On wpia-hn, all the nodes are
+##'   32 core. If `cores` is omitted then a single core is assumed, unless 
+##'   `wholenode` is TRUE.
 ##'
-##' @param wholenode Request the whole node?  This will default to
-##'   `TRUE` if any template other than `GeneralNodes` is
-##'   selected.
+##' @param wholenode If TRUE, request exclusive access to whichever compute node is
+##'   allocated to the job. Your code will have access to all the cores
+##'   and memory on the node.
 ##'
 ##' @param parallel Should we set up the parallel cluster?  Normally
-##'   if more than one core is implied (via the `cores` argument,
-##'   by picking a template other than `GeneralNodes` or by using
-##'   `wholenode`) then a parallel cluster will be set up (see
+##'   if more than one core is implied (via the `cores` or `wholenode` 
+##'   arguments, then a parallel cluster will be set up (see
 ##'   Details).  If `parallel` is set to `FALSE` then this
 ##'   will not occur.  This might be useful in cases where you want to
 ##'   manage your own job level parallelism (e.g. using OpenMP) or if
@@ -214,7 +212,7 @@ didehpc_config <- function(credentials = NULL, home = NULL, temp = NULL,
     dat$template <- valid_templates()[[cluster]][[1L]]
   }
   mounts <- detect_mount()
-  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
+  remap_nas <- cluster %in% c("fi--didemrchnb", "wpia-hn")
   shares <- dide_detect_mount(mounts, dat$shares, dat$home, dat$temp,
                               workdir, credentials$username, remap_nas, cluster)
   resource <- check_resources(cluster, dat$template, dat$cores,
@@ -385,7 +383,7 @@ print.didehpc_config <- function(x, ...) {
 ##' @title Valid DIDE clusters
 ##' @export
 valid_clusters <- function() {
-  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hpc-hn", "wpia-hn")
+  c("fi--dideclusthn", "fi--didemrchnb", "wpia-hn")
 }
 
 
@@ -397,8 +395,7 @@ cluster_name <- function(name) {
     if (!(name %in% valid_clusters())) {
       alias <- list(
         "fi--dideclusthn" = c("small", "little", "dide", "ide", "dideclusthn"),
-        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"),
-        "wpia-hpc-hn" = "covid")
+        "fi--didemrchnb" = c("big", "mrc", "didemrchnb"))
       alias <-
         setNames(rep(names(alias), lengths(alias)), unlist(alias, FALSE, FALSE))
       name <- alias[[match_value(tolower(name), names(alias), "name")]]
@@ -412,7 +409,6 @@ valid_templates <- function() {
   list("fi--dideclusthn" = c("GeneralNodes", "8Core", "Training"),
        "fi--didemrchnb" = c("GeneralNodes", "12Core", "12and16Core", "16Core",
                             "20Core", "24Core", "32Core", "MEM1024"),
-       "wpia-hpc-hn" = "AllNodes",
        "wpia-hn" = "AllNodes")
 }
 
@@ -421,7 +417,6 @@ didehpc_check_max_cores <- function(cluster, cores) {
     switch(cluster,
          "fi--dideclusthn" = 24,
          "fi--didemrchnb" = 64,
-         "wpia-hpc-hn" = 32,
          "wpia-hn" = 32,
          stop(sprintf("Invalid cluster '%s'", cluster)))
   if (cores > max_cores) {
@@ -431,8 +426,7 @@ didehpc_check_max_cores <- function(cluster, cores) {
 
 check_resources <- function(cluster, template, cores, wholenode, parallel) {
   template <- match_value(template, valid_templates()[[cluster]])
-  general <- template %in% c("GeneralNodes", "Training")
-
+  
   if (!is.null(cores)) {
     if (isTRUE(wholenode)) {
       stop("Cannot specify both wholenode and cores")
@@ -442,7 +436,7 @@ check_resources <- function(cluster, template, cores, wholenode, parallel) {
     parallel <- parallel %||% (cores > 1) # be careful of precendence
     ret <- list(template = template, parallel = parallel,
                 count = cores, type = "Cores")
-  } else if (!general || isTRUE(wholenode)) {
+  } else if (isTRUE(wholenode)) {
     ret <- list(template = template, parallel = parallel %||% TRUE,
                 count = 1L, type = "Nodes")
   } else {
@@ -468,7 +462,6 @@ check_worker_resource <- function(worker_resource, cluster, template,
 
 redis_host <- function(cluster) {
   switch(cluster,
-         "wpia-hpc-hn" = "12.0.1.254",
          "fi--didemrchnb" = "12.0.0.1",
          "fi--dideclusthn" = "11.0.0.1",
          "wpia-hn" = "10.0.2.254",
