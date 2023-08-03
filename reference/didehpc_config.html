@@ -19,7 +19,7 @@ documentation coming later."><!-- mathjax --><script src="https://cdnjs.cloudfla
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">didehpc</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.21</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.3.22</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@ or a list of such calls.</p></dd>
 "GeneralNodes", "12Core", "16Core", "12and16Core", "20Core",
 "24Core", "32Core", or "MEM1024" (for nodes with 1Tb of RAM; we have
 three - two of which have 32 cores, and the other is the AMD epyc with
-64). On the new "wpia-hpc-hn" cluster, you should
+64). On the new "wpia-hn" cluster, you should
 currently use "AllNodes". See the main cluster documentation if you
 tweak these parameters, as you may not have permission to use
 all templates (and if you use one that you don't have permission
@@ -151,28 +151,26 @@ instructed to.</p></dd>
 
 
 <dt>cores</dt>
-<dd><p>The number of cores to request.  This is mostly
-useful when using the <code>GeneralNodes</code> template.  If
+<dd><p>The number of cores to request.  If
 specified, then we will request this many cores from the windows
 queuer.  If you request too many cores then your task will queue
-forever!  24 is the largest this should be on fi--dideclusthn,
-64 on fi--didemrchnb and 32 on wpia-hpc-hn (assuming you have access to those
-nodes).  If omitted then a single core is selected for the
-GeneralNodes template or the <em>entire machine</em> for the other
-templates (unless modified by <code>wholenode</code>).</p></dd>
+forever!  24 is the largest this can be on fi--dideclusthn. On fi--didemrchnb,
+the GeneralNodes template has mainly 20 cores or less, with a single 64 core
+node, and the 32Core template has 32 core nodes. On wpia-hn, all the nodes are
+32 core. If <code>cores</code> is omitted then a single core is assumed, unless
+<code>wholenode</code> is TRUE.</p></dd>
 
 
 <dt>wholenode</dt>
-<dd><p>Request the whole node?  This will default to
-<code>TRUE</code> if any template other than <code>GeneralNodes</code> is
-selected.</p></dd>
+<dd><p>If TRUE, request exclusive access to whichever compute node is
+allocated to the job. Your code will have access to all the cores
+and memory on the node.</p></dd>
 
 
 <dt>parallel</dt>
 <dd><p>Should we set up the parallel cluster?  Normally
-if more than one core is implied (via the <code>cores</code> argument,
-by picking a template other than <code>GeneralNodes</code> or by using
-<code>wholenode</code>) then a parallel cluster will be set up (see
+if more than one core is implied (via the <code>cores</code> or <code>wholenode</code>
+arguments, then a parallel cluster will be set up (see
 Details).  If <code>parallel</code> is set to <code>FALSE</code> then this
 will not occur.  This might be useful in cases where you want to
 manage your own job level parallelism (e.g. using OpenMP) or if
@@ -277,17 +275,16 @@ task to do some parallel processing <em>in addition</em> to the
 parallelism between tasks) you can do that through the
 configuration options here.</p>
 <p>The <code>template</code> option chooses among templates defined on the
-cluster.  If you select one of these then we will reserve an
-entire node <em>unless</em> you also specify <code>cores</code>.
-Alternatively if <code>wholenode</code> is specified this overrides
-the logic here.</p>
+cluster.</p>
 <p>If you specify <code>cores</code>, the HPC will queue your job until an
 appropriate number of cores appears for the selected template.
 This can leave your job queuing forever (e.g., selecting 20 cores
-on a 16Core template) so be careful.  The <code>cores</code> option is
-most useful with the <code>GeneralNodes</code> template.</p>
-<p>In either case, if more than 1 core is implied (either by using
-any template other than <code>GeneralNodes</code> or by specifying a
+on a 16Core template) so be careful.</p>
+<p>Alternatively, if you specify <code>wholenode</code> as TRUE, then you will
+have exclusive access to whichever compute node is allocated
+to your job, reserving all of its cores.</p>
+<p>If more than 1 core is requested, either by choosing
+<code>wholenode</code>, or by specifying a
 <code>cores</code> value greater than 1) on startup, a <code>parallel</code>
 cluster will be started, using <code><a href="https://rdrr.io/r/parallel/makeCluster.html" class="external-link">parallel::makePSOCKcluster</a></code>
 and this will be registered as the default cluster.  The nodes
