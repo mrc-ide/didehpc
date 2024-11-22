@@ -1,12 +1,5 @@
-pandoc: 2.19.2
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.1.1
 pkgdown_sha: ~
-articles:
-  didehpc: didehpc.html
-  orderly: orderly.html
-  packages: packages.html
-  quickstart: quickstart.html
-  troubleshooting: troubleshooting.html
-  workers: workers.html
-last_built: 2023-08-03T08:37Z
-
+articles: {}
+last_built: 2024-11-22T17:29Z
