@@ -1,2 +1,0 @@
-<html><head></head><body onload="document.fsub.submit();"><form name="fsub" id="fsub" action="result.php" method="post"/><input type="hidden" id="title" name="title" value="Sm9iIDM0OTA2MzkgRmFpbHVyZSBTdGF0dXM="/><input type="hidden" id="res" name="res" value="T3V0cHV0ICAgICAgICAgICAgICAgICAgICAgICAgICA6CgpDOlxVc2Vyc1xyZml0empvaD5lY2hvIHN0YXJ0aW5nIQpzdGFydGluZyEKCkM6XFVzZXJzXHJmaXR6am9oPnNsZWVwIDEwCgpDOlxVc2Vyc1xyZml0empvaD5lY2hvIGRvbmUhCmRvbmUhCgo="/></form></body></html>
-
