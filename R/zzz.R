@@ -1,6 +1,8 @@
 .onLoad <- function(...) {
   inform()
-  if (!identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  if (interactive()) {
+    ## Only fail interactively, which allows the package to replace
+    ## previously existing versions.
     stop("The didehpc package is no longer functional", call. = FALSE)
   }
 }
